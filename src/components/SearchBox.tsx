@@ -2,21 +2,23 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { Search, Clock, Star, X, ChevronDown, BadgeCheck, LoaderCircle } from 'lucide-react';
+import { Search, Clock, Star, X, ChevronDown, BadgeCheck, LoaderCircle, Swords } from 'lucide-react';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import type { PlayerHit } from '../../shared/types';
 import { parseRiotId, profilePath } from '../lib/riotId';
 import { removeRecent, useFavorites, useRecent, useRegion, type SavedPlayer } from '../lib/storage';
 import { GameImg } from './ui/GameImg';
-import { assets, rankEmblem, useStaticData } from '../lib/ddragon';
+import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
 import { api } from '../lib/api';
 import { titleCase } from '../lib/format';
 
 type Option =
   | { kind: 'player'; player: PlayerHit; source: 'favorite' | 'recent' | 'match' }
+  | { kind: 'champion'; championId: number; slug: string; name: string; title: string; tags: string[] }
   | { kind: 'go'; label: string };
 
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
+const squash = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]/g, '');
 const keyOf = (p: { platform: string; gameName: string; tagLine: string }) => `${p.platform}:${p.gameName}#${p.tagLine}`.toLowerCase();
 
 function useWide() {
@@ -115,11 +117,25 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
     recent.filter(savedMatch).forEach((p) => push(toHit(p), 'recent'));
     if (q.length >= 2) (indexQ.data ?? []).forEach((h) => push(h, 'match'));
 
-    const list = out.slice(0, 8);
+    // Champions: names that start with the query first ("ka" → Kai'Sa, Karma…), then names containing it.
+    const champs: Option[] = [];
+    const cq = squash(q);
+    if (cq.length >= 2 && !q.includes('#') && sd) {
+      const starts: Option[] = [];
+      const contains: Option[] = [];
+      for (const [id, c] of sd.champions) {
+        const n = squash(c.name);
+        const hit = n.startsWith(cq) || squash(c.id).startsWith(cq) ? starts : n.includes(cq) ? contains : null;
+        hit?.push({ kind: 'champion', championId: id, slug: champSlug(c.id), name: c.name, title: c.title, tags: c.tags });
+      }
+      const byName = (a: Option, b: Option) => (a as { name: string }).name.localeCompare((b as { name: string }).name);
+      champs.push(...starts.sort(byName), ...contains.sort(byName));
+    }
+    const list = [...champs.slice(0, 4), ...out.slice(0, champs.length ? 6 : 8)];
     const id = parseRiotId(q, platform.defaultTag);
     if (id && !seen.has(keyOf({ platform: platform.id, ...id }))) list.push({ kind: 'go', label: `${id.gameName}#${id.tagLine}` });
     return list;
-  }, [q, slow, fullId, resolveQ.data, indexQ.data, favorites, recent, platform.id, platform.defaultTag]);
+  }, [q, slow, fullId, resolveQ.data, indexQ.data, favorites, recent, platform.id, platform.defaultTag, sd]);
 
   useEffect(() => setActive(0), [query]);
 
@@ -146,10 +162,11 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
 
   function choose(o: Option | undefined) {
     if (!o) {
-      setHint('Type a Riot ID, like Hide on bush#KR1.');
+      setHint('Type a champion or a Riot ID, like Hide on bush#KR1.');
       return;
     }
-    if (o.kind === 'go') navigate(profilePath(platform.id, parseRiotId(q, platform.defaultTag)!));
+    if (o.kind === 'champion') navigate(`/champions/${o.slug}`);
+    else if (o.kind === 'go') navigate(profilePath(platform.id, parseRiotId(q, platform.defaultTag)!));
     else navigate(profilePath(o.player.platform, o.player));
     setQuery('');
     setOpen(false);
@@ -175,7 +192,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
 
   const searching = (indexQ.isFetching && fast.length >= 2) || resolveQ.isFetching;
   const showList = open && (options.length > 0 || searching);
-  const missingTag = q && !q.includes('#');
+  const missingTag = q && !q.includes('#') && !options.some((o) => o.kind === 'champion');
 
   return (
     <div ref={rootRef} className={clsx('relative w-full', hero ? 'max-w-2xl' : 'max-w-md')}>
@@ -216,7 +233,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
           aria-controls={listId}
           aria-autocomplete="list"
           aria-activedescendant={showList && options[active] ? `${listId}-${active}` : undefined}
-          aria-label="Riot ID"
+          aria-label="Search players or champions"
           autoComplete="off"
           spellCheck={false}
           value={query}
@@ -231,7 +248,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
             if (query) setOpen(true);
           }}
           onKeyDown={onKeyDown}
-          placeholder={hero ? 'Player name or Riot ID' : 'Search players'}
+          placeholder={hero ? (wide ? 'Search a champion or Riot ID' : 'Champion or Riot ID') : 'Players or champions'}
           className={clsx('min-w-0 flex-1 bg-transparent text-text outline-none placeholder:text-faint', hero ? 'px-4 text-base sm:px-5 sm:text-lg' : 'px-3 text-sm')}
         />
         {searching && <LoaderCircle className="mr-2 size-4 animate-spin self-center text-faint" aria-label="Searching" />}
@@ -255,7 +272,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
         <ul
           id={listId}
           role="listbox"
-          aria-label="Player suggestions"
+          aria-label="Suggestions"
           className="drop-in absolute inset-x-0 top-[calc(100%+6px)] z-40 max-h-[70vh] overflow-y-auto rounded-md border border-line-strong bg-surface py-1 text-left shadow-2xl"
         >
           {options.map((o, i) => {
@@ -269,6 +286,27 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
               onClick: () => choose(o),
               className: clsx('flex cursor-pointer items-center gap-3 px-3 py-2', selected && 'bg-raised'),
             };
+            if (o.kind === 'champion') {
+              const prev = options[i - 1];
+              return (
+                <li key={`c${o.championId}`} {...common} className={clsx(common.className, i > 0 && prev?.kind !== 'champion' && 'border-t border-line')}>
+                  <GameImg src={a.champion(o.championId).url} alt="" size={32} rounded="md" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-text/90">
+                      <Highlight text={o.name} query={q} />
+                    </span>
+                    <span className="block truncate text-xs capitalize text-faint">{o.title}</span>
+                  </span>
+                  <span className="flex shrink-0 items-center gap-1.5 text-xs text-muted">
+                    <span className="hidden sm:inline">{o.tags.slice(0, 2).join(' · ')}</span>
+                    <span className="flex items-center gap-1 rounded bg-sunken px-1.5 py-0.5 font-display text-sm font-bold text-gold">
+                      <Swords className="size-3.5" aria-hidden />
+                      Champion
+                    </span>
+                  </span>
+                </li>
+              );
+            }
             if (o.kind === 'go') {
               return (
                 <li key="go" {...common} className={clsx(common.className, 'border-t border-line')}>
@@ -284,7 +322,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
             }
             const p = o.player;
             return (
-              <li key={keyOf(p)} {...common}>
+              <li key={keyOf(p)} {...common} className={clsx(common.className, options[i - 1]?.kind === 'champion' && 'border-t border-line')}>
                 <span className="relative">
                   <GameImg src={p.profileIconId != null ? a.profileIcon(p.profileIconId) : undefined} alt="" size={32} rounded="full" />
                   {p.level != null && (
