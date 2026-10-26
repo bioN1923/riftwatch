@@ -206,7 +206,7 @@ export interface TierRow {
   winRate: number;
   pickRate: number;
   banRate: number;
-  tier: 'S+' | 'S' | 'A' | 'B' | 'C' | 'D';
+  tier: 'S+' | 'S' | 'A' | 'B' | 'C' | 'D' | '–'; // '–' = too rare in this role to rank
   rank: number; // within role
   lowSample: boolean;
 }
@@ -235,7 +235,9 @@ export interface ChampionStats {
   starting: (Rated & { ids: number[] })[];
   core: (Rated & { ids: number[] })[];
   boots: (Rated & { id: number })[];
-  later: { slot: number; options: (Rated & { id: number })[] }[]; // 4th, 5th, 6th item
+  later: { slot: number; total: number; options: (Rated & { id: number })[] }[]; // 4th, 5th, 6th item
+  coreTotal: number; // games with three completed items
+  bootsTotal: number;
   skills: { order: string; path: number[]; maxOrders: (Rated & { order: string })[]; sample: number };
   matchups: (Rated & { championId: number; goldDiff15: number | null })[];
   byLength: (Rated & { label: string })[];

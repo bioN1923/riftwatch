@@ -17,7 +17,7 @@ export function TierBadge({ tier, size = 'md' }: { tier: TierRow['tier']; size?:
   return (
     <span
       className={clsx('inline-grid place-items-center rounded-sm font-display font-extrabold leading-none', tone, size === 'lg' ? 'h-10 min-w-12 px-2 text-3xl' : 'h-6 min-w-8 px-1 text-base')}
-      title={`Tier ${tier}`}
+      title={tier === '–' ? 'Not ranked: rarely played in this role' : `Tier ${tier}`}
     >
       {tier}
     </span>

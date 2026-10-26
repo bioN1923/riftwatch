@@ -14,7 +14,7 @@ import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { GroupToggle, PatchSelect, ROLE_TABS, RoleTab, TierBadge, WinRateBar } from '../components/champions/common';
 
 type SortKey = 'rank' | 'name' | 'tier' | 'winRate' | 'pickRate' | 'banRate' | 'games';
-const TIER_ORDER = { 'S+': 0, S: 1, A: 2, B: 3, C: 4, D: 5 };
+const TIER_ORDER = { 'S+': 0, S: 1, A: 2, B: 3, C: 4, D: 5, '–': 6 };
 
 export function ChampionsPage() {
   const [params, setParams] = useSearchParams();

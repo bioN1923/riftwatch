@@ -226,11 +226,21 @@ function Abilities({ detail }: { detail: ChampionDetail }) {
   );
 }
 
-function Rate({ r, className }: { r: Rated; className?: string }) {
+const LOW_SAMPLE = 10;
+
+/** Win rate plus how many games back it. Small samples are shown muted, since "100% over 2 games" means nothing. */
+function Rate({ r, className, share }: { r: Rated; className?: string; share?: number }) {
+  const low = r.games < LOW_SAMPLE;
   return (
-    <span className={clsx('num text-right text-xs', className)}>
-      <span className={clsx('block text-sm font-semibold', r.winRate >= 0.5 ? 'text-text' : 'text-muted')}>{pct(r.winRate, 1)}</span>
-      <span className="text-faint">{thousands(r.games)} games</span>
+    <span className={clsx('num shrink-0 text-right text-xs', className)} title={low ? `Only ${r.games} game${r.games === 1 ? '' : 's'} so far` : undefined}>
+      <span className={clsx('block text-sm font-semibold', low ? 'text-faint' : r.winRate >= 0.5 ? 'text-win' : 'text-loss')}>
+        {pct(r.winRate, 1)}
+        {low && <span aria-hidden>*</span>}
+      </span>
+      <span className="text-faint">
+        {share != null ? `${pct(share)} · ` : ''}
+        {thousands(r.games)} game{r.games === 1 ? '' : 's'}
+      </span>
     </span>
   );
 }
@@ -259,6 +269,12 @@ function BuildPanel({ s, abilityIcons }: { s: ChampionStats; abilityIcons?: stri
         Recommended build
       </h2>
       <p className="text-xs text-muted">The most played choices, with how often they win.</p>
+      {s.summary && s.summary.games < 50 && (
+        <p className="mt-3 rounded border border-kda-great/40 bg-kda-great/10 px-3 py-2 text-sm">
+          Early numbers: built from {s.summary.games} game{s.summary.games === 1 ? '' : 's'} so far. Win rates marked * have fewer than {LOW_SAMPLE} games behind them and will
+          settle as more games come in.
+        </p>
+      )}
 
       <div className="mt-5 space-y-7">
         {rune && (
@@ -324,30 +340,7 @@ function BuildPanel({ s, abilityIcons }: { s: ChampionStats; abilityIcons?: stri
           )}
         </div>
 
-        {s.core.length > 0 && (
-          <Block title="Core build" aside="First three completed items">
-            <ul className="divide-y divide-line">
-              {s.core.map((c, i) => (
-                <li key={i} className="flex items-center justify-between gap-3 py-2 first:pt-0">
-                  <span className="flex items-center gap-3">
-                    <span className={clsx('num w-4 text-sm font-semibold', i === 0 ? 'text-gold' : 'text-faint')}>{i + 1}</span>
-                    <ItemRow ids={c.ids} size={i === 0 ? 40 : 32} arrows />
-                  </span>
-                  <Rate r={c} />
-                </li>
-              ))}
-            </ul>
-          </Block>
-        )}
-
-        {(s.boots.length > 0 || s.later.length > 0) && (
-          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-            {s.boots.length > 0 && <OptionList title="Boots" options={s.boots} />}
-            {s.later.map((l) => (
-              <OptionList key={l.slot} title={`${l.slot}th item`} options={l.options} />
-            ))}
-          </div>
-        )}
+        <ItemsBlock s={s} />
 
         {s.skills.path.length > 0 && (
           <Block
@@ -377,18 +370,121 @@ function BuildPanel({ s, abilityIcons }: { s: ChampionStats; abilityIcons?: stri
   );
 }
 
-function OptionList({ title, options }: { title: string; options: (Rated & { id: number })[] }) {
+const ORDINAL: Record<number, string> = { 4: '4th', 5: '5th', 6: '6th' };
+
+function ItemName({ id }: { id: number }) {
+  const { data: sd } = useStaticData();
+  return <>{assets(sd).item(id).name || `Item ${id}`}</>;
+}
+
+/** Core build, boots and late-game options, laid out the way a game actually goes. */
+function ItemsBlock({ s }: { s: ChampionStats }) {
+  const [more, setMore] = useState(false);
+  const core = s.core[0];
   return (
-    <Block title={title}>
-      <ul className="space-y-1.5">
-        {options.map((o) => (
-          <li key={o.id} className="flex items-center justify-between gap-2">
-            <ItemRow ids={[o.id]} size={30} />
-            <Rate r={o} />
-          </li>
-        ))}
-      </ul>
+    <Block title="Items" aside={s.coreTotal ? `${thousands(s.coreTotal)} games with three or more completed items` : undefined}>
+      <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_240px]">
+        <div className="rounded border border-line bg-raised/40 p-4">
+          <p className="mb-3 text-xs font-medium text-muted">Core build — first three completed items, in buying order</p>
+          {core ? (
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <ol className="flex items-start gap-2">
+                {core.ids.map((id, i) => (
+                  <li key={`${id}-${i}`} className="flex items-start gap-2">
+                    <span className="flex w-[76px] flex-col items-center gap-1.5 text-center">
+                      <ItemRow ids={[id]} size={48} />
+                      <span className="line-clamp-2 text-[11px] leading-tight text-muted">
+                        <ItemName id={id} />
+                      </span>
+                    </span>
+                    {i < core.ids.length - 1 && <span className="mt-4 text-faint" aria-hidden>›</span>}
+                  </li>
+                ))}
+              </ol>
+              <Rate r={core} share={s.coreTotal ? core.games / s.coreTotal : undefined} />
+            </div>
+          ) : (
+            <p className="text-sm text-muted">No game has reached three completed items yet.</p>
+          )}
+          {s.core.length > 1 && (
+            <div className="mt-3 border-t border-line pt-2">
+              <button onClick={() => setMore((v) => !v)} aria-expanded={more} className="text-xs font-medium text-gold hover:underline">
+                {more ? 'Hide other core builds' : `Show ${s.core.length - 1} other core build${s.core.length > 2 ? 's' : ''}`}
+              </button>
+              {more && (
+                <ul className="fade-up mt-2 space-y-2">
+                  {s.core.slice(1).map((c, i) => (
+                    <li key={i} className="flex items-center justify-between gap-3">
+                      <ItemRow ids={c.ids} size={30} arrows />
+                      <Rate r={c} share={s.coreTotal ? c.games / s.coreTotal : undefined} />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="rounded border border-line bg-raised/40 p-4">
+          <p className="mb-3 text-xs font-medium text-muted">Boots</p>
+          {s.boots.length ? (
+            <ul className="space-y-2.5">
+              {s.boots.map((b) => (
+                <OptionRow key={b.id} o={b} share={s.bootsTotal ? b.games / s.bootsTotal : undefined} />
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-muted">No boots data yet.</p>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-4 sm:grid-cols-3">
+        {[4, 5, 6].map((slot) => {
+          const l = s.later.find((x) => x.slot === slot);
+          return (
+            <div key={slot} className="rounded border border-line p-4">
+              <p className="mb-3 flex items-baseline justify-between text-xs font-medium text-muted">
+                {ORDINAL[slot]} item
+                {l?.total ? <span className="font-normal text-faint">{thousands(l.total)} games</span> : null}
+              </p>
+              {l && l.options.length ? (
+                <ul className="space-y-2.5">
+                  {l.options.map((o) => (
+                    <OptionRow key={o.id} o={o} share={l.total ? o.games / l.total : undefined} />
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-muted">No game has reached a {ORDINAL[slot]} item yet.</p>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </Block>
+  );
+}
+
+function OptionRow({ o, share }: { o: Rated & { id: number }; share?: number }) {
+  const low = o.games < LOW_SAMPLE;
+  return (
+    <li className="flex items-start gap-2.5">
+      <ItemRow ids={[o.id]} size={32} />
+      <span className="min-w-0 flex-1">
+        <span className="line-clamp-2 break-words text-[13px] leading-tight">
+          <ItemName id={o.id} />
+        </span>
+        <span className="num mt-0.5 block text-xs text-faint" title={low ? `Only ${o.games} game${o.games === 1 ? '' : 's'} so far` : undefined}>
+          <span className={clsx('font-semibold', low ? 'text-faint' : o.winRate >= 0.5 ? 'text-win' : 'text-loss')}>
+            {pct(o.winRate, 1)}
+            {low && '*'}
+          </span>
+          {' · '}
+          {share != null ? `${pct(share)} pick · ` : ''}
+          {thousands(o.games)}
+        </span>
+      </span>
+    </li>
   );
 }
 

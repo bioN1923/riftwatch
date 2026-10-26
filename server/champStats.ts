@@ -79,10 +79,40 @@ function newRole(): RoleAgg {
   return { g: 0, w: 0, k: 0, d: 0, a: 0, cs: 0, dmg: 0, gold: 0, min: 0, runes: {}, spells: {}, core: {}, boots: {}, s4: {}, s5: {}, s6: {}, start: {}, max: {}, lv: Array.from({ length: 18 }, () => [0, 0, 0, 0]), tl: 0, vs: {}, len: LENGTHS.map(() => ({ g: 0, w: 0 })) };
 }
 
-function bump(map: Record<string, C>, key: string, win: boolean) {
+function bump(map: Record<string, C>, key: string, win: boolean, delta = 1) {
   const c = (map[key] ??= { g: 0, w: 0 });
-  c.g++;
-  if (win) c.w++;
+  c.g += delta;
+  if (win) c.w += delta;
+  if (c.g <= 0) delete map[key];
+}
+
+/** Completed items in inventory-slot order (new items fill the first free slot). */
+function slotBuild(items: number[]) {
+  const inv = items.slice(0, 6);
+  return { legendaries: inv.filter((id) => itemKind(id) === 'legendary'), boots: inv.find((id) => itemKind(id) === 'boots') };
+}
+
+/** Completed items in the order they were actually bought, keeping only those still owned at the end. */
+function purchaseBuild(items: number[], purchases: { t: number; itemId: number; sold?: boolean }[]) {
+  const owned = new Map<number, number>();
+  for (const id of items.slice(0, 6)) if (itemKind(id) === 'legendary') owned.set(id, (owned.get(id) ?? 0) + 1);
+  const order: number[] = [];
+  for (const e of purchases) {
+    if (e.sold || itemKind(e.itemId) !== 'legendary') continue;
+    const left = owned.get(e.itemId) ?? 0;
+    if (left > 0) {
+      order.push(e.itemId);
+      owned.set(e.itemId, left - 1);
+    }
+  }
+  return order;
+}
+
+function countBuild(r: { core: Record<string, C>; s4: Record<string, C>; s5: Record<string, C>; s6: Record<string, C> }, legendaries: number[], win: boolean, delta: 1 | -1) {
+  if (legendaries.length >= 3) bump(r.core, legendaries.slice(0, 3).join(','), win, delta);
+  if (legendaries[3]) bump(r.s4, String(legendaries[3]), win, delta);
+  if (legendaries[4]) bump(r.s5, String(legendaries[4]), win, delta);
+  if (legendaries[5]) bump(r.s6, String(legendaries[5]), win, delta);
 }
 
 export class ChampionStatsStore {
@@ -158,14 +188,10 @@ export class ChampionStatsStore {
       }
       bump(r.spells, [...p.spells].sort((x, y) => x - y).join(','), p.win);
 
-      // Items fill the first free slot, so slot order is close to purchase order.
-      const legendaries = p.items.slice(0, 6).filter((id) => itemKind(id) === 'legendary');
-      const boots = p.items.slice(0, 6).find((id) => itemKind(id) === 'boots');
+      // Slot order first; replaced by the real purchase order if the timeline arrives later.
+      const { legendaries, boots } = slotBuild(p.items);
       if (boots) bump(r.boots, String(boots), p.win);
-      if (legendaries.length >= 3) bump(r.core, legendaries.slice(0, 3).join(','), p.win);
-      if (legendaries[3]) bump(r.s4, String(legendaries[3]), p.win);
-      if (legendaries[4]) bump(r.s5, String(legendaries[4]), p.win);
-      if (legendaries[5]) bump(r.s6, String(legendaries[5]), p.win);
+      countBuild(r, legendaries, p.win, 1);
 
       // Who plays this champion most (and best): a per-champion leaderboard.
       if (p.puuid && !p.puuid.startsWith('demo-rand') && p.gameName) {
@@ -209,6 +235,13 @@ export class ChampionStatsStore {
       if (i < 0) return;
       const r = this.role(g, p.championId, aram ? 'ALL' : p.position);
       r.tl++;
+
+      const bySlot = slotBuild(p.items).legendaries;
+      const byPurchase = purchaseBuild(p.items, tl.items[i] ?? []);
+      if (byPurchase.length === bySlot.length && byPurchase.join() !== bySlot.join()) {
+        countBuild(r, bySlot, p.win, -1);
+        countBuild(r, byPurchase, p.win, 1);
+      }
 
       const start = (tl.items[i] ?? []).filter((it) => it.t <= 60 && !it.sold && itemKind(it.itemId) === 'starter').map((it) => it.itemId);
       if (start.length) bump(r.start, start.sort((x, y) => x - y).join(','), p.win);
@@ -317,6 +350,8 @@ export class ChampionStatsStore {
       core: [],
       boots: [],
       later: [],
+      coreTotal: 0,
+      bootsTotal: 0,
       skills: { order: '', path: [], maxOrders: [], sample: 0 },
       matchups: [],
       byLength: [],
@@ -343,7 +378,18 @@ export class ChampionStatsStore {
 
     return {
       ...empty,
-      summary: this.rows(g).find((x) => x.championId === championId && x.role === chosen) ?? null,
+      summary: this.rows(g).find((x) => x.championId === championId && x.role === chosen) ?? {
+        // Played in this role too rarely to be ranked, but the games still count.
+        championId,
+        role: chosen,
+        games: r.g,
+        winRate: r.w / r.g,
+        pickRate: r.g / Math.max(1, g.matches),
+        banRate: c!.bans / Math.max(1, g.matches),
+        tier: '–',
+        rank: 0,
+        lowSample: true,
+      },
       avg: {
         kills: r.k / r.g,
         deaths: r.d / r.g,
@@ -363,7 +409,13 @@ export class ChampionStatsStore {
       starting: top(r.start, 3).map(([k, v]) => ({ ...rated(v), ids: ids(k) })),
       core: top(r.core, 5).map(([k, v]) => ({ ...rated(v), ids: ids(k) })),
       boots: top(r.boots, 3).map(([k, v]) => ({ ...rated(v), id: Number(k) })),
-      later: (['s4', 's5', 's6'] as const).map((key, i) => ({ slot: i + 4, options: top(r[key], 4).map(([k, v]) => ({ ...rated(v), id: Number(k) })) })).filter((x) => x.options.length),
+      later: (['s4', 's5', 's6'] as const).map((key, i) => ({
+        slot: i + 4,
+        total: Object.values(r[key]).reduce((n, v) => n + v.g, 0),
+        options: top(r[key], 4).map(([k, v]) => ({ ...rated(v), id: Number(k) })),
+      })),
+      coreTotal: Object.values(r.core).reduce((n, v) => n + v.g, 0),
+      bootsTotal: Object.values(r.boots).reduce((n, v) => n + v.g, 0),
       skills: { order: top(r.max, 1)[0]?.[0] ?? '', path: sample ? path.filter(Boolean) : [], maxOrders: top(r.max, 3).map(([k, v]) => ({ ...rated(v), order: k })), sample },
       matchups: Object.entries(r.vs)
         .map(([id, v]) => ({ ...rated(v), championId: Number(id), goldDiff15: v.gn ? v.gd / v.gn : null }))
