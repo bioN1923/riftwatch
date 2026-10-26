@@ -1,13 +1,56 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
+import { useQueries } from '@tanstack/react-query';
 import clsx from 'clsx';
-import type { LiveGame as Live } from '../../../shared/types';
-import { assets, useStaticData } from '../../lib/ddragon';
-import { duration } from '../../lib/format';
+import { Link2 } from 'lucide-react';
+import type { LiveGame as Live, LiveParticipant, ScoutInfo } from '../../../shared/types';
+import { api } from '../../lib/api';
+import { assets, rankEmblem, useStaticData } from '../../lib/ddragon';
+import { compact, duration, pct, titleCase } from '../../lib/format';
 import { queueName } from '../../lib/queues';
 import { profilePath } from '../../lib/riotId';
 import { GameImg } from '../ui/GameImg';
+import { Skeleton } from '../ui/States';
 import { SpellsRunes } from '../match/Loadout';
+import { ladderValue } from '../../lib/ladder';
+
+const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
+const TIERS = ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'EMERALD', 'DIAMOND'];
+const DIV = ['IV', 'III', 'II', 'I'];
+const GROUP_COLORS = ['var(--kda-great)', 'var(--kda-good)', 'var(--kda-ok)', 'var(--gold)'];
+
+/** Players on the same team who shared at least two of their last ten games are probably queued together. */
+function premadeGroups(players: LiveParticipant[], scouts: (ScoutInfo | undefined)[]) {
+  const parent = players.map((_, i) => i);
+  const find = (i: number): number => (parent[i] === i ? i : (parent[i] = find(parent[i])));
+  for (let i = 0; i < players.length; i++)
+    for (let j = i + 1; j < players.length; j++) {
+      if (players[i].teamId !== players[j].teamId) continue;
+      const a = scouts[i]?.recentMatchIds ?? [];
+      const b = new Set(scouts[j]?.recentMatchIds ?? []);
+      if (a.filter((id) => b.has(id)).length >= 2) parent[find(i)] = find(j);
+    }
+  const groups = new Map<number, number[]>();
+  players.forEach((_, i) => groups.set(find(i), [...(groups.get(find(i)) ?? []), i]));
+  // player index -> group number, only for groups of two or more
+  const out = new Map<number, number>();
+  let g = 0;
+  for (const members of groups.values()) {
+    if (members.length < 2) continue;
+    members.forEach((m) => out.set(m, g));
+    g++;
+  }
+  return out;
+}
+
+function avgRank(scouts: (ScoutInfo | undefined)[]) {
+  const vals = scouts.flatMap((s) => (s?.solo ? [ladderValue({ tier: s.solo.tier, rank: s.solo.rank, lp: s.solo.leaguePoints })] : []));
+  if (!vals.length) return null;
+  const v = vals.reduce((x, y) => x + y, 0) / vals.length;
+  if (v >= 2800) return 'Master+';
+  const t = TIERS[Math.floor(v / 400)] ?? 'IRON';
+  return `${titleCase(t)} ${DIV[Math.floor((v % 400) / 100)]}`;
+}
 
 export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string; platform: string }) {
   const { data } = useStaticData();
@@ -18,64 +61,150 @@ export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string;
     return () => clearInterval(t);
   }, []);
   const elapsed = Math.max(0, (now - game.startedAt) / 1000);
-  const teams = [100, 200].map((t) => ({ teamId: t, players: game.participants.filter((p) => p.teamId === t), bans: game.bans.filter((b) => b.teamId === t) }));
+
+  const players = game.participants;
+  const scoutQs = useQueries({
+    queries: players.map((p) => ({
+      queryKey: ['scout', platform, p.puuid, p.championId],
+      queryFn: ({ signal }: { signal: AbortSignal }) => api.scout(platform, p.puuid, p.championId, signal),
+      enabled: !!p.puuid,
+      staleTime: 5 * 60_000,
+    })),
+  });
+  const scouts = scoutQs.map((q) => q.data);
+  const groups = premadeGroups(players, scouts);
+  const teams = [100, 200].map((t) => ({
+    teamId: t,
+    idx: players.map((p, i) => (p.teamId === t ? i : -1)).filter((i) => i >= 0),
+    bans: game.bans.filter((b) => b.teamId === t),
+  }));
 
   return (
     <section aria-labelledby="live-h" className="space-y-4">
       <div className="panel flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3">
-        <span className="inline-flex items-center gap-1.5 rounded bg-loss px-2 py-0.5 text-xs font-semibold text-white">
-          <span className="live-dot size-1.5 rounded-full bg-white" aria-hidden /> Live
+        <span className="inline-flex items-center gap-1.5 rounded-sm bg-loss px-2 py-0.5 text-xs font-semibold text-on-accent">
+          <span className="live-dot size-1.5 rounded-full bg-on-accent" aria-hidden /> Live
         </span>
-        <h2 id="live-h" className="font-display text-lg font-semibold">
+        <h2 id="live-h" className="font-display text-xl font-bold">
           {queueName(game.queueId)}
         </h2>
-        <span className="num text-muted" aria-label={`Elapsed ${duration(elapsed)}`}>
+        <span className="num text-muted">
           {duration(elapsed)}
         </span>
-        <span className="text-xs text-faint md:ml-auto">Game time is approximate and refreshes every minute.</span>
+        <span className="text-xs text-faint md:ml-auto">Rank, mastery and premades are looked up for every player. Game time refreshes every minute.</span>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {teams.map((t) => (
-          <div key={t.teamId} className="panel overflow-hidden">
-            <div className={clsx('flex items-center justify-between px-4 py-2', t.teamId === 100 ? 'bg-win-tint' : 'bg-loss-tint')}>
-              <h3 className={clsx('font-display font-semibold', t.teamId === 100 ? 'text-win' : 'text-loss')}>{t.teamId === 100 ? 'Blue side' : 'Red side'}</h3>
-              {t.bans.length > 0 && (
-                <div className="flex items-center gap-1" aria-label="Bans">
-                  <span className="mr-1 text-xs text-muted">Bans</span>
-                  {t.bans.map((b, i) => {
-                    const c = a.champion(b.championId);
-                    return <GameImg key={i} src={c.url} alt={`Banned ${c.name}`} size={20} rounded="sm" className="opacity-60 grayscale" />;
-                  })}
-                </div>
-              )}
+      <div className="grid gap-4">
+        {teams.map((t) => {
+          const avg = avgRank(t.idx.map((i) => scouts[i]));
+          return (
+            <div key={t.teamId} className="panel overflow-hidden">
+              <div className={clsx('flex flex-wrap items-center justify-between gap-2 px-4 py-2', t.teamId === 100 ? 'bg-side-blue/10' : 'bg-side-red/10')}>
+                <h3 className={clsx('font-display text-lg font-bold', t.teamId === 100 ? 'text-side-blue' : 'text-side-red')}>
+                  {t.teamId === 100 ? 'Blue side' : 'Red side'}
+                  {avg && <span className="ml-2 font-sans text-xs font-normal text-muted">average {avg}</span>}
+                </h3>
+                {t.bans.length > 0 && (
+                  <div className="flex items-center gap-1" role="group" aria-label="Bans">
+                    <span className="mr-1 text-xs text-muted">Bans</span>
+                    {t.bans.map((b, i) => {
+                      const c = a.champion(b.championId);
+                      return <GameImg key={i} src={c.url} alt={`Banned ${c.name}`} size={20} rounded="sm" className="opacity-60 grayscale" />;
+                    })}
+                  </div>
+                )}
+              </div>
+              <ul>
+                {t.idx.map((i) => (
+                  <PlayerRow key={players[i].puuid + i} p={players[i]} s={scouts[i]} loading={scoutQs[i].isPending && !!players[i].puuid} self={players[i].puuid === puuid} group={groups.get(i)} platform={platform} />
+                ))}
+              </ul>
             </div>
-            <ul>
-              {t.players.map((p) => {
-                const c = a.champion(p.championId);
-                const self = p.puuid === puuid;
-                return (
-                  <li key={p.puuid + p.championId} className={clsx('flex items-center gap-3 border-t border-line px-4 py-2', self && 'bg-raised')}>
-                    <GameImg src={c.url} alt={c.name} size={40} rounded="full" />
-                    <SpellsRunes p={p} a={a} size={19} />
-                    <div className="min-w-0">
-                      {self || !p.gameName ? (
-                        <p className="truncate font-semibold">{p.gameName || 'Hidden player'}</p>
-                      ) : (
-                        <Link to={profilePath(platform, p)} className="block truncate font-medium hover:underline">
-                          {p.gameName}
-                          <span className="text-faint">#{p.tagLine}</span>
-                        </Link>
-                      )}
-                      <p className="text-xs text-muted">{c.name}</p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
+  );
+}
+
+function PlayerRow({ p, s, loading, self, group, platform }: { p: LiveParticipant; s?: ScoutInfo; loading: boolean; self: boolean; group?: number; platform: string }) {
+  const { data } = useStaticData();
+  const a = assets(data);
+  const c = a.champion(p.championId);
+  const solo = s?.solo;
+  const games = solo ? solo.wins + solo.losses : 0;
+  const wr = games ? solo!.wins / games : 0;
+  const tags: { label: string; tone: 'good' | 'bad' | 'neutral'; title: string }[] = [];
+  if (s?.mastery && s.mastery.points < 15000) tags.push({ label: 'New on this champion', tone: 'bad', title: `${compact(s.mastery.points)} mastery points` });
+  if (s?.mastery && s.mastery.points >= 300_000) tags.push({ label: 'Champion specialist', tone: 'good', title: `${compact(s.mastery.points)} mastery points` });
+  if (solo?.hotStreak) tags.push({ label: 'Hot streak', tone: 'good', title: 'On a ranked win streak' });
+  if (s?.level != null && s.level < 60 && games >= 20 && wr >= 0.62) tags.push({ label: 'Possible smurf', tone: 'neutral', title: `Level ${s.level}, ${pct(wr)} over ${games} games` });
+
+  return (
+    <li className={clsx('grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-t border-line px-4 py-2.5 sm:grid-cols-[auto_minmax(0,1fr)_170px_100px]', self && 'bg-raised')}>
+      <div className="flex items-center gap-2">
+        <span className="relative">
+          <GameImg src={c.url} alt={c.name} size={42} rounded="md" />
+          {group != null && (
+            <span className="absolute -left-1.5 -top-1.5 grid size-5 place-items-center rounded-full ring-2 ring-surface" style={{ background: GROUP_COLORS[group % GROUP_COLORS.length] }} title="Queued together (shared recent games)">
+              <Link2 className="size-3 text-bg" aria-label="Premade" />
+            </span>
+          )}
+        </span>
+        <SpellsRunes p={p} a={a} size={19} />
+      </div>
+      <div className="min-w-0">
+        {self || !p.gameName ? (
+          <p className="truncate font-semibold">{p.gameName || 'Hidden player'}</p>
+        ) : (
+          <Link to={profilePath(platform, p)} className="block truncate font-medium hover:text-gold hover:underline">
+            {p.gameName}
+            <span className="text-faint">#{p.tagLine}</span>
+          </Link>
+        )}
+        <p className="truncate text-xs text-muted">
+          {c.name}
+          {s?.mastery && <span className="num"> · {compact(s.mastery.points)} mastery</span>}
+        </p>
+        {tags.length > 0 && (
+          <ul className="mt-1 flex flex-wrap gap-1">
+            {tags.map((t) => (
+              <li key={t.label} title={t.title} className={clsx('whitespace-nowrap rounded-sm border px-1 text-[10px] font-medium', t.tone === 'good' ? 'border-win/40 text-win' : t.tone === 'bad' ? 'border-loss/40 text-loss' : 'border-line-strong text-muted')}>
+                {t.label}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <div className="hidden items-center gap-2 sm:flex">
+        {loading ? (
+          <Skeleton className="h-8 w-full" />
+        ) : solo ? (
+          <>
+            <img src={rankEmblem(solo.tier)} alt="" className="size-8" />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold">
+                {titleCase(solo.tier)} {APEX.has(solo.tier) ? '' : solo.rank}
+              </p>
+              <p className="num text-xs text-muted">{solo.leaguePoints} LP</p>
+            </div>
+          </>
+        ) : (
+          <span className="text-sm text-faint">Unranked</span>
+        )}
+      </div>
+      <div className="text-right">
+        {loading ? (
+          <Skeleton className="ml-auto h-8 w-16" />
+        ) : solo ? (
+          <>
+            <p className={clsx('num text-sm font-semibold', wr >= 0.55 ? 'text-win' : wr < 0.47 ? 'text-loss' : 'text-text')}>{pct(wr)}</p>
+            <p className="num text-xs text-muted">{games} games</p>
+          </>
+        ) : (
+          <span className="text-xs text-faint sm:hidden">Unranked</span>
+        )}
+      </div>
+    </li>
   );
 }

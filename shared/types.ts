@@ -239,4 +239,41 @@ export interface ChampionStats {
   skills: { order: string; path: number[]; maxOrders: (Rated & { order: string })[]; sample: number };
   matchups: (Rated & { championId: number; goldDiff15: number | null })[];
   byLength: (Rated & { label: string })[];
+  synergy: { role: string; list: (Rated & { championId: number })[] } | null;
+  players: (Rated & { gameName: string; tagLine: string; platform: string; kda: number })[];
+}
+
+/* ---------- Ranked history, tracking and scouting ---------- */
+
+export interface LpPoint {
+  t: number;
+  queue: string;
+  tier: string;
+  rank: string;
+  lp: number;
+  wins: number;
+  losses: number;
+}
+
+export interface TrackedPlayer {
+  platform: string;
+  puuid: string;
+  gameName: string;
+  tagLine: string;
+}
+
+export interface LpHistory {
+  points: LpPoint[];
+  tracked: boolean;
+}
+
+/** Everything the live-game and multi-search views need about one player, cheaply. */
+export interface ScoutInfo {
+  puuid: string;
+  level: number | null;
+  profileIconId: number | null;
+  solo: LeagueEntry | null;
+  flex: LeagueEntry | null;
+  mastery: { level: number; points: number } | null; // on the requested champion
+  recentMatchIds: string[]; // for premade detection
 }

@@ -26,6 +26,6 @@ export function fromSlug(slug: string): RiotId | null {
   return { gameName: decoded.slice(0, i), tagLine: decoded.slice(i + 1) };
 }
 
-export function profilePath(platform: string, id: RiotId, sub?: 'live') {
+export function profilePath(platform: string, id: RiotId, sub?: 'live' | 'stats') {
   return `/lol/${platform}/${toSlug(id)}${sub ? `/${sub}` : ''}`;
 }

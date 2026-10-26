@@ -13,13 +13,15 @@ import { ProfileHeader } from '../components/profile/ProfileHeader';
 import { ChampionPool, dayRecord, MasteryList, PlayedWith, ScoutingReport } from '../components/profile/Sidebar';
 import type { MatchSummary } from '../../shared/types';
 import { LiveGame } from '../components/profile/LiveGame';
+import { StatsTab } from '../components/profile/StatsTab';
+import { LpPanel } from '../components/profile/LpPanel';
 import { MatchRow } from '../components/match/MatchRow';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 
 const FIRST_PAGE = 20;
 const NEXT_PAGE = 10;
 
-export function ProfilePage({ tab }: { tab: 'overview' | 'live' }) {
+export function ProfilePage({ tab }: { tab: 'overview' | 'stats' | 'live' }) {
   const params = useParams();
   const platform = getPlatform(params.region);
   const id = params.slug ? fromSlug(params.slug) : null;
@@ -41,7 +43,7 @@ export function ProfilePage({ tab }: { tab: 'overview' | 'live' }) {
   return <ProfileView key={`${platform.id}/${id.gameName}/${id.tagLine}`.toLowerCase()} platform={platform.id} gameName={id.gameName} tagLine={id.tagLine} tab={tab} />;
 }
 
-function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; gameName: string; tagLine: string; tab: 'overview' | 'live' }) {
+function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; gameName: string; tagLine: string; tab: 'overview' | 'stats' | 'live' }) {
   const qc = useQueryClient();
   const [search, setSearch] = useSearchParams();
   const queue = (QUEUE_FILTERS.some((q) => q.id === search.get('queue')) ? search.get('queue') : 'all') as QueueFilter;
@@ -116,6 +118,30 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
 
   const live = liveQ.data?.inGame ? liveQ.data : null;
 
+  const queueBar = (
+              <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+      <div className="flex w-max gap-5 border-b border-line" role="group" aria-label="Filter by queue">
+        {QUEUE_FILTERS.map((q) => (
+          <button
+            key={q.id}
+            aria-pressed={queue === q.id}
+            onClick={() => {
+              const next = new URLSearchParams(search);
+              q.id === 'all' ? next.delete('queue') : next.set('queue', q.id);
+              setSearch(next, { replace: true });
+            }}
+            className={clsx(
+              '-mb-px whitespace-nowrap border-b-2 pb-2 text-sm font-medium transition-colors',
+              queue === q.id ? 'border-gold text-text' : 'border-transparent text-muted hover:text-text',
+            )}
+          >
+            {q.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <>
       <ProfileHeader profile={profile} matches={matches} inGame={!!live} tab={tab} updating={updating} onUpdate={update} />
@@ -133,30 +159,22 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
               <EmptyState title={`${profile.account.gameName} isn’t in a game right now`}>This page checks again every minute while it’s open.</EmptyState>
             </div>
           )
+        ) : tab === 'stats' ? (
+          <div className="space-y-4">
+            {queueBar}
+            <StatsTab
+              matches={matches}
+              puuid={profile.account.puuid}
+              loading={matchesQ.isPending}
+              hasMore={!!matchesQ.hasNextPage}
+              loadingMore={matchesQ.isFetchingNextPage}
+              onLoadMore={() => matchesQ.fetchNextPage()}
+            />
+          </div>
         ) : (
           <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_310px]">
             <section aria-label="Match history" className="min-w-0 space-y-4">
-              <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-                <div className="flex w-max gap-5 border-b border-line" role="group" aria-label="Filter by queue">
-                  {QUEUE_FILTERS.map((q) => (
-                    <button
-                      key={q.id}
-                      aria-pressed={queue === q.id}
-                      onClick={() => {
-                        const next = new URLSearchParams(search);
-                        q.id === 'all' ? next.delete('queue') : next.set('queue', q.id);
-                        setSearch(next, { replace: true });
-                      }}
-                      className={clsx(
-                        '-mb-px whitespace-nowrap border-b-2 pb-2 text-sm font-medium transition-colors',
-                        queue === q.id ? 'border-gold text-text' : 'border-transparent text-muted hover:text-text',
-                      )}
-                    >
-                      {q.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              {queueBar}
 
               {matchesQ.isError ? (
                 <ErrorState
@@ -211,6 +229,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
 
             <aside aria-label="Player summary" className="space-y-4 lg:sticky lg:top-[72px] lg:self-start">
               <ScoutingReport ov={ov} matches={matches} puuid={profile.account.puuid} name={profile.account.gameName} />
+              <LpPanel profile={profile} />
               <ChampionPool ov={ov} loading={matchesQ.isPending} />
               <PlayedWith ov={ov} platform={platform} />
               <MasteryList mastery={profile.mastery} />
@@ -224,7 +243,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
 
 function ProfileSkeleton() {
   return (
-    <div aria-busy="true" aria-label="Loading profile">
+    <div aria-busy="true" role="status" aria-label="Loading profile">
       <div className="border-b border-line bg-surface">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-8">
           <Skeleton className="size-[88px]" />

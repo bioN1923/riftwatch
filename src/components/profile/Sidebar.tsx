@@ -105,7 +105,7 @@ export function ScoutingReport({ ov, matches, puuid, name }: { ov?: Overview; ma
           <p className="mt-1 text-xs text-muted">KDA</p>
         </div>
         {roleGames > 0 && (
-          <div className="ml-auto flex items-end gap-1.5" aria-label="Games per position">
+          <div className="ml-auto flex items-end gap-1.5" role="group" aria-label="Games per position">
             {ROLES.map((r) => {
               const n = ov.roles[r] ?? 0;
               return (
@@ -160,7 +160,7 @@ export function ChampionPool({ ov, loading }: { ov?: Overview; loading: boolean 
                 <Link to={data?.champions.get(c.championId) ? `/champions/${champSlug(data.champions.get(c.championId)!.id)}` : '#'} className="block truncate font-medium hover:text-gold">
                   {champ.name}
                 </Link>
-                <div className="mt-1 flex h-1.5 overflow-hidden rounded-full bg-sunken" aria-label={`${c.wins} wins, ${c.games - c.wins} losses`}>
+                <div className="mt-1 flex h-1.5 overflow-hidden rounded-full bg-sunken" role="img" aria-label={`${c.wins} wins, ${c.games - c.wins} losses`}>
                   <span className="bg-win" style={{ width: `${wr * 100}%` }} />
                   <span className="flex-1 bg-loss/70" />
                 </div>

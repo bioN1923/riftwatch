@@ -9,22 +9,47 @@ export interface Series {
   dashed?: boolean;
 }
 
-const PAD = { left: 46, right: 92, top: 12, bottom: 26 };
+const PAD_BASE = { left: 46, right: 92, top: 12, bottom: 26 };
 
 /** Multi-series line chart over game minutes, with a crosshair tooltip and direct end labels. */
-export function LineChart({ series, height = 240, format, label }: { series: Series[]; height?: number; format: (n: number) => string; label: string }) {
+export function LineChart({
+  series,
+  height = 240,
+  format,
+  label,
+  xLabel = (i) => `${i}m`,
+  hoverTitle = (i) => `Minute ${i}`,
+  tickEvery = 5,
+  endLabels = true,
+  padLeft = 46,
+  zeroBased = true,
+  yTicks,
+}: {
+  series: Series[];
+  height?: number;
+  format: (n: number) => string;
+  label: string;
+  xLabel?: (i: number) => string;
+  hoverTitle?: (i: number) => string;
+  tickEvery?: number;
+  endLabels?: boolean;
+  padLeft?: number;
+  zeroBased?: boolean;
+  yTicks?: number[];
+}) {
+  const PAD = { ...PAD_BASE, left: padLeft, right: endLabels ? PAD_BASE.right : 14 };
   const [ref, width] = useWidth<HTMLDivElement>();
   const [hover, setHover] = useState<number | null>(null);
   const n = Math.max(...series.map((s) => s.values.length));
   const all = series.flatMap((s) => s.values);
-  const ticks = niceTicks(Math.min(0, ...all), Math.max(...all, 1));
+  const ticks = yTicks ?? niceTicks(zeroBased ? Math.min(0, ...all) : Math.min(...all), Math.max(...all, 1));
   const yMin = ticks[0];
   const yMax = ticks[ticks.length - 1];
   const w = Math.max(0, width - PAD.left - PAD.right);
   const h = height - PAD.top - PAD.bottom;
   const x = (i: number) => PAD.left + (n <= 1 ? 0 : (i / (n - 1)) * w);
   const y = (v: number) => PAD.top + h - ((v - yMin) / (yMax - yMin)) * h;
-  const xTicks = Array.from({ length: n }, (_, i) => i).filter((i) => i % 5 === 0);
+  const xTicks = Array.from({ length: n }, (_, i) => i).filter((i) => i % tickEvery === 0);
 
   // End labels: nudge apart so they never overlap.
   const ends = series
@@ -63,7 +88,7 @@ export function LineChart({ series, height = 240, format, label }: { series: Ser
             ))}
             {xTicks.map((i) => (
               <text key={i} x={x(i)} y={height - 6} textAnchor="middle" className="num fill-[var(--faint)] text-[10px]">
-                {i}m
+                {xLabel(i)}
               </text>
             ))}
             {series.map((s) => (
@@ -80,7 +105,7 @@ export function LineChart({ series, height = 240, format, label }: { series: Ser
                 strokeDasharray={s.dashed ? '5 4' : undefined}
               />
             ))}
-            {ends.map(({ s, y: ly }) => (
+            {endLabels && ends.map(({ s, y: ly }) => (
               <text key={s.id} x={PAD.left + w + 8} y={ly} dy="0.32em" className="fill-[var(--muted)] text-[11px]">
                 {s.name.length > 13 ? `${s.name.slice(0, 12)}…` : s.name}
               </text>
@@ -109,7 +134,7 @@ export function LineChart({ series, height = 240, format, label }: { series: Ser
             className="pointer-events-none absolute top-2 z-10 min-w-36 rounded border border-line-strong bg-raised px-2.5 py-2 text-xs shadow-xl"
             style={{ left: x(hover) > width / 2 ? x(hover) - 160 : x(hover) + 12 }}
           >
-            <p className="mb-1 font-semibold">Minute {hover}</p>
+            <p className="mb-1 font-semibold">{hoverTitle(hover)}</p>
             {series.map((s) => (
               <p key={s.id} className="flex items-center justify-between gap-4">
                 <span className="flex items-center gap-1.5 text-muted">

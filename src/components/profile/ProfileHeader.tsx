@@ -10,6 +10,8 @@ import { isFavorite, toggleFavorite, useFavorites } from '../../lib/storage';
 import { profilePath } from '../../lib/riotId';
 import { pct, timeAgo, titleCase } from '../../lib/format';
 import { me, result } from '../../lib/stats';
+import { playerTags } from '../../lib/tags';
+import { TagList } from '../ui/TagList';
 
 const COOLDOWN_MS = 60_000;
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
@@ -25,7 +27,7 @@ export function ProfileHeader({
   profile: Profile;
   matches: MatchSummary[] | undefined;
   inGame: boolean;
-  tab: 'overview' | 'live';
+  tab: 'overview' | 'stats' | 'live';
   updating: boolean;
   onUpdate: () => void;
 }) {
@@ -83,6 +85,10 @@ export function ProfileHeader({
                 </button>
               </div>
               <p className="mt-1.5 text-sm text-muted">{platform?.name}</p>
+              <TagList
+                className="mt-2"
+                tags={playerTags({ matches, puuid: profile.account.puuid, solo, level: profile.summoner.summonerLevel, champName: (cid) => a.champion(cid).name })}
+              />
               <div className="mt-3 flex flex-wrap items-center gap-3">
                 <button
                   onClick={onUpdate}
@@ -112,11 +118,14 @@ export function ProfileHeader({
           <TabLink to={profilePath(profile.platform, id)} active={tab === 'overview'}>
             Overview
           </TabLink>
+          <TabLink to={profilePath(profile.platform, id, 'stats')} active={tab === 'stats'}>
+            Stats
+          </TabLink>
           <TabLink to={profilePath(profile.platform, id, 'live')} active={tab === 'live'}>
             Live game
             {inGame && (
-              <span className="ml-2 inline-flex items-center gap-1 rounded-sm bg-loss px-1.5 py-px font-sans text-[11px] font-semibold text-white">
-                <span className="live-dot size-1.5 rounded-full bg-white" aria-hidden />
+              <span className="ml-2 inline-flex items-center gap-1 rounded-sm bg-loss px-1.5 py-px font-sans text-[11px] font-semibold text-on-accent">
+                <span className="live-dot size-1.5 rounded-full bg-on-accent" aria-hidden />
                 In game
               </span>
             )}

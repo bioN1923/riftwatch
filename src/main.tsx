@@ -5,10 +5,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router';
 import './index.css';
 import { Layout } from './components/Layout';
 import { HomePage } from './pages/Home';
-import { ProfilePage } from './pages/Profile';
 import { NotFoundPage } from './pages/NotFound';
-import { ChampionsPage } from './pages/Champions';
-import { ChampionPage } from './pages/Champion';
+import { RouteError } from './pages/RouteError';
 import { ApiClientError } from './lib/api';
 
 const queryClient = new QueryClient({
@@ -22,16 +20,30 @@ const queryClient = new QueryClient({
   },
 });
 
+const profileRoute = (tab: 'overview' | 'stats' | 'live') => async () => {
+  const { ProfilePage } = await import('./pages/Profile');
+  return { element: <ProfilePage tab={tab} /> };
+};
+
+// Pages other than Home load on demand, keeping the first download small.
 const router = createBrowserRouter([
   {
     element: <Layout />,
+    hydrateFallbackElement: <div className="min-h-dvh bg-bg" />,
     children: [
-      { path: '/', element: <HomePage /> },
-      { path: '/lol/:region/:slug', element: <ProfilePage tab="overview" /> },
-      { path: '/lol/:region/:slug/live', element: <ProfilePage tab="live" /> },
-      { path: '/champions', element: <ChampionsPage /> },
-      { path: '/champions/:slug', element: <ChampionPage /> },
-      { path: '*', element: <NotFoundPage /> },
+      {
+        errorElement: <RouteError />,
+        children: [
+          { path: '/', element: <HomePage /> },
+          { path: '/lol/:region/:slug', lazy: profileRoute('overview') },
+          { path: '/lol/:region/:slug/live', lazy: profileRoute('live') },
+          { path: '/lol/:region/:slug/stats', lazy: profileRoute('stats') },
+          { path: '/champions', lazy: async () => ({ Component: (await import('./pages/Champions')).ChampionsPage }) },
+          { path: '/champions/:slug', lazy: async () => ({ Component: (await import('./pages/Champion')).ChampionPage }) },
+          { path: '/multisearch', lazy: async () => ({ Component: (await import('./pages/MultiSearch')).MultiSearchPage }) },
+          { path: '*', element: <NotFoundPage /> },
+        ],
+      },
     ],
   },
 ]);

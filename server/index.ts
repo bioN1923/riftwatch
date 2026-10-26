@@ -1,19 +1,21 @@
 import 'dotenv/config';
 import express, { type NextFunction, type Request, type Response } from 'express';
+import compression from 'compression';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { ApiError } from './errors';
 import { RiotClient } from './riot';
 import { shapeLeague, shapeLive, shapeMatch, shapeTimeline } from './shape';
-import { DEMO_SEED, mockLive, mockMatchById, mockMatches, mockProfile, mockTimeline, nameFromDemoPuuid } from './mock';
+import { DEMO_SEED, mockLive, mockLpHistory, mockMatchById, mockMatches, mockProfile, mockScout, mockTimeline, nameFromDemoPuuid } from './mock';
+import { LpStore } from './lpStore';
 import { PlayerIndex } from './playerIndex';
 import { ChampionStatsStore } from './champStats';
 import { loadItemKinds } from './items';
 import { startCrawler } from './crawler';
 import { TtlCache } from './cache';
 import { getPlatform } from '../shared/regions';
-import type { ApiErrorBody, HealthResponse, MatchPage, MatchSummary, MatchTimeline, PlayerHit, Profile, StatsGroup } from '../shared/types';
+import type { ApiErrorBody, HealthResponse, LpHistory, MatchPage, MatchSummary, MatchTimeline, PlayerHit, Profile, ScoutInfo, StatsGroup } from '../shared/types';
 
 const PORT = Number(process.env.PORT ?? 3001);
 const API_KEY = process.env.RIOT_API_KEY?.trim() ?? '';
@@ -30,6 +32,7 @@ if (DEMO) DEMO_SEED.forEach((p) => players.add(p));
 
 const champStats = new ChampionStatsStore(DEMO ? null : path.resolve(here, 'data', 'champions.json'));
 const timelines = new TtlCache<MatchTimeline>(300);
+const lp = new LpStore(path.resolve(here, 'data', DEMO ? 'lp.demo.json' : 'lp.json'));
 let lastUserRequest = 0;
 
 if (DEMO) {
@@ -60,6 +63,8 @@ function indexMatches(platform: string, matches: MatchSummary[]) {
 
 const app = express();
 app.disable('x-powered-by');
+app.use(compression());
+app.use(express.json({ limit: '10kb' }));
 
 const wrap =
   (fn: (req: Request, res: Response) => Promise<unknown>) =>
@@ -128,7 +133,7 @@ app.get(
       throw e;
     }
 
-    const [league, mastery] = await Promise.all([riot.league(p, account.puuid, fresh), riot.mastery(p, account.puuid, fresh).catch(() => [])]);
+    const [league, mastery] = await Promise.all([riot.league(p, account.puuid, fresh, summoner.id), riot.mastery(p, account.puuid, fresh).catch(() => [])]);
 
     const profile: Profile = {
       platform: p.id,
@@ -144,6 +149,7 @@ app.get(
       fetchedAt: Date.now(),
     };
     indexProfile(profile);
+    lp.record(profile.account.puuid, profile.ranked);
     res.json(profile);
   }),
 );
@@ -201,13 +207,68 @@ app.get(
   }),
 );
 
+app.get('/api/lp/:platform/:puuid', (req, res) => {
+  const puuid = String(req.params.puuid);
+  let points = lp.history(puuid);
+  if (DEMO && points.length < 2) {
+    const name = nameFromDemoPuuid(puuid);
+    points = name ? mockLpHistory(name.gameName, name.tagLine) : [];
+  }
+  res.json({ points, tracked: lp.isTracked(puuid) } satisfies LpHistory);
+});
+
+app.post('/api/track', (req, res) => {
+  const { platform, puuid, gameName, tagLine } = req.body ?? {};
+  if (!getPlatform(platform) || typeof puuid !== 'string' || !puuid || typeof gameName !== 'string' || typeof tagLine !== 'string') {
+    throw new ApiError(400, 'BAD_REQUEST', 'Missing player details.');
+  }
+  lp.track({ platform, puuid, gameName, tagLine });
+  res.json({ tracked: true });
+});
+
+app.delete('/api/track/:puuid', (req, res) => {
+  lp.untrack(String(req.params.puuid));
+  res.json({ tracked: false });
+});
+
+/** Rank, level, mastery on a champion and recent match ids: what the live and multi-search views need. */
+app.get(
+  '/api/scout/:platform/:puuid',
+  wrap(async (req, res) => {
+    const p = platformOr400(String(req.params.platform));
+    const puuid = String(req.params.puuid);
+    const championId = Number(req.query.champion ?? 0);
+    if (DEMO) return res.json(mockScout(puuid, championId));
+    const [summoner, league, mastery, ids] = await Promise.all([
+      riot.summoner(p, puuid).catch(() => null),
+      riot.league(p, puuid).catch(() => [] as any[]),
+      championId ? riot.masteryOn(p, puuid, championId).catch(() => null) : Promise.resolve(null),
+      riot.matchIds(p, puuid, 0, 10, {}).catch(() => [] as string[]),
+    ]);
+    const ranked = shapeLeague(league ?? []);
+    lp.record(puuid, ranked);
+    const info: ScoutInfo = {
+      puuid,
+      level: summoner?.summonerLevel ?? null,
+      profileIconId: summoner?.profileIconId ?? null,
+      solo: ranked.find((e) => e.queueType === 'RANKED_SOLO_5x5') ?? null,
+      flex: ranked.find((e) => e.queueType === 'RANKED_FLEX_SR') ?? null,
+      mastery: mastery ? { level: mastery.championLevel, points: mastery.championPoints } : null,
+      recentMatchIds: ids,
+    };
+    res.json(info);
+  }),
+);
+
 const groupParam = (v: unknown): StatsGroup => (v === 'aram' ? 'aram' : 'ranked');
 
 app.get('/api/champions', (req, res) => {
+  res.setHeader('Cache-Control', 'public, max-age=60');
   res.json(champStats.tierList(groupParam(req.query.group), req.query.patch ? String(req.query.patch) : undefined));
 });
 
 app.get('/api/champions/:id', (req, res) => {
+  res.setHeader('Cache-Control', 'public, max-age=60');
   const id = Number(req.params.id);
   if (!Number.isFinite(id)) throw new ApiError(400, 'BAD_REQUEST', 'Unknown champion.');
   res.json(
@@ -294,7 +355,27 @@ if (!DEMO && process.env.CRAWLER !== 'false') {
   startCrawler({ riot, platform: crawlPlatform, stats: champStats, lastUserRequest: () => lastUserRequest, paceMs: Number(process.env.CRAWL_PACE_MS ?? 2500) });
 }
 
+// Tracked (starred) players: refresh their rank regularly so LP history fills in by itself.
+if (!DEMO) {
+  const refreshTracked = async () => {
+    for (const t of lp.tracked()) {
+      while (Date.now() - lastUserRequest < 8000) await new Promise((r) => setTimeout(r, 2000));
+      const p = getPlatform(t.platform);
+      if (!p) continue;
+      try {
+        lp.record(t.puuid, shapeLeague(await riot.league(p, t.puuid, true)));
+      } catch {
+        /* try again next round */
+      }
+      await new Promise((r) => setTimeout(r, 3000));
+    }
+  };
+  setInterval(() => void refreshTracked(), 20 * 60_000).unref();
+  setTimeout(() => void refreshTracked(), 15_000).unref();
+}
+
 process.on('SIGINT', () => {
+  lp.flush();
   players.flush();
   champStats.flush();
   process.exit(0);

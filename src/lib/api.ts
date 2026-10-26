@@ -1,4 +1,4 @@
-import type { ApiErrorBody, ApiErrorCode, ChampionStats, HealthResponse, LiveResponse, MatchPage, MatchTimeline, PlayerHit, Profile, StatsGroup, TierList } from '../../shared/types';
+import type { ApiErrorBody, ApiErrorCode, ChampionStats, HealthResponse, LiveResponse, LpHistory, MatchPage, MatchTimeline, PlayerHit, Profile, ScoutInfo, StatsGroup, TierList } from '../../shared/types';
 
 export class ApiClientError extends Error {
   constructor(
@@ -11,10 +11,10 @@ export class ApiClientError extends Error {
   }
 }
 
-async function request<T>(path: string, signal?: AbortSignal): Promise<T> {
+async function request<T>(path: string, signal?: AbortSignal, init?: RequestInit): Promise<T> {
   let res: Response;
   try {
-    res = await fetch(`/api${path}`, { signal });
+    res = await fetch(`/api${path}`, { signal, ...init });
   } catch (e) {
     if ((e as Error).name === 'AbortError') throw e;
     throw new ApiClientError(0, 'UPSTREAM', 'Can’t reach the Riftwatch server. Is it running? Start it with “npm run dev”.');
@@ -53,5 +53,11 @@ export const api = {
   tierList: (group: StatsGroup, patch?: string, signal?: AbortSignal) => request<TierList>(`/champions?group=${group}${patch ? `&patch=${patch}` : ''}`, signal),
   champion: (id: number, p: { group: StatsGroup; role?: string; patch?: string }, signal?: AbortSignal) =>
     request<ChampionStats>(`/champions/${id}?group=${p.group}${p.role ? `&role=${p.role}` : ''}${p.patch ? `&patch=${p.patch}` : ''}`, signal),
+  lp: (platform: string, puuid: string, signal?: AbortSignal) => request<LpHistory>(`/lp/${platform}/${enc(puuid)}`, signal),
+  track: (p: { platform: string; puuid: string; gameName: string; tagLine: string }) =>
+    request<{ tracked: boolean }>('/track', undefined, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) }),
+  untrack: (puuid: string) => request<{ tracked: boolean }>(`/track/${enc(puuid)}`, undefined, { method: 'DELETE' }),
+  scout: (platform: string, puuid: string, championId?: number, signal?: AbortSignal) =>
+    request<ScoutInfo>(`/scout/${platform}/${enc(puuid)}${championId ? `?champion=${championId}` : ''}`, signal),
   live: (platform: string, puuid: string, signal?: AbortSignal) => request<LiveResponse>(`/live/${platform}/${enc(puuid)}`, signal),
 };

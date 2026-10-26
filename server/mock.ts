@@ -4,7 +4,7 @@
  * the same profile. Search "notfound#demo" to see the not-found state.
  */
 import { scoreMatch } from './shape';
-import type { LeagueEntry, LiveResponse, MatchPage, MatchSummary, MatchTimeline, Participant, PlayerHit, Profile, TimelineEvent } from '../shared/types';
+import type { LeagueEntry, LiveResponse, LpPoint, MatchPage, MatchSummary, MatchTimeline, Participant, PlayerHit, Profile, ScoutInfo, TimelineEvent } from '../shared/types';
 
 type Role = 'TOP' | 'JUNGLE' | 'MIDDLE' | 'BOTTOM' | 'UTILITY';
 
@@ -441,10 +441,20 @@ export function mockMatches(puuidOrName: { gameName: string; tagLine: string }, 
   return { matches: slice, nextStart: start + count < filtered.length ? start + count : null };
 }
 
+/** Premade groups in generated live games, so the scout view can detect them. */
+const demoPremades = new Map<string, string>();
+
 export function mockLive(gameName: string, tagLine: string): LiveResponse {
   const p = persona(gameName, tagLine);
   if (p.seed % 3 !== 0) return { inGame: false };
   const m = mockMatch(p, 999);
+  const mate = m.participants.find((x) => x.puuid === p.duo.puuid) ?? m.participants.find((x) => x.teamId === 100 && x.puuid !== p.puuid);
+  if (mate) {
+    demoPremades.set(p.puuid, `PAIR_${p.seed}`);
+    demoPremades.set(mate.puuid, `PAIR_${p.seed}`);
+  }
+  const enemyDuo = m.participants.filter((x) => x.teamId === 200).slice(3, 5);
+  enemyDuo.forEach((x) => demoPremades.set(x.puuid, `PAIR_E_${p.seed}`));
   const r = rng(p.seed + 99);
   return {
     inGame: true,
@@ -467,3 +477,62 @@ export function mockLive(gameName: string, tagLine: string): LiveResponse {
   };
 }
 
+
+const TIER_LIST = ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'EMERALD', 'DIAMOND', 'MASTER'];
+
+export function mockScout(puuid: string, championId: number): ScoutInfo {
+  const name = nameFromDemoPuuid(puuid);
+  const r = rng(hash(puuid) + championId);
+  const prof = name ? mockProfile('euw1', name.gameName, name.tagLine) : null;
+  let solo: LeagueEntry | null = prof?.ranked.find((e) => e.queueType === 'RANKED_SOLO_5x5') ?? null;
+  if (!prof && r() < 0.85) {
+    const tier = pick(r, TIER_LIST.slice(1, 7));
+    const wins = int(r, 15, 180);
+    solo = { queueType: 'RANKED_SOLO_5x5', tier, rank: pick(r, ['I', 'II', 'III', 'IV']), leaguePoints: int(r, 0, 99), wins, losses: Math.round(wins * (0.8 + r() * 0.45)), hotStreak: r() < 0.2, veteran: r() < 0.25, freshBlood: r() < 0.1 };
+  }
+  const group = demoPremades.get(puuid);
+  const own = Array.from({ length: 10 }, (_, i) => `DEMO_SOLO_${hash(puuid)}_${i}`);
+  return {
+    puuid,
+    level: prof?.summoner.summonerLevel ?? int(r, 35, 520),
+    profileIconId: prof?.summoner.profileIconId ?? pick(r, [588, 4568, 5367, 6328, 29]),
+    solo,
+    flex: prof?.ranked.find((e) => e.queueType === 'RANKED_FLEX_SR') ?? null,
+    mastery: r() < 0.9 ? { level: int(r, 1, 40), points: Math.round(Math.pow(r(), 2) * 900_000) } : null,
+    recentMatchIds: group ? [`${group}_1`, `${group}_2`, `${group}_3`, ...own.slice(3)] : own,
+  };
+}
+
+/** A month of plausible LP movement ending at the player's current rank. */
+export function mockLpHistory(gameName: string, tagLine: string): LpPoint[] {
+  const prof = mockProfile('euw1', gameName, tagLine);
+  const solo = prof?.ranked.find((e) => e.queueType === 'RANKED_SOLO_5x5');
+  if (!solo) return [];
+  const r = rng(hash(`${gameName}#${tagLine}`) + 3);
+  const TIERS_ALL = ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'EMERALD', 'DIAMOND', 'MASTER', 'GRANDMASTER', 'CHALLENGER'];
+  const DIV = ['IV', 'III', 'II', 'I'];
+  const toAbs = (tier: string, rank: string, lp: number) => {
+    const ti = TIERS_ALL.indexOf(tier);
+    return ti >= 7 ? 2800 + lp : ti * 400 + DIV.indexOf(rank) * 100 + lp;
+  };
+  const fromAbs = (v: number) => {
+    if (v >= 2800) return { tier: 'MASTER', rank: 'I', lp: v - 2800 };
+    const ti = Math.floor(v / 400);
+    const di = Math.floor((v % 400) / 100);
+    return { tier: TIERS_ALL[ti], rank: DIV[di], lp: Math.round(v % 100) };
+  };
+  const points: LpPoint[] = [];
+  let v = toAbs(solo.tier, solo.rank, solo.leaguePoints);
+  let wins = solo.wins;
+  let losses = solo.losses;
+  const now = Date.now();
+  for (let i = 0; i < 36; i++) {
+    const f = fromAbs(Math.max(0, v));
+    points.unshift({ t: now - i * 20 * 3600_000 - int(r, 0, 3 * 3600_000), queue: 'RANKED_SOLO_5x5', tier: f.tier, rank: f.rank, lp: f.lp, wins, losses });
+    const won = r() < 0.5;
+    v += won ? -int(r, 18, 26) : int(r, 15, 24);
+    if (won) wins--;
+    else losses--;
+  }
+  return points;
+}

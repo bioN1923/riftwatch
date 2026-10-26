@@ -60,9 +60,9 @@ function DemoBanner() {
   const { data } = useQuery({ queryKey: ['health'], queryFn: api.health, staleTime: Infinity, retry: false });
   if (data?.mode !== 'demo') return null;
   return (
-    <div className="border-b border-line bg-sunken px-4 py-1.5 text-center text-xs text-muted">
+    <aside aria-label="Demo mode" className="border-b border-line bg-sunken px-4 py-1.5 text-center text-xs text-muted">
       Demo data — every Riot ID shows a generated profile. Add <code className="text-text">RIOT_API_KEY</code> to <code className="text-text">.env</code> for real players.
-    </div>
+    </aside>
   );
 }
 
@@ -76,6 +76,9 @@ function MainNav() {
       </NavLink>
       <NavLink to="/champions" className={link}>
         Champions
+      </NavLink>
+      <NavLink to="/multisearch" className={link}>
+        Multi-search
       </NavLink>
     </nav>
   );
@@ -103,12 +106,15 @@ export function Layout() {
           <Outlet />
         </div>
       </main>
-      <nav aria-label="Main" className="sticky bottom-0 z-30 grid grid-cols-2 border-t border-line bg-bg/95 backdrop-blur md:hidden">
+      <nav aria-label="Main" className="sticky bottom-0 z-30 grid grid-cols-3 border-t border-line bg-bg/95 backdrop-blur md:hidden">
         <NavLink to="/" end className={({ isActive }) => clsx('py-3 text-center font-display text-lg font-bold', isActive ? 'text-gold' : 'text-muted')}>
           Players
         </NavLink>
         <NavLink to="/champions" className={({ isActive }) => clsx('py-3 text-center font-display text-lg font-bold', isActive ? 'text-gold' : 'text-muted')}>
           Champions
+        </NavLink>
+        <NavLink to="/multisearch" className={({ isActive }) => clsx('py-3 text-center font-display text-lg font-bold', isActive ? 'text-gold' : 'text-muted')}>
+          Lobby
         </NavLink>
       </nav>
       <footer className="border-t border-line py-6 text-center text-xs text-faint">
