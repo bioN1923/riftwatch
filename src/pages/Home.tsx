@@ -52,7 +52,7 @@ export function HomePage() {
   const saved = favorites.length + recent.length > 0;
   return (
     <div className="mx-auto max-w-6xl px-4">
-      <section className="grid gap-10 pb-16 pt-14 sm:pt-24 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-end">
+      <section className="grid grid-cols-[minmax(0,1fr)] gap-10 pb-16 pt-14 sm:pt-24 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-end">
         <div>
           <h1 className="font-display text-6xl font-extrabold leading-[0.9] tracking-tight sm:text-8xl">
             Scout any

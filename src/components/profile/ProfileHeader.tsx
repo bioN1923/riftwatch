@@ -70,7 +70,7 @@ export function ProfileHeader({
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1">
-                <h1 className="truncate font-display text-4xl font-extrabold leading-none tracking-tight sm:text-5xl">
+                <h1 title={`${profile.account.gameName}#${profile.account.tagLine}`} className="truncate font-display text-4xl font-extrabold leading-none tracking-tight sm:text-5xl">
                   {profile.account.gameName}
                   <span className="ml-2 text-2xl font-semibold text-muted sm:text-3xl">#{profile.account.tagLine}</span>
                 </h1>

@@ -1,84 +1,91 @@
 # Riftwatch (lol-stats v3)
 
-A League of Legends player lookup in the spirit of u.gg and op.gg: rank, match history with full scoreboards, recent champion stats, duo partners, mastery and live games, for every region.
+A League of Legends stats site in the spirit of u.gg, op.gg and Porofessor, with its own look: player profiles with minute-by-minute game breakdowns, champion builds and tier lists, live-game scouting, multi-search, ladders and rank history, for every region.
 
 ## Quick start
 
 ```bash
 npm install
 cp .env.example .env      # Windows: copy .env.example .env
-npm run dev               # API on :3001, web app on http://localhost:5173
+npm run dev               # API on :3001, site on http://localhost:5173
 ```
 
-With no `RIOT_API_KEY` in `.env` the app runs in **demo mode**: any Riot ID shows a generated (but consistent) profile, so you can work on the UI without a key. Search `notfound#demo` to see the not-found state.
+Without a `RIOT_API_KEY` in `.env` the app runs in **demo mode**: any Riot ID shows a generated (but consistent) profile, and champion stats come from a few thousand generated games, so everything can be explored without a key. Search `notfound#demo` to see the not-found state.
 
-For real data, get a key at <https://developer.riotgames.com>, put it in `.env` as `RIOT_API_KEY=RGAPI-…` and restart. Development keys expire every 24 hours; the app tells you when that happens. To run the site publicly you need a Personal or Production key from Riot.
+For real data, get a key at <https://developer.riotgames.com>, put it in `.env` as `RIOT_API_KEY=RGAPI-…` and restart. Development keys expire every 24 hours; the site tells you when that happens. The server reads your key's real rate limits from Riot's responses, so a Personal or Production key is used at full speed automatically.
 
 | Script | What it does |
 | --- | --- |
 | `npm run dev` | API + Vite dev server with hot reload |
 | `npm run demo` | Same, forced into demo data |
-| `npm run build` | Type-check and build the web app into `dist/` |
-| `npm start` | Serve the API **and** the built app from one port (3001) |
-| `npm run typecheck` | Type-check only |
+| `npm test` | Unit tests (Vitest) |
+| `npm run build` | Type-check and build the site into `dist/` |
+| `npm start` | Serve the API **and** the built site from one port (3001), with link previews |
+| `docker build -t riftwatch . && docker run -p 3001:3001 --env-file .env -v riftwatch-data:/app/server/data riftwatch` | Run it as a container |
 
-## What changed from v2
+## Features
 
-- **The API key no longer reaches the browser.** v2 used `VITE_RIOT_API_KEY`, which Vite bundles into the public JavaScript. The key is now server-only.
-- **Current Riot endpoints.** Riot removed summoner IDs; everything now uses PUUIDs (`league-v4/by-puuid`, `champion-mastery-v4/by-puuid`, `spectator-v5`).
-- **All 15 regions** with correct platform / regional routing, instead of hardcoded EUNE.
-- **Rate limiting and caching.** Requests queue to stay under your key's limits (20/s, 100/2 min by default, configurable), retry once on 429, and finished matches are cached for a day.
-- **Match history is finished**: items, runes, spells, KDA, kill share, CS/min, vision, multikills, MVP/ACE and a 0–10 performance score, plus an expandable scoreboard for both teams with damage, gold and objectives.
-- **Its own look** ("Hextech ink"): splash-art match cards grouped by day, a header with ranks and a champion form ribbon, and a written scouting report alongside champion pool, frequent teammates and mastery.
-- **Live game tab** with both teams, runes, spells and bans; refreshes every minute.
-- **UX**: keyboard-friendly search with recent and favorite players (press `/` anywhere), region remembered, shareable URLs (`/lol/euw1/Name-TAG?queue=solo`), skeleton loading, clear error messages (not found / wrong region / expired key / rate limited), light and dark themes, responsive down to phone width, visible focus, reduced-motion support.
-- **Always-current game assets** from Data Dragon's latest patch instead of a hardcoded 13.x version.
+### Players
+- **Search with autocomplete** from every player the server has seen, plus a live check when you type a full `Name#TAG`. Press `/` anywhere to search. Recent and starred players are remembered.
+- **Profile**: ranks, a strip of the last 20 games as champion portraits, quick-read tags (win/loss streaks, one-tricks, role mains, high KDA, possible smurf, often MVP…), a written scouting report, champion pool, frequent teammates, mastery and **rank history** (LP chart). Starred players are tracked: the server checks their rank every 20 minutes so the chart fills in by itself.
+- **Match history** grouped by day, with queue filters and auto-loading. Every game expands into five tabs:
+  - **Post game** – both scoreboards, team gold/kills/objectives
+  - **Performance** – head-to-head with the lane opponent across 17 metrics, each ranked within the game
+  - **Item build** – shop visits with timestamps, skill order, full rune page; switch to any of the ten players
+  - **Timeline** – gold lead chart with objectives, minimap of kills/deaths, event log
+  - **Metrics** – gold, CS, XP or damage per minute vs the opponent and lobby average, lane leads at 10/15/20
+- **Stats tab**: sortable per-champion table (KDA, CS/min, damage, gold, kill share, vision…), per-role summary, an activity calendar, and trend charts with a 5-game rolling average.
+- **Live game**: every player's rank, win rate, mastery on their champion, warning tags ("new on this champion", "hot streak"…) and **premade detection** (players who shared recent games), plus team average rank.
 
-## Game details
+### Tools
+- **Multi-search** – paste the champion-select chat ("… joined the lobby") and scout all teammates at once: rank, last 10 ranked results, best champions and tags. The URL is shareable.
+- **Ladder** – Challenger, Grandmaster and Master for any region and queue.
+- **Server status** – Riot's incident and maintenance notices appear as a banner.
 
-Every game expands into five tabs:
+### Champions
+- **Tier list** by role, Ranked or ARAM, per patch, sortable, with this week's free rotation.
+- **Champion pages**: tier and win/pick/ban rates, abilities, recommended build (rune pages, spells, starting items, core builds, boots, 4th–6th items, skill order), matchups with gold leads at 15 minutes, best duo partners, win rate by game length, the players who play it most, average stats, base stats and lore.
 
-- **Post game**: both scoreboards with damage dealt and taken, gold, CS, wards and items, plus team kills, gold and objectives.
-- **Performance**: head-to-head against the lane opponent (or the lobby average in ARAM) across 17 metrics, each with its rank in the game, plus the categories this player led.
-- **Item build**: shop visits in order with timestamps (sold items crossed out), skill order and max order, and the full rune page. You can switch to any of the 10 players.
-- **Timeline**: blue-side gold lead minute by minute with objectives and towers marked, a minimap of the player's kills, assists and deaths, and an event log.
-- **Metrics**: gold, CS, experience or damage over time against the lane opponent and the lobby average, lane leads at 10/15/20 minutes, and a table view.
+Riot publishes no champion statistics, so like u.gg and op.gg the server builds them from games it reads: everything loaded for profiles, plus a **background collector** that walks the Challenger and Grandmaster ladders. It makes one request every 2.5 s and pauses while anyone is browsing — roughly 700 games an hour on a development key. Stats survive restarts; the four latest patches are kept. Settings: `CRAWLER`, `CRAWL_REGION`, `CRAWL_PACE_MS` in `.env`.
 
-Timelines come from Riot's match timeline endpoint and load only when you open one of those tabs.
+### Quality
+- Riot API key stays on the server; adaptive rate limiting with retry on 429; responses cached; gzip.
+- Lazy-loaded pages (first download ~80 kB gzipped), skeleton loading, clear error messages, an error page instead of a blank screen.
+- Light/dark/system themes, responsive down to phone width (bottom navigation), keyboard accessible, reduced-motion support, WCAG AA contrast, zero axe-core violations on every page.
+- Link previews (title and description) for shared profile and champion links when served by `npm start`.
 
-## Champions
+## Data files
 
-`/champions` is a tier list (by role, Ranked or ARAM, per patch, sortable) and each champion has a page with tier, win/pick/ban rates, abilities, the recommended build (rune pages, spells, starting items, core builds, boots, 4th–6th item options, skill order), matchups with gold leads at 15 minutes, win rate by game length, average stats, base stats and lore.
+`server/data/` (git-ignored) holds what the server learns over time:
 
-Riot has no API for champion statistics, so like u.gg and op.gg the server builds them itself from games it reads:
+| File | Contents |
+| --- | --- |
+| `players.json` | Players seen, for autocomplete and ladder names |
+| `champions.json` | Champion statistics by patch |
+| `lp.json` | Rank history and tracked players |
 
-- every ranked or ARAM match it loads for a profile, plus timelines you open;
-- a **background collector** that walks the Challenger and Grandmaster ladders and reads their recent ranked games with timelines. It makes one request every 2.5 seconds (well under a development key's limit) and pauses while anyone is using the site.
-
-With a development key that is roughly 700 matches an hour, so the tier list is usable after an hour or two and solid after a day. Stats are saved in `server/data/champions.json` and survive restarts; the four most recent patches are kept. Settings in `.env`: `CRAWLER`, `CRAWL_REGION`, `CRAWL_PACE_MS`.
-
-## Search autocomplete
-
-Riot has no "search players by name" endpoint, so (like op.gg) suggestions come from players the server has already seen: every profile, match and live game it loads adds those players to an index saved in `server/data/players.json`. It grows the more you use it. When you type a full Riot ID (`Name#TAG`), the server also checks Riot directly so brand-new players show up, marked with a check.
+Delete a file to reset it.
 
 ## Project layout
 
 ```
 server/        Express API (TypeScript, run with tsx)
-  index.ts       routes: /api/profile, /api/matches, /api/timeline, /api/search, /api/live, /api/champions, /api/health
-  riot.ts        Riot client: routing, cache, rate limiter, error mapping
-  shape.ts       trims Riot payloads (matches, timelines) into compact types + performance score
-  playerIndex.ts players seen so far, for autocomplete (saved to server/data/)
-  champStats.ts  champion statistics aggregated from matches (saved to server/data/)
+  index.ts       routes: profile, matches, timeline, live, scout, search, lp/track,
+                 champions, leaderboard, rotation, status, health; static site + link previews
+  riot.ts        Riot client: routing, cache, adaptive rate limiter, error mapping
+  shape.ts       trims Riot payloads (matches, timelines, live) + performance score
+  champStats.ts  champion statistics aggregated from matches
   crawler.ts     background collector of high-elo ranked matches
+  playerIndex.ts players seen, for autocomplete and names
+  lpStore.ts     rank history and tracked players
   items.ts       item classification (legendary / boots / starter) from Data Dragon
-  mock.ts        demo-mode data generator (profiles, matches, timelines)
+  mock.ts        demo-mode data (profiles, matches, timelines, ladders, live games)
 shared/        types and region table used by both sides
-src/           React 19 + TanStack Query + React Router + Tailwind v4
-  pages/         Home, Profile (overview + live), Champions (tier list), Champion, NotFound
-  components/    SearchBox, profile/*, match/* (card + details tabs), champions/*, build/*, charts/*, ui/*
-  lib/           api client, Data Dragon, formatting, stats, storage
-public/ranks/  rank emblems (from the original lol-stats project)
+src/           React 19 + TanStack Query + React Router 7 + Tailwind 4
+  pages/         Home, Profile (overview, stats, live), Champions, Champion, Leaderboard, MultiSearch
+  components/    match/* (card + detail tabs), profile/*, champions/*, build/*, charts/*, ui/*
+  lib/           api client, Data Dragon, formatting, stats, tags, ladder maths, storage
+tests/         Vitest unit tests
 ```
 
 Riftwatch isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties.

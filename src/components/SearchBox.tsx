@@ -19,6 +19,18 @@ type Option =
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
 const keyOf = (p: { platform: string; gameName: string; tagLine: string }) => `${p.platform}:${p.gameName}#${p.tagLine}`.toLowerCase();
 
+function useWide() {
+  const query = '(min-width: 640px)';
+  const [wide, setWide] = useState(() => typeof window !== 'undefined' && window.matchMedia(query).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const on = () => setWide(mq.matches);
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+  return wide;
+}
+
 function useDebounced<T>(value: T, ms: number) {
   const [v, setV] = useState(value);
   useEffect(() => {
@@ -59,6 +71,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
   const rootRef = useRef<HTMLDivElement>(null);
   const listId = useId();
   const hero = variant === 'hero';
+  const wide = useWide();
 
   const q = query.trim();
   const fast = useDebounced(q, 160);
@@ -189,7 +202,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
           >
             {PLATFORMS.map((p) => (
               <option key={p.id} value={p.id}>
-                {hero ? `${p.label} — ${p.name}` : p.label}
+                {hero && wide ? `${p.label} — ${p.name}` : p.label}
               </option>
             ))}
           </select>

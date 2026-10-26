@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
@@ -14,6 +14,7 @@ import { ChampionPool, dayRecord, MasteryList, PlayedWith, ScoutingReport } from
 import type { MatchSummary } from '../../shared/types';
 import { LiveGame } from '../components/profile/LiveGame';
 import { StatsTab } from '../components/profile/StatsTab';
+import { AutoLoad } from '../components/ui/AutoLoad';
 import { LpPanel } from '../components/profile/LpPanel';
 import { MatchRow } from '../components/match/MatchRow';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
@@ -30,6 +31,8 @@ export function ProfilePage({ tab }: { tab: 'overview' | 'stats' | 'live' }) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-10">
         <ErrorState
+          page
+          title="That link doesn’t work"
           error={new ApiClientError(400, 'BAD_REQUEST', 'This profile link isn’t valid. Profile links look like /lol/euw1/Name-TAG.')}
           action={
             <Link to="/" className="rounded-lg bg-gold px-4 py-2 font-semibold text-gold-ink">
@@ -76,6 +79,8 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
   });
 
   const matches = useMemo(() => matchesQ.data?.pages.flatMap((p) => p.matches), [matchesQ.data]);
+  const { fetchNextPage } = matchesQ;
+  const loadMore = useCallback(() => void fetchNextPage(), [fetchNextPage]);
   const ov = useMemo(() => (matches && puuid ? overview(matches, puuid) : undefined), [matches, puuid]);
 
   useEffect(() => {
@@ -105,6 +110,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
     return (
       <div className="mx-auto max-w-6xl px-4 py-10">
         <ErrorState
+          page
           error={profileQ.error}
           action={
             <button onClick={() => profileQ.refetch()} className="rounded-lg border border-line-strong px-4 py-2 font-semibold hover:bg-raised">
@@ -215,13 +221,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
                     )}
                   </div>
                   {matchesQ.hasNextPage && (
-                    <button
-                      onClick={() => matchesQ.fetchNextPage()}
-                      disabled={matchesQ.isFetchingNextPage}
-                      className="w-full rounded border border-dashed border-line-strong py-3 font-medium text-muted transition-colors hover:border-gold hover:text-text disabled:opacity-60"
-                    >
-                      {matchesQ.isFetchingNextPage ? 'Loading more games…' : 'Show more games'}
-                    </button>
+                    <AutoLoad onLoad={loadMore} loading={matchesQ.isFetchingNextPage} loadedPages={matchesQ.data?.pages.length ?? 0} />
                   )}
                 </>
               )}
