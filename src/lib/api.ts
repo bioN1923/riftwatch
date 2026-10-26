@@ -1,0 +1,57 @@
+import type { ApiErrorBody, ApiErrorCode, ChampionStats, HealthResponse, LiveResponse, MatchPage, MatchTimeline, PlayerHit, Profile, StatsGroup, TierList } from '../../shared/types';
+
+export class ApiClientError extends Error {
+  constructor(
+    public status: number,
+    public code: ApiErrorCode,
+    message: string,
+    public retryAfter?: number,
+  ) {
+    super(message);
+  }
+}
+
+async function request<T>(path: string, signal?: AbortSignal): Promise<T> {
+  let res: Response;
+  try {
+    res = await fetch(`/api${path}`, { signal });
+  } catch (e) {
+    if ((e as Error).name === 'AbortError') throw e;
+    throw new ApiClientError(0, 'UPSTREAM', 'Can’t reach the Riftwatch server. Is it running? Start it with “npm run dev”.');
+  }
+  if (!res.ok) {
+    let body: ApiErrorBody | undefined;
+    try {
+      body = await res.json();
+    } catch {
+      /* not JSON */
+    }
+    throw new ApiClientError(
+      res.status,
+      body?.error.code ?? 'UPSTREAM',
+      body?.error.message ?? `The server responded with ${res.status}.`,
+      body?.error.retryAfter,
+    );
+  }
+  return res.json() as Promise<T>;
+}
+
+const enc = encodeURIComponent;
+
+export const api = {
+  health: () => request<HealthResponse>('/health'),
+  profile: (platform: string, gameName: string, tagLine: string, opts: { fresh?: boolean; signal?: AbortSignal } = {}) =>
+    request<Profile>(`/profile/${platform}/${enc(gameName)}/${enc(tagLine)}${opts.fresh ? '?fresh=1' : ''}`, opts.signal),
+  matches: (platform: string, puuid: string, p: { start: number; count: number; queue: string; fresh?: boolean }, signal?: AbortSignal) =>
+    request<MatchPage>(
+      `/matches/${platform}/${enc(puuid)}?start=${p.start}&count=${p.count}&queue=${p.queue}${p.fresh ? '&fresh=1' : ''}`,
+      signal,
+    ),
+  timeline: (platform: string, matchId: string, signal?: AbortSignal) => request<MatchTimeline>(`/timeline/${platform}/${enc(matchId)}`, signal),
+  search: (platform: string, q: string, resolve: boolean, signal?: AbortSignal) =>
+    request<PlayerHit[]>(`/search?platform=${platform}&q=${enc(q)}${resolve ? '&resolve=1' : ''}`, signal),
+  tierList: (group: StatsGroup, patch?: string, signal?: AbortSignal) => request<TierList>(`/champions?group=${group}${patch ? `&patch=${patch}` : ''}`, signal),
+  champion: (id: number, p: { group: StatsGroup; role?: string; patch?: string }, signal?: AbortSignal) =>
+    request<ChampionStats>(`/champions/${id}?group=${p.group}${p.role ? `&role=${p.role}` : ''}${p.patch ? `&patch=${p.patch}` : ''}`, signal),
+  live: (platform: string, puuid: string, signal?: AbortSignal) => request<LiveResponse>(`/live/${platform}/${enc(puuid)}`, signal),
+};

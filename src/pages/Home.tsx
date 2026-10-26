@@ -1,0 +1,161 @@
+import { useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '../lib/api';
+import { RoleIcon, ROLE_LABEL } from '../components/ui/RoleIcon';
+import { TierBadge } from '../components/champions/common';
+import { pct } from '../lib/format';
+import { Link } from 'react-router';
+import { Star, Clock } from 'lucide-react';
+import { SearchBox } from '../components/SearchBox';
+import { GameImg } from '../components/ui/GameImg';
+import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
+import { profilePath } from '../lib/riotId';
+import { useFavorites, useRecent, type SavedPlayer } from '../lib/storage';
+import { getPlatform } from '../../shared/regions';
+import { titleCase } from '../lib/format';
+
+function PlayerChip({ p }: { p: SavedPlayer }) {
+  const { data } = useStaticData();
+  const a = assets(data);
+  return (
+    <Link
+      to={profilePath(p.platform, p)}
+      className="flex items-center gap-3 rounded border border-line bg-surface px-3 py-2 transition-colors hover:border-gold/60 hover:bg-raised"
+    >
+      <GameImg src={p.profileIconId != null ? a.profileIcon(p.profileIconId) : undefined} alt="" size={36} rounded="full" />
+      <span className="min-w-0 flex-1">
+        <span className="block truncate font-medium">
+          {p.gameName}
+          <span className="text-muted">#{p.tagLine}</span>
+        </span>
+        <span className="flex items-center gap-1.5 text-xs text-muted">
+          {getPlatform(p.platform)?.label}
+          {p.tier && (
+            <>
+              <img src={rankEmblem(p.tier)} alt="" className="size-4" />
+              {titleCase(p.tier)} {['MASTER', 'GRANDMASTER', 'CHALLENGER'].includes(p.tier) ? '' : p.rank}
+            </>
+          )}
+        </span>
+      </span>
+    </Link>
+  );
+}
+
+export function HomePage() {
+  const favorites = useFavorites();
+  const recent = useRecent();
+  useEffect(() => {
+    document.title = 'Riftwatch — League of Legends stats';
+  }, []);
+
+  const saved = favorites.length + recent.length > 0;
+  return (
+    <div className="mx-auto max-w-6xl px-4">
+      <section className="grid gap-10 pb-16 pt-14 sm:pt-24 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-end">
+        <div>
+          <h1 className="font-display text-6xl font-extrabold leading-[0.9] tracking-tight sm:text-8xl">
+            Scout any
+            <br />
+            summoner.
+          </h1>
+          <p className="mt-5 max-w-lg text-base text-muted sm:text-lg">
+            Rank, every recent game broken down minute by minute, champion pools and live matches — for any account on any server.
+          </p>
+          <div className="mt-9">
+            <SearchBox variant="hero" autoFocus />
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          {favorites.length > 0 && (
+            <section aria-labelledby="fav-h">
+              <h2 id="fav-h" className="mb-2 flex items-center gap-2 font-display text-lg font-bold text-muted">
+                <Star className="size-4" aria-hidden /> Favorites
+              </h2>
+              <div className="grid gap-1.5">
+                {favorites.slice(0, 5).map((p) => (
+                  <PlayerChip key={`${p.platform}${p.gameName}${p.tagLine}`} p={p} />
+                ))}
+              </div>
+            </section>
+          )}
+          {recent.length > 0 && (
+            <section aria-labelledby="recent-h">
+              <h2 id="recent-h" className="mb-2 flex items-center gap-2 font-display text-lg font-bold text-muted">
+                <Clock className="size-4" aria-hidden /> Recently viewed
+              </h2>
+              <div className="grid gap-1.5">
+                {recent.slice(0, 5).map((p) => (
+                  <PlayerChip key={`${p.platform}${p.gameName}${p.tagLine}`} p={p} />
+                ))}
+              </div>
+            </section>
+          )}
+          {!saved && (
+            <div className="panel panel-tick p-5 text-sm text-muted">
+              <p className="font-display text-lg font-bold text-text">Nobody saved yet</p>
+              <p className="mt-1">Players you open appear here, and starred ones stay at the top.</p>
+              <Link to={profilePath('kr', { gameName: 'Hide on bush', tagLine: 'KR1' })} className="mt-3 inline-block font-medium text-gold underline-offset-4 hover:underline">
+                Start with Faker’s profile
+              </Link>
+            </div>
+          )}
+        </div>
+      </section>
+      <StrongestPicks />
+    </div>
+  );
+}
+
+const ROLES = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'];
+
+/** The best-placed champion in each role, straight from the tier list. */
+function StrongestPicks() {
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  const q = useQuery({ queryKey: ['tierlist', 'ranked', undefined], queryFn: ({ signal }) => api.tierList('ranked', undefined, signal), staleTime: 60_000 });
+  const rows = q.data?.rows ?? [];
+  const picks = ROLES.map((role) => rows.filter((r) => r.role === role && !r.lowSample).sort((x, y) => x.rank - y.rank)[0]).filter(Boolean);
+  if (!picks.length) return null;
+  return (
+    <section aria-labelledby="picks-h" className="pb-20">
+      <div className="mb-3 flex items-baseline justify-between gap-3">
+        <h2 id="picks-h" className="font-display text-2xl font-bold">
+          Strongest picks{q.data?.patch ? ` on ${q.data.patch}` : ''}
+        </h2>
+        <Link to="/champions" className="text-sm font-medium text-gold hover:underline">
+          Full tier list
+        </Link>
+      </div>
+      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+        {picks.map((r, i) => {
+          const c = sd?.champions.get(r.championId);
+          return (
+            <li key={r.role} className="fade-up" style={{ animationDelay: `${i * 50}ms` }}>
+              <Link
+                to={c ? `/champions/${champSlug(c.id)}?role=${r.role}` : '/champions'}
+                className="group relative block h-40 overflow-hidden rounded border border-line bg-surface transition-colors hover:border-gold/60"
+              >
+                <img src={a.splash(r.championId)} alt="" className="absolute inset-0 h-full w-full object-cover object-top opacity-70 transition-transform duration-500 group-hover:scale-105" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/50 to-transparent" />
+                <div className="relative flex h-full flex-col justify-between p-3">
+                  <span className="flex items-center justify-between">
+                    <span className="flex items-center gap-1 rounded-sm bg-bg/70 px-1.5 py-0.5 text-xs text-muted backdrop-blur">
+                      <RoleIcon role={r.role} size={13} /> {ROLE_LABEL[r.role]}
+                    </span>
+                    <TierBadge tier={r.tier} />
+                  </span>
+                  <span>
+                    <span className="block font-display text-2xl font-bold leading-none group-hover:text-gold">{a.champion(r.championId).name}</span>
+                    <span className="num text-xs text-muted">{pct(r.winRate, 1)} win rate</span>
+                  </span>
+                </div>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
