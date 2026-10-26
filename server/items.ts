@@ -27,6 +27,8 @@ export async function loadItemKinds() {
     const next = new Map<number, ItemKind>();
     for (const [key, it] of Object.entries<any>(data.data)) {
       const id = Number(key);
+      // 6-digit ids are mode-specific copies (Arena, Swarm…); Summoner's Rift uses the base ids.
+      if (id >= 10000) continue;
       const tags: string[] = it.tags ?? [];
       const onRift = it.maps?.['11'] !== false;
       const buyable = it.gold?.purchasable !== false && it.inStore !== false;

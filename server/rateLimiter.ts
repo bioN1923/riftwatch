@@ -15,6 +15,15 @@ export class RateLimiter {
 
   constructor(private windows: Window[]) {}
 
+  /** Replace the limits, e.g. after reading the key's real limits from Riot's headers. */
+  setWindows(windows: Window[]) {
+    if (windows.length) this.windows = windows;
+  }
+
+  describe() {
+    return this.windows.map((w) => `${w.limit}/${w.ms / 1000}s`).join(', ');
+  }
+
   schedule(host: string): Promise<void> {
     const prev = this.chains.get(host) ?? Promise.resolve();
     const next = prev.then(() => this.waitForSlot(host));

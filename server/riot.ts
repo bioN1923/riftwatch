@@ -13,6 +13,7 @@ export interface RiotAccount {
 }
 export interface RiotSummoner {
   puuid: string;
+  id?: string; // removed by Riot in 2025 on most platforms
   profileIconId: number;
   summonerLevel: number;
   revisionDate: number;
@@ -21,6 +22,7 @@ export interface RiotSummoner {
 export class RiotClient {
   private cache = new TtlCache<unknown>(1500);
   private limiter: RateLimiter;
+  private appLimitHeader = '';
 
   constructor(
     private apiKey: string,
@@ -52,6 +54,7 @@ export class RiotClient {
         throw new ApiError(502, 'UPSTREAM', 'Could not reach the Riot API. Check your internet connection.');
       }
 
+      this.adaptLimits(res.headers.get('x-app-rate-limit'));
       if (res.ok) {
         const data = (await res.json()) as T;
         if (ttlMs > 0) this.cache.set(key, data, ttlMs);
@@ -84,6 +87,24 @@ export class RiotClient {
     throw new ApiError(429, 'RATE_LIMITED', 'Riot is rate limiting requests. Try again in a moment.');
   }
 
+  /**
+   * Riot reports the key's real limits on every response ("20:1,100:120"). Development,
+   * personal and production keys differ, so adopt them (at 90%, leaving headroom).
+   */
+  private adaptLimits(header: string | null) {
+    if (!header || header === this.appLimitHeader) return;
+    this.appLimitHeader = header;
+    const windows = header
+      .split(',')
+      .map((part) => part.split(':').map(Number))
+      .filter(([limit, secs]) => limit > 0 && secs > 0)
+      .map(([limit, secs]) => ({ limit: Math.max(1, Math.floor(limit * 0.9)), ms: secs * 1000 }));
+    if (windows.length) {
+      this.limiter.setWindows(windows);
+      console.log(`Using your API key's rate limits: ${this.limiter.describe()}`);
+    }
+  }
+
   account(p: Platform, gameName: string, tagLine: string, fresh = false) {
     return this.get<RiotAccount>(
       p.accountRegional,
@@ -97,14 +118,27 @@ export class RiotClient {
     return this.get<RiotSummoner>(p.id, `/lol/summoner/v4/summoners/by-puuid/${puuid}`, 5 * MINUTE, { fresh }) as Promise<RiotSummoner>;
   }
 
-  league(p: Platform, puuid: string, fresh = false) {
-    return this.get<unknown[]>(p.id, `/lol/league/v4/entries/by-puuid/${puuid}`, 2 * MINUTE, { fresh }) as Promise<any[]>;
+  async league(p: Platform, puuid: string, fresh = false, summonerId?: string) {
+    try {
+      return (await this.get<unknown[]>(p.id, `/lol/league/v4/entries/by-puuid/${puuid}`, 2 * MINUTE, { fresh })) as any[];
+    } catch (e) {
+      // Older routing: fall back to the summoner-id endpoint when it is still available.
+      if (e instanceof ApiError && e.code === 'NOT_FOUND' && summonerId) {
+        return ((await this.get<unknown[]>(p.id, `/lol/league/v4/entries/by-summoner/${summonerId}`, 2 * MINUTE, { fresh })) as any[]) ?? [];
+      }
+      if (e instanceof ApiError && e.code === 'NOT_FOUND') return [];
+      throw e;
+    }
   }
 
   mastery(p: Platform, puuid: string, fresh = false) {
     return this.get<unknown[]>(p.id, `/lol/champion-mastery/v4/champion-masteries/by-puuid/${puuid}/top?count=10`, 30 * MINUTE, {
       fresh,
     }) as Promise<any[]>;
+  }
+
+  masteryOn(p: Platform, puuid: string, championId: number) {
+    return this.get<any>(p.id, `/lol/champion-mastery/v4/champion-masteries/by-puuid/${puuid}/by-champion/${championId}`, 30 * MINUTE, { allow404: true });
   }
 
   matchIds(p: Platform, puuid: string, start: number, count: number, filter: { queue?: number; type?: string }, fresh = false) {
