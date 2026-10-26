@@ -59,6 +59,13 @@ fly secrets unset SITE_PASSWORD
 
 The site is then public, and the production key doesn't expire.
 
+If Riot asks you to verify the URL with a `riot.txt` file, set the code they give you
+(it's served at `/riot.txt`, even while the password is on):
+
+```powershell
+fly secrets set RIOT_VERIFICATION=<code from Riot>
+```
+
 ## Later
 
 - **Own domain:** `fly certs add riftwatch.example.com`, then add the DNS records it prints.
