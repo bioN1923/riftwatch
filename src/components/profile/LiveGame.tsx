@@ -135,10 +135,9 @@ function PlayerRow({ p, s, loading, self, group, platform }: { p: LiveParticipan
   const games = solo ? solo.wins + solo.losses : 0;
   const wr = games ? solo!.wins / games : 0;
   const tags: { label: string; tone: 'good' | 'bad' | 'neutral'; title: string }[] = [];
-  if (s?.mastery && s.mastery.points < 15000) tags.push({ label: 'New on this champion', tone: 'bad', title: `${compact(s.mastery.points)} mastery points` });
   if (s?.mastery && s.mastery.points >= 300_000) tags.push({ label: 'Champion specialist', tone: 'good', title: `${compact(s.mastery.points)} mastery points` });
   if (solo?.hotStreak) tags.push({ label: 'Hot streak', tone: 'good', title: 'On a ranked win streak' });
-  if (s?.level != null && s.level < 60 && games >= 20 && wr >= 0.62) tags.push({ label: 'Possible smurf', tone: 'neutral', title: `Level ${s.level}, ${pct(wr)} over ${games} games` });
+  if (games >= 20 && wr >= 0.62) tags.push({ label: 'High win rate', tone: 'good', title: `${pct(wr)} over ${games} ranked games` });
 
   return (
     <li className={clsx('grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-t border-line px-4 py-2.5 sm:grid-cols-[auto_minmax(0,1fr)_170px_100px]', self && 'bg-raised')}>

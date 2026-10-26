@@ -64,6 +64,18 @@ function indexMatches(platform: string, matches: MatchSummary[]) {
 const app = express();
 app.disable('x-powered-by');
 app.use(compression());
+
+// Optional password for the whole site (HTTP Basic auth). Riot doesn't allow a development key
+// on a site the public can reach, so keep SITE_PASSWORD set until the production key is approved
+// and give the reviewers the login. The health check stays open for the host's monitoring.
+const SITE_PASSWORD = process.env.SITE_PASSWORD;
+if (SITE_PASSWORD) {
+  const expected = 'Basic ' + Buffer.from(`${process.env.SITE_USER ?? 'riot'}:${SITE_PASSWORD}`).toString('base64');
+  app.use((req, res, next) => {
+    if (req.path === '/api/health' || req.headers.authorization === expected) return next();
+    res.set('WWW-Authenticate', 'Basic realm="Riftwatch preview", charset="UTF-8"').status(401).send('Login required');
+  });
+}
 app.use(express.json({ limit: '10kb' }));
 
 const wrap =

@@ -26,15 +26,18 @@ fly volumes create riftwatch_data --region fra --size 1
 
 Answer `y` if it warns about a single volume (one machine is what this app wants).
 
-## 3. Add your Riot key as a secret
+## 3. Add your Riot key and a site password
+
+Riot's policy: a **development key must not power a site the public can reach** — it's only for a
+prototype Riot reviews. So until your production key is approved, lock the site with a password:
 
 ```powershell
-fly secrets set RIOT_API_KEY=RGAPI-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+fly secrets set RIOT_API_KEY=RGAPI-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx SITE_PASSWORD=choose-a-password
 ```
 
-A **development key expires every 24 hours** — until Riot approves a production key, run the
-command again with the new key each day (the app restarts with it). To show the site without a
-key, use demo mode instead: `fly secrets set DEMO_MODE=true` (remove later with `fly secrets unset DEMO_MODE`).
+Visitors then get a login prompt (user `riot`, your password). Put both in the App Notes of your
+Riot application so the reviewers can open it. The development key expires every 24 hours: set
+the new one each day with `fly secrets set RIOT_API_KEY=...`.
 
 ## 4. Deploy
 
@@ -46,9 +49,15 @@ The site is then at `https://<your-app-name>.fly.dev`. Check it with `fly status
 
 ## 5. Apply for a Riot production key
 
-On https://developer.riotgames.com, register a product (Personal → Production), describe the site,
-and give the `fly.dev` link (or your own domain) as the working prototype. When it's approved, set
-the new key with step 3 — it no longer expires.
+On https://developer.riotgames.com, register a product, describe the site and give the `fly.dev`
+link plus the login as the working prototype. When it's approved:
+
+```powershell
+fly secrets set RIOT_API_KEY=<production key>
+fly secrets unset SITE_PASSWORD
+```
+
+The site is then public, and the production key doesn't expire.
 
 ## Later
 

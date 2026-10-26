@@ -45,6 +45,7 @@ describe('player summaries', () => {
       const n = Number(streak.label.split(' ')[0]);
       expect(n).toBeGreaterThanOrEqual(3);
     }
-    for (const t of tags) expect(['good', 'bad', 'neutral']).toContain(t.tone);
+    // Riot policy: no tags that shame a player.
+    for (const t of tags) expect(['good', 'neutral']).toContain(t.tone);
   });
 });
