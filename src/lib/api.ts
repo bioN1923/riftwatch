@@ -1,4 +1,4 @@
-import type { ApiErrorBody, ApiErrorCode, ChampionStats, HealthResponse, LiveResponse, LpHistory, MatchPage, MatchTimeline, PlayerHit, Profile, ScoutInfo, StatsGroup, TierList } from '../../shared/types';
+import type { ApiErrorBody, ApiErrorCode, ChampionStats, HealthResponse, Ladder, LiveResponse, LpHistory, ServerStatus, MatchPage, MatchTimeline, PlayerHit, Profile, ScoutInfo, StatsGroup, TierList } from '../../shared/types';
 
 export class ApiClientError extends Error {
   constructor(
@@ -59,5 +59,9 @@ export const api = {
   untrack: (puuid: string) => request<{ tracked: boolean }>(`/track/${enc(puuid)}`, undefined, { method: 'DELETE' }),
   scout: (platform: string, puuid: string, championId?: number, signal?: AbortSignal) =>
     request<ScoutInfo>(`/scout/${platform}/${enc(puuid)}${championId ? `?champion=${championId}` : ''}`, signal),
+  leaderboard: (platform: string, p: { queue: string; tier: string; page: number }, signal?: AbortSignal) =>
+    request<Ladder>(`/leaderboard/${platform}?queue=${p.queue}&tier=${p.tier}&page=${p.page}`, signal),
+  rotation: (platform: string, signal?: AbortSignal) => request<{ championIds: number[] }>(`/rotation/${platform}`, signal),
+  status: (platform: string, signal?: AbortSignal) => request<ServerStatus>(`/status/${platform}`, signal),
   live: (platform: string, puuid: string, signal?: AbortSignal) => request<LiveResponse>(`/live/${platform}/${enc(puuid)}`, signal),
 };

@@ -98,3 +98,13 @@ describe('rate limiter', () => {
     expect(rl.describe()).toBe('450/10s');
   });
 });
+
+describe('ladder (demo)', () => {
+  it('is sorted by LP and sized per tier', async () => {
+    const { mockLadder } = await import('../server/mock');
+    const ch = mockLadder('challenger', 'solo');
+    expect(ch).toHaveLength(300);
+    for (let i = 1; i < ch.length; i++) expect(ch[i - 1].lp).toBeGreaterThanOrEqual(ch[i].lp);
+    expect(mockLadder('master', 'solo').length).toBeGreaterThan(ch.length);
+  });
+});

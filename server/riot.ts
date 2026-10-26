@@ -154,8 +154,20 @@ export class RiotClient {
   }
 
   /** Top of the ladder; entries include each player's puuid. */
-  apexLeague(p: Platform, tier: 'challenger' | 'grandmaster' | 'master') {
-    return this.get<any>(p.id, `/lol/league/v4/${tier}leagues/by-queue/RANKED_SOLO_5x5`, 60 * MINUTE) as Promise<any>;
+  apexLeague(p: Platform, tier: 'challenger' | 'grandmaster' | 'master', queue = 'RANKED_SOLO_5x5') {
+    return this.get<any>(p.id, `/lol/league/v4/${tier}leagues/by-queue/${queue}`, 10 * MINUTE) as Promise<any>;
+  }
+
+  accountByPuuid(p: Platform, puuid: string) {
+    return this.get<RiotAccount>(p.accountRegional, `/riot/account/v1/accounts/by-puuid/${puuid}`, 24 * 60 * MINUTE) as Promise<RiotAccount>;
+  }
+
+  rotation(p: Platform) {
+    return this.get<any>(p.id, `/lol/platform/v3/champion-rotations`, 60 * MINUTE) as Promise<any>;
+  }
+
+  status(p: Platform) {
+    return this.get<any>(p.id, `/lol/status/v4/platform-data`, 5 * MINUTE) as Promise<any>;
   }
 
   timeline(p: Platform, matchId: string) {

@@ -277,3 +277,32 @@ export interface ScoutInfo {
   mastery: { level: number; points: number } | null; // on the requested champion
   recentMatchIds: string[]; // for premade detection
 }
+
+/* ---------- Leaderboards, rotation, status ---------- */
+
+export interface LadderEntry {
+  rank: number;
+  puuid: string;
+  gameName: string | null;
+  tagLine: string | null;
+  lp: number;
+  wins: number;
+  losses: number;
+  hotStreak: boolean;
+  veteran: boolean;
+}
+
+export interface Ladder {
+  platform: string;
+  queue: 'solo' | 'flex';
+  tier: 'challenger' | 'grandmaster' | 'master';
+  total: number;
+  page: number;
+  pageSize: number;
+  entries: LadderEntry[];
+}
+
+export interface ServerStatus {
+  platform: string;
+  notices: { id: string; kind: 'incident' | 'maintenance'; severity: string; title: string; detail: string }[];
+}

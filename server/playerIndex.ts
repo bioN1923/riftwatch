@@ -11,27 +11,32 @@ interface Entry extends PlayerHit {
   key: string; // normalised "name#tag"
   seen: number;
   hits: number; // how often someone opened this profile
+  puuid?: string;
 }
 
 const MAX_ENTRIES = 60_000;
 
-const norm = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, '');
+const norm = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '');
 
 export class PlayerIndex {
   private entries = new Map<string, Entry>(); // `${platform}:${key}`
+  private byPuuid = new Map<string, string>(); // puuid -> entries key
   private dirty = false;
 
   constructor(private file: string) {
     try {
       const list = JSON.parse(fs.readFileSync(file, 'utf8')) as Entry[];
-      for (const e of list) this.entries.set(`${e.platform}:${e.key}`, e);
+      for (const e of list) {
+        this.entries.set(`${e.platform}:${e.key}`, e);
+        if (e.puuid) this.byPuuid.set(e.puuid, `${e.platform}:${e.key}`);
+      }
     } catch {
       /* first run */
     }
     setInterval(() => this.flush(), 15_000).unref();
   }
 
-  add(p: PlayerHit, opts: { viewed?: boolean } = {}) {
+  add(p: PlayerHit & { puuid?: string }, opts: { viewed?: boolean } = {}) {
     if (!p.gameName || !p.tagLine) return;
     const key = norm(`${p.gameName}#${p.tagLine}`);
     const id = `${p.platform}:${key}`;
@@ -48,6 +53,10 @@ export class PlayerIndex {
     // Only overwrite profile details when we actually have them.
     for (const k of ['profileIconId', 'level', 'tier', 'rank', 'lp'] as const) if (p[k] !== undefined) (next as any)[k] = p[k];
     delete (next as any).verified;
+    if (p.puuid && !p.puuid.startsWith('demo-rand')) {
+      next.puuid = p.puuid;
+      this.byPuuid.set(p.puuid, id);
+    }
     this.entries.delete(id);
     this.entries.set(id, next);
     if (this.entries.size > MAX_ENTRIES) {
@@ -55,6 +64,13 @@ export class PlayerIndex {
       if (oldest) this.entries.delete(oldest);
     }
     this.dirty = true;
+  }
+
+  /** Riot ID for a puuid, if this server has seen the player. */
+  nameOf(puuid: string): { gameName: string; tagLine: string } | undefined {
+    const id = this.byPuuid.get(puuid);
+    const e = id ? this.entries.get(id) : undefined;
+    return e && e.puuid === puuid ? { gameName: e.gameName, tagLine: e.tagLine } : undefined;
   }
 
   search(query: string, platform: string, limit = 8): PlayerHit[] {

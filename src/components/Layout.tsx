@@ -1,10 +1,11 @@
 import { Link, NavLink, Outlet, useLocation } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
-import { Monitor, Moon, Sun } from 'lucide-react';
+import { useState } from 'react';
+import { AlertTriangle, Monitor, Moon, Sun, X } from 'lucide-react';
 import clsx from 'clsx';
 import { SearchBox } from './SearchBox';
 import { api } from '../lib/api';
-import { useTheme, type Theme } from '../lib/storage';
+import { useRegion, useTheme, type Theme } from '../lib/storage';
 
 export function Logo({ className }: { className?: string }) {
   return (
@@ -66,16 +67,44 @@ function DemoBanner() {
   );
 }
 
+/** Riot's own incident and maintenance notices for the selected region. */
+function StatusBanner() {
+  const [region] = useRegion();
+  const [hidden, setHidden] = useState<string[]>([]);
+  const { data } = useQuery({ queryKey: ['status', region], queryFn: ({ signal }) => api.status(region, signal), staleTime: 5 * 60_000, refetchInterval: 5 * 60_000, retry: false });
+  const notices = (data?.notices ?? []).filter((n) => !hidden.includes(n.id));
+  if (!notices.length) return null;
+  return (
+    <aside aria-label="Server status" className="border-b border-kda-great/40 bg-kda-great/10">
+      {notices.slice(0, 2).map((n) => (
+        <div key={n.id} className="mx-auto flex max-w-6xl items-start gap-3 px-4 py-2 text-sm">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-kda-great" aria-hidden />
+          <p className="min-w-0 flex-1">
+            <span className="font-semibold">{n.kind === 'maintenance' ? 'Maintenance' : 'Server issue'}:</span> {n.title}
+            {n.detail && <span className="text-muted"> — {n.detail.length > 160 ? `${n.detail.slice(0, 157)}…` : n.detail}</span>}
+          </p>
+          <button onClick={() => setHidden((h) => [...h, n.id])} aria-label="Dismiss notice" className="rounded p-0.5 text-muted hover:text-text">
+            <X className="size-4" aria-hidden />
+          </button>
+        </div>
+      ))}
+    </aside>
+  );
+}
+
 function MainNav() {
   const link = ({ isActive }: { isActive: boolean }) =>
     clsx('relative px-2 py-1 font-display text-lg font-bold tracking-wide transition-colors', isActive ? 'text-text' : 'text-muted hover:text-text');
   return (
-    <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
+    <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
       <NavLink to="/" end className={link}>
         Players
       </NavLink>
       <NavLink to="/champions" className={link}>
         Champions
+      </NavLink>
+      <NavLink to="/leaderboard" className={link}>
+        Ladder
       </NavLink>
       <NavLink to="/multisearch" className={link}>
         Multi-search
@@ -93,6 +122,7 @@ export function Layout() {
         Skip to content
       </a>
       <DemoBanner />
+      <StatusBanner />
       <header className="sticky top-0 z-30 border-b border-line bg-bg/85 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 sm:gap-4">
           <Logo />
@@ -106,12 +136,15 @@ export function Layout() {
           <Outlet />
         </div>
       </main>
-      <nav aria-label="Main" className="sticky bottom-0 z-30 grid grid-cols-3 border-t border-line bg-bg/95 backdrop-blur md:hidden">
+      <nav aria-label="Main" className="sticky bottom-0 z-30 grid grid-cols-4 border-t border-line bg-bg/95 backdrop-blur lg:hidden">
         <NavLink to="/" end className={({ isActive }) => clsx('py-3 text-center font-display text-lg font-bold', isActive ? 'text-gold' : 'text-muted')}>
           Players
         </NavLink>
         <NavLink to="/champions" className={({ isActive }) => clsx('py-3 text-center font-display text-lg font-bold', isActive ? 'text-gold' : 'text-muted')}>
           Champions
+        </NavLink>
+        <NavLink to="/leaderboard" className={({ isActive }) => clsx('py-3 text-center font-display text-lg font-bold', isActive ? 'text-gold' : 'text-muted')}>
+          Ladder
         </NavLink>
         <NavLink to="/multisearch" className={({ isActive }) => clsx('py-3 text-center font-display text-lg font-bold', isActive ? 'text-gold' : 'text-muted')}>
           Lobby

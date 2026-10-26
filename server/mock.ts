@@ -536,3 +536,34 @@ export function mockLpHistory(gameName: string, tagLine: string): LpPoint[] {
   }
   return points;
 }
+
+const LADDER_SIZE = { challenger: 300, grandmaster: 700, master: 2500 } as const;
+
+/** Generated apex ladder, sorted by LP. */
+export function mockLadder(tier: 'challenger' | 'grandmaster' | 'master', queue: 'solo' | 'flex') {
+  const r = rng(hash(`${tier}-${queue}`));
+  const n = LADDER_SIZE[tier] / (queue === 'flex' ? 3 : 1);
+  const top = tier === 'challenger' ? 2100 : tier === 'grandmaster' ? 900 : 450;
+  const bottom = tier === 'challenger' ? 900 : tier === 'grandmaster' ? 450 : 0;
+  return Array.from({ length: Math.round(n) }, (_, i) => {
+    const name = fakeName(r);
+    const wins = int(r, 120, 520);
+    return {
+      puuid: puuidFor(`${name.gameName}#${name.tagLine}`),
+      gameName: name.gameName,
+      tagLine: name.tagLine,
+      lp: Math.round(top - (top - bottom) * Math.pow(i / n, 0.8)),
+      wins,
+      losses: Math.round(wins * (0.78 + r() * 0.2)),
+      hotStreak: r() < 0.15,
+      veteran: r() < 0.4,
+    };
+  });
+}
+
+/** This week's free champions (changes weekly). */
+export function mockRotation() {
+  const week = Math.floor(Date.now() / (7 * 86400_000));
+  const r = rng(week);
+  return [...ALL_CHAMPS].sort(() => r() - 0.5).slice(0, 20);
+}

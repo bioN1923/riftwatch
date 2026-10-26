@@ -6,6 +6,7 @@ import { ArrowDown, ArrowUp, Search } from 'lucide-react';
 import type { StatsGroup, TierRow } from '../../shared/types';
 import { api } from '../lib/api';
 import { assets, champSlug, useStaticData } from '../lib/ddragon';
+import { useRegion } from '../lib/storage';
 import { pct, thousands } from '../lib/format';
 import { GameImg } from '../components/ui/GameImg';
 import { RoleIcon, ROLE_LABEL } from '../components/ui/RoleIcon';
@@ -101,6 +102,8 @@ export function ChampionsPage() {
           <GroupToggle value={group} onChange={(g) => set('queue', g === 'ranked' ? null : g)} />
         </div>
       </div>
+
+      <FreeRotation />
 
       <div className="mt-6 flex flex-wrap items-end justify-between gap-4 border-b border-line">
         {group === 'ranked' ? (
@@ -221,5 +224,34 @@ export function ChampionsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+/** This week's free champions on the selected region. */
+function FreeRotation() {
+  const [region] = useRegion();
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  const q = useQuery({ queryKey: ['rotation', region], queryFn: ({ signal }) => api.rotation(region, signal), staleTime: 60 * 60_000, retry: false });
+  const ids = q.data?.championIds ?? [];
+  if (!ids.length) return null;
+  return (
+    <section aria-labelledby="rot-h" className="mt-6">
+      <h2 id="rot-h" className="mb-2 text-xs font-medium text-muted">
+        Free to play this week
+      </h2>
+      <ul className="flex flex-wrap gap-1.5">
+        {ids.map((id, i) => {
+          const c = sd?.champions.get(id);
+          return (
+            <li key={id} className="fade-up" style={{ animationDelay: `${i * 15}ms` }}>
+              <Link to={c ? `/champions/${champSlug(c.id)}` : '#'} className="block rounded-[5px] ring-1 ring-line transition hover:-translate-y-0.5 hover:ring-gold">
+                <GameImg src={a.champion(id).url} alt={a.champion(id).name} size={34} rounded="md" tip={a.champion(id).name} />
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }
