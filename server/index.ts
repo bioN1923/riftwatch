@@ -405,7 +405,8 @@ app.use('/api', (_req, res) => {
 const dist = path.resolve(here, '../dist');
 if (fs.existsSync(dist)) {
   const indexHtml = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
-  app.use('/assets', express.static(path.join(dist, 'assets'), { maxAge: '1y', immutable: true }));
+  // fallthrough: false → a missing (e.g. outdated) asset is a real 404, not the HTML page.
+  app.use('/assets', express.static(path.join(dist, 'assets'), { maxAge: '1y', immutable: true, fallthrough: false }));
   app.use(express.static(dist, { maxAge: '1h', index: false }));
   app.get(/^(?!\/api).*/, (req, res) => res.type('html').send(withMeta(indexHtml, req.path)));
 }
@@ -460,6 +461,8 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     if (err.retryAfter) res.setHeader('Retry-After', String(err.retryAfter));
     return res.status(err.status).json({ error: { code: err.code, message: err.message, retryAfter: err.retryAfter } } satisfies ApiErrorBody);
   }
+  const status = (err as { status?: number; statusCode?: number })?.status ?? (err as { statusCode?: number })?.statusCode;
+  if (status === 404) return res.status(404).type('text').send('Not found');
   console.error(err);
   res.status(500).json({ error: { code: 'UPSTREAM', message: 'Something went wrong on the server.' } } satisfies ApiErrorBody);
 });
