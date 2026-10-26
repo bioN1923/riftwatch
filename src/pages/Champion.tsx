@@ -5,7 +5,9 @@ import clsx from 'clsx';
 import type { ChampionStats, Rated, StatsGroup } from '../../shared/types';
 import { api, ApiClientError } from '../lib/api';
 import { assets, championBySlug, champSlug, useChampionDetail, useStaticData, type ChampionDetail } from '../lib/ddragon';
-import { pct, thousands } from '../lib/format';
+import { formatKda, kdaTone, pct, thousands } from '../lib/format';
+import { profilePath } from '../lib/riotId';
+import { getPlatform } from '../../shared/regions';
 import { GameImg, Tooltip } from '../components/ui/GameImg';
 import { ROLE_LABEL } from '../components/ui/RoleIcon';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
@@ -142,10 +144,12 @@ function ChampionView({ championId }: { championId: number }) {
             <div className="min-w-0 space-y-5">
               <BuildPanel s={s} abilityIcons={abilityIcons} />
               {group === 'ranked' && <Matchups s={s} />}
+              {group === 'ranked' && <Synergy s={s} />}
               <LengthChart rows={s.byLength} />
             </div>
             <aside className="space-y-5 lg:sticky lg:top-[72px] lg:self-start">
               <Averages s={s} />
+              <TopPlayers s={s} />
               {detail && <BaseStats d={detail} />}
               {detail?.blurb && (
                 <section className="panel p-4">
@@ -393,8 +397,9 @@ function Matchups({ s }: { s: ChampionStats }) {
   const min = Math.max(3, Math.round((s.summary?.games ?? 0) * 0.015));
   const usable = s.matchups.filter((m) => m.games >= min);
   if (!usable.length) return null;
-  const best = [...usable].sort((x, y) => y.winRate - x.winRate).slice(0, 5);
-  const worst = [...usable].sort((x, y) => x.winRate - y.winRate).slice(0, 5);
+  // A champion only appears on one side: above 50% is a good matchup, below is a hard one.
+  const best = [...usable].filter((m) => m.winRate >= 0.5).sort((x, y) => y.winRate - x.winRate).slice(0, 5);
+  const worst = [...usable].filter((m) => m.winRate < 0.5).sort((x, y) => x.winRate - y.winRate).slice(0, 5);
 
   const row = (m: (typeof usable)[number]) => {
     const c = a.champion(m.championId);
@@ -427,11 +432,11 @@ function Matchups({ s }: { s: ChampionStats }) {
       <div className="mt-4 grid gap-6 md:grid-cols-2">
         <div>
           <h3 className="mb-1 text-sm font-semibold text-win">Strong against</h3>
-          <ul>{best.map(row)}</ul>
+          {best.length ? <ul>{best.map(row)}</ul> : <p className="px-2 text-sm text-muted">No winning matchups yet.</p>}
         </div>
         <div>
           <h3 className="mb-1 text-sm font-semibold text-loss">Struggles against</h3>
-          <ul>{worst.map(row)}</ul>
+          {worst.length ? <ul>{worst.map(row)}</ul> : <p className="px-2 text-sm text-muted">No losing matchups yet.</p>}
         </div>
       </div>
       {usable.length > 10 && (
@@ -476,6 +481,7 @@ function LengthChart({ rows }: { rows: (Rated & { label: string })[] }) {
               <span
                 className={clsx('grow-y w-full max-w-16 rounded-t-[4px]', r.winRate >= 0.5 ? 'bg-win/80' : 'bg-loss/70')}
                 style={{ height: `${Math.max(4, y(r.winRate) * 100)}%`, animationDelay: `${i * 60}ms` }}
+                role="img"
                 aria-label={`${r.label}: ${pct(r.winRate, 1)}`}
               />
             </li>
@@ -547,9 +553,10 @@ function BaseStats({ d }: { d: ChampionDetail }) {
         {bars.map(([k, v]) => (
           <div key={k} className="grid grid-cols-[80px_1fr] items-center gap-3 text-sm">
             <dt className="text-muted">{k}</dt>
-            <dd className="flex gap-0.5" aria-label={`${v} out of 10`}>
+            <dd className="flex gap-0.5">
+              <span className="sr-only">{v} out of 10</span>
               {Array.from({ length: 10 }, (_, i) => (
-                <span key={i} className={clsx('h-1.5 flex-1 rounded-[1px]', i < v ? 'bg-gold' : 'bg-sunken')} />
+                <span key={i} aria-hidden className={clsx('h-1.5 flex-1 rounded-[1px]', i < v ? 'bg-gold' : 'bg-sunken')} />
               ))}
             </dd>
           </div>
@@ -564,7 +571,13 @@ function BaseStats({ d }: { d: ChampionDetail }) {
               <dt className="text-muted">{k}</dt>
               <dd className="num">
                 {Number.isInteger(v) ? v : v.toFixed(3)}
-                {per ? <span className="text-faint"> +{Number.isInteger(per) ? per : per.toFixed(per < 1 ? 2 : 1)}</span> : null}
+                {per ? (
+                  <span className="text-faint">
+                    {' '}
+                    +{Number.isInteger(per) ? per : per.toFixed(per < 1 ? 2 : 1)}
+                    {k === 'Attack speed' ? '%' : ''}
+                  </span>
+                ) : null}
               </dd>
             </div>
           ))}
@@ -584,5 +597,76 @@ function HeroSkeleton() {
         </div>
       </div>
     </div>
+  );
+}
+
+/** Best partners in the role this champion depends on most (support for ADCs, jungler for mids …). */
+function Synergy({ s }: { s: ChampionStats }) {
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  if (!s.synergy || s.synergy.list.length < 2) return null;
+  const partner = ROLE_LABEL[s.synergy.role]?.toLowerCase() ?? 'partner';
+  return (
+    <section className="panel p-5" aria-labelledby="syn-h">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 id="syn-h" className="panel-title text-2xl">
+          Best with
+        </h2>
+        <span className="text-xs text-muted">Win rate with each {partner} on the same team</span>
+      </div>
+      <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {s.synergy.list.map((m) => {
+          const c = a.champion(m.championId);
+          const slug = sd?.champions.get(m.championId)?.id;
+          return (
+            <li key={m.championId}>
+              <Link
+                to={slug ? `/champions/${champSlug(slug)}?role=${s.synergy!.role}` : '#'}
+                className="group flex items-center gap-3 rounded border border-line px-3 py-2 transition-colors hover:border-gold/60 hover:bg-raised"
+              >
+                <GameImg src={c.url} alt="" size={36} rounded="md" />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-medium group-hover:text-gold">{c.name}</span>
+                  <span className="num text-xs text-muted">{thousands(m.games)} games</span>
+                </span>
+                <span className={clsx('num text-sm font-semibold', m.winRate >= 0.5 ? 'text-win' : 'text-loss')}>{pct(m.winRate, 1)}</span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+/** Players this server has seen play the champion most. */
+function TopPlayers({ s }: { s: ChampionStats }) {
+  if (s.players.length < 2) return null;
+  return (
+    <section className="panel p-4" aria-labelledby="tp-h">
+      <h2 id="tp-h" className="panel-title">
+        Who plays it most
+      </h2>
+      <p className="text-xs text-muted">From games this server has read</p>
+      <ol className="mt-3 space-y-1">
+        {s.players.map((p, i) => (
+          <li key={`${p.gameName}#${p.tagLine}`}>
+            <Link to={profilePath(p.platform, p)} className="group grid grid-cols-[18px_minmax(0,1fr)_auto] items-center gap-2 rounded px-1 py-1 text-sm hover:bg-raised">
+              <span className={clsx('num text-xs', i < 3 ? 'font-bold text-gold' : 'text-faint')}>{i + 1}</span>
+              <span className="min-w-0 truncate group-hover:text-gold">
+                {p.gameName}
+                <span className="text-faint">#{p.tagLine}</span>
+                <span className="ml-1 text-[10px] text-faint">{getPlatform(p.platform)?.label}</span>
+              </span>
+              <span className="num text-right text-xs">
+                <span className={clsx('font-semibold', p.winRate >= 0.5 ? 'text-win' : 'text-loss')}>{pct(p.winRate)}</span>
+                <span className="text-muted"> · {p.games}</span>
+                <span className={clsx('ml-1', kdaTone(p.kda))}>{formatKda(p.kda)}</span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }

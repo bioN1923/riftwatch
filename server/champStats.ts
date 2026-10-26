@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import type { ChampionStats, MatchSummary, MatchTimeline, Rated, StatsGroup, TierList, TierRow } from '../shared/types';
 import { itemKind } from './items';
+import { getPlatform } from '../shared/regions';
 
 /**
  * Champion statistics built from the matches this server sees — the same idea as u.gg/op.gg,
@@ -40,7 +41,12 @@ interface RoleAgg {
   tl: number;
   vs: Record<string, Vs>;
   len: C[];
+  duo?: Record<string, C>; // same-team champion in the partner role
+  pl?: Record<string, { n: string; t: string; pf: string; g: number; w: number; k: number; d: number; a: number }>;
 }
+
+/** The teammate role whose champion matters most for each role. */
+const PARTNER: Record<string, string> = { TOP: 'JUNGLE', JUNGLE: 'MIDDLE', MIDDLE: 'JUNGLE', BOTTOM: 'UTILITY', UTILITY: 'BOTTOM' };
 interface GroupAgg {
   matches: number;
   champs: Record<string, { roles: Record<string, RoleAgg>; bans: number }>;
@@ -161,7 +167,23 @@ export class ChampionStatsStore {
       if (legendaries[4]) bump(r.s5, String(legendaries[4]), p.win);
       if (legendaries[5]) bump(r.s6, String(legendaries[5]), p.win);
 
+      // Who plays this champion most (and best): a per-champion leaderboard.
+      if (p.puuid && !p.puuid.startsWith('demo-rand') && p.gameName) {
+        const pl = (r.pl ??= {});
+        const e = (pl[p.puuid] ??= { n: p.gameName, t: p.tagLine, pf: getPlatform(m.id.split('_')[0].toLowerCase())?.id ?? 'euw1', g: 0, w: 0, k: 0, d: 0, a: 0 });
+        e.n = p.gameName;
+        e.t = p.tagLine;
+        e.g++;
+        if (p.win) e.w++;
+        e.k += p.kills;
+        e.d += p.deaths;
+        e.a += p.assists;
+        if (Object.keys(pl).length > 400) r.pl = Object.fromEntries(Object.entries(pl).sort((x, y) => y[1].g - x[1].g).slice(0, 200));
+      }
+
       if (!aram) {
+        const partner = m.participants.find((x) => x.teamId === p.teamId && x.position === PARTNER[p.position]);
+        if (partner) bump((r.duo ??= {}), String(partner.championId), p.win);
         const opp = m.participants.find((x) => x.teamId !== p.teamId && x.position === p.position);
         if (opp) {
           const v = (r.vs[opp.championId] ??= { g: 0, w: 0, gd: 0, gn: 0 });
@@ -298,6 +320,8 @@ export class ChampionStatsStore {
       skills: { order: '', path: [], maxOrders: [], sample: 0 },
       matchups: [],
       byLength: [],
+      synergy: null,
+      players: [],
     };
     if (!g || !r || !r.g) return empty;
 
@@ -345,6 +369,22 @@ export class ChampionStatsStore {
         .map(([id, v]) => ({ ...rated(v), championId: Number(id), goldDiff15: v.gn ? v.gd / v.gn : null }))
         .sort((a, b) => b.games - a.games),
       byLength: r.len.map((x, i) => ({ ...rated(x), label: LENGTHS[i].label })),
+      synergy:
+        r.duo && PARTNER[chosen]
+          ? {
+              role: PARTNER[chosen],
+              list: Object.entries(r.duo)
+                .filter(([, v]) => v.g >= Math.max(3, Math.round(r.g * 0.015)))
+                .map(([id, v]) => ({ ...rated(v), championId: Number(id) }))
+                .sort((a, b) => b.winRate - a.winRate)
+                .slice(0, 6),
+            }
+          : null,
+      players: Object.values(r.pl ?? {})
+        .filter((e) => e.g >= 3)
+        .map((e) => ({ gameName: e.n, tagLine: e.t, platform: e.pf, games: e.g, winRate: e.w / e.g, kda: (e.k + e.a) / Math.max(1, e.d) }))
+        .sort((a, b) => b.games - a.games || b.winRate - a.winRate)
+        .slice(0, 10),
     };
   }
 
@@ -356,6 +396,7 @@ export class ChampionStatsStore {
       for (const g of Object.values(groups)) {
         for (const c of Object.values(g!.champs)) {
           for (const r of Object.values(c.roles)) {
+            if (r.pl && Object.keys(r.pl).length > 60) r.pl = Object.fromEntries(Object.entries(r.pl).sort((x, y) => y[1].g - x[1].g).slice(0, 50));
             for (const key of ['runes', 'core', 's4', 's5', 's6', 'start', 'spells', 'boots'] as const) {
               const entries = Object.entries(r[key]);
               if (entries.length > 60) r[key] = Object.fromEntries(entries.sort((a, b) => b[1].g - a[1].g).slice(0, 40));
