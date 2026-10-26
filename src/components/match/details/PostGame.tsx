@@ -184,10 +184,10 @@ function TeamCompare({ blue, red }: { blue: TeamSummary; red: TeamSummary }) {
           return (
             <div key={label} className="flex items-center gap-3 text-xs">
               <span className="num w-10 text-right font-semibold text-side-blue">{fmt ? fmt(b) : b}</span>
-              <div className="relative flex h-4 flex-1 overflow-hidden rounded-sm" aria-label={`${label}: blue ${b}, red ${r}`}>
+              <div className="relative flex h-4 flex-1 overflow-hidden rounded-sm" role="img" aria-label={`${label}: blue ${b}, red ${r}`}>
                 <span className="bg-side-blue" style={{ width: `${(b / total) * 100}%` }} />
                 <span className="flex-1 bg-side-red" />
-                <span className="absolute inset-0 grid place-items-center text-[10px] font-semibold text-white">{label}</span>
+                <span className="absolute inset-0 grid place-items-center text-[10px] font-semibold text-on-accent">{label}</span>
               </div>
               <span className="num w-10 font-semibold text-side-red">{fmt ? fmt(r) : r}</span>
             </div>

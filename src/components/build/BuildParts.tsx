@@ -60,7 +60,7 @@ export function SkillGrid({ skills, icons }: { skills: number[]; icons?: (string
                     style={on ? { animationDelay: `${lvl * 25}ms` } : undefined}
                     className={clsx(
                       'num size-6 rounded-sm text-center font-semibold',
-                      on ? clsx('pop-in', slot === 4 ? 'bg-gold text-gold-ink' : 'bg-series-2 text-white') : lvl < skills.length ? 'bg-sunken' : 'bg-sunken/40',
+                      on ? clsx('pop-in', slot === 4 ? 'bg-gold text-gold-ink' : 'bg-series-2 text-on-accent') : lvl < skills.length ? 'bg-sunken' : 'bg-sunken/40',
                     )}
                   >
                     {on ? lvl + 1 : ''}

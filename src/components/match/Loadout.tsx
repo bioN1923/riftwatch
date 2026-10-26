@@ -39,7 +39,7 @@ export function Items({ items, size = 22 }: { items: number[]; size?: number }) 
   const { data } = useStaticData();
   const a = assets(data);
   return (
-    <div className="flex gap-0.5" aria-label="Items">
+    <div className="flex gap-0.5" role="group" aria-label="Items">
       {items.map((id, i) => {
         const it = a.item(id);
         return (

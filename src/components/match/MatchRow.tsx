@@ -116,7 +116,7 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
           </div>
 
           {teams.length > 0 && (
-            <div className="hidden shrink-0 grid-cols-2 gap-x-3 border-l border-line pl-4 xl:grid" aria-label="Players">
+            <div className="hidden shrink-0 grid-cols-2 gap-x-3 border-l border-line pl-4 xl:grid" role="group" aria-label="Players">
               {teams.map((team, ti) => (
                 <ul key={ti} className="space-y-[3px]">
                   {team.map((x) => {
