@@ -17,6 +17,22 @@ interface C {
 interface Vs extends C {
   gd: number; // summed gold diff at 15 minutes
   gn: number; // games with a timeline
+  cd?: number; // summed CS diff at 15
+  xd?: number; // summed XP diff at 15
+}
+
+/** Win rate pulled towards 50% for small samples, so one lucky game doesn't top a ranking. */
+export const shrunk = (w: number, g: number, k = 10) => (w + 0.5 * k) / (g + k);
+
+/** The opponents this role does worst against in lane (enough games, sorted by adjusted win rate). */
+function countersOf(r: RoleAgg, n = 3) {
+  const min = Math.max(3, Math.round(r.g * 0.02));
+  return Object.entries(r.vs)
+    .filter(([, v]) => v.g >= min)
+    .sort((a, b) => shrunk(a[1].w, a[1].g) - shrunk(b[1].w, b[1].g))
+    .slice(0, n)
+    .filter(([, v]) => v.w / v.g < 0.5)
+    .map(([id]) => Number(id));
 }
 interface RoleAgg {
   g: number;
@@ -267,6 +283,8 @@ export class ChampionStatsStore {
           const v = r.vs[opp.championId];
           if (v) {
             v.gd += f15.gold[i] - f15.gold[j];
+            v.cd = (v.cd ?? 0) + (f15.cs[i] - f15.cs[j]);
+            v.xd = (v.xd ?? 0) + (f15.xp[i] - f15.xp[j]);
             v.gn++;
           }
         }
@@ -304,6 +322,7 @@ export class ChampionStatsStore {
           tier: 'C',
           rank: 0,
           lowSample: r.g < minGames,
+          counters: role === 'ALL' ? [] : countersOf(r),
         });
       }
     }
@@ -418,7 +437,14 @@ export class ChampionStatsStore {
       bootsTotal: Object.values(r.boots).reduce((n, v) => n + v.g, 0),
       skills: { order: top(r.max, 1)[0]?.[0] ?? '', path: sample ? path.filter(Boolean) : [], maxOrders: top(r.max, 3).map(([k, v]) => ({ ...rated(v), order: k })), sample },
       matchups: Object.entries(r.vs)
-        .map(([id, v]) => ({ ...rated(v), championId: Number(id), goldDiff15: v.gn ? v.gd / v.gn : null }))
+        .map(([id, v]) => ({
+          ...rated(v),
+          championId: Number(id),
+          adjusted: shrunk(v.w, v.g),
+          goldDiff15: v.gn ? v.gd / v.gn : null,
+          csDiff15: v.gn && v.cd != null ? v.cd / v.gn : null,
+          xpDiff15: v.gn && v.xd != null ? v.xd / v.gn : null,
+        }))
         .sort((a, b) => b.games - a.games),
       byLength: r.len.map((x, i) => ({ ...rated(x), label: LENGTHS[i].label })),
       synergy:

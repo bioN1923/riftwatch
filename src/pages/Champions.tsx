@@ -167,6 +167,11 @@ export function ChampionsPage() {
                 {header('pickRate', 'Pick rate')}
                 {header('banRate', 'Ban rate')}
                 {header('games', 'Games')}
+                {group === 'ranked' && (
+                  <th scope="col" className="hidden px-3 py-2 text-left font-medium xl:table-cell">
+                    Weak against
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -215,6 +220,25 @@ export function ChampionsPage() {
                         </span>
                       )}
                     </td>
+                    {group === 'ranked' && (
+                      <td className="hidden px-3 py-2 xl:table-cell">
+                        {r.counters?.length ? (
+                          <span className="flex gap-1">
+                            {r.counters.map((cid) => {
+                              const cc = a.champion(cid);
+                              const cslug = sd?.champions.get(cid)?.id;
+                              return (
+                                <Link key={cid} to={cslug ? `/champions/${champSlug(cslug)}?role=${r.role}` : '#'} onClick={(e) => e.stopPropagation()} className="rounded-[5px] ring-1 ring-loss/40 transition hover:ring-loss">
+                                  <GameImg src={cc.url} alt={`Weak against ${cc.name}`} size={26} rounded="md" tip={cc.name} />
+                                </Link>
+                              );
+                            })}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-faint">–</span>
+                        )}
+                      </td>
+                    )}
                   </tr>
                 );
               })}

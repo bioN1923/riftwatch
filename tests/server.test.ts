@@ -57,6 +57,38 @@ describe('champion statistics', () => {
   });
 });
 
+describe('lane counters', () => {
+  const store = new ChampionStatsStore(null);
+  for (let i = 0; i < 25; i++) {
+    const { matches } = mockMatches({ gameName: `Counter${i}`, tagLine: 'T' }, 0, 20, {});
+    for (const m of matches) {
+      store.addMatch(m);
+      store.addTimeline(m, mockTimeline(m));
+    }
+  }
+
+  it('lists only losing matchups as counters, at most three', () => {
+    for (const row of store.tierList('ranked').rows) {
+      expect((row.counters ?? []).length).toBeLessThanOrEqual(3);
+      const c = store.champion(row.championId, 'ranked', row.role);
+      for (const id of row.counters ?? []) {
+        const m = c.matchups.find((x) => x.championId === id)!;
+        expect(m.winRate).toBeLessThan(0.5);
+      }
+    }
+  });
+
+  it('pulls small samples towards 50% and reports lane leads', async () => {
+    const { shrunk } = await import('../server/champStats');
+    expect(shrunk(1, 1)).toBeCloseTo(0.545, 2);
+    expect(shrunk(60, 100)).toBeGreaterThan(0.58);
+    const row = store.tierList('ranked').rows.sort((a, b) => b.games - a.games)[0];
+    const m = store.champion(row.championId, 'ranked', row.role).matchups.find((x) => x.goldDiff15 != null);
+    expect(m?.csDiff15).not.toBeNull();
+    expect(m?.xpDiff15).not.toBeNull();
+  });
+});
+
 describe('player index', () => {
   it('ranks exact and same-region matches first', () => {
     const idx = new PlayerIndex('/nonexistent/dir/players.json');

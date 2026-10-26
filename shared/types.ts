@@ -209,6 +209,7 @@ export interface TierRow {
   tier: 'S+' | 'S' | 'A' | 'B' | 'C' | 'D' | '–'; // '–' = too rare in this role to rank
   rank: number; // within role
   lowSample: boolean;
+  counters?: number[]; // champion ids this pick struggles against in lane
 }
 
 export interface TierList {
@@ -239,7 +240,7 @@ export interface ChampionStats {
   coreTotal: number; // games with three completed items
   bootsTotal: number;
   skills: { order: string; path: number[]; maxOrders: (Rated & { order: string })[]; sample: number };
-  matchups: (Rated & { championId: number; goldDiff15: number | null })[];
+  matchups: (Rated & { championId: number; adjusted: number; goldDiff15: number | null; csDiff15: number | null; xpDiff15: number | null })[];
   byLength: (Rated & { label: string })[];
   synergy: { role: string; list: (Rated & { championId: number })[] } | null;
   players: (Rated & { gameName: string; tagLine: string; platform: string; kda: number })[];

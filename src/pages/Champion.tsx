@@ -13,7 +13,7 @@ import { ROLE_LABEL } from '../components/ui/RoleIcon';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { Tip } from '../components/match/Loadout';
 import { ItemRow, MaxOrder, RuneTrees, SkillGrid } from '../components/build/BuildParts';
-import { GroupToggle, PatchSelect, RoleTab, TierBadge } from '../components/champions/common';
+import { GroupToggle, PatchSelect, RoleTab, TierBadge, WinRateBar } from '../components/champions/common';
 
 export function ChampionPage() {
   const { slug = '' } = useParams();
@@ -111,6 +111,7 @@ function ChampionView({ championId }: { championId: number }) {
           </div>
 
           <StatStrip s={s} loading={q.isPending} />
+          <CountersStrip s={s} />
           {detail && <Abilities detail={detail} />}
 
           {group === 'ranked' && s && s.roles.length > 0 && (
@@ -488,63 +489,204 @@ function OptionRow({ o, share }: { o: Rated & { id: number }; share?: number }) 
   );
 }
 
+type Matchup = ChampionStats['matchups'][number];
+
+/** Matchups with enough games to mean something, best and worst ranked by adjusted win rate. */
+function laneMatchups(s: ChampionStats) {
+  const min = Math.max(2, Math.round((s.summary?.games ?? 0) * 0.01));
+  const usable = s.matchups.filter((m) => m.games >= min);
+  const easiest = usable.filter((m) => m.adjusted >= 0.5).sort((a, b) => b.adjusted - a.adjusted);
+  const hardest = usable.filter((m) => m.adjusted < 0.5).sort((a, b) => a.adjusted - b.adjusted);
+  return { usable, easiest, hardest };
+}
+
+function champLink(sd: ReturnType<typeof useStaticData>['data'], id: number, role: string) {
+  const slug = sd?.champions.get(id)?.id;
+  return slug ? `/champions/${champSlug(slug)}?role=${role}` : '#';
+}
+
+/** The headline answer: who beats this champion in lane, and who it beats. */
+function CountersStrip({ s }: { s?: ChampionStats }) {
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  if (!s || s.group !== 'ranked' || !s.summary) return null;
+  const { hardest, easiest } = laneMatchups(s);
+  if (!hardest.length && !easiest.length) return null;
+  const group = (label: string, list: Matchup[], tone: 'win' | 'loss') => (
+    <div className="min-w-0">
+      <p className={clsx('mb-1.5 text-xs font-medium', tone === 'loss' ? 'text-loss' : 'text-win')}>{label}</p>
+      {list.length ? (
+        <ul className="flex flex-wrap gap-1.5">
+          {list.slice(0, 5).map((m) => {
+            const c = a.champion(m.championId);
+            return (
+              <li key={m.championId}>
+                <Link
+                  to={champLink(sd, m.championId, s.role)}
+                  className={clsx('group flex items-center gap-2 rounded border bg-surface/70 py-1 pl-1 pr-2.5 backdrop-blur transition-colors hover:bg-raised', tone === 'loss' ? 'border-loss/40' : 'border-win/40')}
+                  title={`${pct(m.winRate, 1)} win rate against ${c.name} over ${m.games} game${m.games === 1 ? '' : 's'}`}
+                >
+                  <GameImg src={c.url} alt="" size={28} rounded="sm" />
+                  <span className="text-sm font-medium group-hover:text-gold">{c.name}</span>
+                  <span className={clsx('num text-xs font-semibold', m.games < LOW_SAMPLE ? 'text-faint' : tone === 'loss' ? 'text-loss' : 'text-win')}>{pct(m.winRate)}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p className="text-sm text-muted">Not enough games yet.</p>
+      )}
+    </div>
+  );
+  return (
+    <div className="mt-6 grid gap-4 sm:grid-cols-2">
+      {group('Countered by', hardest, 'loss')}
+      {group('Strong against', easiest, 'win')}
+    </div>
+  );
+}
+
+const MU_TABS = [
+  { id: 'hard', label: 'Hardest' },
+  { id: 'easy', label: 'Easiest' },
+  { id: 'all', label: 'All' },
+] as const;
+type MuSort = 'winRate' | 'games' | 'goldDiff15' | 'csDiff15' | 'xpDiff15';
+
+function Lead({ v, unit }: { v: number | null; unit: string }) {
+  if (v == null) return <span className="text-faint">–</span>;
+  const r = Math.round(v);
+  return (
+    <span className={clsx(r > 0 ? 'text-win' : r < 0 ? 'text-loss' : 'text-muted')}>
+      {r > 0 ? '+' : r < 0 ? '−' : '±'}
+      {Math.abs(r)}
+      {unit}
+    </span>
+  );
+}
+
+/** Lane matchups: win rate and early leads against every opponent in the same role. */
 function Matchups({ s }: { s: ChampionStats }) {
   const { data: sd } = useStaticData();
   const a = assets(sd);
-  const [all, setAll] = useState(false);
-  const min = Math.max(3, Math.round((s.summary?.games ?? 0) * 0.015));
-  const usable = s.matchups.filter((m) => m.games >= min);
-  if (!usable.length) return null;
-  // A champion only appears on one side: above 50% is a good matchup, below is a hard one.
-  const best = [...usable].filter((m) => m.winRate >= 0.5).sort((x, y) => y.winRate - x.winRate).slice(0, 5);
-  const worst = [...usable].filter((m) => m.winRate < 0.5).sort((x, y) => x.winRate - y.winRate).slice(0, 5);
+  const [tab, setTab] = useState<(typeof MU_TABS)[number]['id']>('hard');
+  const [sort, setSort] = useState<{ k: MuSort; dir: 1 | -1 }>({ k: 'games', dir: -1 });
+  const { usable, easiest, hardest } = laneMatchups(s);
+  if (!s.matchups.length) return null;
 
-  const row = (m: (typeof usable)[number]) => {
-    const c = a.champion(m.championId);
-    const slug = sd?.champions.get(m.championId)?.id;
-    return (
-      <li key={m.championId}>
-        <Link to={slug ? `/champions/${champSlug(slug)}?role=${s.role}` : '#'} className="group flex items-center gap-3 rounded px-2 py-1.5 transition-colors hover:bg-raised">
-          <GameImg src={c.url} alt="" size={30} rounded="md" />
-          <span className="min-w-0 flex-1 truncate text-sm group-hover:text-gold">{c.name}</span>
-          {m.goldDiff15 != null && (
-            <span className={clsx('num hidden text-xs sm:inline', m.goldDiff15 >= 0 ? 'text-win' : 'text-loss')} title="Average gold lead at 15 minutes">
-              {m.goldDiff15 >= 0 ? '+' : '−'}
-              {Math.abs(Math.round(m.goldDiff15))}g @15
-            </span>
-          )}
-          <Rate r={m} className="w-20" />
-        </Link>
-      </li>
+  const list =
+    tab === 'hard'
+      ? hardest.slice(0, 10)
+      : tab === 'easy'
+        ? easiest.slice(0, 10)
+        : [...s.matchups].sort((x, y) => (((x[sort.k] ?? -1e9) as number) - ((y[sort.k] ?? -1e9) as number)) * sort.dir || y.games - x.games);
+  const head = (k: MuSort, label: string) =>
+    tab === 'all' ? (
+      <button onClick={() => setSort((v) => (v.k === k ? { k, dir: (v.dir * -1) as 1 | -1 } : { k, dir: -1 }))} className={clsx('hover:text-text', sort.k === k && 'text-text')}>
+        {label}
+        {sort.k === k ? (sort.dir > 0 ? ' ↑' : ' ↓') : ''}
+      </button>
+    ) : (
+      label
     );
-  };
 
   return (
     <section className="panel p-5" aria-labelledby="mu-h">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 id="mu-h" className="panel-title text-2xl">
-          Matchups
-        </h2>
-        <span className="text-xs text-muted">Win rate against the champion in the same role</span>
-      </div>
-      <div className="mt-4 grid gap-6 md:grid-cols-2">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h3 className="mb-1 text-sm font-semibold text-win">Strong against</h3>
-          {best.length ? <ul>{best.map(row)}</ul> : <p className="px-2 text-sm text-muted">No winning matchups yet.</p>}
+          <h2 id="mu-h" className="panel-title text-2xl">
+            Lane matchups
+          </h2>
+          <p className="text-xs text-muted">
+            {s.summary ? `${ROLE_LABEL[s.role] ?? s.role} vs the enemy ${ROLE_LABEL[s.role]?.toLowerCase() ?? 'laner'}. ` : ''}Leads are averages at 15 minutes.
+          </p>
         </div>
-        <div>
-          <h3 className="mb-1 text-sm font-semibold text-loss">Struggles against</h3>
-          {worst.length ? <ul>{worst.map(row)}</ul> : <p className="px-2 text-sm text-muted">No losing matchups yet.</p>}
+        <div role="tablist" aria-label="Matchup list" className="flex rounded border border-line bg-surface p-0.5">
+          {MU_TABS.map((t) => (
+            <button
+              key={t.id}
+              role="tab"
+              aria-selected={tab === t.id}
+              onClick={() => setTab(t.id)}
+              className={clsx('rounded-sm px-3 py-1 text-sm font-medium transition-colors', tab === t.id ? 'bg-raised text-text' : 'text-muted hover:text-text')}
+            >
+              {t.label}
+              {t.id === 'all' && <span className="num ml-1 text-xs text-faint">{s.matchups.length}</span>}
+            </button>
+          ))}
         </div>
       </div>
-      {usable.length > 10 && (
-        <div className="mt-4 border-t border-line pt-3">
-          <button onClick={() => setAll((v) => !v)} aria-expanded={all} className="text-sm font-medium text-gold hover:underline">
-            {all ? 'Hide full list' : `Show all ${usable.length} matchups`}
-          </button>
-          {all && <ul className="fade-up mt-2 grid gap-x-6 md:grid-cols-2">{usable.map(row)}</ul>}
+
+      {list.length === 0 ? (
+        <p className="mt-4 text-sm text-muted">
+          {usable.length === 0 ? 'Not enough games against any single opponent yet. Check the All tab, or come back once more games are collected.' : tab === 'hard' ? 'No losing matchups so far.' : 'No winning matchups so far.'}
+        </p>
+      ) : (
+        <div className="mt-4 overflow-x-auto">
+          <table key={tab} className="fade-in w-full min-w-[560px] text-sm">
+            <caption className="sr-only">Lane matchups</caption>
+            <thead className="text-xs text-muted">
+              <tr className="border-b border-line">
+                <th scope="col" className="py-2 pr-2 text-left font-medium">
+                  Opponent
+                </th>
+                <th scope="col" className="px-2 text-right font-medium">
+                  {head('winRate', 'Win rate')}
+                </th>
+                <th scope="col" className="px-2 text-right font-medium">
+                  {head('games', 'Games')}
+                </th>
+                <th scope="col" className="px-2 text-right font-medium">
+                  {head('goldDiff15', 'Gold @15')}
+                </th>
+                <th scope="col" className="px-2 text-right font-medium">
+                  {head('csDiff15', 'CS @15')}
+                </th>
+                <th scope="col" className="pl-2 text-right font-medium">
+                  {head('xpDiff15', 'XP @15')}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {list.map((m) => {
+                const c = a.champion(m.championId);
+                const low = m.games < LOW_SAMPLE;
+                return (
+                  <tr key={m.championId} className="border-b border-line/60 last:border-0 hover:bg-raised">
+                    <td className="py-1.5 pr-2">
+                      <Link to={champLink(sd, m.championId, s.role)} className="group flex items-center gap-2.5">
+                        <GameImg src={c.url} alt="" size={30} rounded="md" />
+                        <span className="font-medium group-hover:text-gold">{c.name}</span>
+                      </Link>
+                    </td>
+                    <td className="num px-2 text-right">
+                      <span className="inline-flex items-center gap-2">
+                        <WinRateBar value={m.winRate} />
+                        <span className={clsx('w-12 font-semibold', low ? 'text-faint' : m.winRate >= 0.5 ? 'text-win' : 'text-loss')} title={low ? `Only ${m.games} games` : undefined}>
+                          {pct(m.winRate, 1)}
+                          {low && '*'}
+                        </span>
+                      </span>
+                    </td>
+                    <td className="num px-2 text-right text-muted">{thousands(m.games)}</td>
+                    <td className="num px-2 text-right">
+                      <Lead v={m.goldDiff15} unit="g" />
+                    </td>
+                    <td className="num px-2 text-right">
+                      <Lead v={m.csDiff15} unit="" />
+                    </td>
+                    <td className="num pl-2 text-right">
+                      <Lead v={m.xpDiff15} unit="" />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
+      {tab !== 'all' && <p className="mt-3 text-xs text-faint">Ranked by win rate adjusted for sample size, so a couple of lucky games don’t top the list.</p>}
     </section>
   );
 }
