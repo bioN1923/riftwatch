@@ -14,6 +14,7 @@ import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { Tip } from '../components/match/Loadout';
 import { ItemRow, MaxOrder, RuneTrees, SkillGrid } from '../components/build/BuildParts';
 import { GroupToggle, PatchSelect, RoleTab, TierBadge, WinRateBar } from '../components/champions/common';
+import { fadeIn } from '../lib/motion';
 
 export function ChampionPage() {
   const { slug = '' } = useParams();
@@ -76,9 +77,11 @@ function ChampionView({ championId }: { championId: number }) {
       <section className="relative overflow-hidden border-b border-line bg-surface">
         <div aria-hidden className="pointer-events-none absolute inset-0">
           <img
+            key={championId}
             src={a.fullSplash(championId)}
             alt=""
-            className="fade-in h-full w-full object-cover object-[70%_20%] opacity-50"
+            {...fadeIn('splash')}
+            className="h-full w-full object-cover object-[70%_20%] opacity-50"
             onError={(e) => (e.currentTarget.style.display = 'none')}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-surface via-surface/85 to-surface/20" />

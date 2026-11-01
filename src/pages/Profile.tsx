@@ -150,7 +150,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
 
   return (
     <>
-      <ProfileHeader profile={profile} matches={matches} inGame={!!live} tab={tab} updating={updating} onUpdate={update} />
+      <ProfileHeader profile={profile} matches={matches} inGame={!!live} tab={tab} updating={updating} readyAt={profileQ.dataUpdatedAt + (profile.updateIn ?? 0)} onUpdate={update} />
 
       <div className="mx-auto max-w-6xl px-4 py-5">
         {tab === 'live' ? (
@@ -206,8 +206,10 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
                                 <span className="text-win">{rec.w}W</span> <span className="text-loss">{rec.l}L</span>
                               </span>
                             </h2>
-                            {g.matches.map((m) => (
-                              <MatchRow key={m.id} match={m} puuid={profile.account.puuid} platform={platform} />
+                            {g.matches.map((m, i) => (
+                              <div key={m.id} className="fade-up" style={{ animationDelay: `${Math.min(i, 8) * 45}ms` }}>
+                                <MatchRow match={m} puuid={profile.account.puuid} platform={platform} />
+                              </div>
                             ))}
                           </section>
                         );

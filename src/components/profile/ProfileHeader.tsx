@@ -12,8 +12,8 @@ import { pct, timeAgo, titleCase } from '../../lib/format';
 import { me, result } from '../../lib/stats';
 import { playerTags } from '../../lib/tags';
 import { TagList } from '../ui/TagList';
+import { fadeIn } from '../../lib/motion';
 
-const COOLDOWN_MS = 60_000;
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
 
 export function ProfileHeader({
@@ -22,6 +22,7 @@ export function ProfileHeader({
   inGame,
   tab,
   updating,
+  readyAt,
   onUpdate,
 }: {
   profile: Profile;
@@ -29,6 +30,8 @@ export function ProfileHeader({
   inGame: boolean;
   tab: 'overview' | 'stats' | 'live';
   updating: boolean;
+  /** Client-clock time when the server allows the next update. */
+  readyAt: number;
   onUpdate: () => void;
 }) {
   const { data } = useStaticData();
@@ -42,18 +45,22 @@ export function ProfileHeader({
   const backdrop = profile.mastery[0] ? a.splash(profile.mastery[0].championId) : undefined;
 
   const [now, setNow] = useState(Date.now());
+  const cooling = now < readyAt;
   useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 5000);
+    setNow(Date.now());
+    // Tick every second while the countdown runs, otherwise just keep "Updated … ago" fresh.
+    const t = setInterval(() => setNow(Date.now()), cooling ? 1000 : 15_000);
     return () => clearInterval(t);
-  }, []);
-  const cooling = now - profile.fetchedAt < COOLDOWN_MS;
+  }, [cooling, readyAt]);
+  const wait = Math.max(0, Math.ceil((readyAt - now) / 1000));
+  const waitLabel = `${Math.floor(wait / 60)}:${String(wait % 60).padStart(2, '0')}`;
   const id = { gameName: profile.account.gameName, tagLine: profile.account.tagLine };
 
   return (
     <section className="relative overflow-hidden border-b border-line bg-surface">
       {backdrop && (
         <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-full max-w-4xl">
-          <img src={backdrop} alt="" className="h-full w-full object-cover object-[center_25%] opacity-35" onError={(e) => (e.currentTarget.style.display = 'none')} />
+          <img key={backdrop} src={backdrop} alt="" {...fadeIn('splash')} className="h-full w-full object-cover object-[center_25%] opacity-35" onError={(e) => (e.currentTarget.style.display = 'none')} />
           <div className="absolute inset-0 bg-gradient-to-r from-surface via-surface/70 to-surface/10" />
           <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent" />
         </div>
@@ -93,6 +100,7 @@ export function ProfileHeader({
                 <button
                   onClick={onUpdate}
                   disabled={updating || cooling}
+                  title={cooling ? `You can update again in ${waitLabel}` : 'Get the latest games and rank'}
                   className="inline-flex h-8 items-center gap-2 rounded bg-gold px-3.5 text-sm font-semibold text-gold-ink transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <RefreshCw className={clsx('size-3.5', updating && 'animate-spin')} aria-hidden />
@@ -100,7 +108,8 @@ export function ProfileHeader({
                 </button>
                 <CopyLink />
                 <span className="text-xs text-muted" aria-live="polite">
-                  Updated {timeAgo(profile.fetchedAt, now)}
+                  Updated {timeAgo(readyAt - (profile.updateIn ?? 0), now)}
+                  {cooling && !updating && <span className="num text-faint"> · next update in {waitLabel}</span>}
                 </span>
               </div>
             </div>
@@ -176,7 +185,7 @@ function RankBlock({ label, entry, big }: { label: string; entry?: LeagueEntry; 
   const size = big ? 76 : 56;
   return (
     <div className="flex items-center gap-3">
-      <img src={rankEmblem(entry.tier)} alt="" width={size} height={size} style={{ width: size, height: size }} className="shrink-0 drop-shadow-[0_6px_14px_rgba(0,0,0,0.45)]" />
+      <img src={rankEmblem(entry.tier)} alt="" {...fadeIn()} width={size} height={size} style={{ width: size, height: size }} className="shrink-0 drop-shadow-[0_6px_14px_rgba(0,0,0,0.45)]" />
       <div>
         <p className="flex items-center gap-1.5 text-xs text-muted">
           {label}

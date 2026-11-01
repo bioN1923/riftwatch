@@ -184,12 +184,12 @@ export function ChampionsPage() {
                     key={`${r.championId}-${r.role}`}
                     onClick={() => navigate(href)}
                     className="fade-up group cursor-pointer border-t border-line transition-colors hover:bg-raised"
-                    style={{ animationDelay: `${Math.min(i, 20) * 12}ms` }}
+                    style={{ animationDelay: `${Math.min(i, 16) * 22}ms` }}
                   >
                     <td className="num w-10 px-3 py-2 text-muted">{role === 'ALL' && sort.key === 'tier' ? i + 1 : r.rank}</td>
                     <td className="px-3 py-2">
                       <Link to={href} onClick={(e) => e.stopPropagation()} className="flex items-center gap-3 font-medium">
-                        <GameImg src={c.url} alt="" size={34} rounded="md" className="transition-transform duration-200 group-hover:scale-105" />
+                        <GameImg src={c.url} alt="" size={34} rounded="md" />
                         <span className="group-hover:text-gold">{c.name}</span>
                       </Link>
                     </td>

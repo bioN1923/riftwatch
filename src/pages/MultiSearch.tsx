@@ -15,6 +15,7 @@ import { playerTags } from '../lib/tags';
 import { GameImg } from '../components/ui/GameImg';
 import { TagList } from '../components/ui/TagList';
 import { Skeleton } from '../components/ui/States';
+import { fadeIn } from '../lib/motion';
 
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
 
@@ -164,7 +165,7 @@ function PlayerCard({ platform, id }: { platform: string; id: RiotId }) {
       <div className="mt-3 flex items-center gap-2.5">
         {solo ? (
           <>
-            <img src={rankEmblem(solo.tier)} alt="" className="size-11" />
+            <img src={rankEmblem(solo.tier)} alt="" {...fadeIn()} className="size-11" />
             <div>
               <p className="font-display text-xl font-bold leading-tight">
                 {titleCase(solo.tier)} {APEX.has(solo.tier) ? '' : solo.rank}

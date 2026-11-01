@@ -42,6 +42,8 @@ export interface Profile {
   ranked: LeagueEntry[];
   mastery: Mastery[];
   fetchedAt: number;
+  /** Milliseconds until this profile may be updated again (server-decided, so clocks don't matter). */
+  updateIn?: number;
 }
 
 export interface Participant {

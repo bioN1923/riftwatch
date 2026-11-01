@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import clsx from 'clsx';
+import { fadeIn } from '../../lib/motion';
 
 interface Props {
   src?: string;
@@ -17,11 +18,13 @@ export function GameImg({ src, alt, size, className, rounded = 'md', tip }: Prop
   const radius = rounded === 'full' ? 'rounded-full' : rounded === 'sm' ? 'rounded-[3px]' : 'rounded-[5px]';
   const box = (
     <span
-      className={clsx('relative inline-block shrink-0 overflow-hidden bg-sunken align-middle', radius, className)}
+      className={clsx('game-img relative inline-block shrink-0 overflow-hidden bg-sunken align-middle', radius, className)}
       style={{ width: size, height: size }}
     >
       {src && !failed ? (
         <img
+          key={src}
+          {...fadeIn()}
           src={src}
           alt={alt}
           width={size}

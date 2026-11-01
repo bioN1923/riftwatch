@@ -13,6 +13,7 @@ import { profilePath } from '../lib/riotId';
 import { useFavorites, useRecent, type SavedPlayer } from '../lib/storage';
 import { getPlatform } from '../../shared/regions';
 import { titleCase } from '../lib/format';
+import { fadeIn } from '../lib/motion';
 
 function PlayerChip({ p }: { p: SavedPlayer }) {
   const { data } = useStaticData();
@@ -32,7 +33,7 @@ function PlayerChip({ p }: { p: SavedPlayer }) {
           {getPlatform(p.platform)?.label}
           {p.tier && (
             <>
-              <img src={rankEmblem(p.tier)} alt="" className="size-4" />
+              <img src={rankEmblem(p.tier)} alt="" {...fadeIn()} className="size-4" />
               {titleCase(p.tier)} {['MASTER', 'GRANDMASTER', 'CHALLENGER'].includes(p.tier) ? '' : p.rank}
             </>
           )}
@@ -137,7 +138,7 @@ function StrongestPicks() {
                 to={c ? `/champions/${champSlug(c.id)}?role=${r.role}` : '/champions'}
                 className="group relative block h-40 overflow-hidden rounded border border-line bg-surface transition-colors hover:border-gold/60"
               >
-                <img src={a.splash(r.championId)} alt="" className="absolute inset-0 h-full w-full object-cover object-top opacity-70 transition-transform duration-500 group-hover:scale-105" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                <img src={a.splash(r.championId)} alt="" {...fadeIn('splash')} className="absolute inset-0 h-full w-full object-cover object-top opacity-70 group-hover:scale-105" onError={(e) => (e.currentTarget.style.display = 'none')} />
                 <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/50 to-transparent" />
                 <div className="relative flex h-full flex-col justify-between p-3">
                   <span className="flex items-center justify-between">

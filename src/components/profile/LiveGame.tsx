@@ -13,6 +13,7 @@ import { GameImg } from '../ui/GameImg';
 import { Skeleton } from '../ui/States';
 import { SpellsRunes } from '../match/Loadout';
 import { ladderValue } from '../../lib/ladder';
+import { fadeIn } from '../../lib/motion';
 
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
 const TIERS = ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'EMERALD', 'DIAMOND'];
@@ -180,7 +181,7 @@ function PlayerRow({ p, s, loading, self, group, platform }: { p: LiveParticipan
           <Skeleton className="h-8 w-full" />
         ) : solo ? (
           <>
-            <img src={rankEmblem(solo.tier)} alt="" className="size-8" />
+            <img src={rankEmblem(solo.tier)} alt="" {...fadeIn()} className="size-8" />
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">
                 {titleCase(solo.tier)} {APEX.has(solo.tier) ? '' : solo.rank}

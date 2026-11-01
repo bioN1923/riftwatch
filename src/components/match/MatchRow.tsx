@@ -11,6 +11,7 @@ import { result } from '../../lib/stats';
 import { GameImg } from '../ui/GameImg';
 import { Items, SpellsRunes } from './Loadout';
 import { MatchDetails } from './MatchDetails';
+import { fadeIn } from '../../lib/motion';
 
 const RESULT_LABEL = { win: 'Win', loss: 'Loss', remake: 'Remake' } as const;
 
@@ -49,7 +50,7 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
       <div className="flex">
         {/* Splash column: who you played, and how it went */}
         <div className="relative w-[92px] shrink-0 overflow-hidden sm:w-[132px]">
-          {splash && <img src={splash} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover object-[center_20%] transition-transform duration-500 ease-out group-hover/card:scale-105" onError={(e) => (e.currentTarget.style.display = 'none')} />}
+          {splash && <img src={splash} alt="" loading="lazy" {...fadeIn('splash')} className="absolute inset-0 h-full w-full object-cover object-[center_20%] group-hover/card:scale-105" onError={(e) => (e.currentTarget.style.display = 'none')} />}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-surface/30 to-surface" />
           <div className="absolute inset-0 bg-gradient-to-t from-surface/95 via-surface/10 to-transparent" />
           <div className={clsx('absolute inset-y-0 left-0 w-[3px]', r === 'win' ? 'bg-win' : r === 'loss' ? 'bg-loss' : 'bg-faint')} />

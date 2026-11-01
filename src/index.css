@@ -110,6 +110,13 @@
   color-scheme: light;
 }
 
+@theme {
+  --default-transition-duration: 240ms;
+  --default-transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
@@ -270,8 +277,14 @@
 }
 
 /* ---------- Motion ----------
-   Short, quiet, and only where something changed: content arriving, a panel opening,
-   a chart drawing. Everything is switched off for reduced-motion users below. */
+   Soft, decelerating curves everywhere: things arrive quickly and settle slowly, so nothing
+   snaps. Only where something changed: content arriving, a panel opening, a chart drawing,
+   an image finishing loading. Everything is switched off for reduced-motion users below. */
+:root {
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1); /* fast start, long gentle settle */
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.32, 0.64, 1); /* a hint of overshoot */
+}
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -280,23 +293,31 @@
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(10px);
   }
 }
 @keyframes drop-in {
   from {
     opacity: 0;
-    transform: translateY(-4px) scale(0.99);
+    transform: translateY(-6px) scale(0.985);
+  }
+}
+@keyframes tip-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px) scale(0.97);
   }
 }
 @keyframes expand-in {
   from {
     opacity: 0;
     clip-path: inset(0 0 100% 0);
+    transform: translateY(-4px);
   }
   to {
     opacity: 1;
     clip-path: inset(0 0 0 0);
+    transform: none;
   }
 }
 @keyframes grow-x {
@@ -312,7 +333,7 @@
 @keyframes pop-in {
   from {
     opacity: 0;
-    transform: scale(0.6);
+    transform: scale(0.7);
   }
 }
 @keyframes draw {
@@ -324,37 +345,77 @@
   }
 }
 .fade-in {
-  animation: fade-in 220ms ease-out both;
+  animation: fade-in 360ms var(--ease-soft) both;
 }
 .fade-in-slow {
-  animation: fade-in 700ms ease-out 200ms both;
+  animation: fade-in 900ms var(--ease-soft) 150ms both;
 }
 .fade-up {
-  animation: fade-up 260ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: fade-up 520ms var(--ease-smooth) both;
 }
 .drop-in {
   transform-origin: top;
-  animation: drop-in 140ms ease-out both;
+  animation: drop-in 240ms var(--ease-smooth) both;
 }
 .tip-in {
-  animation: fade-in 120ms ease-out both;
+  transform-origin: bottom center;
+  animation: tip-in 180ms var(--ease-smooth) both;
 }
 .expand-in {
-  animation: expand-in 260ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: expand-in 420ms var(--ease-smooth) both;
 }
 .grow-x {
-  animation: grow-x 600ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: grow-x 900ms var(--ease-smooth) both;
 }
 .grow-y {
   transform-origin: bottom;
-  animation: grow-y 600ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: grow-y 900ms var(--ease-smooth) both;
 }
 .pop-in {
-  animation: pop-in 220ms cubic-bezier(0.3, 1.4, 0.5, 1) both;
+  animation: pop-in 380ms var(--ease-spring) both;
 }
 .draw-line {
   stroke-dasharray: 1;
-  animation: draw 900ms cubic-bezier(0.3, 0.6, 0.2, 1) both;
+  animation: draw 1200ms var(--ease-smooth) both;
+}
+
+/* Images fade in once they've loaded instead of popping in (data-fade is set by fadeIn()). */
+img[data-fade] {
+  transition:
+    opacity 550ms var(--ease-soft),
+    transform 1400ms var(--ease-smooth),
+    scale 700ms var(--ease-smooth),
+    filter 700ms var(--ease-soft);
+}
+img[data-fade]:not([data-loaded]) {
+  opacity: 0;
+}
+/* Big splash art also settles from a slight zoom and blur. */
+img[data-fade='splash']:not([data-loaded]) {
+  transform: scale(1.06);
+  filter: blur(8px);
+}
+/* Icons inside links lift a little on hover; the frame clips the zoom. */
+.game-img img {
+  transition:
+    opacity 450ms var(--ease-soft),
+    scale 450ms var(--ease-smooth);
+}
+a:hover .game-img img,
+a:focus-visible .game-img img {
+  scale: 1.1;
+}
+.game-img {
+  transition:
+    box-shadow 300ms var(--ease-smooth),
+    translate 300ms var(--ease-smooth),
+    scale 300ms var(--ease-smooth),
+    transform 300ms var(--ease-smooth),
+    opacity 300ms var(--ease-soft);
+}
+/* Clickable table rows: hovering anywhere on the row zooms its champion icon too. */
+tr.group:hover .game-img img {
+  scale: 1.1;
 }
 
 @media (prefers-reduced-motion: reduce) {

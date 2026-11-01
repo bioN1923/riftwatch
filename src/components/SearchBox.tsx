@@ -11,6 +11,7 @@ import { GameImg } from './ui/GameImg';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
 import { api } from '../lib/api';
 import { titleCase } from '../lib/format';
+import { fadeIn } from '../lib/motion';
 
 type Option =
   | { kind: 'player'; player: PlayerHit; source: 'favorite' | 'recent' | 'match' }
@@ -340,7 +341,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
                   <span className="flex items-center gap-1 text-xs text-muted">
                     {p.tier ? (
                       <>
-                        <img src={rankEmblem(p.tier)} alt="" className="size-4" />
+                        <img src={rankEmblem(p.tier)} alt="" {...fadeIn()} className="size-4" />
                         {titleCase(p.tier)} {APEX.has(p.tier) ? '' : p.rank}
                         {p.lp != null && <span className="num text-faint"> · {p.lp} LP</span>}
                       </>

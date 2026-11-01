@@ -110,22 +110,35 @@ app.get('/api/health', (_req, res) => {
   res.json({ ok: true, mode: DEMO ? 'demo' : 'live' } satisfies HealthResponse);
 });
 
+const UPDATE_COOLDOWN_MS = 3 * 60_000;
+const lastUpdate = new Map<string, number>(); // "platform:name#tag" -> when Riot was last asked for fresh data
+setInterval(() => {
+  for (const [k, t] of lastUpdate) if (Date.now() - t > UPDATE_COOLDOWN_MS) lastUpdate.delete(k);
+}, 10 * 60_000).unref();
+
 app.get(
   '/api/profile/:platform/:gameName/:tagLine',
   wrap(async (req, res) => {
     const p = platformOr400(String(req.params.platform));
     const gameName = String(req.params.gameName).trim();
     const tagLine = String(req.params.tagLine).trim();
-    const fresh = req.query.fresh === '1';
+    let fresh = req.query.fresh === '1';
     if (!gameName || !tagLine || gameName.length > 16 || tagLine.length > 5) {
       throw new ApiError(400, 'BAD_REQUEST', 'A Riot ID looks like Name#TAG — up to 16 characters, then a tag of 3–5.');
     }
+
+    // One real update per player every UPDATE_COOLDOWN_MS, enforced here rather than trusted to the browser.
+    const coolKey = `${p.id}:${gameName}#${tagLine}`.toLowerCase();
+    const last = lastUpdate.get(coolKey);
+    if (fresh && last && Date.now() - last < UPDATE_COOLDOWN_MS) fresh = false;
+    if (fresh) lastUpdate.set(coolKey, Date.now());
+    const updateIn = () => Math.max(0, (lastUpdate.get(coolKey) ?? 0) + UPDATE_COOLDOWN_MS - Date.now());
 
     if (DEMO) {
       const profile = mockProfile(p.id, gameName, tagLine);
       if (!profile) throw new ApiError(404, 'NOT_FOUND', `No player called ${gameName}#${tagLine} on ${p.label}.`);
       indexProfile(profile);
-      return res.json(profile);
+      return res.json({ ...profile, updateIn: updateIn() });
     }
 
     let account;
@@ -165,7 +178,7 @@ app.get(
     };
     indexProfile(profile);
     lp.record(profile.account.puuid, profile.ranked);
-    res.json(profile);
+    res.json({ ...profile, updateIn: updateIn() });
   }),
 );
 
