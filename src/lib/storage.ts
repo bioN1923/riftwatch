@@ -89,18 +89,3 @@ export function setTheme(t: Theme) {
   else document.documentElement.dataset.theme = t;
 }
 
-/* Animations: "system" follows the device's reduce-motion setting; on/off override it. */
-export type Motion = 'system' | 'on' | 'off';
-const motionStore = createStore<Motion>('rw:motion-choice', 'system');
-export const useMotion = () => [useStore(motionStore), setMotion] as const;
-export function setMotion(m: Motion) {
-  motionStore.set(m);
-  try {
-    if (m === 'system') localStorage.removeItem('rw:motion');
-    else localStorage.setItem('rw:motion', m);
-  } catch {
-    /* ignore */
-  }
-  if (m === 'system') delete document.documentElement.dataset.motion;
-  else document.documentElement.dataset.motion = m;
-}

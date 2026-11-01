@@ -11,8 +11,6 @@
       try {
         var t = localStorage.getItem('rw:theme');
         if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
-        var m = localStorage.getItem('rw:motion');
-        if (m === 'on' || m === 'off') document.documentElement.dataset.motion = m;
       } catch (e) {}
     </script>
   </head>

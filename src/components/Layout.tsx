@@ -1,11 +1,11 @@
 import { Link, NavLink, Outlet, useLocation } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
-import { AlertTriangle, Monitor, Moon, Sparkles, Sun, X } from 'lucide-react';
+import { useState } from 'react';
+import { AlertTriangle, Monitor, Moon, Sun, X } from 'lucide-react';
 import clsx from 'clsx';
 import { SearchBox } from './SearchBox';
 import { api } from '../lib/api';
-import { useMotion, useRegion, useTheme, type Theme } from '../lib/storage';
+import { useRegion, useTheme, type Theme } from '../lib/storage';
 
 export function Logo({ className }: { className?: string }) {
   return (
@@ -54,45 +54,6 @@ function ThemeSwitch() {
       ))}
     </div>
     </>
-  );
-}
-
-function useSystemReducedMotion() {
-  const query = '(prefers-reduced-motion: reduce)';
-  const [reduced, setReduced] = useState(() => typeof window !== 'undefined' && window.matchMedia(query).matches);
-  useEffect(() => {
-    const mq = window.matchMedia(query);
-    const on = () => setReduced(mq.matches);
-    mq.addEventListener('change', on);
-    return () => mq.removeEventListener('change', on);
-  }, []);
-  return reduced;
-}
-
-/** Animations on/off. Follows the device's reduce-motion setting until the visitor chooses. */
-function MotionSwitch() {
-  const [motion, setMotion] = useMotion();
-  const systemReduced = useSystemReducedMotion();
-  const on = motion === 'on' || (motion === 'system' && !systemReduced);
-  const toggle = () => {
-    const wantOn = !on;
-    // Store "system" when the choice matches the device anyway, so a later device change still applies.
-    setMotion(wantOn === !systemReduced ? 'system' : wantOn ? 'on' : 'off');
-  };
-  const label = on ? 'Animations on. Turn off' : systemReduced && motion === 'system' ? 'Animations are off because your device asks for reduced motion. Turn on' : 'Animations off. Turn on';
-  return (
-    <button
-      onClick={toggle}
-      aria-pressed={on}
-      aria-label={label}
-      title={label}
-      className={clsx(
-        'grid size-9 shrink-0 place-items-center rounded-lg border border-line bg-surface transition-colors',
-        on ? 'text-gold hover:text-text' : 'text-faint hover:text-text',
-      )}
-    >
-      <Sparkles className="size-4" aria-hidden />
-    </button>
   );
 }
 
@@ -167,7 +128,6 @@ export function Layout() {
           <Logo />
           <MainNav />
           <div className="flex min-w-0 flex-1 justify-center">{!home && <SearchBox />}</div>
-          <MotionSwitch />
           <ThemeSwitch />
         </div>
       </header>
