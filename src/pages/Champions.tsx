@@ -12,6 +12,7 @@ import { GameImg } from '../components/ui/GameImg';
 import { RoleIcon, ROLE_LABEL } from '../components/ui/RoleIcon';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { GroupToggle, PatchSelect, ROLE_TABS, RoleTab, TierBadge, WinRateBar } from '../components/champions/common';
+import { SlidingIndicator } from '../components/ui/Motion';
 
 type SortKey = 'rank' | 'name' | 'tier' | 'winRate' | 'pickRate' | 'banRate' | 'games';
 const TIER_ORDER = { 'S+': 0, S: 1, A: 2, B: 3, C: 4, D: 5, '–': 6 };
@@ -107,7 +108,8 @@ export function ChampionsPage() {
 
       <div className="mt-6 flex flex-wrap items-end justify-between gap-4 border-b border-line">
         {group === 'ranked' ? (
-          <div role="tablist" aria-label="Role" className="flex gap-5 overflow-x-auto">
+          <div role="tablist" aria-label="Role" className="relative flex gap-5 overflow-x-auto">
+            <SlidingIndicator />
             {ROLE_TABS.map((t) => (
               <RoleTab key={t.id} role={t.id} active={role === t.id} onClick={() => set('role', t.id === 'ALL' ? null : t.id)}>
                 {t.label}

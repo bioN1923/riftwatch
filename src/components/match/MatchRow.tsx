@@ -12,6 +12,7 @@ import { GameImg } from '../ui/GameImg';
 import { Items, SpellsRunes } from './Loadout';
 import { MatchDetails } from './MatchDetails';
 import { fadeIn } from '../../lib/motion';
+import { Collapse } from '../ui/Motion';
 
 const RESULT_LABEL = { win: 'Win', loss: 'Loss', remake: 'Remake' } as const;
 
@@ -149,15 +150,13 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
           aria-label={open ? 'Hide game details' : 'Show game details'}
           className="flex w-10 shrink-0 items-center justify-center border-l border-line text-muted transition-colors hover:bg-raised hover:text-gold"
         >
-          <ChevronDown className={clsx('size-5 transition-transform', open && 'rotate-180')} aria-hidden />
+          <ChevronDown className={clsx('size-5 transition-transform duration-[420ms]', open && 'rotate-180')} aria-hidden />
         </button>
       </div>
 
-      {open && (
-        <div id={detailsId} className="expand-in">
-          <MatchDetails match={match} puuid={puuid} platform={platform} />
-        </div>
-      )}
+      <Collapse open={open} id={detailsId}>
+        <MatchDetails match={match} puuid={puuid} platform={platform} />
+      </Collapse>
     </article>
   );
 }

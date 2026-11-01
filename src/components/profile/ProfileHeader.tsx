@@ -13,6 +13,7 @@ import { me, result } from '../../lib/stats';
 import { playerTags } from '../../lib/tags';
 import { TagList } from '../ui/TagList';
 import { fadeIn } from '../../lib/motion';
+import { SlidingIndicator } from '../ui/Motion';
 
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
 
@@ -108,7 +109,7 @@ export function ProfileHeader({
                 </button>
                 <CopyLink />
                 <span className="text-xs text-muted" aria-live="polite">
-                  Updated {timeAgo(readyAt - (profile.updateIn ?? 0), now)}
+                  Updated {timeAgo(readyAt - (profile.updateIn ?? 0) - (profile.age ?? 0), now)}
                   {cooling && !updating && <span className="num text-faint"> · next update in {waitLabel}</span>}
                 </span>
               </div>
@@ -123,7 +124,8 @@ export function ProfileHeader({
 
         <FormRibbon matches={matches} puuid={profile.account.puuid} />
 
-        <nav aria-label="Profile sections" className="mt-2 flex gap-1">
+        <nav aria-label="Profile sections" className="relative mt-2 flex gap-1">
+          <SlidingIndicator className="h-[3px]" />
           <TabLink to={profilePath(profile.platform, id)} active={tab === 'overview'}>
             Overview
           </TabLink>
@@ -210,7 +212,7 @@ function TabLink({ to, active, children }: { to: string; active: boolean; childr
       aria-current={active ? 'page' : undefined}
       className={clsx(
         'relative inline-flex items-center px-3 pb-3 pt-2 font-display text-lg font-bold tracking-wide transition-colors',
-        active ? 'text-text after:absolute after:inset-x-2 after:bottom-0 after:h-[3px] after:bg-gold' : 'text-muted hover:text-text',
+        active ? 'text-text' : 'text-muted hover:text-text',
       )}
     >
       {children}

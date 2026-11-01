@@ -6,6 +6,7 @@ import { Performance } from './details/Performance';
 import { ItemBuild } from './details/ItemBuild';
 import { TimelineTab } from './details/TimelineTab';
 import { Metrics } from './details/Metrics';
+import { SlidingIndicator, useSlideDirection } from '../ui/Motion';
 
 const TABS = [
   { id: 'post', label: 'Post game' },
@@ -20,6 +21,7 @@ export function MatchDetails({ match, puuid, platform }: { match: MatchSummary; 
   const [tab, setTab] = useState<TabId>('post');
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   const base = `md-${match.id}`;
+  const dir = useSlideDirection(TABS.findIndex((t) => t.id === tab));
 
   function onKey(e: React.KeyboardEvent, i: number) {
     const dir = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
@@ -32,7 +34,8 @@ export function MatchDetails({ match, puuid, platform }: { match: MatchSummary; 
 
   return (
     <div className="border-t border-line-strong bg-bg/40">
-      <div role="tablist" aria-label="Game details" className="flex gap-1 overflow-x-auto border-b border-line px-3">
+      <div role="tablist" aria-label="Game details" className="relative flex gap-1 overflow-x-auto border-b border-line px-3">
+        <SlidingIndicator />
         {TABS.map((t, i) => (
           <button
             key={t.id}
@@ -48,14 +51,14 @@ export function MatchDetails({ match, puuid, platform }: { match: MatchSummary; 
             onKeyDown={(e) => onKey(e, i)}
             className={clsx(
               'relative whitespace-nowrap px-3 py-2.5 font-display text-base font-bold tracking-wide transition-colors',
-              tab === t.id ? 'text-text after:absolute after:inset-x-2 after:bottom-0 after:h-[2px] after:bg-gold' : 'text-muted hover:text-text',
+              tab === t.id ? 'text-text' : 'text-muted hover:text-text',
             )}
           >
             {t.label}
           </button>
         ))}
       </div>
-      <div key={tab} role="tabpanel" id={`${base}-panel`} aria-labelledby={`${base}-tab-${tab}`} className="fade-in">
+      <div key={tab} role="tabpanel" id={`${base}-panel`} aria-labelledby={`${base}-tab-${tab}`} className="tab-in" style={{ '--dir': dir } as React.CSSProperties}>
         {tab === 'post' && <PostGame match={match} puuid={puuid} platform={platform} />}
         {tab === 'performance' && <Performance match={match} puuid={puuid} />}
         {tab === 'build' && <ItemBuild match={match} puuid={puuid} platform={platform} />}

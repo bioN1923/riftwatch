@@ -18,6 +18,7 @@ import { AutoLoad } from '../components/ui/AutoLoad';
 import { LpPanel } from '../components/profile/LpPanel';
 import { MatchRow } from '../components/match/MatchRow';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
+import { useSlideDirection } from '../components/ui/Motion';
 
 const FIRST_PAGE = 20;
 const NEXT_PAGE = 10;
@@ -56,6 +57,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
   const profileKey = ['profile', platform, gameName.toLowerCase(), tagLine.toLowerCase()];
   const profileQ = useQuery({ queryKey: profileKey, queryFn: ({ signal }) => api.profile(platform, gameName, tagLine, { signal }) });
   const profile = profileQ.data;
+  const tabDir = useSlideDirection(['overview', 'stats', 'live'].indexOf(tab));
   const puuid = profile?.account.puuid;
 
   const matchesQ = useInfiniteQuery({
@@ -152,7 +154,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
     <>
       <ProfileHeader profile={profile} matches={matches} inGame={!!live} tab={tab} updating={updating} readyAt={profileQ.dataUpdatedAt + (profile.updateIn ?? 0)} onUpdate={update} />
 
-      <div className="mx-auto max-w-6xl px-4 py-5">
+      <div key={tab} className="tab-in mx-auto max-w-6xl px-4 py-5" style={{ '--dir': tabDir } as React.CSSProperties}>
         {tab === 'live' ? (
           liveQ.isPending ? (
             <Skeleton className="h-80" />

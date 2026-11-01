@@ -122,23 +122,28 @@ app.get(
     const p = platformOr400(String(req.params.platform));
     const gameName = String(req.params.gameName).trim();
     const tagLine = String(req.params.tagLine).trim();
-    let fresh = req.query.fresh === '1';
+    let fresh = true;
     if (!gameName || !tagLine || gameName.length > 16 || tagLine.length > 5) {
       throw new ApiError(400, 'BAD_REQUEST', 'A Riot ID looks like Name#TAG — up to 16 characters, then a tag of 3–5.');
     }
 
-    // One real update per player every UPDATE_COOLDOWN_MS, enforced here rather than trusted to the browser.
+    // Opening a profile or pressing Update reads fresh data from Riot, at most once per player
+    // every UPDATE_COOLDOWN_MS; in between, the cached copy is served. Enforced here, not trusted
+    // to the browser, and reported as relative times so the visitor's clock doesn't matter.
     const coolKey = `${p.id}:${gameName}#${tagLine}`.toLowerCase();
     const last = lastUpdate.get(coolKey);
-    if (fresh && last && Date.now() - last < UPDATE_COOLDOWN_MS) fresh = false;
-    if (fresh) lastUpdate.set(coolKey, Date.now());
-    const updateIn = () => Math.max(0, (lastUpdate.get(coolKey) ?? 0) + UPDATE_COOLDOWN_MS - Date.now());
+    if (last && Date.now() - last < UPDATE_COOLDOWN_MS) fresh = false;
+    else lastUpdate.set(coolKey, Date.now());
+    const timing = () => {
+      const at = lastUpdate.get(coolKey) ?? Date.now();
+      return { updateIn: Math.max(0, at + UPDATE_COOLDOWN_MS - Date.now()), age: Date.now() - at };
+    };
 
     if (DEMO) {
       const profile = mockProfile(p.id, gameName, tagLine);
       if (!profile) throw new ApiError(404, 'NOT_FOUND', `No player called ${gameName}#${tagLine} on ${p.label}.`);
       indexProfile(profile);
-      return res.json({ ...profile, updateIn: updateIn() });
+      return res.json({ ...profile, ...timing() });
     }
 
     let account;
@@ -178,7 +183,7 @@ app.get(
     };
     indexProfile(profile);
     lp.record(profile.account.puuid, profile.ranked);
-    res.json({ ...profile, updateIn: updateIn() });
+    res.json({ ...profile, ...timing() });
   }),
 );
 

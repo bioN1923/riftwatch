@@ -44,6 +44,8 @@ export interface Profile {
   fetchedAt: number;
   /** Milliseconds until this profile may be updated again (server-decided, so clocks don't matter). */
   updateIn?: number;
+  /** Milliseconds since this data was last read fresh from Riot. */
+  age?: number;
 }
 
 export interface Participant {

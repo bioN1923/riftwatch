@@ -69,7 +69,7 @@ export function RoleTab({ role, active, children, onClick }: { role: string; act
       onClick={onClick}
       className={clsx(
         '-mb-px flex items-center gap-1.5 whitespace-nowrap border-b-2 px-1 pb-2 text-sm font-medium transition-colors',
-        active ? 'border-gold text-text' : 'border-transparent text-muted hover:text-text',
+        active ? 'border-transparent text-text' : 'border-transparent text-muted hover:text-text',
       )}
     >
       {role !== 'ALL' && <RoleIcon role={role} size={15} />}

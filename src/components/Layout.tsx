@@ -132,7 +132,7 @@ export function Layout() {
         </div>
       </header>
       <main id="main" className="flex-1">
-        <div key={pathname} className="fade-in">
+        <div key={pathname.replace(/\/(live|stats)$/, '')} className="fade-in">
           <Outlet />
         </div>
       </main>

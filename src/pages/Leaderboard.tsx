@@ -12,6 +12,7 @@ import { useRegion } from '../lib/storage';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { WinRateBar } from '../components/champions/common';
 import { fadeIn } from '../lib/motion';
+import { SlidingIndicator } from '../components/ui/Motion';
 
 const TIERS = [
   { id: 'challenger', label: 'Challenger' },
@@ -92,14 +93,15 @@ export function LeaderboardPage() {
         </div>
       </div>
 
-      <div role="tablist" aria-label="Tier" className="mt-6 flex gap-5 border-b border-line">
+      <div role="tablist" aria-label="Tier" className="relative mt-6 flex gap-5 border-b border-line">
+        <SlidingIndicator />
         {TIERS.map((t) => (
           <button
             key={t.id}
             role="tab"
             aria-selected={tier === t.id}
             onClick={() => set({ tier: t.id === 'challenger' ? null : t.id, page: null })}
-            className={clsx('-mb-px flex items-center gap-2 border-b-2 pb-2 text-sm font-medium transition-colors', tier === t.id ? 'border-gold text-text' : 'border-transparent text-muted hover:text-text')}
+            className={clsx('-mb-px flex items-center gap-2 border-b-2 pb-2 text-sm font-medium transition-colors', tier === t.id ? 'border-transparent text-text' : 'border-transparent text-muted hover:text-text')}
           >
             <img src={rankEmblem(t.id)} alt="" {...fadeIn()} className="size-6" />
             {t.label}

@@ -15,6 +15,7 @@ import { Tip } from '../components/match/Loadout';
 import { ItemRow, MaxOrder, RuneTrees, SkillGrid } from '../components/build/BuildParts';
 import { GroupToggle, PatchSelect, RoleTab, TierBadge, WinRateBar } from '../components/champions/common';
 import { fadeIn } from '../lib/motion';
+import { SlidingIndicator } from '../components/ui/Motion';
 
 export function ChampionPage() {
   const { slug = '' } = useParams();
@@ -118,7 +119,8 @@ function ChampionView({ championId }: { championId: number }) {
           {detail && <Abilities detail={detail} />}
 
           {group === 'ranked' && s && s.roles.length > 0 && (
-            <div role="tablist" aria-label="Role" className="mt-6 flex gap-5 overflow-x-auto">
+            <div role="tablist" aria-label="Role" className="relative mt-6 flex gap-5 overflow-x-auto">
+              <SlidingIndicator />
               {s.roles.map((r) => (
                 <RoleTab key={r.role} role={r.role} active={s.role === r.role} onClick={() => set('role', r.role)}>
                   {ROLE_LABEL[r.role] ?? r.role}

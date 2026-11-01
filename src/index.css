@@ -379,6 +379,23 @@
   animation: draw 1200ms var(--ease-smooth) both;
 }
 
+/* Tab panels slide in from the side of the tab you moved to (--dir: -1, 0 or 1). */
+@keyframes tab-in {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--dir, 0) * 18px)) translateY(calc((1 - var(--dir, 0) * var(--dir, 0)) * 6px));
+  }
+}
+.tab-in {
+  animation: tab-in 380ms var(--ease-smooth) both;
+}
+/* Collapse: height follows the grid row; opacity eases alongside. */
+.collapse-grid {
+  transition:
+    grid-template-rows 420ms var(--ease-smooth),
+    opacity 320ms var(--ease-soft);
+}
+
 /* Images fade in once they've loaded instead of popping in (data-fade is set by fadeIn()). */
 img[data-fade] {
   transition:
@@ -401,9 +418,11 @@ img[data-fade='splash']:not([data-loaded]) {
     opacity 450ms var(--ease-soft),
     scale 450ms var(--ease-smooth);
 }
+.game-img:hover img,
 a:hover .game-img img,
-a:focus-visible .game-img img {
-  scale: 1.1;
+a:focus-visible .game-img img,
+button:hover > .game-img img {
+  scale: 1.12;
 }
 .game-img {
   transition:
