@@ -3,6 +3,7 @@ import { ChevronRight } from 'lucide-react';
 import { assets, SHARDS, useStaticData, type StaticData } from '../../lib/ddragon';
 import { GameImg } from '../ui/GameImg';
 import { Tip } from '../match/Loadout';
+import { ItemTip } from '../ui/ItemTip';
 
 const KEYS = ['Q', 'W', 'E', 'R'];
 
@@ -148,7 +149,7 @@ export function ItemRow({ ids, size = 32, arrows }: { ids: number[]; size?: numb
         const it = a.item(id);
         return (
           <span key={`${id}-${i}`} className="flex items-center gap-1">
-            <GameImg src={it.url} alt={it.name || `Item ${id}`} size={size} rounded="sm" tip={it.name ? <Tip title={it.name} body={it.plaintext} extra={it.gold ? `${it.gold} gold` : undefined} /> : undefined} />
+            <GameImg src={it.url} alt={it.name || `Item ${id}`} size={size} rounded="sm" tip={it.name ? <ItemTip id={id} /> : undefined} />
             {arrows && i < ids.length - 1 && <ChevronRight className="size-3.5 text-faint" aria-hidden />}
           </span>
         );

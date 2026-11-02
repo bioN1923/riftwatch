@@ -5,7 +5,7 @@ import type { MatchSummary, MatchTimeline, Participant } from '../../../../share
 import { assets, useStaticData } from '../../../lib/ddragon';
 import { MaxOrder, maxOrderOf, RuneTrees, SkillGrid } from '../../build/BuildParts';
 import { GameImg } from '../../ui/GameImg';
-import { Tip } from '../Loadout';
+import { ItemTip } from '../../ui/ItemTip';
 import { fmtTime, PlayerPicker, SectionTitle, TimelineGate, useTimeline } from './shared';
 
 export function ItemBuild({ match, puuid, platform }: { match: MatchSummary; puuid: string; platform: string }) {
@@ -61,7 +61,7 @@ function PurchasePath({ items }: { items: MatchTimeline['items'][number] }) {
                         alt={`${it.sold ? 'Sold ' : ''}${info.name || `item ${it.itemId}`}`}
                         size={30}
                         rounded="sm"
-                        tip={<Tip title={info.name || `Item ${it.itemId}`} body={info.plaintext} extra={it.sold ? 'Sold' : info.gold ? `${info.gold} gold` : undefined} />}
+                        tip={<ItemTip id={it.itemId} note={it.sold ? 'Sold' : undefined} />}
                       />
                       {it.sold && <span className="absolute inset-x-0 top-1/2 h-[2px] -rotate-45 bg-loss" aria-hidden />}
                     </span>

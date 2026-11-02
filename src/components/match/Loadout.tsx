@@ -1,6 +1,7 @@
 import type { Participant } from '../../../shared/types';
 import { assets, useStaticData } from '../../lib/ddragon';
 import { GameImg } from '../ui/GameImg';
+import { ItemTip } from '../ui/ItemTip';
 
 type Assets = ReturnType<typeof assets>;
 
@@ -50,7 +51,7 @@ export function Items({ items, size = 22 }: { items: number[]; size?: number }) 
             size={size}
             rounded={i === 6 ? 'full' : 'sm'}
             className={i === 6 ? 'ml-0.5' : undefined}
-            tip={id && it.name ? <Tip title={it.name} body={it.plaintext} extra={it.gold ? `${it.gold} gold` : undefined} /> : undefined}
+            tip={id && it.name ? <ItemTip id={id} /> : undefined}
           />
         );
       })}

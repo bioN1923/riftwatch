@@ -40,6 +40,11 @@
   --series-2: #2e8fc4;
   --on-accent: #091315;
   --focus: #f3cf86;
+  --tone-phys: #f3a462;
+  --tone-magic: #74b9ff;
+  --tone-heal: #63d496;
+  --tone-shield: #b7c6d6;
+  --tone-speed: #7fd6cb;
   --shadow: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 10px 30px -18px rgb(0 0 0 / 0.7);
   color-scheme: dark;
 }
@@ -73,6 +78,11 @@
     --series-2: #1b70a3;
     --on-accent: #ffffff;
     --focus: #946414;
+    --tone-phys: #a54d12;
+    --tone-magic: #1d5fae;
+    --tone-heal: #13733c;
+    --tone-shield: #4b5d6c;
+    --tone-speed: #13716a;
     --shadow: 0 1px 2px rgb(16 32 31 / 0.06);
     color-scheme: light;
   }
@@ -106,6 +116,11 @@
   --series-2: #1b70a3;
   --on-accent: #ffffff;
   --focus: #946414;
+  --tone-phys: #a54d12;
+  --tone-magic: #1d5fae;
+  --tone-heal: #13733c;
+  --tone-shield: #4b5d6c;
+  --tone-speed: #13716a;
   --shadow: 0 1px 2px rgb(16 32 31 / 0.06);
   color-scheme: light;
 }

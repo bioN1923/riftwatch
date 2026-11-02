@@ -7,7 +7,7 @@ export interface StaticData {
   version: string;
   champions: Map<number, { id: string; name: string; title: string; tags: string[] }>;
   spells: Map<number, { id: string; name: string; description: string }>;
-  items: Map<number, { name: string; plaintext: string; gold: number }>;
+  items: Map<number, ItemData>;
   runes: Map<number, { icon: string; name: string; desc: string }>;
   trees: { id: number; name: string; icon: string; slots: number[][] }[];
 }
@@ -16,6 +16,15 @@ async function getJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Data Dragon request failed (${res.status})`);
   return res.json();
+}
+
+export interface ItemData {
+  name: string;
+  plaintext: string;
+  gold: number;
+  sell: number;
+  description: string; // Riot's tagged markup; see lib/itemText.ts
+  from: number[];
 }
 
 const stripTags = (s: string) => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -36,9 +45,16 @@ async function loadStatic(): Promise<StaticData> {
   const spells = new Map<number, { id: string; name: string; description: string }>();
   for (const s of Object.values<any>(spell.data)) spells.set(Number(s.key), { id: s.id, name: s.name, description: s.description });
 
-  const items = new Map<number, { name: string; plaintext: string; gold: number }>();
+  const items = new Map<number, ItemData>();
   for (const [id, it] of Object.entries<any>(item.data)) {
-    items.set(Number(id), { name: it.name, plaintext: it.plaintext || stripTags(it.description ?? '').slice(0, 140), gold: it.gold?.total ?? 0 });
+    items.set(Number(id), {
+      name: it.name,
+      plaintext: it.plaintext || stripTags(it.description ?? '').slice(0, 140),
+      gold: it.gold?.total ?? 0,
+      sell: it.gold?.sell ?? 0,
+      description: it.description ?? '',
+      from: (it.from ?? []).map(Number),
+    });
   }
 
   const runeMap = new Map<number, { icon: string; name: string; desc: string }>();

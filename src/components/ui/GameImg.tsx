@@ -81,7 +81,7 @@ export function Tooltip({ content, children }: { content: ReactNode; children: R
             ref={tipRef}
             role="tooltip"
             style={{ left: pos?.left ?? -9999, top: pos?.top ?? -9999 }}
-            className="tip-in pointer-events-none fixed z-[100] w-max max-w-64 rounded border border-line-strong bg-raised px-2.5 py-1.5 text-left text-xs leading-snug text-text shadow-xl"
+            className="tip-in pointer-events-none fixed z-[100] w-max max-w-[min(18rem,calc(100vw-1rem))] rounded-md border border-line-strong bg-raised px-3 py-2 shadow-2xl text-left text-xs leading-snug text-text shadow-xl"
           >
             {content}
           </span>,
