@@ -150,23 +150,52 @@ function countBuild(r: RoleAgg, legendaries: number[], boots: number | undefined
 }
 
 /**
+ * Pick variations from a tally: the three most played, plus the best performer (by
+ * sample-adjusted win rate) if it isn't among them. Tags mark which is which.
+ */
+function pickVariations<T extends C>(entries: [string, T][]) {
+  const total = entries.reduce((n, [, v]) => n + v.g, 0);
+  const all = [...entries].sort((a, b) => b[1].g - a[1].g);
+  const popular = all.filter(([, v]) => v.g >= Math.max(3, Math.round(total * 0.03))).slice(0, 3);
+  for (const e of all) if (popular.length < 3 && !popular.includes(e)) popular.push(e);
+  const qualified = all.filter(([, v]) => v.g >= Math.max(5, Math.round(total * 0.05)));
+  const best = [...qualified].sort((a, b) => shrunk(b[1].w, b[1].g) - shrunk(a[1].w, a[1].g))[0];
+  const chosen = best && !popular.includes(best) ? [...popular, best] : popular;
+  return chosen.map(([key, v], i) => ({
+    key,
+    v,
+    share: total ? v.g / total : 0,
+    tags: [...(i === 0 ? (['popular'] as const) : []), ...(best && key === best[0] && qualified.length > 1 ? (['best'] as const) : [])],
+  }));
+}
+
+/** Rune pages grouped without their stat shards; each page keeps its most played shard set. */
+export function runeVariations(runes: Record<string, C>): ChampionStats['runes'] {
+  const pages = new Map<string, C & { shards: Record<string, number> }>();
+  for (const [k, v] of Object.entries(runes)) {
+    const [pri, sec, shards] = k.split('|');
+    const page = (pages.get(`${pri}|${sec}`) ?? pages.set(`${pri}|${sec}`, { g: 0, w: 0, shards: {} }).get(`${pri}|${sec}`))!;
+    page.g += v.g;
+    page.w += v.w;
+    page.shards[shards ?? ''] = (page.shards[shards ?? ''] ?? 0) + v.g;
+  }
+  const ids = (s: string) => (s ? s.split(',').map(Number) : []);
+  return pickVariations([...pages.entries()]).map(({ key, v, share, tags }) => {
+    const [pri, sec] = key.split('|');
+    const [ps, pl] = pri.split(':');
+    const [ss, sl] = sec.split(':');
+    const shards = Object.entries(v.shards).sort((a, b) => b[1] - a[1])[0]?.[0] ?? '';
+    return { games: v.g, winRate: v.w / v.g, share, tags, primaryStyle: Number(ps), primary: ids(pl), secondaryStyle: Number(ss), secondary: ids(sl), shards: ids(shards) };
+  });
+}
+
+/**
  * Up to four complete build variations: the most played core builds (first three items),
  * plus the best-performing one if it isn't among them. Each carries the boots and 4th–6th
  * items bought after that specific core.
  */
 export function buildVariations(r: RoleAgg): ChampionStats['builds'] {
-  const total = Object.values(r.core).reduce((n, v) => n + v.g, 0);
-  if (!total) return [];
-  const all = Object.entries(r.core).sort((a, b) => b[1].g - a[1].g);
-  const enough = (g: number) => g >= Math.max(3, Math.round(total * 0.03));
-  const popular = all.filter(([, v]) => enough(v.g)).slice(0, 3);
-  // Fill to three with whatever exists when data is thin.
-  for (const e of all) if (popular.length < 3 && !popular.includes(e)) popular.push(e);
-  const qualified = all.filter(([, v]) => v.g >= Math.max(5, Math.round(total * 0.05)));
-  const best = [...qualified].sort((a, b) => shrunk(b[1].w, b[1].g) - shrunk(a[1].w, a[1].g))[0];
-  const chosen = best && !popular.includes(best) ? [...popular, best] : popular;
-  const bestKey = best?.[0];
-
+  const chosen = pickVariations(Object.entries(r.core));
   const opts = (m: Record<string, C> | undefined, n: number) =>
     Object.entries(m ?? {})
       .sort((a, b) => b[1].g - a[1].g)
@@ -174,14 +203,14 @@ export function buildVariations(r: RoleAgg): ChampionStats['builds'] {
       .map(([k, v]) => ({ id: Number(k), games: v.g, winRate: v.w / v.g }));
   const sum = (m: Record<string, C> | undefined) => Object.values(m ?? {}).reduce((n, v) => n + v.g, 0);
 
-  return chosen.map(([key, v], i) => {
+  return chosen.map(({ key, v, share, tags }) => {
     const bv = r.bv?.[key];
     return {
       ids: key.split(',').map(Number),
       games: v.g,
       winRate: v.w / v.g,
-      share: v.g / total,
-      tags: [...(i === 0 ? (['popular'] as const) : []), ...(key === bestKey && qualified.length > 1 ? (['best'] as const) : [])],
+      share,
+      tags,
       boots: opts(bv?.boots, 2),
       bootsTotal: sum(bv?.boots),
       later: (['s4', 's5', 's6'] as const).map((s, j) => ({ slot: j + 4, total: sum(bv?.[s]), options: opts(bv?.[s], 3) })),
@@ -477,12 +506,7 @@ export class ChampionStatsStore {
         goldPerMin: r.gold / r.min,
         minutes: r.min / r.g,
       },
-      runes: top(r.runes, 3).map(([k, v]) => {
-        const [pri, sec, shards] = k.split('|');
-        const [ps, pl] = pri.split(':');
-        const [ss, sl] = sec.split(':');
-        return { ...rated(v), primaryStyle: Number(ps), primary: ids(pl), secondaryStyle: Number(ss), secondary: ids(sl), shards: ids(shards) };
-      }),
+      runes: runeVariations(r.runes),
       spells: top(r.spells, 2).map(([k, v]) => ({ ...rated(v), ids: ids(k) })),
       starting: top(r.start, 3).map(([k, v]) => ({ ...rated(v), ids: ids(k) })),
       core: top(r.core, 5).map(([k, v]) => ({ ...rated(v), ids: ids(k) })),

@@ -267,7 +267,9 @@ function BuildPanel({ s, abilityIcons }: { s: ChampionStats; abilityIcons?: stri
   const { data: sd } = useStaticData();
   const a = assets(sd);
   const [page, setPage] = useState(0);
+  useEffect(() => setPage(0), [s.championId, s.role, s.patch, s.group]);
   const rune = s.runes[page] ?? s.runes[0];
+  const runeDir = useSlideDirection(page);
 
   return (
     <section className="panel panel-tick p-5" aria-labelledby="build-h">
@@ -284,32 +286,23 @@ function BuildPanel({ s, abilityIcons }: { s: ChampionStats; abilityIcons?: stri
 
       <div className="mt-5 space-y-7">
         {rune && (
-          <Block
-            title="Runes"
-            aside={
-              s.runes.length > 1 && (
-                <span role="tablist" aria-label="Rune pages" className="flex gap-1">
-                  {s.runes.map((r, i) => (
-                    <button
-                      key={i}
-                      role="tab"
-                      aria-selected={page === i}
-                      onClick={() => setPage(i)}
-                      className={clsx('rounded-sm px-2 py-1 transition-colors', page === i ? 'bg-raised text-text' : 'text-muted hover:text-text')}
-                    >
-                      <span className="flex items-center gap-1.5">
-                        <GameImg src={a.rune(r.primary[0]).url} alt="" size={16} rounded="full" />
-                        <span className="num">{pct(r.winRate)}</span>
-                      </span>
-                    </button>
-                  ))}
-                </span>
-              )
-            }
-          >
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <RuneTrees key={page} primaryStyle={rune.primaryStyle} secondaryStyle={rune.secondaryStyle} picked={[...rune.primary, ...rune.secondary]} shards={rune.shards} />
-              <Rate r={rune} />
+          <Block title="Runes" aside={s.runes.length > 1 ? `${s.runes.length} most played pages` : undefined}>
+            {s.runes.length > 1 && (
+              <VariationCards
+                label="Rune pages"
+                name="Page"
+                pick={page}
+                onPick={setPage}
+                items={s.runes.map((r) => ({
+                  key: `${r.primary.join()}|${r.secondary.join()}`,
+                  r: r.share != null ? r : { ...r, share: 0, tags: [] },
+                  content: <RunePageSummary r={r} />,
+                }))}
+              />
+            )}
+            <div key={page} className="tab-in flex flex-wrap items-start justify-between gap-4 rounded border border-line bg-raised/40 p-4" style={{ '--dir': runeDir } as React.CSSProperties}>
+              <RuneTrees primaryStyle={rune.primaryStyle} secondaryStyle={rune.secondaryStyle} picked={[...rune.primary, ...rune.secondary]} shards={rune.shards} />
+              <Rate r={rune} share={rune.share} />
             </div>
           </Block>
         )}
@@ -384,6 +377,77 @@ function ItemName({ id }: { id: number }) {
 }
 
 /** Core build, boots and late-game options, laid out the way a game actually goes. */
+/** Compact rune page for a card: keystone, the three other primary runes, and the secondary tree. */
+function RunePageSummary({ r }: { r: ChampionStats['runes'][number] }) {
+  const { data } = useStaticData();
+  const a = assets(data);
+  const tree = (id: number) => data?.trees.find((t) => t.id === id);
+  const ks = a.rune(r.primary[0]);
+  const sec = tree(r.secondaryStyle);
+  return (
+    <span className="flex items-center gap-2">
+      <GameImg src={ks.url} alt={ks.name} size={34} rounded="full" className="bg-[#0e1b1d]!" tip={ks.name ? <Tip title={ks.name} body={ks.desc} /> : undefined} />
+      <span className="flex gap-0.5">
+        {r.primary.slice(1).map((id) => {
+          const x = a.rune(id);
+          return <GameImg key={id} src={x.url} alt={x.name} size={20} rounded="full" className="bg-[#0e1b1d]!" tip={x.name ? <Tip title={x.name} body={x.desc} /> : undefined} />;
+        })}
+      </span>
+      {sec && <GameImg src={`https://ddragon.leagueoflegends.com/cdn/img/${sec.icon}`} alt={sec.name} size={20} rounded="full" className="ml-auto opacity-80" tip={sec.name} />}
+    </span>
+  );
+}
+
+type Variation = Rated & { share: number; tags: ('popular' | 'best')[] };
+
+/** A row of cards to choose between variations (builds, rune pages). Swipeable on phones. */
+function VariationCards({ label, name, items, pick, onPick }: { label: string; name: string; items: { key: string; r: Variation; content: React.ReactNode }[]; pick: number; onPick: (i: number) => void }) {
+  return (
+    <div
+      role="tablist"
+      aria-label={label}
+      className="-mx-4 mb-4 flex snap-x gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:grid sm:grid-cols-[repeat(auto-fill,minmax(168px,1fr))] sm:overflow-visible sm:px-0 sm:pb-0"
+    >
+      {items.map(({ key, r: v, content }, i) => {
+        const active = i === pick;
+        const low = v.games < LOW_SAMPLE;
+        return (
+          <button
+            key={key}
+            role="tab"
+            aria-selected={active}
+            onClick={() => onPick(i)}
+            className={clsx(
+              'group flex w-[172px] shrink-0 snap-start flex-col gap-2 rounded border p-3 text-left transition-[border-color,background-color,translate,box-shadow] duration-300 hover:-translate-y-0.5 sm:w-auto',
+              active ? 'border-gold bg-gold/[0.07] shadow-[0_0_0_1px_var(--gold)]' : 'border-line bg-raised/40 hover:border-line-strong',
+            )}
+          >
+            <span className="flex items-center justify-between gap-2">
+              <span className={clsx('font-display text-sm font-bold', active ? 'text-gold' : 'text-muted')}>
+                {name} {i + 1}
+              </span>
+              <span className="flex gap-1">
+                {v.tags.includes('popular') && <span className="rounded-sm bg-sunken px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-muted">Most played</span>}
+                {v.tags.includes('best') && <span className="rounded-sm bg-win/15 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-win">Best win rate</span>}
+              </span>
+            </span>
+            {content}
+            <span className="num flex flex-wrap items-baseline justify-between gap-x-2 whitespace-nowrap text-xs">
+              <span className={clsx('text-sm font-semibold', low ? 'text-faint' : v.winRate >= 0.5 ? 'text-win' : 'text-loss')}>
+                {pct(v.winRate, 1)}
+                {low && <span aria-hidden>*</span>}
+              </span>
+              <span className="text-faint">
+                {thousands(v.games)} game{v.games === 1 ? '' : 's'} · {pct(v.share)}
+              </span>
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 /** Build variations to choose from; older saved stats without them fall back to the overall core list. */
 function variationsOf(s: ChampionStats): ChampionStats['builds'] {
   if (s.builds?.length) return s.builds;
@@ -413,42 +477,13 @@ function ItemsBlock({ s }: { s: ChampionStats }) {
   return (
     <Block title="Items" aside={s.coreTotal ? `${thousands(s.coreTotal)} games with three or more completed items` : undefined}>
       {builds.length > 1 && (
-        <div role="tablist" aria-label="Build variations" className="-mx-4 mb-4 flex snap-x gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:grid sm:grid-cols-[repeat(auto-fill,minmax(168px,1fr))] sm:overflow-visible sm:px-0 sm:pb-0">
-          {builds.map((v, i) => {
-            const active = i === pick;
-            const low = v.games < LOW_SAMPLE;
-            return (
-              <button
-                key={v.ids.join()}
-                role="tab"
-                aria-selected={active}
-                onClick={() => setPick(i)}
-                className={clsx(
-                  'group flex w-[172px] shrink-0 snap-start flex-col gap-2 rounded border p-3 text-left sm:w-auto transition-[border-color,background-color,translate,box-shadow] duration-300 hover:-translate-y-0.5',
-                  active ? 'border-gold bg-gold/[0.07] shadow-[0_0_0_1px_var(--gold)]' : 'border-line bg-raised/40 hover:border-line-strong',
-                )}
-              >
-                <span className="flex items-center justify-between gap-2">
-                  <span className={clsx('font-display text-sm font-bold', active ? 'text-gold' : 'text-muted')}>Build {i + 1}</span>
-                  <span className="flex gap-1">
-                    {v.tags.includes('popular') && <span className="rounded-sm bg-sunken px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-muted">Most played</span>}
-                    {v.tags.includes('best') && <span className="rounded-sm bg-win/15 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-win">Best win rate</span>}
-                  </span>
-                </span>
-                <ItemRow ids={v.ids} size={30} arrows />
-                <span className="num flex flex-wrap items-baseline justify-between gap-x-2 whitespace-nowrap text-xs">
-                  <span className={clsx('text-sm font-semibold', low ? 'text-faint' : v.winRate >= 0.5 ? 'text-win' : 'text-loss')}>
-                    {pct(v.winRate, 1)}
-                    {low && <span aria-hidden>*</span>}
-                  </span>
-                  <span className="text-faint">
-                    {thousands(v.games)} game{v.games === 1 ? '' : 's'} · {pct(v.share)}
-                  </span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        <VariationCards
+          label="Build variations"
+          name="Build"
+          pick={pick}
+          onPick={setPick}
+          items={builds.map((v) => ({ key: v.ids.join(), r: v, content: <ItemRow ids={v.ids} size={30} arrows /> }))}
+        />
       )}
 
       {b ? (

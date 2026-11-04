@@ -123,6 +123,27 @@ export const SHARDS: Record<number, string> = {
   5003: 'Magic Resist',
 };
 
+/** Stat shards ("the little runes"): the in-game grid, one pick per row. Not in Data Dragon's rune file. */
+const SHARD_ICON = 'https://ddragon.leagueoflegends.com/cdn/img/perk-images/StatMods/';
+export const SHARD_INFO: Record<number, { name: string; desc: string; icon: string }> = {
+  5008: { name: 'Adaptive Force', desc: '+9 Adaptive Force', icon: 'StatModsAdaptiveForceIcon.png' },
+  5005: { name: 'Attack Speed', desc: '+10% Attack Speed', icon: 'StatModsAttackSpeedIcon.png' },
+  5007: { name: 'Ability Haste', desc: '+8 Ability Haste', icon: 'StatModsCDRScalingIcon.png' },
+  5010: { name: 'Move Speed', desc: '+2.5% Move Speed', icon: 'StatModsMovementSpeedIcon.png' },
+  5001: { name: 'Health Scaling', desc: '+10–180 Health (based on level)', icon: 'StatModsHealthPlusIcon.png' },
+  5011: { name: 'Health', desc: '+65 Health', icon: 'StatModsHealthScalingIcon.png' },
+  5013: { name: 'Tenacity and Slow Resist', desc: '+15% Tenacity and Slow Resist', icon: 'StatModsTenacityIcon.png' },
+  5002: { name: 'Armor', desc: '+6 Armor', icon: 'StatModsArmorIcon.png' },
+  5003: { name: 'Magic Resist', desc: '+8 Magic Resist', icon: 'StatModsMagicResIcon.png' },
+  5012: { name: 'Resist Scaling', desc: '+1–8 Armor and Magic Resist (based on level)', icon: 'StatModsAdaptiveForceScalingIcon.png' },
+};
+export const shardIcon = (id: number) => (SHARD_INFO[id] ? SHARD_ICON + SHARD_INFO[id].icon : undefined);
+export const SHARD_ROWS: { label: string; ids: number[] }[] = [
+  { label: 'Offense', ids: [5008, 5005, 5007] },
+  { label: 'Flex', ids: [5008, 5010, 5001] },
+  { label: 'Defense', ids: [5011, 5013, 5001] },
+];
+
 export interface ChampionDetail {
   id: string;
   name: string;

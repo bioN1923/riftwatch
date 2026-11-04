@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { ChevronRight } from 'lucide-react';
-import { assets, SHARDS, useStaticData, type StaticData } from '../../lib/ddragon';
+import { assets, SHARD_INFO, SHARD_ROWS, shardIcon, useStaticData, type StaticData } from '../../lib/ddragon';
 import { GameImg } from '../ui/GameImg';
 import { Tip } from '../match/Loadout';
 import { ItemTip } from '../ui/ItemTip';
@@ -88,19 +88,42 @@ export function RuneTrees({ primaryStyle, secondaryStyle, picked, shards }: { pr
     <div className="flex flex-wrap gap-x-10 gap-y-5">
       {primary && <Tree tree={primary} picked={set} a={a} withKeystone />}
       {secondary && <Tree tree={secondary} picked={set} a={a} />}
-      {shards.length > 0 && (
-        <div>
-          <p className="mb-2 text-xs text-muted">Shards</p>
-          <ul className="space-y-1 text-sm">
-            {shards.map((s, i) => (
-              <li key={i} className="flex items-center gap-2">
-                <span className="size-2 rotate-45 bg-gold" aria-hidden />
-                {SHARDS[s] ?? `Shard ${s}`}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {shards.length > 0 && <ShardGrid shards={shards} />}
+    </div>
+  );
+}
+
+/** The stat-shard grid as in the client: three rows of options, the chosen one in each row lit. */
+export function ShardGrid({ shards }: { shards: number[] }) {
+  return (
+    <div>
+      <p className="mb-2 text-sm font-semibold">Stat shards</p>
+      <div className="space-y-1.5">
+        {SHARD_ROWS.map((row, ri) => {
+          const picked = shards[ri];
+          // If Riot changes a row, still show the pick.
+          const ids = picked != null && !row.ids.includes(picked) ? [...row.ids, picked] : row.ids;
+          return (
+            <div key={row.label} className="flex items-center gap-1.5" role="group" aria-label={row.label}>
+              {ids.map((id, k) => {
+                const on = id === picked;
+                const info = SHARD_INFO[id];
+                return (
+                  <GameImg
+                    key={`${id}-${k}`}
+                    src={shardIcon(id)}
+                    alt={on ? info?.name ?? `Shard ${id}` : ''}
+                    size={24}
+                    rounded="full"
+                    className={clsx('bg-[#0e1b1d]! p-[3px] transition duration-300', on ? 'ring-2 ring-gold' : 'opacity-30 grayscale')}
+                    tip={info ? <Tip title={`${row.label}: ${info.name}`} body={info.desc} /> : undefined}
+                  />
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -127,7 +150,7 @@ function Tree({ tree, picked, a, withKeystone }: { tree: StaticData['trees'][num
                   alt={on ? r.name : ''}
                   size={big ? 36 : 28}
                   rounded="full"
-                  className={clsx('transition', on ? 'ring-2 ring-gold' : 'opacity-25 grayscale')}
+                  className={clsx('bg-[#0e1b1d]! transition duration-300', on ? 'ring-2 ring-gold' : 'opacity-25 grayscale')}
                   tip={r.name ? <Tip title={r.name} body={r.desc} /> : undefined}
                 />
               );
