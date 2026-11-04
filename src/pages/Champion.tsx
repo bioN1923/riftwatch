@@ -15,7 +15,7 @@ import { Tip } from '../components/match/Loadout';
 import { ItemRow, MaxOrder, RuneTrees, SkillGrid } from '../components/build/BuildParts';
 import { GroupToggle, PatchSelect, RoleTab, TierBadge, WinRateBar } from '../components/champions/common';
 import { fadeIn } from '../lib/motion';
-import { SlidingIndicator } from '../components/ui/Motion';
+import { SlidingIndicator, useSlideDirection } from '../components/ui/Motion';
 
 export function ChampionPage() {
   const { slug = '' } = useParams();
@@ -384,89 +384,146 @@ function ItemName({ id }: { id: number }) {
 }
 
 /** Core build, boots and late-game options, laid out the way a game actually goes. */
+/** Build variations to choose from; older saved stats without them fall back to the overall core list. */
+function variationsOf(s: ChampionStats): ChampionStats['builds'] {
+  if (s.builds?.length) return s.builds;
+  return s.core.slice(0, 3).map((c, i) => ({
+    ...c,
+    share: s.coreTotal ? c.games / s.coreTotal : 0,
+    tags: i === 0 ? ['popular'] : [],
+    boots: [],
+    bootsTotal: 0,
+    later: [],
+  }));
+}
+
 function ItemsBlock({ s }: { s: ChampionStats }) {
-  const [more, setMore] = useState(false);
-  const core = s.core[0];
+  const builds = variationsOf(s);
+  const [pick, setPick] = useState(0);
+  useEffect(() => setPick(0), [s.championId, s.role, s.patch, s.group]);
+  const b = builds[Math.min(pick, builds.length - 1)];
+  const dir = useSlideDirection(pick);
+  // Per-build follow-ups when we have them; otherwise the champion-wide numbers.
+  const boots = b?.bootsTotal ? { list: b.boots, total: b.bootsTotal, own: true } : { list: s.boots, total: s.bootsTotal, own: false };
+  const later = (slot: number) => {
+    const own = b?.later.find((x) => x.slot === slot);
+    return own?.total ? { ...own, own: true } : { ...(s.later.find((x) => x.slot === slot) ?? { slot, total: 0, options: [] }), own: false };
+  };
+
   return (
     <Block title="Items" aside={s.coreTotal ? `${thousands(s.coreTotal)} games with three or more completed items` : undefined}>
-      <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_240px]">
-        <div className="rounded border border-line bg-raised/40 p-4">
-          <p className="mb-3 text-xs font-medium text-muted">Core build — first three completed items, in buying order</p>
-          {core ? (
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <ol className="flex items-start gap-2">
-                {core.ids.map((id, i) => (
-                  <li key={`${id}-${i}`} className="flex items-start gap-2">
-                    <span className="flex w-[76px] flex-col items-center gap-1.5 text-center">
-                      <ItemRow ids={[id]} size={48} />
-                      <span className="line-clamp-2 text-[11px] leading-tight text-muted">
-                        <ItemName id={id} />
-                      </span>
-                    </span>
-                    {i < core.ids.length - 1 && <span className="mt-4 text-faint" aria-hidden>›</span>}
-                  </li>
-                ))}
-              </ol>
-              <Rate r={core} share={s.coreTotal ? core.games / s.coreTotal : undefined} />
-            </div>
-          ) : (
-            <p className="text-sm text-muted">No game has reached three completed items yet.</p>
-          )}
-          {s.core.length > 1 && (
-            <div className="mt-3 border-t border-line pt-2">
-              <button onClick={() => setMore((v) => !v)} aria-expanded={more} className="text-xs font-medium text-gold hover:underline">
-                {more ? 'Hide other core builds' : `Show ${s.core.length - 1} other core build${s.core.length > 2 ? 's' : ''}`}
+      {builds.length > 1 && (
+        <div role="tablist" aria-label="Build variations" className="-mx-4 mb-4 flex snap-x gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:grid sm:grid-cols-[repeat(auto-fill,minmax(168px,1fr))] sm:overflow-visible sm:px-0 sm:pb-0">
+          {builds.map((v, i) => {
+            const active = i === pick;
+            const low = v.games < LOW_SAMPLE;
+            return (
+              <button
+                key={v.ids.join()}
+                role="tab"
+                aria-selected={active}
+                onClick={() => setPick(i)}
+                className={clsx(
+                  'group flex w-[172px] shrink-0 snap-start flex-col gap-2 rounded border p-3 text-left sm:w-auto transition-[border-color,background-color,translate,box-shadow] duration-300 hover:-translate-y-0.5',
+                  active ? 'border-gold bg-gold/[0.07] shadow-[0_0_0_1px_var(--gold)]' : 'border-line bg-raised/40 hover:border-line-strong',
+                )}
+              >
+                <span className="flex items-center justify-between gap-2">
+                  <span className={clsx('font-display text-sm font-bold', active ? 'text-gold' : 'text-muted')}>Build {i + 1}</span>
+                  <span className="flex gap-1">
+                    {v.tags.includes('popular') && <span className="rounded-sm bg-sunken px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-muted">Most played</span>}
+                    {v.tags.includes('best') && <span className="rounded-sm bg-win/15 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-win">Best win rate</span>}
+                  </span>
+                </span>
+                <ItemRow ids={v.ids} size={30} arrows />
+                <span className="num flex flex-wrap items-baseline justify-between gap-x-2 whitespace-nowrap text-xs">
+                  <span className={clsx('text-sm font-semibold', low ? 'text-faint' : v.winRate >= 0.5 ? 'text-win' : 'text-loss')}>
+                    {pct(v.winRate, 1)}
+                    {low && <span aria-hidden>*</span>}
+                  </span>
+                  <span className="text-faint">
+                    {thousands(v.games)} game{v.games === 1 ? '' : 's'} · {pct(v.share)}
+                  </span>
+                </span>
               </button>
-              {more && (
-                <ul className="fade-up mt-2 space-y-2">
-                  {s.core.slice(1).map((c, i) => (
-                    <li key={i} className="flex items-center justify-between gap-3">
-                      <ItemRow ids={c.ids} size={30} arrows />
-                      <Rate r={c} share={s.coreTotal ? c.games / s.coreTotal : undefined} />
+            );
+          })}
+        </div>
+      )}
+
+      {b ? (
+        <div key={b.ids.join()} className="tab-in" style={{ '--dir': dir } as React.CSSProperties}>
+          <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_240px]">
+            <div className="rounded border border-line bg-raised/40 p-4">
+              <p className="mb-3 text-xs font-medium text-muted">
+                {builds.length > 1 ? `Build ${pick + 1} core` : 'Core build'} — first three completed items, in buying order
+              </p>
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <ol className="flex items-start gap-2">
+                  {b.ids.map((id, i) => (
+                    <li key={`${id}-${i}`} className="flex items-start gap-2">
+                      <span className="flex w-[76px] flex-col items-center gap-1.5 text-center">
+                        <ItemRow ids={[id]} size={48} />
+                        <span className="line-clamp-2 text-[11px] leading-tight text-muted">
+                          <ItemName id={id} />
+                        </span>
+                      </span>
+                      {i < b.ids.length - 1 && <span className="mt-4 text-faint" aria-hidden>›</span>}
                     </li>
                   ))}
-                </ul>
-              )}
+                </ol>
+                <Rate r={b} share={b.share} />
+              </div>
             </div>
-          )}
-        </div>
 
-        <div className="rounded border border-line bg-raised/40 p-4">
-          <p className="mb-3 text-xs font-medium text-muted">Boots</p>
-          {s.boots.length ? (
-            <ul className="space-y-2.5">
-              {s.boots.map((b) => (
-                <OptionRow key={b.id} o={b} share={s.bootsTotal ? b.games / s.bootsTotal : undefined} />
-              ))}
-            </ul>
-          ) : (
-            <p className="text-sm text-muted">No boots data yet.</p>
-          )}
-        </div>
-      </div>
-
-      <div className="mt-4 grid gap-4 sm:grid-cols-3">
-        {[4, 5, 6].map((slot) => {
-          const l = s.later.find((x) => x.slot === slot);
-          return (
-            <div key={slot} className="rounded border border-line p-4">
+            <div className="rounded border border-line bg-raised/40 p-4">
               <p className="mb-3 flex items-baseline justify-between text-xs font-medium text-muted">
-                {ORDINAL[slot]} item
-                {l?.total ? <span className="font-normal text-faint">{thousands(l.total)} games</span> : null}
+                Boots
+                {!boots.own && boots.list.length > 0 && builds.length > 1 && <span className="font-normal text-faint">all builds</span>}
               </p>
-              {l && l.options.length ? (
+              {boots.list.length ? (
                 <ul className="space-y-2.5">
-                  {l.options.map((o) => (
-                    <OptionRow key={o.id} o={o} share={l.total ? o.games / l.total : undefined} />
+                  {boots.list.map((o) => (
+                    <OptionRow key={o.id} o={o} share={boots.total ? o.games / boots.total : undefined} />
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm text-muted">No game has reached a {ORDINAL[slot]} item yet.</p>
+                <p className="text-sm text-muted">No boots data yet.</p>
               )}
             </div>
-          );
-        })}
-      </div>
+          </div>
+
+          <div className="mt-4 grid gap-4 sm:grid-cols-3">
+            {[4, 5, 6].map((slot) => {
+              const l = later(slot);
+              return (
+                <div key={slot} className="rounded border border-line p-4">
+                  <p className="mb-3 flex items-baseline justify-between text-xs font-medium text-muted">
+                    {ORDINAL[slot]} item
+                    {l.total ? (
+                      <span className="font-normal text-faint">
+                        {!l.own && builds.length > 1 ? 'all builds · ' : ''}
+                        {thousands(l.total)} games
+                      </span>
+                    ) : null}
+                  </p>
+                  {l.options.length ? (
+                    <ul className="space-y-2.5">
+                      {l.options.map((o) => (
+                        <OptionRow key={o.id} o={o} share={l.total ? o.games / l.total : undefined} />
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-muted">No game has reached a {ORDINAL[slot]} item yet.</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        <p className="rounded border border-line bg-raised/40 p-4 text-sm text-muted">No game has reached three completed items yet.</p>
+      )}
     </Block>
   );
 }

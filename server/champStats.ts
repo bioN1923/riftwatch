@@ -58,7 +58,15 @@ interface RoleAgg {
   vs: Record<string, Vs>;
   len: C[];
   duo?: Record<string, C>; // same-team champion in the partner role
+  bv?: Record<string, BuildVar>; // per core build (first three items): its boots and 4th–6th items
   pl?: Record<string, { n: string; t: string; pf: string; g: number; w: number; k: number; d: number; a: number }>;
+}
+
+interface BuildVar {
+  boots: Record<string, C>;
+  s4: Record<string, C>;
+  s5: Record<string, C>;
+  s6: Record<string, C>;
 }
 
 /** The teammate role whose champion matters most for each role. */
@@ -124,11 +132,61 @@ function purchaseBuild(items: number[], purchases: { t: number; itemId: number; 
   return order;
 }
 
-function countBuild(r: { core: Record<string, C>; s4: Record<string, C>; s5: Record<string, C>; s6: Record<string, C> }, legendaries: number[], win: boolean, delta: 1 | -1) {
-  if (legendaries.length >= 3) bump(r.core, legendaries.slice(0, 3).join(','), win, delta);
+function countBuild(r: RoleAgg, legendaries: number[], boots: number | undefined, win: boolean, delta: 1 | -1) {
+  if (legendaries.length >= 3) {
+    const key = legendaries.slice(0, 3).join(',');
+    bump(r.core, key, win, delta);
+    // The same game counted under its core build, so each build variation has its own follow-ups.
+    const v = ((r.bv ??= {})[key] ??= { boots: {}, s4: {}, s5: {}, s6: {} });
+    if (boots) bump(v.boots, String(boots), win, delta);
+    if (legendaries[3]) bump(v.s4, String(legendaries[3]), win, delta);
+    if (legendaries[4]) bump(v.s5, String(legendaries[4]), win, delta);
+    if (legendaries[5]) bump(v.s6, String(legendaries[5]), win, delta);
+    if (!r.core[key]) delete r.bv[key];
+  }
   if (legendaries[3]) bump(r.s4, String(legendaries[3]), win, delta);
   if (legendaries[4]) bump(r.s5, String(legendaries[4]), win, delta);
   if (legendaries[5]) bump(r.s6, String(legendaries[5]), win, delta);
+}
+
+/**
+ * Up to four complete build variations: the most played core builds (first three items),
+ * plus the best-performing one if it isn't among them. Each carries the boots and 4th–6th
+ * items bought after that specific core.
+ */
+export function buildVariations(r: RoleAgg): ChampionStats['builds'] {
+  const total = Object.values(r.core).reduce((n, v) => n + v.g, 0);
+  if (!total) return [];
+  const all = Object.entries(r.core).sort((a, b) => b[1].g - a[1].g);
+  const enough = (g: number) => g >= Math.max(3, Math.round(total * 0.03));
+  const popular = all.filter(([, v]) => enough(v.g)).slice(0, 3);
+  // Fill to three with whatever exists when data is thin.
+  for (const e of all) if (popular.length < 3 && !popular.includes(e)) popular.push(e);
+  const qualified = all.filter(([, v]) => v.g >= Math.max(5, Math.round(total * 0.05)));
+  const best = [...qualified].sort((a, b) => shrunk(b[1].w, b[1].g) - shrunk(a[1].w, a[1].g))[0];
+  const chosen = best && !popular.includes(best) ? [...popular, best] : popular;
+  const bestKey = best?.[0];
+
+  const opts = (m: Record<string, C> | undefined, n: number) =>
+    Object.entries(m ?? {})
+      .sort((a, b) => b[1].g - a[1].g)
+      .slice(0, n)
+      .map(([k, v]) => ({ id: Number(k), games: v.g, winRate: v.w / v.g }));
+  const sum = (m: Record<string, C> | undefined) => Object.values(m ?? {}).reduce((n, v) => n + v.g, 0);
+
+  return chosen.map(([key, v], i) => {
+    const bv = r.bv?.[key];
+    return {
+      ids: key.split(',').map(Number),
+      games: v.g,
+      winRate: v.w / v.g,
+      share: v.g / total,
+      tags: [...(i === 0 ? (['popular'] as const) : []), ...(key === bestKey && qualified.length > 1 ? (['best'] as const) : [])],
+      boots: opts(bv?.boots, 2),
+      bootsTotal: sum(bv?.boots),
+      later: (['s4', 's5', 's6'] as const).map((s, j) => ({ slot: j + 4, total: sum(bv?.[s]), options: opts(bv?.[s], 3) })),
+    };
+  });
 }
 
 export class ChampionStatsStore {
@@ -207,7 +265,7 @@ export class ChampionStatsStore {
       // Slot order first; replaced by the real purchase order if the timeline arrives later.
       const { legendaries, boots } = slotBuild(p.items);
       if (boots) bump(r.boots, String(boots), p.win);
-      countBuild(r, legendaries, p.win, 1);
+      countBuild(r, legendaries, boots, p.win, 1);
 
       // Who plays this champion most (and best): a per-champion leaderboard.
       if (p.puuid && !p.puuid.startsWith('demo-rand') && p.gameName) {
@@ -252,11 +310,11 @@ export class ChampionStatsStore {
       const r = this.role(g, p.championId, aram ? 'ALL' : p.position);
       r.tl++;
 
-      const bySlot = slotBuild(p.items).legendaries;
+      const { legendaries: bySlot, boots } = slotBuild(p.items);
       const byPurchase = purchaseBuild(p.items, tl.items[i] ?? []);
       if (byPurchase.length === bySlot.length && byPurchase.join() !== bySlot.join()) {
-        countBuild(r, bySlot, p.win, -1);
-        countBuild(r, byPurchase, p.win, 1);
+        countBuild(r, bySlot, boots, p.win, -1);
+        countBuild(r, byPurchase, boots, p.win, 1);
       }
 
       const start = (tl.items[i] ?? []).filter((it) => it.t <= 60 && !it.sold && itemKind(it.itemId) === 'starter').map((it) => it.itemId);
@@ -367,6 +425,7 @@ export class ChampionStatsStore {
       spells: [],
       starting: [],
       core: [],
+      builds: [],
       boots: [],
       later: [],
       coreTotal: 0,
@@ -427,6 +486,7 @@ export class ChampionStatsStore {
       spells: top(r.spells, 2).map(([k, v]) => ({ ...rated(v), ids: ids(k) })),
       starting: top(r.start, 3).map(([k, v]) => ({ ...rated(v), ids: ids(k) })),
       core: top(r.core, 5).map(([k, v]) => ({ ...rated(v), ids: ids(k) })),
+      builds: buildVariations(r),
       boots: top(r.boots, 3).map(([k, v]) => ({ ...rated(v), id: Number(k) })),
       later: (['s4', 's5', 's6'] as const).map((key, i) => ({
         slot: i + 4,
@@ -479,6 +539,7 @@ export class ChampionStatsStore {
               const entries = Object.entries(r[key]);
               if (entries.length > 60) r[key] = Object.fromEntries(entries.sort((a, b) => b[1].g - a[1].g).slice(0, 40));
             }
+            if (r.bv) for (const k of Object.keys(r.bv)) if (!r.core[k]) delete r.bv[k];
           }
         }
       }

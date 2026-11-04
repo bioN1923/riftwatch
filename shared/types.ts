@@ -239,6 +239,15 @@ export interface ChampionStats {
   spells: (Rated & { ids: number[] })[];
   starting: (Rated & { ids: number[] })[];
   core: (Rated & { ids: number[] })[];
+  /** Complete build variations: core (first three items) with the boots and 4th–6th items bought after it. */
+  builds: (Rated & {
+    ids: number[];
+    share: number; // of games with three completed items
+    tags: ('popular' | 'best')[];
+    boots: (Rated & { id: number })[];
+    bootsTotal: number;
+    later: { slot: number; total: number; options: (Rated & { id: number })[] }[];
+  })[];
   boots: (Rated & { id: number })[];
   later: { slot: number; total: number; options: (Rated & { id: number })[] }[]; // 4th, 5th, 6th item
   coreTotal: number; // games with three completed items
