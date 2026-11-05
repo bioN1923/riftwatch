@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import clsx from 'clsx';
 import { fadeIn } from '../../lib/motion';
@@ -43,6 +43,9 @@ export function GameImg({ src, alt, size, className, rounded = 'md', tip }: Prop
   return <Tooltip content={tip}>{box}</Tooltip>;
 }
 
+/** Closes whichever tooltip is open, so opening another one replaces it. */
+let closeOpen: (() => void) | null = null;
+
 /**
  * Hover tooltip rendered into <body> with fixed positioning, so it never gets clipped by
  * (or adds scrollbars to) the scrolling container it sits in.
@@ -64,16 +67,52 @@ export function Tooltip({ content, children }: { content: ReactNode; children: R
     setPos({ left, top });
   }, [anchor]);
 
+  const pointer = useRef<string>('mouse');
   const show = () => {
-    if (ref.current) setAnchor(ref.current.getBoundingClientRect());
+    if (!ref.current) return;
+    // Only one tooltip open at a time (matters on touch, where nothing "leaves").
+    if (closeOpen && closeOpen !== hide) closeOpen();
+    closeOpen = hide;
+    setAnchor(ref.current.getBoundingClientRect());
   };
-  const hide = () => {
+  function hide() {
+    if (closeOpen === hide) closeOpen = null;
     setAnchor(null);
     setPos(null);
-  };
+  }
+
+  // While open: scrolling, resizing or touching anywhere else closes it.
+  useEffect(() => {
+    if (!anchor) return;
+    const onDown = (e: PointerEvent) => {
+      if (!ref.current?.contains(e.target as Node)) hide();
+    };
+    const opts = { capture: true, passive: true } as const;
+    window.addEventListener('scroll', hide, opts);
+    window.addEventListener('resize', hide, opts);
+    document.addEventListener('pointerdown', onDown, opts);
+    return () => {
+      window.removeEventListener('scroll', hide, opts);
+      window.removeEventListener('resize', hide, opts);
+      document.removeEventListener('pointerdown', onDown, opts);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [anchor]);
 
   return (
-    <span ref={ref} className="inline-flex" onMouseEnter={show} onMouseLeave={hide}>
+    <span
+      ref={ref}
+      className="inline-flex"
+      onPointerDown={(e) => (pointer.current = e.pointerType)}
+      onPointerEnter={(e) => e.pointerType === 'mouse' && show()}
+      onPointerLeave={(e) => e.pointerType === 'mouse' && hide()}
+      // Touch and pen: a tap opens it, a second tap on the same icon closes it.
+      onClick={() => {
+        if (pointer.current === 'mouse') return;
+        if (anchor) hide();
+        else show();
+      }}
+    >
       {children}
       {anchor &&
         createPortal(
