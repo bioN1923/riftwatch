@@ -1,4 +1,4 @@
-import type { ApiErrorBody, ApiErrorCode, ChampionStats,
+import type { ApiErrorBody, Augment, ApiErrorCode, ChampionStats,
   MatchupStats, HealthResponse, Ladder, LiveResponse, LpHistory, ServerStatus, MatchPage, MatchTimeline, PlayerHit, Profile, ScoutInfo, StatsGroup, TierList } from '../../shared/types';
 
 export class ApiClientError extends Error {
@@ -66,5 +66,6 @@ export const api = {
     request<Ladder>(`/leaderboard/${platform}?queue=${p.queue}&tier=${p.tier}&page=${p.page}`, signal),
   rotation: (platform: string, signal?: AbortSignal) => request<{ championIds: number[] }>(`/rotation/${platform}`, signal),
   status: (platform: string, signal?: AbortSignal) => request<ServerStatus>(`/status/${platform}`, signal),
+  augments: (lang: string, signal?: AbortSignal) => request<Augment[]>(`/augments?lang=${lang}`, signal),
   live: (platform: string, puuid: string, signal?: AbortSignal) => request<LiveResponse>(`/live/${platform}/${enc(puuid)}`, signal),
 };

@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.4
+
+### New
+- **Compare players** (`/compare`): two players side by side, even from different regions: rank, recent form, 12 per-game stats, roles, most-played champions and games played together. A Compare button on every profile starts one.
+- **Arena builds**: Arena on the tier list and champion pages, with average place, top-4 and first-place rates, the best augments (by rarity, with descriptions in every language), finishing-place chart and best duo partners. The collector now also reads ARAM and Arena games.
+- **Search engines**: translated page titles and descriptions in all seven languages, `?lang=` links with hreflang and canonical tags, `/sitemap.xml` (every champion and popular matchup) and `/robots.txt`. Kept out of search engines while the site password is on.
+- **Error alerts**: server, Riot and browser errors are grouped at `/admin/errors` (set `ADMIN_TOKEN`), and new problems or an expired Riot key are posted to a Discord/Slack webhook (`ALERT_WEBHOOK_URL`).
+
 ## 3.2 — overnight update
 
 ### New

@@ -47,7 +47,23 @@ fly deploy
 
 The site is then at `https://<your-app-name>.fly.dev`. Check it with `fly status` and `fly logs`.
 
-## 5. Apply for a Riot production key
+## 5. Error alerts (recommended)
+
+Get a message when something breaks: a Riot key that expired, Riot rate limits, or a page
+crashing on someone's phone.
+
+1. In Discord: Server Settings → Integrations → Webhooks → New Webhook, pick a channel, Copy
+   Webhook URL. (A Slack incoming webhook works too.)
+2. Set it, plus a long random token for the error list page:
+
+```powershell
+fly secrets set ALERT_WEBHOOK_URL=https://discord.com/api/webhooks/... ADMIN_TOKEN=pick-a-long-random-string
+```
+
+Each new problem is posted once (repeats are counted, and re-posted at most hourly). The full
+list is at `https://<your-app-name>.fly.dev/admin/errors?token=<your token>`.
+
+## 6. Apply for a Riot production key
 
 On https://developer.riotgames.com, register a product, describe the site and give the `fly.dev`
 link plus the login as the working prototype. When it's approved:
@@ -57,7 +73,16 @@ fly secrets set RIOT_API_KEY=<production key>
 fly secrets unset SITE_PASSWORD
 ```
 
-The site is then public, and the production key doesn't expire.
+The site is then public, and the production key doesn't expire. Once it's public, search engines
+can find it: the site serves `/robots.txt` and `/sitemap.xml` (every champion and popular matchup,
+in all seven languages). Set your address so those links are right:
+
+```powershell
+fly secrets set SITE_URL=https://<your-app-name>.fly.dev
+```
+
+Then add the site in Google Search Console and submit `https://<your address>/sitemap.xml`.
+While `SITE_PASSWORD` is set, robots.txt tells search engines to stay away.
 
 If Riot asks you to verify the URL with a `riot.txt` file, set the code they give you
 (it's served at `/riot.txt`, even while the password is on):

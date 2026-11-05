@@ -54,6 +54,9 @@ export const pct = (x: number, digits = 0) =>
 
 export const compact = (n: number) => fmt('compact', (l) => new Intl.NumberFormat(l, { notation: 'compact', maximumFractionDigits: 1 })).format(n);
 export const thousands = (n: number) => num(Math.round(n));
+/** Fixed decimals in the language's style (2.5 / 2,5). */
+export const decimal = (x: number, digits = 1) =>
+  fmt(`dec${digits}`, (l) => new Intl.NumberFormat(l, { minimumFractionDigits: digits, maximumFractionDigits: digits })).format(x);
 
 /** Champion class (Data Dragon keeps these in English): "Mage" → "Mag". */
 const CLASSES = ['Assassin', 'Fighter', 'Mage', 'Marksman', 'Support', 'Tank'];

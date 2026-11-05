@@ -55,6 +55,7 @@ export interface Participant {
   teamId: number;
   subteam?: number; // Arena only
   placement?: number; // Arena only
+  augments?: number[]; // Arena only
   win: boolean;
   championId: number;
   champLevel: number;
@@ -196,7 +197,7 @@ export interface HealthResponse {
 
 /* ---------- Champion statistics (aggregated by the server from matches it has seen) ---------- */
 
-export type StatsGroup = 'ranked' | 'aram';
+export type StatsGroup = 'ranked' | 'aram' | 'arena';
 
 export interface Rated {
   games: number;
@@ -258,6 +259,23 @@ export interface ChampionStats {
   byLength: (Rated & { label: string })[];
   synergy: { role: string; list: (Rated & { championId: number })[] } | null;
   players: (Rated & { gameName: string; tagLine: string; platform: string; kda: number })[];
+  /** Arena only: placements, augments and duo partners. Win rate counts a top-four finish as a win. */
+  arena?: {
+    avgPlacement: number;
+    firstRate: number;
+    placements: number[]; // games finishing 1st … 8th
+    augments: (Rated & { id: number; pickRate: number; avgPlacement: number; firstRate: number })[];
+    partners: (Rated & { championId: number; avgPlacement: number })[];
+  };
+}
+
+/** One Arena augment, in the requested language. */
+export interface Augment {
+  id: number;
+  name: string;
+  rarity: 'silver' | 'gold' | 'prismatic' | 'other';
+  icon: string;
+  desc: string;
 }
 
 /** One lane matchup (champion vs a lane opponent): result, laning leads and what was played into it. */

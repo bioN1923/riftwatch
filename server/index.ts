@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { ApiError } from './errors';
 import { RiotClient } from './riot';
 import { shapeLeague, shapeLive, shapeMatch, shapeTimeline } from './shape';
-import { DEMO_SEED, mockLadder, mockLive, mockLpHistory, mockMatchById, mockMatches, mockProfile, mockRotation, mockScout, mockTimeline, nameFromDemoPuuid } from './mock';
+import { DEMO_SEED, mockArenaMatch, mockLadder, mockLive, mockLpHistory, mockMatchById, mockMatches, mockProfile, mockRotation, mockScout, mockTimeline, nameFromDemoPuuid } from './mock';
 import { LpStore } from './lpStore';
 import { PlayerIndex } from './playerIndex';
 import { ChampionStatsStore } from './champStats';
@@ -15,7 +15,11 @@ import { loadItemKinds } from './items';
 import { startCrawler } from './crawler';
 import { TtlCache } from './cache';
 import { getPlatform } from '../shared/regions';
-import { championBySlug, championCard, loadOgData, matchupCard, profileCard, siteCard, type ProfileCard } from './og';
+import { augments } from './augments';
+import { ErrorLog, errorsPage } from './errorLog';
+import { timingSafeEqual } from 'node:crypto';
+import { HTML_LANG, OG_LOCALE, alternateLinks, pickLang, seoText, sitemapXml } from './seo';
+import { allChampions, championByKey, championBySlug, championCard, loadOgData, matchupCard, profileCard, siteCard, type ProfileCard } from './og';
 import type { ApiErrorBody, HealthResponse, Ladder, LadderEntry, LpHistory, MatchPage, MatchSummary, MatchTimeline, PlayerHit, Profile, ScoutInfo, ServerStatus, StatsGroup } from '../shared/types';
 
 const PORT = Number(process.env.PORT ?? 3001);
@@ -33,6 +37,7 @@ if (DEMO) DEMO_SEED.forEach((p) => players.add(p));
 
 const champStats = new ChampionStatsStore(DEMO ? null : path.resolve(here, 'data', 'champions.json'));
 const timelines = new TtlCache<MatchTimeline>(300);
+const errorLog = new ErrorLog(DEMO ? null : path.resolve(here, 'data', 'errors.json'));
 const lp = new LpStore(path.resolve(here, 'data', DEMO ? 'lp.demo.json' : 'lp.json'));
 let lastUserRequest = 0;
 
@@ -46,6 +51,7 @@ if (DEMO) {
       champStats.addTimeline(m, mockTimeline(m));
     }
   }
+  for (let i = 0; i < 1500; i++) champStats.addMatch(mockArenaMatch(i));
   console.log(`Demo champion stats ready (${Date.now() - t0} ms).`);
 } else {
   void loadItemKinds();
@@ -78,11 +84,59 @@ const SITE_PASSWORD = process.env.SITE_PASSWORD;
 if (SITE_PASSWORD) {
   const expected = 'Basic ' + Buffer.from(`${process.env.SITE_USER ?? 'riot'}:${SITE_PASSWORD}`).toString('base64');
   app.use((req, res, next) => {
-    if (req.path === '/api/health' || req.path === '/riot.txt' || req.headers.authorization === expected) return next();
+    if (req.path === '/api/health' || req.path === '/riot.txt' || req.path === '/robots.txt' || req.headers.authorization === expected) return next();
     res.set('WWW-Authenticate', 'Basic realm="Riftwatch preview", charset="UTF-8"').status(401).send('Login required');
   });
 }
 app.use(express.json({ limit: '10kb' }));
+
+/* ---------- Error reports and the owner's error page ---------- */
+
+// Browsers report crashes here. Each address may send a few a minute; the rest are dropped.
+const reportsByIp = new Map<string, { at: number; n: number }>();
+app.post('/api/client-error', (req, res) => {
+  const ip = req.ip ?? '';
+  const now = Date.now();
+  const r = reportsByIp.get(ip);
+  if (r && now - r.at < 60_000 && r.n >= 5) return res.status(204).end();
+  reportsByIp.set(ip, r && now - r.at < 60_000 ? { at: r.at, n: r.n + 1 } : { at: now, n: 1 });
+  if (reportsByIp.size > 5000) reportsByIp.clear();
+  const b = (req.body ?? {}) as Record<string, unknown>;
+  const str = (v: unknown, n: number) => (typeof v === 'string' ? v.slice(0, n) : undefined);
+  const message = str(b.message, 500);
+  if (message) errorLog.record({ source: 'client', kind: str(b.kind, 60) || 'Error', message, where: str(b.where, 300), detail: [str(b.stack, 1500), str(req.get('user-agent'), 200)].filter(Boolean).join('\n\n') });
+  res.status(204).end();
+});
+
+/** /admin/errors?token=… — only when ADMIN_TOKEN is set, and only with the right token. */
+function adminOk(req: Request) {
+  const want = process.env.ADMIN_TOKEN;
+  const got = typeof req.query.token === 'string' ? req.query.token : '';
+  if (!want || want.length < 8) return false;
+  const a = Buffer.from(got);
+  const b = Buffer.from(want);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+app.get('/admin/errors', (req, res) => {
+  if (!adminOk(req)) return res.status(404).type('text/plain').send('Not found');
+  res.setHeader('Cache-Control', 'no-store');
+  res.type('html').send(errorsPage(errorLog.entries(), String(req.query.token)));
+});
+app.get('/api/admin/errors', (req, res) => {
+  if (!adminOk(req)) return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Unknown API route.' } } satisfies ApiErrorBody);
+  res.setHeader('Cache-Control', 'no-store');
+  res.json(errorLog.entries());
+});
+app.post('/admin/errors/clear', (req, res) => {
+  if (!adminOk(req)) return res.status(404).type('text/plain').send('Not found');
+  errorLog.clear();
+  res.redirect(303, `/admin/errors?token=${encodeURIComponent(String(req.query.token))}`);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled rejection:', reason);
+  errorLog.record({ source: 'server', kind: 'UnhandledRejection', message: String((reason as Error)?.message ?? reason), detail: (reason as Error)?.stack });
+});
 
 const wrap =
   (fn: (req: Request, res: Response) => Promise<unknown>) =>
@@ -363,12 +417,25 @@ app.get(
   }),
 );
 
-const groupParam = (v: unknown): StatsGroup => (v === 'aram' ? 'aram' : 'ranked');
+const groupParam = (v: unknown): StatsGroup => (v === 'aram' || v === 'arena' ? v : 'ranked');
 
 app.get('/api/champions', (req, res) => {
   res.setHeader('Cache-Control', 'public, max-age=60');
   res.json(champStats.tierList(groupParam(req.query.group), req.query.patch ? String(req.query.patch) : undefined));
 });
+
+app.get(
+  '/api/augments',
+  wrap(async (req, res) => {
+    try {
+      const list = await augments(String(req.query.lang ?? 'en'));
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.json(list);
+    } catch {
+      throw new ApiError(502, 'UPSTREAM', 'Augment data is unavailable right now.');
+    }
+  }),
+);
 
 app.get('/api/champions/:id', (req, res) => {
   res.setHeader('Cache-Control', 'public, max-age=60');
@@ -514,6 +581,37 @@ app.use('/api', (_req, res) => {
   res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Unknown API route.' } } satisfies ApiErrorBody);
 });
 
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain');
+  // While the site is password-protected (development key), keep it out of search engines entirely.
+  if (SITE_PASSWORD) return res.send('User-agent: *\nDisallow: /\n');
+  res.send(`User-agent: *\nDisallow: /api/\nAllow: /\n\nSitemap: ${siteOrigin(req)}/sitemap.xml\n`);
+});
+
+let sitemapCache: { at: number; xml: string } | null = null;
+app.get('/sitemap.xml', (req, res) => {
+  if (SITE_PASSWORD) return res.status(404).type('text/plain').send('Not found');
+  if (!sitemapCache || Date.now() - sitemapCache.at > 6 * 3600_000) {
+    const paths = ['/', '/champions', '/champions?queue=aram', '/champions?queue=arena', '/leaderboard', '/multisearch', '/compare'];
+    for (const c of allChampions()) paths.push(`/champions/${c.id.toLowerCase()}`);
+    // The most played lane matchups, which are the ones people search for.
+    const tier = champStats.tierList('ranked');
+    for (const row of tier.rows) {
+      if (row.lowSample) continue;
+      const a = championByKey(row.championId);
+      if (!a) continue;
+      const s = champStats.champion(row.championId, 'ranked', row.role);
+      for (const m of s.matchups.filter((x) => x.games >= 20).slice(0, 6)) {
+        const b = championByKey(m.championId);
+        if (b) paths.push(`/champions/${a.id.toLowerCase()}/vs/${b.id.toLowerCase()}`);
+      }
+    }
+    sitemapCache = { at: Date.now(), xml: sitemapXml(siteOrigin(req), [...new Set(paths)]) };
+  }
+  res.type('application/xml').setHeader('Cache-Control', 'public, max-age=3600');
+  res.send(sitemapCache.xml);
+});
+
 // In production, serve the built client from the same origin.
 const dist = path.resolve(here, '../dist');
 if (fs.existsSync(dist)) {
@@ -524,26 +622,32 @@ if (fs.existsSync(dist)) {
   app.get(/^(?!\/api|\/og\/).*/, (req, res) => res.type('html').send(withMeta(indexHtml, req)));
 }
 
-/** Page titles and link-preview tags (Discord, Slack, X …) for shared profile and champion links. */
+/** Page titles, descriptions, language alternates and link-preview tags, translated for the page's language. */
 function withMeta(html: string, req: Request) {
   const urlPath = req.path;
-  const origin = `${req.protocol}://${req.get('host')}`;
+  const origin = siteOrigin(req);
+  const { lang, explicit } = pickLang(req.query.lang, req.get('accept-language'));
+  const T = (key: Parameters<typeof seoText>[1], vars?: Record<string, string>) => seoText(lang, key, vars);
   let image = '/og/site.jpg';
   const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-  let title = 'Riftwatch — League of Legends stats';
-  let desc = 'Rank, match history, champion stats and live games for any League of Legends account.';
+  let title = T('siteTitle');
+  let desc = T('siteDesc');
+  let indexable = true;
+  // Query parameters that make a different page (the rest are view state and stay out of canonical URLs).
+  const keep = new URLSearchParams();
   const prof = /^\/lol\/([a-z0-9]+)\/([^/]+)/.exec(urlPath);
-  const champ = /^\/champions\/([a-z0-9]+)/i.exec(urlPath);
+  const champ = /^\/champions\/([a-z0-9]+)\/?$/i.exec(urlPath);
   const vs = /^\/champions\/([a-z0-9]+)\/vs\/([a-z0-9]+)/i.exec(urlPath);
   if (vs) {
     const a = championBySlug(vs[1]);
     const b = championBySlug(vs[2]);
     if (a && b) {
-      title = `${a.name} vs ${b.name}: build, runes and win rate · Riftwatch`;
-      desc = `How to play ${a.name} into ${b.name}: who's favoured, lane leads at 15 minutes, and the runes and items that win.`;
-      const role = typeof req.query.role === 'string' ? `?role=${encodeURIComponent(req.query.role)}` : '';
-      image = `/og/vs/${vs[1].toLowerCase()}/${vs[2].toLowerCase()}.jpg${role}`;
-    }
+      title = T('vsTitle', { a: a.name, b: b.name });
+      desc = T('vsDesc', { a: a.name, b: b.name });
+      const role = typeof req.query.role === 'string' ? req.query.role : undefined;
+      if (role) keep.set('role', role);
+      image = `/og/vs/${vs[1].toLowerCase()}/${vs[2].toLowerCase()}.jpg${role ? `?role=${encodeURIComponent(role)}` : ''}`;
+    } else indexable = false;
   } else if (prof) {
     const slug = decodeURIComponent(prof[2]);
     const i = slug.lastIndexOf('-');
@@ -555,26 +659,45 @@ function withMeta(html: string, req: Request) {
       const known = hit && hit.gameName.toLowerCase() === gameName.toLowerCase() ? hit : undefined;
       const rank = known?.tier ? `${known.tier.charAt(0)}${known.tier.slice(1).toLowerCase()} ${['MASTER', 'GRANDMASTER', 'CHALLENGER'].includes(known.tier) ? '' : known.rank ?? ''}`.trim() : null;
       title = `${known?.gameName ?? gameName}#${known?.tagLine ?? tagLine}${rank ? ` — ${rank}` : ''} · Riftwatch`;
-      desc = `${rank ? `${rank}${known?.lp != null ? ` ${known.lp} LP` : ''} on ${platform?.label ?? prof[1]}. ` : ''}Match history, champion stats, rank history and live game.`;
+      desc = rank ? T('profileDesc', { rank: `${rank}${known?.lp != null ? ` ${known.lp} LP` : ''} · ${platform?.label ?? prof[1]}` }) : T('profileDescUnranked');
       image = `/og/profile/${prof[1]}/${encodeURIComponent(`${gameName}-${tagLine}`)}.jpg`;
+      // Only players someone has actually looked up are worth indexing; unknown names may not exist.
+      if (!known) indexable = false;
     }
   } else if (champ) {
-    const name = championBySlug(champ[1])?.name ?? champ[1].charAt(0).toUpperCase() + champ[1].slice(1);
-    if (championBySlug(champ[1])) image = `/og/champion/${champ[1].toLowerCase()}.jpg`;
-    title = `${name} build, runes and counters · Riftwatch`;
-    desc = `Win rate, best build, runes, skill order and matchups for ${name}.`;
-  } else if (urlPath.startsWith('/champions')) {
-    title = 'Champion tier list · Riftwatch';
+    const c = championBySlug(champ[1]);
+    const name = c?.name ?? champ[1].charAt(0).toUpperCase() + champ[1].slice(1);
+    if (c) image = `/og/champion/${champ[1].toLowerCase()}.jpg`;
+    else indexable = false;
+    const queue = req.query.queue === 'aram' || req.query.queue === 'arena' ? req.query.queue : undefined;
+    if (queue) keep.set('queue', queue);
+    title = queue === 'aram' ? T('aramTitle', { name }) : queue === 'arena' ? T('aramTitle', { name }).replace('ARAM', 'Arena') : T('champTitle', { name });
+    desc = T('champDesc', { name });
+  } else if (urlPath === '/champions') {
+    if (req.query.queue === 'aram' || req.query.queue === 'arena') keep.set('queue', req.query.queue);
+    title = T('tierTitle');
+    desc = T('tierDesc');
   } else if (urlPath.startsWith('/leaderboard')) {
-    title = 'Ranked ladder · Riftwatch';
+    title = T('ladderTitle');
+    desc = T('ladderDesc');
   } else if (urlPath.startsWith('/multisearch')) {
-    title = 'Multi-search · Riftwatch';
+    title = T('msTitle');
+    desc = T('msDesc');
+    if (req.query.players) indexable = false;
+  } else if (urlPath.startsWith('/compare')) {
+    title = T('cmpTitle');
+    desc = T('cmpDesc');
+    if (req.query.a || req.query.b) indexable = false;
+  } else if (urlPath !== '/') {
+    indexable = false; // unknown page: the client shows "not found"
   }
   const tags = [
+    ...(indexable && !SITE_PASSWORD ? alternateLinks(origin, urlPath, explicit ? lang : null, keep) : [`<meta name="robots" content="noindex" />`]),
     `<meta property="og:site_name" content="Riftwatch" />`,
     `<meta property="og:title" content="${esc(title)}" />`,
     `<meta property="og:description" content="${esc(desc)}" />`,
     `<meta property="og:type" content="website" />`,
+    `<meta property="og:locale" content="${OG_LOCALE[lang]}" />`,
     `<meta property="og:url" content="${esc(origin + req.originalUrl)}" />`,
     `<meta property="og:image" content="${esc(origin + image)}" />`,
     `<meta property="og:image:width" content="1200" />`,
@@ -582,27 +705,45 @@ function withMeta(html: string, req: Request) {
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:image" content="${esc(origin + image)}" />`,
     `<meta name="theme-color" content="#091315" />`,
+    ...(urlPath === '/' ? [`<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Riftwatch', url: `${origin}/`, inLanguage: HTML_LANG[lang], description: desc }).replace(/</g, '\\u003c')}</script>`] : []),
   ].join('\n    ');
   return html
+    .replace(/<html lang="[^"]*">/, `<html lang="${HTML_LANG[lang]}">`)
     .replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`)
     .replace(/<meta name="description" content="[^"]*" \/>/, `<meta name="description" content="${esc(desc)}" />`)
     .replace('</head>', `    ${tags}\n  </head>`);
 }
 
-app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+/** The public address: SITE_URL when set (behind proxies and custom domains), otherwise the request's host. */
+function siteOrigin(req: Request) {
+  return (process.env.SITE_URL ?? `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
+}
+
+app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof ApiError) {
+    // Problems with Riot's side or our key are worth knowing about; "not found" and bad input aren't.
+    if (err.code === 'KEY_INVALID' || err.code === 'RATE_LIMITED' || err.code === 'UPSTREAM' || err.code === 'NO_KEY')
+      errorLog.record({ source: 'riot', kind: err.code, message: err.message, where: `${req.method} ${req.path}`, urgent: err.code === 'KEY_INVALID' });
     if (err.retryAfter) res.setHeader('Retry-After', String(err.retryAfter));
     return res.status(err.status).json({ error: { code: err.code, message: err.message, retryAfter: err.retryAfter } } satisfies ApiErrorBody);
   }
   const status = (err as { status?: number; statusCode?: number })?.status ?? (err as { statusCode?: number })?.statusCode;
   if (status === 404) return res.status(404).type('text').send('Not found');
   console.error(err);
+  errorLog.record({ source: 'server', kind: String((err as Error)?.name ?? 'Error'), message: String((err as Error)?.message ?? err), where: `${req.method} ${req.path}`, detail: (err as Error)?.stack });
   res.status(500).json({ error: { code: 'UPSTREAM', message: 'Something went wrong on the server.' } } satisfies ApiErrorBody);
 });
 
 if (!DEMO && process.env.CRAWLER !== 'false') {
   const crawlPlatform = getPlatform(process.env.CRAWL_REGION ?? 'euw1') ?? getPlatform('euw1')!;
-  startCrawler({ riot, platform: crawlPlatform, stats: champStats, lastUserRequest: () => lastUserRequest, paceMs: Number(process.env.CRAWL_PACE_MS ?? 2500) });
+  startCrawler({
+    riot,
+    platform: crawlPlatform,
+    stats: champStats,
+    lastUserRequest: () => lastUserRequest,
+    paceMs: Number(process.env.CRAWL_PACE_MS ?? 2500),
+    onStop: (message) => errorLog.record({ source: 'riot', kind: 'KEY_INVALID', message, where: 'champion stats collector', urgent: true }),
+  });
 }
 
 // Tracked (starred) players: refresh their rank regularly so LP history fills in by itself.
@@ -625,6 +766,7 @@ if (!DEMO) {
 }
 
 process.on('SIGINT', () => {
+  errorLog.flush();
   lp.flush();
   players.flush();
   champStats.flush();

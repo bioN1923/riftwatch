@@ -9,6 +9,7 @@ import { NotFoundPage } from './pages/NotFound';
 import { RouteError } from './pages/RouteError';
 import { ApiClientError } from './lib/api';
 import { initI18n, useLang } from './i18n';
+import { installErrorReporting } from './lib/reportError';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,6 +44,7 @@ const router = createBrowserRouter([
           { path: '/champions/:slug', lazy: async () => ({ Component: (await import('./pages/Champion')).ChampionPage }) },
           { path: '/champions/:slug/vs/:opp', lazy: async () => ({ Component: (await import('./pages/Matchup')).MatchupPage }) },
           { path: '/leaderboard', lazy: async () => ({ Component: (await import('./pages/Leaderboard')).LeaderboardPage }) },
+          { path: '/compare', lazy: async () => ({ Component: (await import('./pages/Compare')).ComparePage }) },
           { path: '/multisearch', lazy: async () => ({ Component: (await import('./pages/MultiSearch')).MultiSearchPage }) },
           { path: '*', element: <NotFoundPage /> },
         ],
@@ -57,6 +59,7 @@ function App() {
   return <RouterProvider key={lang} router={router} />;
 }
 
+installErrorReporting();
 await initI18n();
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

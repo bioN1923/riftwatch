@@ -5,11 +5,11 @@ import { shapeMatch, shapeTimeline } from './shape';
 
 /**
  * Background match collector for champion stats. It walks the Challenger and Grandmaster
- * ladders, pulling each player's recent ranked games plus timelines. It paces itself well
+ * ladders, pulling each player's recent ranked games plus timelines, and some ARAM and Arena games. It paces itself well
  * under the key's limit and pauses whenever someone is using the site, so page loads
  * always come first.
  */
-export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats: ChampionStatsStore; lastUserRequest: () => number; paceMs: number }) {
+export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats: ChampionStatsStore; lastUserRequest: () => number; paceMs: number; onStop?: (message: string) => void }) {
   const { riot, platform, stats } = opts;
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const seenPlayers = new Set<string>();
@@ -36,6 +36,20 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
           if (seenPlayers.has(puuid) && Math.random() < 0.7) continue;
           seenPlayers.add(puuid);
           const ids = await paced(() => riot.matchIds(platform, puuid, 0, 10, { queue: 420 })).catch(() => [] as string[]);
+          // Every third player or so, also take their recent ARAM and Arena games (no timelines needed).
+          if (Math.random() < 0.35) {
+            for (const queue of [450, 1700]) {
+              const extra = await paced(() => riot.matchIds(platform, puuid, 0, 5, { queue })).catch(() => [] as string[]);
+              for (const id of extra) {
+                if (stats.has(id)) continue;
+                try {
+                  stats.addMatch(shapeMatch(await paced(() => riot.match(platform, id, false))));
+                } catch (e) {
+                  if ((e as any)?.code === 'KEY_INVALID') throw e;
+                }
+              }
+            }
+          }
           for (const id of ids) {
             if (stats.has(id) && stats.hasTimeline(id)) continue;
             try {
@@ -53,6 +67,7 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
       } catch (e) {
         if ((e as any)?.code === 'KEY_INVALID') {
           console.warn('Match collector stopped: the Riot API key was rejected.');
+          opts.onStop?.('The champion stats collector stopped: Riot rejected the API key (development keys expire every 24 hours).');
           stats.collecting = false;
           return;
         }

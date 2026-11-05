@@ -567,3 +567,82 @@ export function mockRotation() {
   const r = rng(week);
   return [...ALL_CHAMPS].sort(() => r() - 0.5).slice(0, 20);
 }
+
+/* ---------- Arena (demo champion stats only) ---------- */
+
+const AUGMENT_POOL = [93, 89, 323, 87, 108, 120, 327, 66, 23, 21, 243, 14, 129, 231, 318, 6, 94, 308, 223, 44, 214, 5, 80, 97, 154, 90, 28, 226, 54, 51, 72, 136, 133, 135, 193, 65, 180, 92, 10, 233, 310, 251, 322, 53, 57, 88, 236, 171, 39, 79, 86, 30, 60, 321, 15, 156, 27, 103, 82, 76];
+const ARENA_ITEMS = [...new Set(Object.values(ITEMS).flat())];
+
+/** A generated Arena game: eight duos, placements 1–8, four augments each. Top four counts as a win. */
+export function mockArenaMatch(seed: number): MatchSummary {
+  const r = rng(seed * 7477 + 3);
+  const duration = int(r, 900, 1500);
+  const minutes = duration / 60;
+  const used = new Set<number>();
+  const champ = () => {
+    let c = pick(r, ALL_CHAMPS);
+    for (let i = 0; used.has(c) && i < 40; i++) c = pick(r, ALL_CHAMPS);
+    used.add(c);
+    return c;
+  };
+  // Some champions and augments are simply stronger, so the stats have a shape to them.
+  const strength = (id: number) => ((id * 2654435761) % 1000) / 1000;
+  const duos = Array.from({ length: 8 }, (_, i) => {
+    const pair = [champ(), champ()];
+    return { sub: i + 1, pair, power: strength(pair[0]) + strength(pair[1]) + r() * 1.6 };
+  }).sort((a, b) => b.power - a.power);
+
+  const participants: Participant[] = [];
+  duos.forEach((d, place) => {
+    for (const championId of d.pair) {
+      const cr = rng(championId * 7919 + 101);
+      const augs = [...AUGMENT_POOL].sort(() => (r() < 0.6 ? cr() : r()) - 0.5).slice(0, 4);
+      const items = [...ARENA_ITEMS].sort(() => (r() < 0.7 ? cr() : r()) - 0.5).slice(0, 5);
+      const kills = int(r, 2, 14) + (8 - place);
+      participants.push({
+        puuid: `demo-rand-arena-${seed}-${participants.length}`,
+        gameName: fakeName(r).gameName,
+        tagLine: 'DEMO',
+        teamId: 100,
+        subteam: d.sub,
+        placement: place + 1,
+        augments: augs,
+        win: place < 4,
+        championId,
+        champLevel: Math.min(18, 9 + place),
+        position: '',
+        kills,
+        deaths: int(r, 2, 9),
+        assists: int(r, 2, 10),
+        cs: 0,
+        gold: Math.round(700 * minutes),
+        damage: Math.round((900 + r() * 900) * minutes),
+        damageTaken: Math.round(1000 * minutes * (0.7 + r() * 0.6)),
+        visionScore: 0,
+        wardsPlaced: 0,
+        controlWards: 0,
+        items: [...items, 0, 0],
+        spells: [2202, 2201],
+        keystone: 0,
+        primaryStyle: 0,
+        secondaryStyle: 0,
+        largestMultiKill: 1,
+        killParticipation: 0.5,
+        score: 0,
+        runes: { primary: [], secondary: [], shards: [] },
+        extra: { soloKills: 0, turretPlates: 0, csAt10: 0, firstBlood: false, damageMitigated: 0, healing: 0, shielding: 0, ccTime: 0, objectiveDamage: 0, turretDamage: 0, skillshotsHit: 0, skillshotsDodged: 0 },
+      });
+    }
+  });
+  return {
+    id: `DEMOARENA_${seed}`,
+    queueId: 1700,
+    gameMode: 'CHERRY',
+    startedAt: Date.now() - seed * 600_000,
+    duration,
+    version: '15.20.1',
+    remake: false,
+    teams: [],
+    participants,
+  };
+}

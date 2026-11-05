@@ -61,7 +61,16 @@ interface RoleAgg {
   bv?: Record<string, BuildVar>; // per core build (first three items): its boots and 4th–6th items
   mu?: Record<string, MatchupAgg>; // per lane opponent: what was played into them
   pl?: Record<string, { n: string; t: string; pf: string; g: number; w: number; k: number; d: number; a: number }>;
+  ar?: ArenaAgg;
 }
+
+/** Arena: finishing places, augments (with the places they led to) and duo partners. */
+interface ArenaAgg {
+  pl: number[]; // games per place, index 0 = 1st
+  aug: Record<string, C & { p: number; f: number }>; // p = summed placement, f = first places
+  par: Record<string, C & { p: number }>;
+}
+const newArena = (): ArenaAgg => ({ pl: [0, 0, 0, 0, 0, 0, 0, 0], aug: {}, par: {} });
 
 interface BuildVar {
   boots: Record<string, C>;
@@ -111,7 +120,8 @@ const LENGTHS = [
 ];
 const KEYS = ['Q', 'W', 'E'];
 
-export const groupOf = (queueId: number): StatsGroup | null => (queueId === 420 || queueId === 440 ? 'ranked' : queueId === 450 ? 'aram' : null);
+export const groupOf = (queueId: number): StatsGroup | null =>
+  queueId === 420 || queueId === 440 ? 'ranked' : queueId === 450 ? 'aram' : queueId === 1700 ? 'arena' : null;
 export const patchOf = (version: string) => version.split('.').slice(0, 2).join('.');
 const patchCmp = (a: string, b: string) => {
   const [a1, a2] = a.split('.').map(Number);
@@ -238,6 +248,27 @@ export function buildVariations(r: BuildTally): ChampionStats['builds'] {
   });
 }
 
+function arenaSummary(ar: ArenaAgg, games: number): NonNullable<ChampionStats['arena']> {
+  const placed = ar.pl.reduce((s, n) => s + n, 0) || 1;
+  const minAug = Math.max(2, Math.round(games * 0.01));
+  return {
+    avgPlacement: ar.pl.reduce((s, n, i) => s + n * (i + 1), 0) / placed,
+    firstRate: ar.pl[0] / placed,
+    placements: ar.pl,
+    augments: Object.entries(ar.aug)
+      .filter(([, a]) => a.g >= minAug)
+      .map(([id, a]) => ({ id: Number(id), games: a.g, winRate: a.w / a.g, pickRate: a.g / games, avgPlacement: a.p / a.g, firstRate: a.f / a.g }))
+      // Pull small samples towards an average 4.5th place so a lucky handful doesn't top the list.
+      .sort((a, b) => (a.avgPlacement * a.games + 4.5 * 10) / (a.games + 10) - (b.avgPlacement * b.games + 4.5 * 10) / (b.games + 10) || b.games - a.games)
+      .slice(0, 40),
+    partners: Object.entries(ar.par)
+      .filter(([, c]) => c.g >= Math.max(2, Math.round(games * 0.01)))
+      .map(([id, c]) => ({ championId: Number(id), games: c.g, winRate: c.w / c.g, avgPlacement: c.p / c.g }))
+      .sort((a, b) => (a.avgPlacement * a.games + 4.5 * 10) / (a.games + 10) - (b.avgPlacement * b.games + 4.5 * 10) / (b.games + 10))
+      .slice(0, 8),
+  };
+}
+
 export class ChampionStatsStore {
   private s: Store = { v: 1, patches: {}, seen: [], seenTl: [] };
   private seen = new Set<string>();
@@ -286,7 +317,8 @@ export class ChampionStatsStore {
     this.seen.add(m.id);
     this.dirty = true;
     g.matches++;
-    const aram = m.queueId === 450;
+    const arena = m.queueId === 1700;
+    const aram = m.queueId === 450 || arena; // no lanes: one 'ALL' role
     const minutes = m.duration / 60;
     const lenIdx = LENGTHS.findIndex((l) => minutes < l.max);
 
@@ -310,6 +342,26 @@ export class ChampionStatsStore {
         bump(r.runes, `${p.primaryStyle}:${p.runes.primary.join(',')}|${p.secondaryStyle}:${p.runes.secondary.join(',')}|${p.runes.shards.join(',')}`, p.win);
       }
       bump(r.spells, [...p.spells].sort((x, y) => x - y).join(','), p.win);
+
+      if (arena && p.placement) {
+        const place = Math.min(8, Math.max(1, p.placement));
+        const ar = (r.ar ??= newArena());
+        ar.pl[place - 1]++;
+        for (const id of new Set(p.augments ?? [])) {
+          const a = (ar.aug[id] ??= { g: 0, w: 0, p: 0, f: 0 });
+          a.g++;
+          if (p.win) a.w++;
+          a.p += place;
+          if (place === 1) a.f++;
+        }
+        const mate = m.participants.find((x) => x !== p && x.subteam === p.subteam);
+        if (mate) {
+          const c = (ar.par[mate.championId] ??= { g: 0, w: 0, p: 0 });
+          c.g++;
+          if (p.win) c.w++;
+          c.p += place;
+        }
+      }
 
       // Slot order first; replaced by the real purchase order if the timeline arrives later.
       const { legendaries, boots } = slotBuild(p.items);
@@ -527,7 +579,7 @@ export class ChampionStatsStore {
     const roleList = c ? Object.entries(c.roles).map(([r, a]) => ({ role: r, games: a.g })) : [];
     const total = roleList.reduce((s, r) => s + r.games, 0);
     const roles = roleList.filter((r) => r.games > 0).map((r) => ({ ...r, share: r.games / Math.max(1, total) })).sort((a, b) => b.games - a.games);
-    const chosen = role && c?.roles[role] ? role : (roles[0]?.role ?? (group === 'aram' ? 'ALL' : 'MIDDLE'));
+    const chosen = role && c?.roles[role] ? role : (roles[0]?.role ?? (group === 'ranked' ? 'MIDDLE' : 'ALL'));
     const r = c?.roles[chosen];
 
     const empty: ChampionStats = {
@@ -637,6 +689,7 @@ export class ChampionStatsStore {
         .map((e) => ({ gameName: e.n, tagLine: e.t, platform: e.pf, games: e.g, winRate: e.w / e.g, kda: (e.k + e.a) / Math.max(1, e.d) }))
         .sort((a, b) => b.games - a.games || b.winRate - a.winRate)
         .slice(0, 10),
+      arena: r.ar ? arenaSummary(r.ar, r.g) : undefined,
     };
   }
 
@@ -654,6 +707,10 @@ export class ChampionStatsStore {
               if (entries.length > 60) r[key] = Object.fromEntries(entries.sort((a, b) => b[1].g - a[1].g).slice(0, 40));
             }
             if (r.bv) for (const k of Object.keys(r.bv)) if (!r.core[k]) delete r.bv[k];
+            if (r.ar) {
+              const par = Object.entries(r.ar.par);
+              if (par.length > 80) r.ar.par = Object.fromEntries(par.sort((a, b) => b[1].g - a[1].g).slice(0, 60));
+            }
             for (const mu of Object.values(r.mu ?? {})) {
               for (const key of ['runes', 'spells', 'start', 'core', 'boots', 's4', 's5', 's6'] as const) {
                 const entries = Object.entries(mu[key]);

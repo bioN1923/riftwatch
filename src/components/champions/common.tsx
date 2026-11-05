@@ -30,6 +30,7 @@ export function GroupToggle({ value, onChange }: { value: StatsGroup; onChange: 
         [
           ['ranked', t('queueToggle.ranked')],
           ['aram', t('queueToggle.aram')],
+          ['arena', t('queueToggle.arena')],
         ] as const
       ).map(([id, label]) => (
         <button

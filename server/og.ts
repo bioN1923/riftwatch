@@ -41,6 +41,7 @@ export async function loadOgData() {
 }
 export const championBySlug = (slug: string) => champs.find((c) => c.id.toLowerCase() === slug.toLowerCase());
 export const championByKey = (key: number) => champs.find((c) => c.key === key);
+export const allChampions = () => champs;
 
 /* ---------- Images ---------- */
 

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import clsx from 'clsx';
-import { RefreshCw, Star, Flame, Link2, Check } from 'lucide-react';
+import { RefreshCw, Star, Flame, Link2, Check, Scale } from 'lucide-react';
 import type { LeagueEntry, MatchSummary, Profile } from '../../../shared/types';
 import { getPlatform } from '../../../shared/regions';
 import { GameImg, Tooltip } from '../ui/GameImg';
 import { assets, rankEmblem, useStaticData } from '../../lib/ddragon';
 import { isFavorite, toggleFavorite, useFavorites } from '../../lib/storage';
-import { profilePath } from '../../lib/riotId';
+import { profilePath, toSlug } from '../../lib/riotId';
 import { pct, timeAgo, tierName, regionName } from '../../lib/format';
 import { me, result } from '../../lib/stats';
 import { playerTags } from '../../lib/tags';
@@ -109,6 +109,13 @@ export function ProfileHeader({
                   {updating ? t('profile.updating') : t('profile.update')}
                 </button>
                 <CopyLink />
+                <Link
+                  to={`/compare?a=${profile.platform}/${toSlug(id)}`}
+                  className="inline-flex h-8 items-center gap-1.5 rounded border border-line-strong px-3 text-sm font-medium text-muted transition-colors hover:border-gold/60 hover:text-text"
+                >
+                  <Scale className="size-3.5" aria-hidden />
+                  {t('profile.compare')}
+                </Link>
                 <span className="text-xs text-muted" aria-live="polite">
                   {t('profile.updated', { ago: timeAgo(readyAt - (profile.updateIn ?? 0) - (profile.age ?? 0), now) })}
                   {cooling && !updating && <span className="num text-faint"> · {t('profile.nextUpdate', { time: waitLabel })}</span>}

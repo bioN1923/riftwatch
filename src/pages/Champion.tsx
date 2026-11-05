@@ -15,6 +15,7 @@ import { Tip } from '../components/match/Loadout';
 import { ItemRow, MaxOrder, RuneTrees, SkillGrid } from '../components/build/BuildParts';
 import { GroupToggle, PatchSelect, RoleTab, TierBadge, WinRateBar } from '../components/champions/common';
 import { fadeIn } from '../lib/motion';
+import { ArenaPanel, ArenaStrip } from '../components/champions/Arena';
 import { SlidingIndicator, useSlideDirection } from '../components/ui/Motion';
 import { t } from '../i18n';
 
@@ -45,7 +46,8 @@ export function ChampionPage() {
 
 function ChampionView({ championId }: { championId: number }) {
   const [params, setParams] = useSearchParams();
-  const group: StatsGroup = params.get('queue') === 'aram' ? 'aram' : 'ranked';
+  const queue = params.get('queue');
+  const group: StatsGroup = queue === 'aram' || queue === 'arena' ? queue : 'ranked';
   const role = params.get('role') ?? undefined;
   const patch = params.get('patch') ?? undefined;
   const { data: sd } = useStaticData();
@@ -115,7 +117,7 @@ function ChampionView({ championId }: { championId: number }) {
             </div>
           </div>
 
-          <StatStrip s={s} loading={q.isPending} />
+          {group === 'arena' && s && !q.isPending ? <ArenaStrip s={s} /> : <StatStrip s={s} loading={q.isPending} />}
           <CountersStrip s={s} />
           {detail && <Abilities detail={detail} />}
 
@@ -144,13 +146,14 @@ function ChampionView({ championId }: { championId: number }) {
           <ErrorState error={q.error} />
         ) : !s?.summary ? (
           <div className="panel">
-            <EmptyState title={t(group === 'aram' ? 'cp.noAram' : 'cp.noRanked', { champion: info?.name ?? '' })}>
+            <EmptyState title={t(group === 'aram' ? 'cp.noAram' : group === 'arena' ? 'cp.noArena' : 'cp.noRanked', { champion: info?.name ?? '' })}>
               {t('cp.noGamesBody')}
             </EmptyState>
           </div>
         ) : (
           <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
             <div className="min-w-0 space-y-5">
+              {group === 'arena' && <ArenaPanel s={s} />}
               <BuildPanel s={s} abilityIcons={abilityIcons} />
               {group === 'ranked' && <Matchups s={s} />}
               {group === 'ranked' && <Synergy s={s} />}
@@ -851,7 +854,7 @@ function Averages({ s }: { s: ChampionStats }) {
   if (!v) return null;
   const rows: [string, string][] = [
     [t('avg.kda'), `${v.kills.toFixed(1)} / ${v.deaths.toFixed(1)} / ${v.assists.toFixed(1)}`],
-    [t('avg.cs'), v.csPerMin.toFixed(1)],
+    ...(s.group === 'arena' ? [] : ([[t('avg.cs'), v.csPerMin.toFixed(1)]] as [string, string][])),
     [t('avg.dmg'), v.damagePerMin.toFixed(0)],
     [t('avg.gold'), v.goldPerMin.toFixed(0)],
     [t('avg.length'), `${Math.floor(v.minutes)}:${String(Math.round((v.minutes % 1) * 60)).padStart(2, '0')}`],

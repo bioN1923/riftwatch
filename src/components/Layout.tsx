@@ -197,6 +197,9 @@ function MainNav() {
       <NavLink to="/multisearch" className={link}>
         {t('nav.multisearch')}
       </NavLink>
+      <NavLink to="/compare" className={link}>
+        {t('nav.compare')}
+      </NavLink>
     </nav>
   );
 }

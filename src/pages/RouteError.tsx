@@ -1,5 +1,7 @@
 import { isRouteErrorResponse, Link, useRouteError } from 'react-router';
+import { useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
+import { reportError } from '../lib/reportError';
 import { t } from '../i18n';
 
 /** Shown when a page crashes or fails to load, instead of a blank screen. */
@@ -13,7 +15,12 @@ export function RouteError() {
       : error instanceof Error
         ? error.message
         : t('routeError.unexpected');
-  if (error) console.error(error);
+  useEffect(() => {
+    if (error) {
+      console.error(error);
+      if (!isRouteErrorResponse(error)) reportError(error, 'PageCrash');
+    }
+  }, [error]);
   return (
     <div role="alert" className="mx-auto max-w-lg px-4 py-24 text-center">
       <AlertTriangle className="mx-auto size-9 text-kda-great" aria-hidden />

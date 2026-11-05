@@ -40,6 +40,7 @@ export function shapeMatch(raw: any): MatchSummary {
       teamId: p.teamId,
       subteam: p.playerSubteamId || undefined,
       placement: p.placement || p.subteamPlacement || undefined,
+      augments: ((a: number[]) => (a.length ? a : undefined))([p.playerAugment1, p.playerAugment2, p.playerAugment3, p.playerAugment4, p.playerAugment5, p.playerAugment6].filter((x: number) => x > 0)),
       win: !!p.win,
       championId: p.championId,
       champLevel: p.champLevel,

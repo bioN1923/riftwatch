@@ -39,6 +39,16 @@ let dict: Dict = en;
 const listeners = new Set<() => void>();
 
 function detect(): Lang {
+  // A ?lang= link (from search results or a shared URL) wins, and is remembered.
+  const fromUrl = new URLSearchParams(location.search).get('lang') as Lang | null;
+  if (fromUrl && LANGS.some((l) => l.id === fromUrl)) {
+    try {
+      localStorage.setItem(KEY, fromUrl);
+    } catch {
+      /* storage blocked */
+    }
+    return fromUrl;
+  }
   try {
     const saved = localStorage.getItem(KEY) as Lang | null;
     if (saved && LANGS.some((l) => l.id === saved)) return saved;
@@ -75,6 +85,12 @@ export async function setLang(next: Lang) {
     /* storage blocked */
   }
   await load(next);
+  // Keep a ?lang= in the address bar in step, so the URL shows the language on screen.
+  const url = new URL(location.href);
+  if (url.searchParams.has('lang')) {
+    url.searchParams.set('lang', next);
+    history.replaceState(history.state, '', url);
+  }
   listeners.forEach((l) => l());
 }
 

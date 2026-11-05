@@ -21,8 +21,9 @@ const TIER_ORDER = { 'S+': 0, S: 1, A: 2, B: 3, C: 4, D: 5, '–': 6 };
 export function ChampionsPage() {
   const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
-  const group: StatsGroup = params.get('queue') === 'aram' ? 'aram' : 'ranked';
-  const role = group === 'aram' ? 'ALL' : (params.get('role') ?? 'ALL');
+  const queue = params.get('queue');
+  const group: StatsGroup = queue === 'aram' || queue === 'arena' ? queue : 'ranked';
+  const role = group !== 'ranked' ? 'ALL' : (params.get('role') ?? 'ALL');
   const patch = params.get('patch') ?? undefined;
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: 'tier', dir: 1 });
@@ -85,7 +86,7 @@ export function ChampionsPage() {
           <h1 className="font-display text-5xl font-extrabold leading-none tracking-tight">{t('tl.heading')}</h1>
           <p className="mt-2 max-w-2xl text-sm text-muted">
             {q.data && q.data.matches > 0 ? (
-              t.rich(group === 'aram' ? (q.data.patch ? 'tl.builtFromAramPatch' : 'tl.builtFromAram') : q.data.patch ? 'tl.builtFromRankedPatch' : 'tl.builtFromRanked', {
+              t.rich(group === 'arena' ? (q.data.patch ? 'tl.builtFromArenaPatch' : 'tl.builtFromArena') : group === 'aram' ? (q.data.patch ? 'tl.builtFromAramPatch' : 'tl.builtFromAram') : q.data.patch ? 'tl.builtFromRankedPatch' : 'tl.builtFromRanked', {
                 count: <span className="num font-semibold text-text">{thousands(q.data.matches)}</span>,
                 patch: q.data.patch ?? '',
               })
@@ -177,7 +178,7 @@ export function ChampionsPage() {
               {rows.map((r, i) => {
                 const c = a.champion(r.championId);
                 const champ = sd?.champions.get(r.championId);
-                const href = champ ? `/champions/${champSlug(champ.id)}${group === 'aram' ? '?queue=aram' : r.role !== 'ALL' ? `?role=${r.role}` : ''}` : '#';
+                const href = champ ? `/champions/${champSlug(champ.id)}${group !== 'ranked' ? `?queue=${group}` : r.role !== 'ALL' ? `?role=${r.role}` : ''}` : '#';
                 return (
                   <tr
                     key={`${r.championId}-${r.role}`}
