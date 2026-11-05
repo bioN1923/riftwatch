@@ -10,6 +10,7 @@ import { addRecent } from '../lib/storage';
 import { overview } from '../lib/stats';
 import { QUEUE_FILTERS, type QueueFilter } from '../lib/queues';
 import { ProfileHeader } from '../components/profile/ProfileHeader';
+import { PlayerChampionDialog } from '../components/profile/PlayerChampion';
 import { ChampionPool, dayRecord, MasteryList, PlayedWith, ScoutingReport } from '../components/profile/Sidebar';
 import type { MatchSummary } from '../../shared/types';
 import { LiveGame } from '../components/profile/LiveGame';
@@ -51,6 +52,18 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
   const qc = useQueryClient();
   const [search, setSearch] = useSearchParams();
   const queue = (QUEUE_FILTERS.some((q) => q.id === search.get('queue')) ? search.get('queue') : 'all') as QueueFilter;
+  // ?champ=<id> opens the player's record on that champion (shareable; Back closes it).
+  const focusChamp = Number(search.get('champ')) || null;
+  const openChamp = (id: number) => {
+    const next = new URLSearchParams(search);
+    next.set('champ', String(id));
+    setSearch(next);
+  };
+  const closeChamp = () => {
+    const next = new URLSearchParams(search);
+    next.delete('champ');
+    setSearch(next, { replace: true });
+  };
   const freshRef = useRef(false);
   const [updating, setUpdating] = useState(false);
 
@@ -152,6 +165,19 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
 
   return (
     <>
+      {focusChamp && matches && (
+        <PlayerChampionDialog
+          key={focusChamp}
+          matches={matches}
+          puuid={profile.account.puuid}
+          name={profile.account.gameName}
+          championId={focusChamp}
+          hasMore={!!matchesQ.hasNextPage}
+          loadingMore={matchesQ.isFetchingNextPage}
+          onLoadMore={() => matchesQ.fetchNextPage()}
+          onClose={closeChamp}
+        />
+      )}
       <ProfileHeader profile={profile} matches={matches} inGame={!!live} tab={tab} updating={updating} readyAt={profileQ.dataUpdatedAt + (profile.updateIn ?? 0)} onUpdate={update} />
 
       <div key={tab} className="tab-in mx-auto max-w-6xl px-4 py-5" style={{ '--dir': tabDir } as React.CSSProperties}>
@@ -177,6 +203,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
               hasMore={!!matchesQ.hasNextPage}
               loadingMore={matchesQ.isFetchingNextPage}
               onLoadMore={() => matchesQ.fetchNextPage()}
+              onOpenChampion={openChamp}
             />
           </div>
         ) : (
@@ -234,7 +261,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
             <aside aria-label="Player summary" className="space-y-4 lg:sticky lg:top-[72px] lg:self-start">
               <ScoutingReport ov={ov} matches={matches} puuid={profile.account.puuid} name={profile.account.gameName} />
               <LpPanel profile={profile} />
-              <ChampionPool ov={ov} loading={matchesQ.isPending} />
+              <ChampionPool ov={ov} loading={matchesQ.isPending} onOpen={openChamp} />
               <PlayedWith ov={ov} platform={platform} />
               <MasteryList mastery={profile.mastery} />
             </aside>

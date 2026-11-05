@@ -84,6 +84,7 @@ export function StatsTab({
   hasMore,
   loadingMore,
   onLoadMore,
+  onOpenChampion,
 }: {
   matches?: MatchSummary[];
   puuid: string;
@@ -91,6 +92,7 @@ export function StatsTab({
   hasMore: boolean;
   loadingMore: boolean;
   onLoadMore: () => void;
+  onOpenChampion?: (championId: number) => void;
 }) {
   if (loading || !matches) {
     return (
@@ -120,7 +122,7 @@ export function StatsTab({
           </button>
         )}
       </div>
-      <ChampionTable matches={matches} puuid={puuid} />
+      <ChampionTable matches={matches} puuid={puuid} onOpen={onOpenChampion} />
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <RoleTable matches={matches} puuid={puuid} />
         <ActivityCalendar matches={matches} puuid={puuid} />
@@ -142,7 +144,7 @@ function SortHeader({ k, sort, setSort, children, className }: { k: SortKey; sor
   );
 }
 
-function ChampionTable({ matches, puuid }: { matches: MatchSummary[]; puuid: string }) {
+function ChampionTable({ matches, puuid, onOpen }: { matches: MatchSummary[]; puuid: string; onOpen?: (championId: number) => void }) {
   const { data: sd } = useStaticData();
   const a = assets(sd);
   const [sort, setSort] = useState<{ k: SortKey; dir: number }>({ k: 'games', dir: -1 });
@@ -188,10 +190,17 @@ function ChampionTable({ matches, puuid }: { matches: MatchSummary[]; puuid: str
               return (
                 <tr key={r.key} className="fade-up border-t border-line first:border-0 hover:bg-raised" style={{ animationDelay: `${Math.min(i, 12) * 15}ms` }}>
                   <td className="px-4 py-2">
-                    <Link to={slug ? `/champions/${champSlug(slug)}` : '#'} className="flex items-center gap-2.5 font-medium hover:text-gold">
-                      <GameImg src={c.url} alt="" size={30} rounded="md" />
-                      {c.name}
-                    </Link>
+                    {onOpen ? (
+                      <button onClick={() => onOpen(id)} className="flex items-center gap-2.5 text-left font-medium hover:text-gold" title={`${c.name}: details and comparison`}>
+                        <GameImg src={c.url} alt="" size={30} rounded="md" />
+                        {c.name}
+                      </button>
+                    ) : (
+                      <Link to={slug ? `/champions/${champSlug(slug)}` : '#'} className="flex items-center gap-2.5 font-medium hover:text-gold">
+                        <GameImg src={c.url} alt="" size={30} rounded="md" />
+                        {c.name}
+                      </Link>
+                    )}
                   </td>
                   <td className="num px-2 text-right">
                     {r.games}

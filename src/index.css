@@ -451,3 +451,27 @@ button:hover > .game-img img {
 tr.group:hover .game-img img {
   scale: 1.1;
 }
+
+/* Player champion dialog: a sheet that slides up on phones, a card that grows in on desktop. */
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+}
+.pc-dialog[open] {
+  animation: sheet-in 420ms var(--ease-smooth) both;
+}
+.pc-dialog[open]::backdrop {
+  animation: fade-in 300ms var(--ease-soft) both;
+}
+@media (min-width: 640px) {
+  .pc-dialog[open] {
+    animation: dialog-in 340ms var(--ease-smooth) both;
+  }
+}

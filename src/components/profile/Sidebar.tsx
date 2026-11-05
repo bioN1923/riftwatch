@@ -133,7 +133,7 @@ export function ScoutingReport({ ov, matches, puuid, name }: { ov?: Overview; ma
   );
 }
 
-export function ChampionPool({ ov, loading }: { ov?: Overview; loading: boolean }) {
+export function ChampionPool({ ov, loading, onOpen }: { ov?: Overview; loading: boolean; onOpen?: (championId: number) => void }) {
   const { data } = useStaticData();
   const a = assets(data);
   return (
@@ -154,12 +154,15 @@ export function ChampionPool({ ov, loading }: { ov?: Overview; loading: boolean 
           const ratio = kdaRatio(c.kills, c.deaths, c.assists);
           const wr = c.wins / c.games;
           return (
-            <li key={c.championId} className="grid grid-cols-[36px_1fr_auto] items-center gap-3 px-4 py-1.5 text-sm">
+            <li key={c.championId}>
+              <button
+                onClick={() => onOpen?.(c.championId)}
+                className="group grid w-full grid-cols-[36px_1fr_auto] items-center gap-3 px-4 py-1.5 text-left text-sm transition-colors hover:bg-raised"
+                title={`${champ.name}: details and comparison`}
+              >
               <GameImg src={champ.url} alt="" size={36} rounded="md" />
               <div className="min-w-0">
-                <Link to={data?.champions.get(c.championId) ? `/champions/${champSlug(data.champions.get(c.championId)!.id)}` : '#'} className="block truncate font-medium hover:text-gold">
-                  {champ.name}
-                </Link>
+                <span className="block truncate font-medium group-hover:text-gold">{champ.name}</span>
                 <div className="mt-1 flex h-1.5 overflow-hidden rounded-full bg-sunken" role="img" aria-label={`${c.wins} wins, ${c.games - c.wins} losses`}>
                   <span className="bg-win" style={{ width: `${wr * 100}%` }} />
                   <span className="flex-1 bg-loss/70" />
@@ -171,6 +174,7 @@ export function ChampionPool({ ov, loading }: { ov?: Overview; loading: boolean 
                 </p>
                 <p className={clsx('num text-xs', kdaTone(ratio))}>{formatKda(ratio)} KDA</p>
               </div>
+              </button>
             </li>
           );
         })}

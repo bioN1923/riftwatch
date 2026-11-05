@@ -25,6 +25,7 @@ export interface ItemData {
   sell: number;
   description: string; // Riot's tagged markup; see lib/itemText.ts
   from: number[];
+  into: number[];
 }
 
 const stripTags = (s: string) => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -54,6 +55,7 @@ async function loadStatic(): Promise<StaticData> {
       sell: it.gold?.sell ?? 0,
       description: it.description ?? '',
       from: (it.from ?? []).map(Number),
+      into: (it.into ?? []).map(Number),
     });
   }
 
@@ -203,3 +205,9 @@ export function championBySlug(sd: StaticData | undefined, slug: string) {
   for (const [key, c] of sd.champions) if (c.id.toLowerCase() === slug.toLowerCase()) return { key, ...c };
   return undefined;
 }
+
+/** A finished item: expensive and not a component of anything else (boots excluded by price). */
+export const isCompletedItem = (sd: StaticData | undefined, id: number) => {
+  const it = sd?.items.get(id);
+  return !!it && it.gold >= 2000 && it.into.length === 0;
+};
