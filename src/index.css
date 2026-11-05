@@ -475,3 +475,9 @@ tr.group:hover .game-img img {
     animation: dialog-in 340ms var(--ease-smooth) both;
   }
 }
+
+/* Native drop-down lists (region, patch): use the site colours so the open list isn't white in dark mode. */
+select option {
+  background-color: var(--surface);
+  color: var(--text);
+}
