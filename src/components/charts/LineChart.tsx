@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { niceTicks, useWidth } from './useWidth';
+import { t } from '../../i18n';
 
 export interface Series {
   id: string;
@@ -17,8 +18,8 @@ export function LineChart({
   height = 240,
   format,
   label,
-  xLabel = (i) => `${i}m`,
-  hoverTitle = (i) => `Minute ${i}`,
+  xLabel = (i) => t('gold.minuteShort', { n: String(i) }),
+  hoverTitle = (i) => t('gold.minute', { n: String(i) }),
   tickEvery = 5,
   endLabels = true,
   padLeft = 46,

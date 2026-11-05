@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react';
+import { t } from '../../i18n';
 
 /**
  * "Show more" button that also loads by itself when scrolled into view — up to `maxAuto`
  * times, so a long session doesn't quietly burn through the API key's request budget.
  */
-export function AutoLoad({ onLoad, loading, loadedPages, maxAuto = 4, label = 'Show more games' }: { onLoad: () => void; loading: boolean; loadedPages: number; maxAuto?: number; label?: string }) {
+export function AutoLoad({ onLoad, loading, loadedPages, maxAuto = 4, label }: { onLoad: () => void; loading: boolean; loadedPages: number; maxAuto?: number; label?: string }) {
   const ref = useRef<HTMLButtonElement>(null);
   const auto = loadedPages <= maxAuto;
   useEffect(() => {
@@ -25,7 +26,7 @@ export function AutoLoad({ onLoad, loading, loadedPages, maxAuto = 4, label = 'S
       disabled={loading}
       className="w-full rounded border border-dashed border-line-strong py-3 font-medium text-muted transition-colors hover:border-gold hover:text-text disabled:opacity-60"
     >
-      {loading ? 'Loading more games…' : label}
+      {loading ? t('autoload.loading') : (label ?? t('autoload.more'))}
     </button>
   );
 }

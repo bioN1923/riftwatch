@@ -10,6 +10,7 @@ import { GameImg, Tooltip } from '../ui/GameImg';
 import { RoleIcon, ROLE_LABEL } from '../ui/RoleIcon';
 import { EmptyState, Skeleton } from '../ui/States';
 import { LineChart } from '../charts/LineChart';
+import { langInfo, t } from '../../i18n';
 
 interface Row {
   key: string;
@@ -106,7 +107,7 @@ export function StatsTab({
   if (!counted.length) {
     return (
       <div className="panel">
-        <EmptyState title="No games to analyse yet">Try another queue filter.</EmptyState>
+        <EmptyState title={t('stats.empty')}>{t('stats.emptyBody')}</EmptyState>
       </div>
     );
   }
@@ -114,11 +115,11 @@ export function StatsTab({
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
         <p>
-          Based on the last <span className="num font-semibold text-text">{counted.length}</span> games{matches.length > counted.length ? ' (remakes excluded)' : ''}.
+          {t.rich(matches.length > counted.length ? 'stats.basedOnRemakes' : 'stats.basedOn', { count: <span className="num font-semibold text-text">{counted.length}</span> })}
         </p>
         {hasMore && (
           <button onClick={onLoadMore} disabled={loadingMore} className="rounded border border-line-strong px-3 py-1.5 font-medium text-text transition-colors hover:border-gold/60 disabled:opacity-60">
-            {loadingMore ? 'Loading…' : 'Include 10 more games'}
+            {loadingMore ? t('common.loading') : t('stats.more')}
           </button>
         )}
       </div>
@@ -159,25 +160,25 @@ function ChampionTable({ matches, puuid, onOpen }: { matches: MatchSummary[]; pu
   return (
     <section className="panel panel-tick overflow-hidden" aria-labelledby="pc-h">
       <h2 id="pc-h" className="panel-title px-4 pt-4">
-        Champions played
+        {t('stats.champions')}
       </h2>
       <div className="mt-2 overflow-x-auto">
         <table className="w-full min-w-[760px] text-sm">
-          <caption className="sr-only">Per-champion averages, sortable</caption>
+          <caption className="sr-only">{t('stats.championsCaption')}</caption>
           <thead className="text-xs text-muted">
             <tr className="border-b border-line">
               <th scope="col" className="px-4 py-2 text-left font-medium">
-                Champion
+                {t('stats.champion')}
               </th>
-              {h('games', 'Games')}
-              {h('wr', 'Win rate')}
-              {h('kda', 'KDA')}
-              {h('cs', 'CS/min')}
-              {h('dmg', 'Dmg/min')}
-              {h('gold', 'Gold/min')}
-              {h('kp', 'Kill share')}
-              {h('share', 'Dmg share')}
-              {h('vision', 'Vision/min', 'pr-4')}
+              {h('games', t('stats.col.games'))}
+              {h('wr', t('stats.col.wr'))}
+              {h('kda', t('stats.col.kda'))}
+              {h('cs', t('stats.col.cs'))}
+              {h('dmg', t('stats.col.dmg'))}
+              {h('gold', t('stats.col.gold'))}
+              {h('kp', t('stats.col.kp'))}
+              {h('share', t('stats.col.share'))}
+              {h('vision', t('stats.col.vision'), 'pr-4')}
             </tr>
           </thead>
           <tbody>
@@ -191,7 +192,7 @@ function ChampionTable({ matches, puuid, onOpen }: { matches: MatchSummary[]; pu
                 <tr key={r.key} className="fade-up border-t border-line first:border-0 hover:bg-raised" style={{ animationDelay: `${Math.min(i, 12) * 15}ms` }}>
                   <td className="px-4 py-2">
                     {onOpen ? (
-                      <button onClick={() => onOpen(id)} className="flex items-center gap-2.5 text-left font-medium hover:text-gold" title={`${c.name}: details and comparison`}>
+                      <button onClick={() => onOpen(id)} className="flex items-center gap-2.5 text-left font-medium hover:text-gold" title={t('pool.details', { champion: c.name })}>
                         <GameImg src={c.url} alt="" size={30} rounded="md" />
                         {c.name}
                       </button>
@@ -205,7 +206,7 @@ function ChampionTable({ matches, puuid, onOpen }: { matches: MatchSummary[]; pu
                   <td className="num px-2 text-right">
                     {r.games}
                     <span className="block text-xs text-muted">
-                      {r.wins}W {r.games - r.wins}L
+                      {t('common.wins', { count: r.wins })} {t('common.losses', { count: r.games - r.wins })}
                     </span>
                   </td>
                   <td className={clsx('num px-2 text-right font-semibold', winRateTone(wr))}>{pct(wr)}</td>
@@ -238,7 +239,7 @@ function RoleTable({ matches, puuid }: { matches: MatchSummary[]; puuid: string 
   return (
     <section className="panel p-4" aria-labelledby="pr-h">
       <h2 id="pr-h" className="panel-title">
-        By role
+        {t('stats.byRole')}
       </h2>
       <ul className="mt-3 space-y-2.5">
         {rows.map((r) => {
@@ -254,7 +255,11 @@ function RoleTable({ matches, puuid }: { matches: MatchSummary[]; puuid: string 
                 <span className="grow-x block h-full origin-left rounded-full bg-gold" style={{ width: `${(r.games / max) * 100}%` }} />
               </span>
               <span className="num w-44 text-right text-xs text-muted">
-                {r.games} games · <span className={clsx('font-semibold', winRateTone(wr))}>{pct(wr)}</span> · <span className={kdaTone(ratio)}>{formatKda(ratio)}</span> KDA
+                {t.rich('stats.roleLine', {
+                  games: t('common.games', { count: r.games }),
+                  rate: <span className={clsx('font-semibold', winRateTone(wr))}>{pct(wr)}</span>,
+                  kda: <span className={kdaTone(ratio)}>{formatKda(ratio)}</span>,
+                })}
               </span>
             </li>
           );
@@ -284,7 +289,10 @@ function ActivityCalendar({ matches, puuid }: { matches: MatchSummary[]; puuid: 
   const cells: { date: Date; e?: { w: number; l: number } }[] = [];
   for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) cells.push({ date: new Date(d), e: days.get(key(d)) });
   const max = Math.max(1, ...[...days.values()].map((e) => e.w + e.l));
-  const fmt = new Intl.DateTimeFormat('en', { weekday: 'short', month: 'short', day: 'numeric' });
+  const fmt = new Intl.DateTimeFormat(langInfo().intl, { weekday: 'short', month: 'short', day: 'numeric' });
+  // Weekday initials in the current language, Monday first (5 Jan 2026 was a Monday).
+  const wd = new Intl.DateTimeFormat(langInfo().intl, { weekday: 'short' });
+  const dayNames = [0, 2, 4, 6].map((i) => wd.format(new Date(2026, 0, 5 + i)));
   const weeks: (typeof cells)[] = [];
   cells.forEach((c, i) => (weeks[Math.floor(i / 7)] ??= []).push(c));
 
@@ -292,13 +300,13 @@ function ActivityCalendar({ matches, puuid }: { matches: MatchSummary[]; puuid: 
     <section className="panel p-4" aria-labelledby="cal-h">
       <div className="flex items-baseline justify-between">
         <h2 id="cal-h" className="panel-title">
-          Activity
+          {t('stats.activity')}
         </h2>
-        <span className="text-xs text-muted">Last 8 weeks of loaded games</span>
+        <span className="text-xs text-muted">{t('stats.activitySub')}</span>
       </div>
-      <div className="mt-3 flex gap-1" role="img" aria-label="Games played per day over the last eight weeks">
+      <div className="mt-3 flex gap-1" role="img" aria-label={t('stats.activityAria')}>
         <div className="mr-1 grid grid-rows-7 gap-1 text-[10px] text-faint" aria-hidden>
-          {['Mon', '', 'Wed', '', 'Fri', '', 'Sun'].map((d, i) => (
+          {[dayNames[0], '', dayNames[1], '', dayNames[2], '', dayNames[3]].map((d, i) => (
             <span key={i} className="h-4 leading-4">
               {d}
             </span>
@@ -309,7 +317,7 @@ function ActivityCalendar({ matches, puuid }: { matches: MatchSummary[]; puuid: 
             {w.map(({ date, e }) => {
               const n = e ? e.w + e.l : 0;
               const wr = e && n ? e.w / n : 0;
-              const label = `${fmt.format(date)}: ${n ? `${n} game${n > 1 ? 's' : ''}, ${e!.w}W ${e!.l}L` : 'no games'}`;
+              const label = n ? t('stats.dayGames', { date: fmt.format(date), games: t('common.games', { count: n }), wins: t('common.wins', { count: e!.w }), losses: t('common.losses', { count: e!.l }) }) : t('stats.dayNone', { date: fmt.format(date) });
               return (
                 <Tooltip key={date.toISOString()} content={label}>
                   <span
@@ -324,30 +332,31 @@ function ActivityCalendar({ matches, puuid }: { matches: MatchSummary[]; puuid: 
       </div>
       <p className="mt-3 flex items-center gap-3 text-xs text-muted">
         <span className="flex items-center gap-1.5">
-          <span className="size-3 rounded-[3px] bg-win" /> Won most games that day
+          <span className="size-3 rounded-[3px] bg-win" /> {t('stats.legendWin')}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="size-3 rounded-[3px] bg-loss" /> Lost most
+          <span className="size-3 rounded-[3px] bg-loss" /> {t('stats.legendLoss')}
         </span>
-        <span>Darker = more games</span>
+        <span>{t('stats.legendDark')}</span>
       </p>
     </section>
   );
 }
 
 const TREND_METRICS = [
-  { id: 'kda', label: 'KDA', fmt: (n: number) => n.toFixed(1) },
-  { id: 'cs', label: 'CS per minute', fmt: (n: number) => n.toFixed(1) },
-  { id: 'share', label: 'Damage share', fmt: (n: number) => `${Math.round(n * 100)}%` },
-  { id: 'kp', label: 'Kill share', fmt: (n: number) => `${Math.round(n * 100)}%` },
-  { id: 'vision', label: 'Vision per minute', fmt: (n: number) => n.toFixed(1) },
-  { id: 'deaths', label: 'Deaths', fmt: (n: number) => n.toFixed(1) },
+  { id: 'kda', fmt: (n: number) => n.toFixed(1) },
+  { id: 'cs', fmt: (n: number) => n.toFixed(1) },
+  { id: 'share', fmt: (n: number) => pct(n) },
+  { id: 'kp', fmt: (n: number) => pct(n) },
+  { id: 'vision', fmt: (n: number) => n.toFixed(1) },
+  { id: 'deaths', fmt: (n: number) => n.toFixed(1) },
 ] as const;
+const metricLabel = (id: (typeof TREND_METRICS)[number]['id']) => t(`metric.${id}`);
 
 /** Per-game values with a 5-game rolling average, oldest game on the left. */
 function Trends({ matches, puuid }: { matches: MatchSummary[]; puuid: string }) {
   const [metric, setMetric] = useState<(typeof TREND_METRICS)[number]['id']>('kda');
-  const def = TREND_METRICS.find((t) => t.id === metric)!;
+  const def = TREND_METRICS.find((m) => m.id === metric)!;
   const games = [...matches]
     .reverse()
     .flatMap((m) => {
@@ -386,26 +395,26 @@ function Trends({ matches, puuid }: { matches: MatchSummary[]; puuid: string }) 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 id="trend-h" className="panel-title">
-            Trends
+            {t('stats.trends')}
           </h2>
           <p className="text-xs text-muted">
-            Recent half vs earlier half:{' '}
+            {t('stats.trendCompare')}{' '}
             <span className={clsx('font-semibold', Math.abs(change) < 1e-6 ? 'text-muted' : better ? 'text-win' : 'text-loss')}>
               {change >= 0 ? '+' : '−'}
               {def.fmt(Math.abs(change))}
             </span>
           </p>
         </div>
-        <div role="radiogroup" aria-label="Metric" className="flex flex-wrap gap-1 rounded border border-line bg-surface p-1">
-          {TREND_METRICS.map((t) => (
+        <div role="radiogroup" aria-label={t('stats.metric')} className="flex flex-wrap gap-1 rounded border border-line bg-surface p-1">
+          {TREND_METRICS.map((m) => (
             <button
-              key={t.id}
+              key={m.id}
               role="radio"
-              aria-checked={metric === t.id}
-              onClick={() => setMetric(t.id)}
-              className={clsx('rounded-sm px-2.5 py-1 text-xs font-medium transition-colors', metric === t.id ? 'bg-raised text-text' : 'text-muted hover:text-text')}
+              aria-checked={metric === m.id}
+              onClick={() => setMetric(m.id)}
+              className={clsx('rounded-sm px-2.5 py-1 text-xs font-medium transition-colors', metric === m.id ? 'bg-raised text-text' : 'text-muted hover:text-text')}
             >
-              {t.label}
+              {metricLabel(m.id)}
             </button>
           ))}
         </div>
@@ -413,14 +422,14 @@ function Trends({ matches, puuid }: { matches: MatchSummary[]; puuid: string }) 
       <div className="mt-4">
         <LineChart
           key={metric}
-          label={`${def.label} per game`}
+          label={t('stats.perGame', { metric: metricLabel(def.id) })}
           format={def.fmt}
           xLabel={(i) => `#${i + 1}`}
-          hoverTitle={(i) => `Game ${i + 1} of ${values.length}`}
+          hoverTitle={(i) => t('stats.gameOf', { n: i + 1, total: values.length })}
           tickEvery={Math.max(1, Math.ceil(values.length / 10))}
           series={[
-            { id: 'avg', name: '5-game average', color: 'var(--series-1)', values: rolling },
-            { id: 'game', name: 'Each game', color: 'var(--faint)', values, dashed: true },
+            { id: 'avg', name: t('stats.avg5'), color: 'var(--series-1)', values: rolling },
+            { id: 'game', name: t('stats.eachGame'), color: 'var(--faint)', values, dashed: true },
           ]}
         />
       </div>

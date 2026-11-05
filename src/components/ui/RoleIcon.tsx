@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 /** Lane glyphs drawn to echo the in-client position icons. */
 const PATHS: Record<string, string> = {
   TOP: 'M3 3h13l-4 4H7v5l-4 4V3zm18 5v13H8l4-4h5v-5l4-4zM10 10h4v4h-4z',
@@ -7,13 +8,11 @@ const PATHS: Record<string, string> = {
   UTILITY: 'M12 4l3 3-3 3-3-3 3-3zM2 8h6l2 3-2 2H5L2 8zm20 0l-3 5h-3l-2-2 2-3h6zm-10 4l2 2v7l-2 1-2-1v-7l2-2z',
 };
 
-export const ROLE_LABEL: Record<string, string> = {
-  TOP: 'Top',
-  JUNGLE: 'Jungle',
-  MIDDLE: 'Mid',
-  BOTTOM: 'Bot',
-  UTILITY: 'Support',
-};
+const ROLE_IDS = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY', 'ALL'];
+/** Role names in the current language: ROLE_LABEL.MIDDLE → "Mid". */
+export const ROLE_LABEL: Record<string, string> = new Proxy({} as Record<string, string>, {
+  get: (_, k) => (typeof k === 'string' && ROLE_IDS.includes(k) ? t(`role.${k}` as 'role.TOP') : undefined),
+});
 
 export function RoleIcon({ role, size = 16, className }: { role: string; size?: number; className?: string }) {
   const d = PATHS[role];

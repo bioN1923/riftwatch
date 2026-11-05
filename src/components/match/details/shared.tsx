@@ -5,6 +5,7 @@ import { api } from '../../../lib/api';
 import { assets, useStaticData } from '../../../lib/ddragon';
 import { GameImg } from '../../ui/GameImg';
 import { Skeleton, ErrorState } from '../../ui/States';
+import { t } from '../../../i18n';
 
 /** The enemy in the same position, if the queue has positions. */
 export function laneOpponent(m: MatchSummary, p: Participant) {
@@ -46,7 +47,7 @@ export function PlayerPicker({ match, value, onChange }: { match: MatchSummary; 
   const a = assets(data);
   const teams = [100, 200].map((t) => match.participants.filter((p) => p.teamId === t));
   return (
-    <div role="radiogroup" aria-label="Show player" className="flex flex-wrap items-center gap-3">
+    <div role="radiogroup" aria-label={t('picker.aria')} className="flex flex-wrap items-center gap-3">
       {teams.map((team, ti) => (
         <div key={ti} className="flex gap-1">
           {team.map((p) => {

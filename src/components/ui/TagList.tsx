@@ -1,10 +1,11 @@
 import clsx from 'clsx';
 import type { PlayerTag } from '../../lib/tags';
+import { t } from '../../i18n';
 
 export function TagList({ tags, className }: { tags: PlayerTag[]; className?: string }) {
   if (!tags.length) return null;
   return (
-    <ul className={clsx('flex flex-wrap gap-1.5', className)} aria-label="Player tags">
+    <ul className={clsx('flex flex-wrap gap-1.5', className)} aria-label={t('tags.label')}>
       {tags.map((t) => (
         <li
           key={t.id}

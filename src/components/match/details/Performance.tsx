@@ -4,6 +4,7 @@ import { assets, useStaticData } from '../../../lib/ddragon';
 import { compact, pct } from '../../../lib/format';
 import { GameImg } from '../../ui/GameImg';
 import { laneOpponent, SectionTitle } from './shared';
+import { t } from '../../../i18n';
 
 interface Metric {
   id: string;
@@ -18,23 +19,23 @@ const per = (n: number, m: MatchSummary) => n / Math.max(1, m.duration / 60);
 const teamDamage = (p: Participant, m: MatchSummary) => m.participants.filter((x) => x.teamId === p.teamId).reduce((s, x) => s + x.damage, 0);
 
 const METRICS: Metric[] = [
-  { id: 'dmg', label: 'Damage to champions', value: (p) => p.damage, fmt: compact, strength: 'Most damage in the game' },
-  { id: 'dpm', label: 'Damage per minute', value: (p, m) => per(p.damage, m), fmt: (n) => n.toFixed(0), strength: 'Highest damage per minute' },
-  { id: 'share', label: 'Share of team damage', value: (p, m) => p.damage / Math.max(1, teamDamage(p, m)), fmt: (n) => pct(n), strength: 'Carried the team’s damage' },
-  { id: 'kp', label: 'Kill share', value: (p) => p.killParticipation, fmt: (n) => pct(n), strength: 'In on the most kills' },
-  { id: 'gpm', label: 'Gold per minute', value: (p, m) => per(p.gold, m), fmt: (n) => n.toFixed(0), strength: 'Richest player' },
-  { id: 'cspm', label: 'CS per minute', value: (p, m) => per(p.cs, m), fmt: (n) => n.toFixed(1), strength: 'Best farmer' },
-  { id: 'cs10', label: 'CS at 10 minutes', value: (p) => p.extra.csAt10, fmt: (n) => n.toFixed(0), strength: 'Best early farm' },
-  { id: 'vpm', label: 'Vision per minute', value: (p, m) => per(p.visionScore, m), fmt: (n) => n.toFixed(2), strength: 'Best vision' },
-  { id: 'taken', label: 'Damage taken', value: (p) => p.damageTaken, fmt: compact, strength: 'Soaked the most damage' },
-  { id: 'mitigated', label: 'Damage mitigated', value: (p) => p.extra.damageMitigated, fmt: compact, strength: 'Toughest frontline' },
-  { id: 'heal', label: 'Healing and shields on allies', value: (p) => p.extra.healing + p.extra.shielding, fmt: compact, strength: 'Kept the team alive' },
-  { id: 'cc', label: 'Crowd control', value: (p) => p.extra.ccTime, fmt: (n) => `${n.toFixed(0)}s`, strength: 'Most crowd control' },
-  { id: 'obj', label: 'Objective damage', value: (p) => p.extra.objectiveDamage, fmt: compact, strength: 'Took the objectives' },
-  { id: 'turret', label: 'Turret damage', value: (p) => p.extra.turretDamage, fmt: compact, strength: 'Top tower pusher' },
-  { id: 'solo', label: 'Solo kills', value: (p) => p.extra.soloKills, fmt: (n) => String(n), strength: 'Most solo kills' },
-  { id: 'plates', label: 'Turret plates', value: (p) => p.extra.turretPlates, fmt: (n) => String(n), strength: 'Most turret plates' },
-  { id: 'deaths', label: 'Deaths', value: (p) => p.deaths, fmt: (n) => String(n), strength: 'Fewest deaths', lowerIsBetter: true },
+  { id: 'dmg', get label() { return t('perf.dmg'); }, value: (p) => p.damage, fmt: compact, get strength() { return t('perf.dmg.best'); } },
+  { id: 'dpm', get label() { return t('perf.dpm'); }, value: (p, m) => per(p.damage, m), fmt: (n) => n.toFixed(0), get strength() { return t('perf.dpm.best'); } },
+  { id: 'share', get label() { return t('perf.share'); }, value: (p, m) => p.damage / Math.max(1, teamDamage(p, m)), fmt: (n) => pct(n), get strength() { return t('perf.share.best'); } },
+  { id: 'kp', get label() { return t('perf.kp'); }, value: (p) => p.killParticipation, fmt: (n) => pct(n), get strength() { return t('perf.kp.best'); } },
+  { id: 'gpm', get label() { return t('perf.gpm'); }, value: (p, m) => per(p.gold, m), fmt: (n) => n.toFixed(0), get strength() { return t('perf.gpm.best'); } },
+  { id: 'cspm', get label() { return t('perf.cspm'); }, value: (p, m) => per(p.cs, m), fmt: (n) => n.toFixed(1), get strength() { return t('perf.cspm.best'); } },
+  { id: 'cs10', get label() { return t('perf.cs10'); }, value: (p) => p.extra.csAt10, fmt: (n) => n.toFixed(0), get strength() { return t('perf.cs10.best'); } },
+  { id: 'vpm', get label() { return t('perf.vpm'); }, value: (p, m) => per(p.visionScore, m), fmt: (n) => n.toFixed(2), get strength() { return t('perf.vpm.best'); } },
+  { id: 'taken', get label() { return t('perf.taken'); }, value: (p) => p.damageTaken, fmt: compact, get strength() { return t('perf.taken.best'); } },
+  { id: 'mitigated', get label() { return t('perf.mitigated'); }, value: (p) => p.extra.damageMitigated, fmt: compact, get strength() { return t('perf.mitigated.best'); } },
+  { id: 'heal', get label() { return t('perf.heal'); }, value: (p) => p.extra.healing + p.extra.shielding, fmt: compact, get strength() { return t('perf.heal.best'); } },
+  { id: 'cc', get label() { return t('perf.cc'); }, value: (p) => p.extra.ccTime, fmt: (n) => t('perf.seconds', { n: n.toFixed(0) }), get strength() { return t('perf.cc.best'); } },
+  { id: 'obj', get label() { return t('perf.obj'); }, value: (p) => p.extra.objectiveDamage, fmt: compact, get strength() { return t('perf.obj.best'); } },
+  { id: 'turret', get label() { return t('perf.turret'); }, value: (p) => p.extra.turretDamage, fmt: compact, get strength() { return t('perf.turret.best'); } },
+  { id: 'solo', get label() { return t('perf.solo'); }, value: (p) => p.extra.soloKills, fmt: (n) => String(n), get strength() { return t('perf.solo.best'); } },
+  { id: 'plates', get label() { return t('perf.plates'); }, value: (p) => p.extra.turretPlates, fmt: (n) => String(n), get strength() { return t('perf.plates.best'); } },
+  { id: 'deaths', get label() { return t('perf.deaths'); }, value: (p) => p.deaths, fmt: (n) => String(n), get strength() { return t('perf.deaths.best'); }, lowerIsBetter: true },
 ];
 
 export function Performance({ match, puuid }: { match: MatchSummary; puuid: string }) {
@@ -66,20 +67,20 @@ export function Performance({ match, puuid }: { match: MatchSummary; puuid: stri
         <div className="flex items-center gap-2.5">
           <GameImg src={me.url} alt="" size={40} rounded="md" className="ring-2 ring-series-1" />
           <div>
-            <p className="text-xs text-muted">This player</p>
+            <p className="text-xs text-muted">{t('perf.thisPlayer')}</p>
             <p className="font-display text-lg font-bold leading-tight">{me.name}</p>
           </div>
         </div>
-        <span className="font-display text-xl font-bold text-faint">vs</span>
+        <span className="font-display text-xl font-bold text-faint">{t('perf.vs')}</span>
         <div className="flex items-center gap-2.5">
           {them ? <GameImg src={them.url} alt="" size={40} rounded="md" className="ring-2 ring-series-2" /> : <span className="size-10 rounded-md bg-series-2/30 ring-2 ring-series-2" />}
           <div>
-            <p className="text-xs text-muted">{opp ? 'Lane opponent' : 'No lane opponent'}</p>
-            <p className="font-display text-lg font-bold leading-tight">{them ? them.name : 'Lobby average'}</p>
+            <p className="text-xs text-muted">{opp ? t('perf.laneOpp') : t('perf.noLaneOpp')}</p>
+            <p className="font-display text-lg font-bold leading-tight">{them ? them.name : t('perf.lobbyAvg')}</p>
           </div>
         </div>
         {strengths.length > 0 && (
-          <ul className="flex flex-wrap gap-1.5 lg:ml-auto" aria-label="Strengths this game">
+          <ul className="flex flex-wrap gap-1.5 lg:ml-auto" aria-label={t('perf.strengths')}>
             {strengths.map((s) => (
               <li key={s.mt.id} className="rounded-sm border border-gold/40 bg-gold/10 px-2 py-0.5 text-xs font-medium text-gold">
                 {s.mt.strength}
@@ -89,15 +90,15 @@ export function Performance({ match, puuid }: { match: MatchSummary; puuid: stri
         )}
       </div>
 
-      <SectionTitle aside="Bars are scaled to the best value in the game. Rank is out of all players.">Head to head</SectionTitle>
+      <SectionTitle aside={t('perf.headNote')}>{t('perf.head')}</SectionTitle>
       <table className="w-full text-sm">
         <thead className="sr-only">
           <tr>
-            <th>Metric</th>
+            <th>{t('perf.metric')}</th>
             <th>{me.name}</th>
-            <th>Comparison</th>
-            <th>{them ? them.name : 'Lobby average'}</th>
-            <th>Rank in game</th>
+            <th>{t('perf.comparison')}</th>
+            <th>{them ? them.name : t('perf.lobbyAvg')}</th>
+            <th>{t('perf.rank')}</th>
           </tr>
         </thead>
         <tbody>

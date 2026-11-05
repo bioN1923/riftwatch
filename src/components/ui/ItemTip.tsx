@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import clsx from 'clsx';
 import { assets, useStaticData } from '../../lib/ddragon';
 import { parseItem, type Seg, type Tone } from '../../lib/itemText';
+import { num, t } from '../../i18n';
 
 const TONE: Record<Tone, string> = {
   phys: 'text-[var(--tone-phys)]',
@@ -32,7 +33,7 @@ export function ItemTip({ id, note }: { id: number; note?: string }) {
   const a = assets(data);
   const it = data?.items.get(id);
   const parsed = useMemo(() => (it ? parseItem(it.description) : null), [it]);
-  if (!it || !parsed) return <span className="font-semibold">{`Item ${id}`}</span>;
+  if (!it || !parsed) return <span className="font-semibold">{t('item.fallback', { id: String(id) })}</span>;
 
   return (
     <span className="block w-[17rem] max-w-full">
@@ -44,7 +45,7 @@ export function ItemTip({ id, note }: { id: number; note?: string }) {
             {it.gold > 0 && (
               <span className="num inline-flex items-center gap-1 font-semibold text-gold">
                 <span className="size-2 rounded-full bg-gold" aria-hidden />
-                {it.gold.toLocaleString()}
+                {num(it.gold)}
               </span>
             )}
             {note && <span className="rounded-sm bg-sunken px-1.5 py-px font-medium text-muted">{note}</span>}
@@ -75,9 +76,9 @@ export function ItemTip({ id, note }: { id: number; note?: string }) {
                       e.kind === 'active' ? 'bg-gold text-gold-ink' : 'bg-sunken text-faint ring-1 ring-line',
                     )}
                   >
-                    {e.kind}
+                    {e.kind === 'active' ? t('item.active') : t('item.passive')}
                   </span>
-                  {e.name && e.name.toLowerCase() !== e.kind && <span className="font-semibold text-gold">{e.name}</span>}
+                  {e.name && ![e.kind, (e.kind === 'active' ? t('item.active') : t('item.passive')).toLowerCase()].includes(e.name.toLowerCase()) && <span className="font-semibold text-gold">{e.name}</span>}
                 </span>
               )}
               <Text segs={e.segs} />
@@ -90,7 +91,7 @@ export function ItemTip({ id, note }: { id: number; note?: string }) {
 
       {it.from.length > 0 && (
         <span className="mt-2.5 flex items-center gap-1.5 border-t border-line pt-2 text-[11px] text-faint">
-          Builds from
+          {t('item.buildsFrom')}
           {it.from.map((f, i) => (
             <img key={i} src={a.item(f).url} alt={data?.items.get(f)?.name ?? ''} className="size-5 rounded-[3px] ring-1 ring-line" />
           ))}

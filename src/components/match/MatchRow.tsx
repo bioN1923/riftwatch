@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { ChevronDown } from 'lucide-react';
 import type { MatchSummary, Participant } from '../../../shared/types';
 import { assets, champSlug, useStaticData } from '../../lib/ddragon';
-import { compact, duration, formatKda, kdaRatio, kdaTone, MULTIKILL, pct, timeAgo } from '../../lib/format';
+import { compact, duration, formatKda, kdaRatio, kdaTone, multikill, pct, timeAgo } from '../../lib/format';
 import { queueName } from '../../lib/queues';
 import { profilePath } from '../../lib/riotId';
 import { result } from '../../lib/stats';
@@ -13,8 +13,9 @@ import { Items, SpellsRunes } from './Loadout';
 import { MatchDetails } from './MatchDetails';
 import { fadeIn } from '../../lib/motion';
 import { Collapse } from '../ui/Motion';
+import { getLang, t } from '../../i18n';
 
-const RESULT_LABEL = { win: 'Win', loss: 'Loss', remake: 'Remake' } as const;
+const resultLabel = (r: 'win' | 'loss' | 'remake') => t(`result.${r}`);
 
 export function Badge({ p }: { p: Participant }) {
   if (p.badge === 'MVP') return <span className="rounded-sm bg-gold px-1.5 py-px font-sans text-[10px] font-bold text-gold-ink">MVP</span>;
@@ -42,7 +43,7 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
   return (
     <article
       id={`m-${match.id}`}
-      aria-label={`${RESULT_LABEL[r]} as ${champ.name}, ${queueName(match.queueId)}, ${timeAgo(ended)}`}
+      aria-label={t('match.aria', { result: resultLabel(r), champion: champ.name, queue: queueName(match.queueId), ago: timeAgo(ended) })}
       className={clsx(
         'group/card scroll-mt-20 overflow-hidden rounded border bg-surface transition-colors duration-200',
         open ? 'border-line-strong' : 'border-line hover:border-line-strong',
@@ -62,7 +63,7 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
                 r === 'win' ? 'bg-win text-bg' : r === 'loss' ? 'bg-loss text-bg' : 'bg-faint text-bg',
               )}
             >
-              {arena && p.placement ? ordinal(p.placement) : RESULT_LABEL[r]}
+              {arena && p.placement ? ordinal(p.placement) : resultLabel(r)}
             </span>
             <div>
               <Link
@@ -71,7 +72,7 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
               >
                 {champ.name}
               </Link>
-              <p className="num text-[11px] text-muted">Level {p.champLevel}</p>
+              <p className="num text-[11px] text-muted">{t('match.level', { level: p.champLevel })}</p>
             </div>
           </div>
         </div>
@@ -97,20 +98,20 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
                   {p.assists}
                 </p>
                 <p className="mt-1 flex items-center gap-2 text-xs">
-                  <span className={clsx('num font-semibold', kdaTone(ratio))}>{formatKda(ratio)} KDA</span>
+                  <span className={clsx('num font-semibold', kdaTone(ratio))}>{t('common.kdaValue', { value: formatKda(ratio) })}</span>
                   <Badge p={p} />
                   {p.largestMultiKill >= 2 && (
                     <span className={clsx('rounded-sm px-1.5 py-px text-[10px] font-bold', p.largestMultiKill >= 4 ? 'bg-kda-great text-bg' : 'bg-raised text-text')}>
-                      {MULTIKILL[Math.min(5, p.largestMultiKill)]}
+                      {multikill(p.largestMultiKill)}
                     </span>
                   )}
                 </p>
               </div>
               <dl className="hidden grid-cols-2 gap-x-4 gap-y-0.5 text-xs md:grid">
-                <Stat label="Kill share" value={pct(p.killParticipation)} />
-                <Stat label="CS" value={`${p.cs} · ${(p.cs / minutes).toFixed(1)}/m`} />
-                <Stat label="Damage" value={compact(p.damage)} />
-                <Stat label="Vision" value={String(p.visionScore)} />
+                <Stat label={t('match.killShare')} value={pct(p.killParticipation)} />
+                <Stat label={t('match.cs')} value={`${p.cs} · ${(p.cs / minutes).toFixed(1)}/m`} />
+                <Stat label={t('match.damage')} value={compact(p.damage)} />
+                <Stat label={t('match.vision')} value={String(p.visionScore)} />
               </dl>
             </div>
 
@@ -118,7 +119,7 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
           </div>
 
           {teams.length > 0 && (
-            <div className="hidden shrink-0 grid-cols-2 gap-x-3 border-l border-line pl-4 xl:grid" role="group" aria-label="Players">
+            <div className="hidden shrink-0 grid-cols-2 gap-x-3 border-l border-line pl-4 xl:grid" role="group" aria-label={t('match.players')}>
               {teams.map((team, ti) => (
                 <ul key={ti} className="space-y-[3px]">
                   {team.map((x) => {
@@ -147,7 +148,7 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
           aria-controls={detailsId}
-          aria-label={open ? 'Hide game details' : 'Show game details'}
+          aria-label={open ? t('match.hide') : t('match.show')}
           className="flex w-10 shrink-0 items-center justify-center border-l border-line text-muted transition-colors hover:bg-raised hover:text-gold"
         >
           <ChevronDown className={clsx('size-5 transition-transform duration-[420ms]', open && 'rotate-180')} aria-hidden />
@@ -171,6 +172,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 export function ordinal(n: number) {
+  if (getLang() !== 'en') return t('common.ordinal', { n: String(n) });
   const s = ['th', 'st', 'nd', 'rd'];
   const v = n % 100;
   return `${n}${s[(v - 20) % 10] || s[v] || s[0]}`;

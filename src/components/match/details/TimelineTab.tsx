@@ -6,6 +6,7 @@ import { assets, useStaticData } from '../../../lib/ddragon';
 import { GameImg } from '../../ui/GameImg';
 import { GoldChart, objectiveLabel } from '../../charts/GoldChart';
 import { fmtTime, PlayerPicker, SectionTitle, TimelineGate, useTimeline } from './shared';
+import { t } from '../../../i18n';
 
 const MAP_SIZE = 14870;
 
@@ -22,11 +23,11 @@ export function TimelineTab({ match, puuid, platform }: { match: MatchSummary; p
           return (
             <>
               <section>
-                <SectionTitle aside="Hover the chart for the gold lead at each minute">Gold lead</SectionTitle>
+                <SectionTitle aside={t('tl.hover')}>{t('tl.goldLead')}</SectionTitle>
                 <GoldChart diff={diff} events={tl.events} />
               </section>
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
-                <h3 className="font-display text-lg font-bold">Kills, deaths and objectives</h3>
+                <h3 className="font-display text-lg font-bold">{t('tl.events')}</h3>
                 <PlayerPicker match={match} value={who} onChange={setWho} />
               </div>
               <PlayerTimeline match={match} tl={tl} who={who} />
@@ -45,7 +46,7 @@ function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTime
   const myTeam = match.participants.find((p) => p.puuid === who)?.teamId ?? 100;
   const champAt = (i: number) => {
     const p = match.participants.find((x) => x.puuid === tl.puuids[i]);
-    return p ? a.champion(p.championId) : { url: undefined, name: 'Minions or turret' };
+    return p ? a.champion(p.championId) : { url: undefined, name: t('tl.minions') };
   };
 
   const kills = tl.events.filter((e): e is Extract<TimelineEvent, { type: 'kill' }> => e.type === 'kill');
@@ -62,7 +63,7 @@ function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTime
       <figure>
         <div className="relative aspect-square w-full overflow-hidden rounded bg-sunken ring-1 ring-line">
           {a.map && <img src={a.map} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60 saturate-50" onError={(e) => (e.currentTarget.style.display = 'none')} />}
-          <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" role="img" aria-label="Where this player's kills and deaths happened">
+          <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" role="img" aria-label={t('tl.mapAria')}>
             {mine.map(({ e, role }, i) => {
               const cx = (e.x / MAP_SIZE) * 100;
               const cy = 100 - (e.y / MAP_SIZE) * 100;
@@ -70,7 +71,7 @@ function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTime
               return (
                 <circle key={i} cx={cx} cy={cy} r={role === 'assist' ? 1.8 : 2.3} fill={role === 'assist' ? 'none' : color} stroke={role === 'assist' ? color : 'var(--bg)'} strokeWidth={role === 'assist' ? 0.8 : 0.5}>
                   <title>
-                    {fmtTime(e.t)} · {role === 'kill' ? `Killed ${champAt(e.victim).name}` : role === 'death' ? `Killed by ${champAt(e.killer).name}` : `Assisted on ${champAt(e.victim).name}`}
+                    {fmtTime(e.t)} · {role === 'kill' ? t('tl.killed', { champion: champAt(e.victim).name }) : role === 'death' ? t('tl.killedBy', { champion: champAt(e.killer).name }) : t('tl.assisted', { champion: champAt(e.victim).name })}
                   </title>
                 </circle>
               );
@@ -79,19 +80,19 @@ function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTime
         </div>
         <figcaption className="mt-2 flex flex-wrap gap-3 text-xs text-muted">
           <span className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-full bg-win" /> Kill ({mine.filter((x) => x.role === 'kill').length})
+            <span className="size-2.5 rounded-full bg-win" /> {t('tl.kill', { count: mine.filter((x) => x.role === 'kill').length })}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-full border border-win" /> Assist ({mine.filter((x) => x.role === 'assist').length})
+            <span className="size-2.5 rounded-full border border-win" /> {t('tl.assist', { count: mine.filter((x) => x.role === 'assist').length })}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-full bg-loss" /> Death ({mine.filter((x) => x.role === 'death').length})
+            <span className="size-2.5 rounded-full bg-loss" /> {t('tl.death', { count: mine.filter((x) => x.role === 'death').length })}
           </span>
         </figcaption>
       </figure>
 
       <ol className="max-h-[360px] space-y-0.5 overflow-y-auto pr-1 text-sm">
-        {feed.length === 0 && <li className="text-muted">Nothing happened for this player.</li>}
+        {feed.length === 0 && <li className="text-muted">{t('tl.nothing')}</li>}
         {feed.map((f, i) => {
           const time = <span className="num w-11 shrink-0 text-xs text-faint">{fmtTime(f.t)}</span>;
           if (f.kind === 'objective') {
@@ -103,7 +104,7 @@ function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTime
                 {time}
                 <Icon className={clsx('size-4', e.teamId === 100 ? 'text-side-blue' : 'text-side-red')} aria-hidden />
                 <span>
-                  {ours ? 'Your team' : 'Enemy team'} took <span className="text-text">{objectiveLabel(e)}</span>
+                  {t.rich(ours ? 'tl.ourTook' : 'tl.enemyTook', { objective: <span className="text-text">{objectiveLabel(e)}</span> })}
                 </span>
               </li>
             );
@@ -117,7 +118,7 @@ function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTime
               <Icon className={clsx('size-4', f.kind === 'death' ? 'text-loss' : 'text-win')} aria-hidden />
               <GameImg src={other.url} alt="" size={20} rounded="sm" />
               <span>
-                {f.kind === 'kill' ? 'Killed' : f.kind === 'death' ? 'Killed by' : 'Helped kill'} <span className="font-medium">{other.name}</span>
+                {t.rich(f.kind === 'kill' ? 'tl.killed' : f.kind === 'death' ? 'tl.killedBy' : 'tl.helped', { champion: <span className="font-medium">{other.name}</span> })}
               </span>
             </li>
           );

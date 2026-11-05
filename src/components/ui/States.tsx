@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { AlertTriangle, SearchX, KeyRound, Timer } from 'lucide-react';
 import { ApiClientError } from '../../lib/api';
+import { getLang, t } from '../../i18n';
 
 export function Skeleton({ className }: { className?: string }) {
   return <div className={`skeleton ${className ?? ''}`} aria-hidden="true" />;
@@ -11,14 +12,15 @@ export function ErrorState({ error, action, page, title: titleOverride }: { erro
   const Icon = e?.code === 'NOT_FOUND' ? SearchX : e?.code === 'KEY_INVALID' ? KeyRound : e?.code === 'RATE_LIMITED' ? Timer : AlertTriangle;
   const title =
     titleOverride ??
-    (e?.code === 'NOT_FOUND'
-      ? 'Player not found'
-      : e?.code === 'KEY_INVALID'
-        ? 'The API key needs renewing'
-        : e?.code === 'RATE_LIMITED'
-          ? 'Too many requests right now'
-          : 'Couldn’t load this');
-  const message = e?.message ?? (error instanceof Error ? error.message : 'Something went wrong.');
+    (e?.code === 'NOT_FOUND' ? t('error.NOT_FOUND.title') : e?.code === 'KEY_INVALID' ? t('error.KEY_INVALID.title') : e?.code === 'RATE_LIMITED' ? t('error.RATE_LIMITED.title') : t('error.generic.title'));
+  // The server explains errors in English; other languages get the translated explanation for the error type.
+  const message = e
+    ? getLang() === 'en'
+      ? e.message
+      : t(`error.${e.code}.body` as 'error.NOT_FOUND.body')
+    : error instanceof Error && getLang() === 'en'
+      ? error.message
+      : t('error.generic.body');
   return (
     <div role="alert" className="panel flex flex-col items-center gap-3 px-6 py-12 text-center">
       <Icon className="size-8 text-muted" aria-hidden />

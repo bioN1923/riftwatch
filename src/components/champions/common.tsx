@@ -1,15 +1,14 @@
 import clsx from 'clsx';
 import type { StatsGroup, TierRow } from '../../../shared/types';
 import { RoleIcon } from '../ui/RoleIcon';
+import { t } from '../../i18n';
 
-export const ROLE_TABS = [
-  { id: 'ALL', label: 'All roles' },
-  { id: 'TOP', label: 'Top' },
-  { id: 'JUNGLE', label: 'Jungle' },
-  { id: 'MIDDLE', label: 'Mid' },
-  { id: 'BOTTOM', label: 'Bot' },
-  { id: 'UTILITY', label: 'Support' },
-];
+export const ROLE_TABS = ['ALL', 'TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'].map((id) => ({
+  id,
+  get label() {
+    return t(`role.${id}` as 'role.TOP');
+  },
+}));
 
 export function TierBadge({ tier, size = 'md' }: { tier: TierRow['tier']; size?: 'md' | 'lg' }) {
   const tone =
@@ -17,7 +16,7 @@ export function TierBadge({ tier, size = 'md' }: { tier: TierRow['tier']; size?:
   return (
     <span
       className={clsx('inline-grid place-items-center rounded-sm font-display font-extrabold leading-none', tone, size === 'lg' ? 'h-10 min-w-12 px-2 text-3xl' : 'h-6 min-w-8 px-1 text-base')}
-      title={tier === '–' ? 'Not ranked: rarely played in this role' : `Tier ${tier}`}
+      title={tier === '–' ? t('tierBadge.unranked') : t('tierBadge.tier', { tier })}
     >
       {tier}
     </span>
@@ -26,11 +25,11 @@ export function TierBadge({ tier, size = 'md' }: { tier: TierRow['tier']; size?:
 
 export function GroupToggle({ value, onChange }: { value: StatsGroup; onChange: (g: StatsGroup) => void }) {
   return (
-    <div role="radiogroup" aria-label="Queue" className="flex rounded border border-line bg-surface p-0.5">
+    <div role="radiogroup" aria-label={t('queueToggle.label')} className="flex rounded border border-line bg-surface p-0.5">
       {(
         [
-          ['ranked', 'Ranked'],
-          ['aram', 'ARAM'],
+          ['ranked', t('queueToggle.ranked')],
+          ['aram', t('queueToggle.aram')],
         ] as const
       ).map(([id, label]) => (
         <button
@@ -48,10 +47,10 @@ export function GroupToggle({ value, onChange }: { value: StatsGroup; onChange: 
 }
 
 export function PatchSelect({ patches, value, onChange }: { patches: string[]; value: string | null; onChange: (p: string) => void }) {
-  if (patches.length <= 1) return value ? <span className="text-sm text-muted">Patch {value}</span> : null;
+  if (patches.length <= 1) return value ? <span className="text-sm text-muted">{t('patch.value', { patch: value })}</span> : null;
   return (
     <label className="flex items-center gap-2 text-sm text-muted">
-      Patch
+      {t('patch.label')}
       <select value={value ?? ''} onChange={(e) => onChange(e.target.value)} className="rounded border border-line bg-surface px-2 py-1 text-text">
         {patches.map((p) => (
           <option key={p}>{p}</option>

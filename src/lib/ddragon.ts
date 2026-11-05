@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { langInfo, t } from '../i18n';
 
 /** Static game data from Riot's Data Dragon CDN, always on the latest patch. */
 const CDN = 'https://ddragon.leagueoflegends.com/cdn';
@@ -30,9 +31,9 @@ export interface ItemData {
 
 const stripTags = (s: string) => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 
-async function loadStatic(): Promise<StaticData> {
+async function loadStatic(locale: string): Promise<StaticData> {
   const [version] = await getJson<string[]>('https://ddragon.leagueoflegends.com/api/versions.json');
-  const base = `${CDN}/${version}/data/en_US`;
+  const base = `${CDN}/${version}/data/${locale}`;
   const [champ, spell, item, runes] = await Promise.all([
     getJson<any>(`${base}/champion.json`),
     getJson<any>(`${base}/summoner.json`),
@@ -70,7 +71,9 @@ async function loadStatic(): Promise<StaticData> {
 }
 
 export function useStaticData() {
-  return useQuery({ queryKey: ['ddragon'], queryFn: loadStatic, staleTime: 6 * 60 * 60 * 1000, gcTime: Infinity, retry: 2 });
+  // Names, item and rune texts come in the site's language (Riot translates Data Dragon).
+  const locale = langInfo().ddragon;
+  return useQuery({ queryKey: ['ddragon', locale], queryFn: () => loadStatic(locale), staleTime: 6 * 60 * 60 * 1000, gcTime: Infinity, retry: 2 });
 }
 
 /** Asset URL helpers. They return undefined until static data has loaded, so images show a placeholder. */
@@ -79,7 +82,7 @@ export function assets(d: StaticData | undefined) {
   return {
     champion(id: number) {
       const c = d?.champions.get(id);
-      return { url: c && v ? `${CDN}/${v}/img/champion/${c.id}.png` : undefined, name: c?.name ?? 'Unknown champion' };
+      return { url: c && v ? `${CDN}/${v}/img/champion/${c.id}.png` : undefined, name: c?.name ?? t('champion.unknown') };
     },
     spell(id: number) {
       const s = d?.spells.get(id);
@@ -112,38 +115,41 @@ export function assets(d: StaticData | undefined) {
 
 export const rankEmblem = (tier: string) => `/ranks/${tier.toLowerCase()}.webp`;
 
-/** Stat shards aren't in runesReforged.json; these are their names. */
-export const SHARDS: Record<number, string> = {
-  5008: 'Adaptive Force',
-  5005: 'Attack Speed',
-  5007: 'Ability Haste',
-  5010: 'Move Speed',
-  5001: 'Health Scaling',
-  5011: 'Health',
-  5013: 'Tenacity and Slow Resist',
-  5002: 'Armor',
-  5003: 'Magic Resist',
-};
 
 /** Stat shards ("the little runes"): the in-game grid, one pick per row. Not in Data Dragon's rune file. */
 const SHARD_ICON = 'https://ddragon.leagueoflegends.com/cdn/img/perk-images/StatMods/';
-export const SHARD_INFO: Record<number, { name: string; desc: string; icon: string }> = {
-  5008: { name: 'Adaptive Force', desc: '+9 Adaptive Force', icon: 'StatModsAdaptiveForceIcon.png' },
-  5005: { name: 'Attack Speed', desc: '+10% Attack Speed', icon: 'StatModsAttackSpeedIcon.png' },
-  5007: { name: 'Ability Haste', desc: '+8 Ability Haste', icon: 'StatModsCDRScalingIcon.png' },
-  5010: { name: 'Move Speed', desc: '+2.5% Move Speed', icon: 'StatModsMovementSpeedIcon.png' },
-  5001: { name: 'Health Scaling', desc: '+10–180 Health (based on level)', icon: 'StatModsHealthPlusIcon.png' },
-  5011: { name: 'Health', desc: '+65 Health', icon: 'StatModsHealthScalingIcon.png' },
-  5013: { name: 'Tenacity and Slow Resist', desc: '+15% Tenacity and Slow Resist', icon: 'StatModsTenacityIcon.png' },
-  5002: { name: 'Armor', desc: '+6 Armor', icon: 'StatModsArmorIcon.png' },
-  5003: { name: 'Magic Resist', desc: '+8 Magic Resist', icon: 'StatModsMagicResIcon.png' },
-  5012: { name: 'Resist Scaling', desc: '+1–8 Armor and Magic Resist (based on level)', icon: 'StatModsAdaptiveForceScalingIcon.png' },
+const SHARD_ICONS: Record<number, string> = {
+  5008: 'StatModsAdaptiveForceIcon.png',
+  5005: 'StatModsAttackSpeedIcon.png',
+  5007: 'StatModsCDRScalingIcon.png',
+  5010: 'StatModsMovementSpeedIcon.png',
+  5001: 'StatModsHealthPlusIcon.png',
+  5011: 'StatModsHealthScalingIcon.png',
+  5013: 'StatModsTenacityIcon.png',
+  5002: 'StatModsArmorIcon.png',
+  5003: 'StatModsMagicResIcon.png',
+  5012: 'StatModsAdaptiveForceScalingIcon.png',
 };
+/** Name and bonus of each shard in the current language, plus its icon file. */
+export const SHARD_INFO: Record<number, { name: string; desc: string; icon: string }> = Object.fromEntries(
+  Object.entries(SHARD_ICONS).map(([id, icon]) => [
+    id,
+    {
+      icon,
+      get name() {
+        return t(`shard.${id}.name` as 'shard.5008.name');
+      },
+      get desc() {
+        return t(`shard.${id}.desc` as 'shard.5008.desc');
+      },
+    },
+  ]),
+);
 export const shardIcon = (id: number) => (SHARD_INFO[id] ? SHARD_ICON + SHARD_INFO[id].icon : undefined);
 export const SHARD_ROWS: { label: string; ids: number[] }[] = [
-  { label: 'Offense', ids: [5008, 5005, 5007] },
-  { label: 'Flex', ids: [5008, 5010, 5001] },
-  { label: 'Defense', ids: [5011, 5013, 5001] },
+  { get label() { return t('shard.row.offense'); }, ids: [5008, 5005, 5007] },
+  { get label() { return t('shard.row.flex'); }, ids: [5008, 5010, 5001] },
+  { get label() { return t('shard.row.defense'); }, ids: [5011, 5013, 5001] },
 ];
 
 export interface ChampionDetail {
@@ -163,11 +169,11 @@ export interface ChampionDetail {
 export function useChampionDetail(sd: StaticData | undefined, championId: number | undefined) {
   const c = championId != null ? sd?.champions.get(championId) : undefined;
   return useQuery({
-    queryKey: ['ddragon-champion', sd?.version, c?.id],
+    queryKey: ['ddragon-champion', sd?.version, c?.id, langInfo().ddragon],
     enabled: !!c && !!sd,
     staleTime: Infinity,
     queryFn: async (): Promise<ChampionDetail> => {
-      const raw = await getJson<any>(`${CDN}/${sd!.version}/data/en_US/champion/${c!.id}.json`);
+      const raw = await getJson<any>(`${CDN}/${sd!.version}/data/${langInfo().ddragon}/champion/${c!.id}.json`);
       const ch = raw.data[c!.id];
       return {
         id: ch.id,

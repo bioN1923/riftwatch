@@ -20,6 +20,7 @@ import { LpPanel } from '../components/profile/LpPanel';
 import { MatchRow } from '../components/match/MatchRow';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { useSlideDirection } from '../components/ui/Motion';
+import { langInfo, t } from '../i18n';
 
 const FIRST_PAGE = 20;
 const NEXT_PAGE = 10;
@@ -34,11 +35,11 @@ export function ProfilePage({ tab }: { tab: 'overview' | 'stats' | 'live' }) {
       <div className="mx-auto max-w-6xl px-4 py-10">
         <ErrorState
           page
-          title="That link doesn’t work"
-          error={new ApiClientError(400, 'BAD_REQUEST', 'This profile link isn’t valid. Profile links look like /lol/euw1/Name-TAG.')}
+          title={t('profile.badLinkTitle')}
+          error={new ApiClientError(400, 'BAD_REQUEST', t('profile.badLinkBody'))}
           action={
             <Link to="/" className="rounded-lg bg-gold px-4 py-2 font-semibold text-gold-ink">
-              Search for a player
+              {t('notFound.cta')}
             </Link>
           }
         />
@@ -129,7 +130,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
           error={profileQ.error}
           action={
             <button onClick={() => profileQ.refetch()} className="rounded-lg border border-line-strong px-4 py-2 font-semibold hover:bg-raised">
-              Try again
+              {t('common.tryAgain')}
             </button>
           }
         />
@@ -141,7 +142,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
 
   const queueBar = (
               <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-      <div className="flex w-max gap-5 border-b border-line" role="group" aria-label="Filter by queue">
+      <div className="flex w-max gap-5 border-b border-line" role="group" aria-label={t('profile.filterQueue')}>
         {QUEUE_FILTERS.map((q) => (
           <button
             key={q.id}
@@ -190,7 +191,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
             <ErrorState error={liveQ.error} />
           ) : (
             <div className="panel">
-              <EmptyState title={`${profile.account.gameName} isn’t in a game right now`}>This page checks again every minute while it’s open.</EmptyState>
+              <EmptyState title={t('profile.notInGame', { name: profile.account.gameName })}>{t('profile.notInGameBody')}</EmptyState>
             </div>
           )
         ) : tab === 'stats' ? (
@@ -208,7 +209,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
           </div>
         ) : (
           <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_310px]">
-            <section aria-label="Match history" className="min-w-0 space-y-4">
+            <section aria-label={t('profile.matchHistory')} className="min-w-0 space-y-4">
               {queueBar}
 
               {matchesQ.isError ? (
@@ -216,7 +217,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
                   error={matchesQ.error}
                   action={
                     <button onClick={() => matchesQ.refetch()} className="rounded border border-line-strong px-4 py-2 font-semibold hover:bg-raised">
-                      Try again
+                      {t('common.tryAgain')}
                     </button>
                   }
                 />
@@ -232,7 +233,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
                             <h2 className="flex items-baseline justify-between">
                               <span className="font-display text-lg font-bold">{g.label}</span>
                               <span className="num text-xs text-muted">
-                                <span className="text-win">{rec.w}W</span> <span className="text-loss">{rec.l}L</span>
+                                <span className="text-win">{t('common.wins', { count: rec.w })}</span> <span className="text-loss">{t('common.losses', { count: rec.l })}</span>
                               </span>
                             </h2>
                             {g.matches.map((m, i) => (
@@ -245,8 +246,8 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
                       })}
                     {matches && matches.length === 0 && (
                       <div className="panel">
-                        <EmptyState title="No games here yet">
-                          {queue === 'all' ? 'This player hasn’t played any matches recently.' : 'No recent games in this queue. Try another filter.'}
+                        <EmptyState title={t('profile.noGames')}>
+                          {queue === 'all' ? t('profile.noGamesAll') : t('profile.noGamesQueue')}
                         </EmptyState>
                       </div>
                     )}
@@ -258,7 +259,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
               )}
             </section>
 
-            <aside aria-label="Player summary" className="space-y-4 lg:sticky lg:top-[72px] lg:self-start">
+            <aside aria-label={t('profile.summary')} className="space-y-4 lg:sticky lg:top-[72px] lg:self-start">
               <ScoutingReport ov={ov} matches={matches} puuid={profile.account.puuid} name={profile.account.gameName} />
               <LpPanel profile={profile} />
               <ChampionPool ov={ov} loading={matchesQ.isPending} onOpen={openChamp} />
@@ -274,7 +275,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
 
 function ProfileSkeleton() {
   return (
-    <div aria-busy="true" role="status" aria-label="Loading profile">
+    <div aria-busy="true" role="status" aria-label={t('profile.loading')}>
       <div className="border-b border-line bg-surface">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-8">
           <Skeleton className="size-[88px]" />
@@ -300,9 +301,8 @@ function ProfileSkeleton() {
   );
 }
 
-const dayFmt = new Intl.DateTimeFormat('en', { weekday: 'long', month: 'short', day: 'numeric' });
-
 function groupByDay(matches: MatchSummary[]) {
+  const dayFmt = new Intl.DateTimeFormat(langInfo().intl, { weekday: 'long', month: 'short', day: 'numeric' });
   const today = new Date();
   const key = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
   const yest = new Date(today);
@@ -313,7 +313,7 @@ function groupByDay(matches: MatchSummary[]) {
     const k = key(d);
     let g = groups.find((x) => x.key === k);
     if (!g) {
-      g = { key: k, label: k === key(today) ? 'Today' : k === key(yest) ? 'Yesterday' : dayFmt.format(d), matches: [] };
+      g = { key: k, label: k === key(today) ? t('common.today') : k === key(yest) ? t('common.yesterday') : dayFmt.format(d), matches: [] };
       groups.push(g);
     }
     g.matches.push(m);

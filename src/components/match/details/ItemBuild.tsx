@@ -7,6 +7,7 @@ import { MaxOrder, maxOrderOf, RuneTrees, SkillGrid } from '../../build/BuildPar
 import { GameImg } from '../../ui/GameImg';
 import { ItemTip } from '../../ui/ItemTip';
 import { fmtTime, PlayerPicker, SectionTitle, TimelineGate, useTimeline } from './shared';
+import { t } from '../../../i18n';
 
 export function ItemBuild({ match, puuid, platform }: { match: MatchSummary; puuid: string; platform: string }) {
   const q = useTimeline(platform, match.id);
@@ -34,7 +35,7 @@ export function ItemBuild({ match, puuid, platform }: { match: MatchSummary; puu
 function PurchasePath({ items }: { items: MatchTimeline['items'][number] }) {
   const { data } = useStaticData();
   const a = assets(data);
-  if (!items.length) return <p className="text-sm text-muted">No purchases recorded.</p>;
+  if (!items.length) return <p className="text-sm text-muted">{t('ib.none')}</p>;
 
   // Group purchases made within the same shop visit (less than 45 seconds apart).
   const groups: { t: number; list: typeof items }[] = [];
@@ -46,7 +47,7 @@ function PurchasePath({ items }: { items: MatchTimeline['items'][number] }) {
 
   return (
     <section>
-      <SectionTitle aside={`${groups.length} shop visits`}>Item path</SectionTitle>
+      <SectionTitle aside={t('ib.visits', { count: groups.length })}>{t('ib.path')}</SectionTitle>
       <ol className="flex flex-wrap items-center gap-y-3">
         {groups.map((g, gi) => (
           <li key={gi} className="flex items-center">
@@ -58,10 +59,10 @@ function PurchasePath({ items }: { items: MatchTimeline['items'][number] }) {
                     <span key={k} className={clsx('relative', it.sold && 'opacity-45')}>
                       <GameImg
                         src={info.url}
-                        alt={`${it.sold ? 'Sold ' : ''}${info.name || `item ${it.itemId}`}`}
+                        alt={it.sold ? t('ib.soldItem', { item: info.name || String(it.itemId) }) : info.name || t('item.fallback', { id: String(it.itemId) })}
                         size={30}
                         rounded="sm"
-                        tip={<ItemTip id={it.itemId} note={it.sold ? 'Sold' : undefined} />}
+                        tip={<ItemTip id={it.itemId} note={it.sold ? t('ib.sold') : undefined} />}
                       />
                       {it.sold && <span className="absolute inset-x-0 top-1/2 h-[2px] -rotate-45 bg-loss" aria-hidden />}
                     </span>
@@ -85,11 +86,11 @@ function SkillOrder({ skills }: { skills: number[] }) {
       <SectionTitle
         aside={
           <span className="flex items-center gap-2 text-sm">
-            Max order <MaxOrder order={maxOrderOf(skills)} />
+            {t('ib.maxOrder')} <MaxOrder order={maxOrderOf(skills)} />
           </span>
         }
       >
-        Skill order
+        {t('ib.skillOrder')}
       </SectionTitle>
       <SkillGrid skills={skills} />
     </section>
@@ -100,7 +101,7 @@ function RunePage({ p }: { p: Participant }) {
   if (!p.runes.primary.length) return null;
   return (
     <section>
-      <SectionTitle>Runes</SectionTitle>
+      <SectionTitle>{t('ib.runes')}</SectionTitle>
       <RuneTrees primaryStyle={p.primaryStyle} secondaryStyle={p.secondaryStyle} picked={[...p.runes.primary, ...p.runes.secondary]} shards={p.runes.shards} />
     </section>
   );

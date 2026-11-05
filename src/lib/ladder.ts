@@ -1,4 +1,6 @@
 import type { LpPoint } from '../../shared/types';
+import { t } from '../i18n';
+import { tierName } from './format';
 
 const TIERS = ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'EMERALD', 'DIAMOND', 'MASTER', 'GRANDMASTER', 'CHALLENGER'];
 const DIV = ['IV', 'III', 'II', 'I'];
@@ -16,9 +18,8 @@ export const ladderLabel = (v: number) => {
   return `${SHORT[TIERS[ti]] ?? '?'}${4 - di}`;
 };
 export const ladderFull = (v: number) => {
-  if (v >= 2800) return `Master+ ${Math.round(v - 2800)} LP`;
+  if (v >= 2800) return t('ladder.masterPlus', { lp: Math.round(v - 2800) });
   const ti = Math.floor(v / 400);
   const di = Math.floor((v % 400) / 100);
-  const t = TIERS[ti] ?? '';
-  return `${t.charAt(0)}${t.slice(1).toLowerCase()} ${DIV[di]} · ${Math.round(v % 100)} LP`;
+  return `${tierName(TIERS[ti])} ${DIV[di]} · ${Math.round(v % 100)} LP`;
 };

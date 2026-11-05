@@ -13,6 +13,7 @@ import { RoleIcon, ROLE_LABEL } from '../components/ui/RoleIcon';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { GroupToggle, PatchSelect, ROLE_TABS, RoleTab, TierBadge, WinRateBar } from '../components/champions/common';
 import { SlidingIndicator } from '../components/ui/Motion';
+import { t } from '../i18n';
 
 type SortKey = 'rank' | 'name' | 'tier' | 'winRate' | 'pickRate' | 'banRate' | 'games';
 const TIER_ORDER = { 'S+': 0, S: 1, A: 2, B: 3, C: 4, D: 5, '–': 6 };
@@ -29,7 +30,7 @@ export function ChampionsPage() {
   const a = assets(sd);
 
   useEffect(() => {
-    document.title = 'Champion tier list — Riftwatch';
+    document.title = t('tl.title');
   }, []);
 
   const q = useQuery({
@@ -81,19 +82,19 @@ export function ChampionsPage() {
     <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-5xl font-extrabold leading-none tracking-tight">Champion tier list</h1>
+          <h1 className="font-display text-5xl font-extrabold leading-none tracking-tight">{t('tl.heading')}</h1>
           <p className="mt-2 max-w-2xl text-sm text-muted">
             {q.data && q.data.matches > 0 ? (
-              <>
-                Built from <span className="num font-semibold text-text">{thousands(q.data.matches)}</span> {group === 'aram' ? 'ARAM' : 'ranked'} games this server has read
-                {q.data.patch ? ` on patch ${q.data.patch}` : ''}. Tiers weigh win rate against how often a champion is played.
-              </>
+              t.rich(group === 'aram' ? (q.data.patch ? 'tl.builtFromAramPatch' : 'tl.builtFromAram') : q.data.patch ? 'tl.builtFromRankedPatch' : 'tl.builtFromRanked', {
+                count: <span className="num font-semibold text-text">{thousands(q.data.matches)}</span>,
+                patch: q.data.patch ?? '',
+              })
             ) : (
-              'Win, pick and ban rates from games this server has read.'
+              t('tl.noData')
             )}
             {q.data?.collecting && (
               <span className="ml-2 inline-flex items-center gap-1.5 text-win">
-                <span className="live-dot size-1.5 rounded-full bg-win" aria-hidden /> Collecting new games
+                <span className="live-dot size-1.5 rounded-full bg-win" aria-hidden /> {t('tl.collecting')}
               </span>
             )}
           </p>
@@ -108,11 +109,11 @@ export function ChampionsPage() {
 
       <div className="mt-6 flex flex-wrap items-end justify-between gap-4 border-b border-line">
         {group === 'ranked' ? (
-          <div role="tablist" aria-label="Role" className="relative flex gap-5 overflow-x-auto">
+          <div role="tablist" aria-label={t('tl.role')} className="relative flex gap-5 overflow-x-auto">
             <SlidingIndicator />
-            {ROLE_TABS.map((t) => (
-              <RoleTab key={t.id} role={t.id} active={role === t.id} onClick={() => set('role', t.id === 'ALL' ? null : t.id)}>
-                {t.label}
+            {ROLE_TABS.map((tab) => (
+              <RoleTab key={tab.id} role={tab.id} active={role === tab.id} onClick={() => set('role', tab.id === 'ALL' ? null : tab.id)}>
+                {tab.label}
               </RoleTab>
             ))}
           </div>
@@ -120,12 +121,12 @@ export function ChampionsPage() {
           <span />
         )}
         <label className="relative mb-2 flex items-center">
-          <span className="sr-only">Filter champions</span>
+          <span className="sr-only">{t('tl.filter')}</span>
           <Search className="pointer-events-none absolute left-2.5 size-4 text-faint" aria-hidden />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Filter champions"
+            placeholder={t('tl.filter')}
             className="h-9 w-56 rounded border border-line bg-surface pl-8 pr-3 text-sm outline-none placeholder:text-faint focus:border-gold"
           />
         </label>
@@ -143,35 +144,31 @@ export function ChampionsPage() {
         </div>
       ) : rows.length === 0 ? (
         <div className="panel mt-6">
-          <EmptyState title={q.data.matches ? 'No champions match that filter' : 'No games collected yet'}>
-            {q.data.matches
-              ? 'Try another name or role.'
-              : q.data.collecting
-                ? 'The server is reading high-elo ranked games in the background. Stats appear here within a few minutes and fill in over the next hours.'
-                : 'Champion stats come from games this server reads. Open some player profiles, or turn on the match collector (CRAWLER=true in .env).'}
+          <EmptyState title={q.data.matches ? t('tl.noMatch') : t('tl.noGames')}>
+            {q.data.matches ? t('tl.noMatchBody') : q.data.collecting ? t('tl.collectingBody') : t('tl.noGamesBody')}
           </EmptyState>
         </div>
       ) : (
         <div className="mt-2 overflow-x-auto">
           <table className="w-full min-w-[720px] text-sm">
-            <caption className="sr-only">Champion tier list, sortable by column</caption>
+            <caption className="sr-only">{t('tl.caption')}</caption>
             <thead className="text-xs text-muted">
               <tr>
                 {header('rank', '#', 'left', 1)}
-                {header('name', 'Champion', 'left', 1)}
+                {header('name', t('tl.col.champion'), 'left', 1)}
                 {role === 'ALL' && group === 'ranked' && (
                   <th scope="col" className="px-3 py-2 text-left font-medium">
-                    Role
+                    {t('tl.col.role')}
                   </th>
                 )}
-                {header('tier', 'Tier', 'left', 1)}
-                {header('winRate', 'Win rate')}
-                {header('pickRate', 'Pick rate')}
-                {header('banRate', 'Ban rate')}
-                {header('games', 'Games')}
+                {header('tier', t('tl.col.tier'), 'left', 1)}
+                {header('winRate', t('tl.col.wr'))}
+                {header('pickRate', t('tl.col.pick'))}
+                {header('banRate', t('tl.col.ban'))}
+                {header('games', t('tl.col.games'))}
                 {group === 'ranked' && (
                   <th scope="col" className="hidden px-3 py-2 text-left font-medium xl:table-cell">
-                    Weak against
+                    {t('tl.col.weak')}
                   </th>
                 )}
               </tr>
@@ -217,7 +214,7 @@ export function ChampionsPage() {
                     <td className="num px-3 py-2 text-right text-muted">
                       {thousands(r.games)}
                       {r.lowSample && (
-                        <span className="ml-1 text-faint" title="Small sample: treat with care">
+                        <span className="ml-1 text-faint" title={t('tl.smallSample')}>
                           *
                         </span>
                       )}
@@ -230,7 +227,7 @@ export function ChampionsPage() {
                               const cc = a.champion(cid);
                               return (
                                 <Link key={cid} to={matchupPath(sd, r.championId, cid, r.role)} onClick={(e) => e.stopPropagation()} className="rounded-[5px] ring-1 ring-loss/40 transition hover:ring-loss">
-                                  <GameImg src={cc.url} alt={`Weak against ${cc.name}`} size={26} rounded="md" tip={`${a.champion(r.championId).name} vs ${cc.name}`} />
+                                  <GameImg src={cc.url} alt={t('tl.weakAgainst', { champion: cc.name })} size={26} rounded="md" tip={t('tl.vs', { a: a.champion(r.championId).name, b: cc.name })} />
                                 </Link>
                               );
                             })}
@@ -245,7 +242,7 @@ export function ChampionsPage() {
               })}
             </tbody>
           </table>
-          {rows.some((r) => r.lowSample) && <p className="mt-3 text-xs text-faint">* Small sample — these numbers will move as more games come in.</p>}
+          {rows.some((r) => r.lowSample) && <p className="mt-3 text-xs text-faint">{t('tl.smallNote')}</p>}
         </div>
       )}
     </div>
@@ -263,7 +260,7 @@ function FreeRotation() {
   return (
     <section aria-labelledby="rot-h" className="mt-6">
       <h2 id="rot-h" className="mb-2 text-xs font-medium text-muted">
-        Free to play this week
+        {t('tl.free')}
       </h2>
       <ul className="flex flex-wrap gap-1.5">
         {ids.map((id, i) => {

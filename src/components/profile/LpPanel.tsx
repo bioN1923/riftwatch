@@ -7,6 +7,7 @@ import { isFavorite, toggleFavorite, useFavorites } from '../../lib/storage';
 import { LineChart } from '../charts/LineChart';
 import { Skeleton } from '../ui/States';
 import { ladderFull, ladderLabel, ladderValue } from '../../lib/ladder';
+import { langInfo, t } from '../../i18n';
 
 export function LpPanel({ profile }: { profile: Profile }) {
   const qc = useQueryClient();
@@ -40,19 +41,19 @@ export function LpPanel({ profile }: { profile: Profile }) {
   const step = Math.max(100, Math.ceil((hi - lo) / 4 / 100) * 100);
   const ticks: number[] = [];
   for (let v = lo; v <= hi; v += step) ticks.push(v);
-  const dateFmt = new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric' });
+  const dateFmt = new Intl.DateTimeFormat(langInfo().intl, { month: 'short', day: 'numeric' });
 
   return (
     <section className="panel p-4" aria-labelledby="lp-h">
       <div className="flex items-baseline justify-between gap-2">
         <h2 id="lp-h" className="panel-title">
-          Rank history
+          {t('lp.title')}
         </h2>
         {queues.length > 1 && (
           <div role="radiogroup" aria-label="Queue" className="flex gap-1 text-xs">
             {queues.map((qq) => (
               <button key={qq} role="radio" aria-checked={active === qq} onClick={() => setQueue(qq)} className={clsx('rounded-sm px-1.5 py-0.5', active === qq ? 'bg-raised text-text' : 'text-muted hover:text-text')}>
-                {qq === 'RANKED_SOLO_5x5' ? 'Solo' : 'Flex'}
+                {qq === 'RANKED_SOLO_5x5' ? t('lp.solo') : t('lp.flexShort')}
               </button>
             ))}
           </div>
@@ -63,9 +64,9 @@ export function LpPanel({ profile }: { profile: Profile }) {
           <p className="text-xs text-muted">
             <span className={clsx('num font-semibold', delta > 0 ? 'text-win' : delta < 0 ? 'text-loss' : 'text-muted')}>
               {delta > 0 ? '+' : delta < 0 ? '−' : '±'}
-              {Math.abs(delta)} LP
+              {t('lp.change', { delta: Math.abs(delta) })}
             </span>{' '}
-            over {days} day{days === 1 ? '' : 's'}
+            {t('lp.overDays', { count: days })}
           </p>
           <div className="mt-2">
             <LineChart
@@ -74,24 +75,24 @@ export function LpPanel({ profile }: { profile: Profile }) {
               padLeft={34}
               zeroBased={false}
               yTicks={ticks}
-              label="Rank over time"
+              label={t('lp.chart')}
               format={ladderLabel}
               xLabel={(i) => dateFmt.format(pts[i].t)}
-              hoverTitle={(i) => `${dateFmt.format(pts[i].t)} · ${pts[i].wins}W ${pts[i].losses}L`}
+              hoverTitle={(i) => `${dateFmt.format(pts[i].t)} · ${t('common.wins', { count: pts[i].wins })} ${t('common.losses', { count: pts[i].losses })}`}
               tickEvery={Math.max(1, Math.ceil(pts.length / 3))}
               series={[{ id: 'lp', name: ladderFull(values[values.length - 1]), color: 'var(--series-1)', values }]}
             />
           </div>
         </>
       ) : (
-        <p className="mt-2 text-sm text-muted">Not enough history yet. Each visit records the current rank{fav ? ', and starred players are checked every 20 minutes.' : '.'}</p>
+        <p className="mt-2 text-sm text-muted">{fav ? t('lp.notEnoughFav') : t('lp.notEnough')}</p>
       )}
       {!fav && (
         <button onClick={() => toggleFavorite(saved)} className="mt-3 text-sm font-medium text-gold hover:underline">
-          Star to track rank automatically
+          {t('lp.star')}
         </button>
       )}
-      {fav && q.data?.tracked && <p className="mt-2 text-xs text-faint">Tracked: rank is checked every 20 minutes while the server runs.</p>}
+      {fav && q.data?.tracked && <p className="mt-2 text-xs text-faint">{t('lp.tracked')}</p>}
     </section>
   );
 }

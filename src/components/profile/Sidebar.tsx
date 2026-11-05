@@ -8,6 +8,7 @@ import { assets, champSlug, useStaticData } from '../../lib/ddragon';
 import { compact, formatKda, kdaRatio, kdaTone, pct, winRateTone } from '../../lib/format';
 import { me, result, type Overview } from '../../lib/stats';
 import { profilePath } from '../../lib/riotId';
+import { t } from '../../i18n';
 
 const ROLES = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'];
 
@@ -45,40 +46,45 @@ export function ScoutingReport({ ov, matches, puuid, name }: { ov?: Overview; ma
   if (roleGames) {
     lines.push(
       mainCount / roleGames >= 0.6 ? (
-        <>
-          A <b>{ROLE_LABEL[mainRole]}</b> player — {mainCount} of {roleGames} games there.
-        </>
+        <>{t.rich('report.mainRole', { role: <b>{ROLE_LABEL[mainRole]}</b>, count: mainCount, total: roleGames })}</>
       ) : (
-        <>
-          Plays several roles; <b>{ROLE_LABEL[mainRole]}</b> most often ({mainCount} of {roleGames}).
-        </>
+        <>{t.rich('report.flexRole', { role: <b>{ROLE_LABEL[mainRole]}</b>, count: mainCount, total: roleGames })}</>
       ),
     );
   }
   if (comfort && comfort.games >= 2) {
     lines.push(
-      <>
-        <b>{comfortName}</b> is the comfort pick: {comfort.games} games, {pct(comfort.wins / comfort.games)} won.
-      </>,
+      <>{t.rich('report.comfort', { champion: <b>{comfortName}</b>, count: comfort.games, rate: pct(comfort.wins / comfort.games) })}</>,
     );
   }
   lines.push(
     <>
-      Averages{' '}
-      <b className="num">
-        {(ov.kills / g).toFixed(1)} / {(ov.deaths / g).toFixed(1)} / {(ov.assists / g).toFixed(1)}
-      </b>{' '}
-      with a hand in {pct(ov.kp)} of team kills.
+      {t.rich('report.averages', {
+        kda: (
+          <b className="num">
+            {(ov.kills / g).toFixed(1)} / {(ov.deaths / g).toFixed(1)} / {(ov.assists / g).toFixed(1)}
+          </b>
+        ),
+        kp: pct(ov.kp),
+      })}
     </>,
   );
   if (bestP && best) {
     lines.push(
       <>
-        Best recent game: <b className="num">{bestP.kills}/{bestP.deaths}/{bestP.assists}</b> on {a.champion(bestP.championId).name} (
-        <a href={`#m-${best.m.id}`} className="underline decoration-line-strong underline-offset-2 hover:text-text">
-          see game
-        </a>
-        ).
+        {t.rich('report.best', {
+          kda: (
+            <b className="num">
+              {bestP.kills}/{bestP.deaths}/{bestP.assists}
+            </b>
+          ),
+          champion: a.champion(bestP.championId).name,
+          link: (
+            <a href={`#m-${best.m.id}`} className="underline decoration-line-strong underline-offset-2 hover:text-text">
+              {t('report.seeGame')}
+            </a>
+          ),
+        })}
       </>,
     );
   }
@@ -87,25 +93,21 @@ export function ScoutingReport({ ov, matches, puuid, name }: { ov?: Overview; ma
   return (
     <section className="panel panel-tick p-4" aria-labelledby="report-h">
       <h2 id="report-h" className="panel-title">
-        Scouting report
+        {t('report.title')}
       </h2>
-      <p className="text-xs text-muted">
-        {name}’s last {g} games{matches.some((m) => m.remake) ? ', remakes excluded' : ''}
-      </p>
+      <p className="text-xs text-muted">{t(matches.some((m) => m.remake) ? 'report.subRemakes' : 'report.sub', { name, count: g })}</p>
 
       <div className="mt-4 flex items-end gap-5">
         <div>
           <p className={clsx('display-num text-5xl font-extrabold leading-none', wr >= 0.5 ? 'text-win' : 'text-loss')}>{Math.round(wr * 100)}%</p>
-          <p className="num mt-1 text-xs text-muted">
-            {ov.wins} won · {ov.losses} lost
-          </p>
+          <p className="num mt-1 text-xs text-muted">{t('report.wonLost', { wins: ov.wins, losses: ov.losses })}</p>
         </div>
         <div>
           <p className={clsx('display-num text-3xl font-bold leading-none', kdaTone(ratio))}>{formatKda(ratio)}</p>
-          <p className="mt-1 text-xs text-muted">KDA</p>
+          <p className="mt-1 text-xs text-muted">{t('common.kda')}</p>
         </div>
         {roleGames > 0 && (
-          <div className="ml-auto flex items-end gap-1.5" role="group" aria-label="Games per position">
+          <div className="ml-auto flex items-end gap-1.5" role="group" aria-label={t('report.perPosition')}>
             {ROLES.map((r) => {
               const n = ov.roles[r] ?? 0;
               return (
@@ -139,7 +141,7 @@ export function ChampionPool({ ov, loading, onOpen }: { ov?: Overview; loading: 
   return (
     <section className="panel" aria-labelledby="champ-h">
       <h2 id="champ-h" className="panel-title px-4 pt-3.5">
-        Champion pool
+        {t('pool.title')}
       </h2>
       <ul className="mt-1 pb-2">
         {loading &&
@@ -158,12 +160,12 @@ export function ChampionPool({ ov, loading, onOpen }: { ov?: Overview; loading: 
               <button
                 onClick={() => onOpen?.(c.championId)}
                 className="group grid w-full grid-cols-[36px_1fr_auto] items-center gap-3 px-4 py-1.5 text-left text-sm transition-colors hover:bg-raised"
-                title={`${champ.name}: details and comparison`}
+                title={t('pool.details', { champion: champ.name })}
               >
               <GameImg src={champ.url} alt="" size={36} rounded="md" />
               <div className="min-w-0">
                 <span className="block truncate font-medium group-hover:text-gold">{champ.name}</span>
-                <div className="mt-1 flex h-1.5 overflow-hidden rounded-full bg-sunken" role="img" aria-label={`${c.wins} wins, ${c.games - c.wins} losses`}>
+                <div className="mt-1 flex h-1.5 overflow-hidden rounded-full bg-sunken" role="img" aria-label={t('common.winsLossesAria', { wins: c.wins, losses: c.games - c.wins })}>
                   <span className="bg-win" style={{ width: `${wr * 100}%` }} />
                   <span className="flex-1 bg-loss/70" />
                 </div>
@@ -172,13 +174,13 @@ export function ChampionPool({ ov, loading, onOpen }: { ov?: Overview; loading: 
                 <p className={clsx('num text-sm font-semibold', winRateTone(wr))}>
                   {pct(wr)} <span className="font-normal text-muted">({c.games})</span>
                 </p>
-                <p className={clsx('num text-xs', kdaTone(ratio))}>{formatKda(ratio)} KDA</p>
+                <p className={clsx('num text-xs', kdaTone(ratio))}>{t('common.kdaValue', { value: formatKda(ratio) })}</p>
               </div>
               </button>
             </li>
           );
         })}
-        {ov && ov.champions.length === 0 && <li className="px-4 py-3 text-sm text-muted">No games in this queue yet.</li>}
+        {ov && ov.champions.length === 0 && <li className="px-4 py-3 text-sm text-muted">{t('pool.empty')}</li>}
       </ul>
     </section>
   );
@@ -189,7 +191,7 @@ export function PlayedWith({ ov, platform }: { ov?: Overview; platform: string }
   return (
     <section className="panel" aria-labelledby="duo-h">
       <h2 id="duo-h" className="panel-title px-4 pt-3.5">
-        Often queues with
+        {t('duo.title')}
       </h2>
       <ul className="mt-1 pb-2">
         {ov.duos.map((d) => {
@@ -201,7 +203,7 @@ export function PlayedWith({ ov, platform }: { ov?: Overview; platform: string }
                   {d.gameName}
                   <span className="text-faint">#{d.tagLine}</span>
                 </span>
-                <span className="num text-xs text-muted">{d.games} games</span>
+                <span className="num text-xs text-muted">{t('common.games', { count: d.games })}</span>
                 <span className={clsx('num w-10 text-right font-semibold', winRateTone(wr))}>{pct(wr)}</span>
               </Link>
             </li>
@@ -220,7 +222,7 @@ export function MasteryList({ mastery }: { mastery: Mastery[] }) {
   return (
     <section className="panel" aria-labelledby="mastery-h">
       <h2 id="mastery-h" className="panel-title px-4 pt-3.5">
-        All-time mastery
+        {t('mastery.title')}
       </h2>
       <ul className="flex justify-between gap-2 px-4 pb-4 pt-3">
         {top.map((m) => {
@@ -228,7 +230,7 @@ export function MasteryList({ mastery }: { mastery: Mastery[] }) {
           return (
             <li key={m.championId}>
               <Link to={data?.champions.get(m.championId) ? `/champions/${champSlug(data.champions.get(m.championId)!.id)}` : '#'} className="group flex flex-col items-center gap-1 text-center">
-                <GameImg src={champ.url} alt={champ.name} size={40} rounded="full" className="ring-1 ring-line-strong transition-transform duration-150 group-hover:-translate-y-0.5" tip={`${champ.name} · mastery ${m.championLevel}`} />
+                <GameImg src={champ.url} alt={champ.name} size={40} rounded="full" className="ring-1 ring-line-strong transition-transform duration-150 group-hover:-translate-y-0.5" tip={t('mastery.tip', { champion: champ.name, level: m.championLevel })} />
                 <span className="num font-display text-base font-bold leading-none group-hover:text-gold">{compact(m.championPoints)}</span>
               </Link>
             </li>

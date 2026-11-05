@@ -14,6 +14,7 @@ import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { PatchSelect, RoleTab } from '../components/champions/common';
 import { SlidingIndicator } from '../components/ui/Motion';
 import { ItemsBlock, Lead, LOW_SAMPLE, RunesBlock, SpellsAndStart } from './Champion';
+import { t } from '../i18n';
 
 export function MatchupPage() {
   const { slug = '', opp = '' } = useParams();
@@ -27,11 +28,11 @@ export function MatchupPage() {
       <div className="mx-auto max-w-6xl px-4 py-10">
         <ErrorState
           page
-          title="Matchup not found"
-          error={new ApiClientError(404, 'NOT_FOUND', 'Check the two champion names in the address.')}
+          title={t('mp.notFound')}
+          error={new ApiClientError(404, 'NOT_FOUND', t('mp.notFoundBody'))}
           action={
             <Link to="/champions" className="rounded bg-gold px-4 py-2 font-semibold text-gold-ink">
-              Browse all champions
+              {t('cp.browse')}
             </Link>
           }
         />
@@ -58,7 +59,7 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
   const m = q.data;
 
   useEffect(() => {
-    if (me && them) document.title = `${me.name} vs ${them.name}: build, runes and win rate — Riftwatch`;
+    if (me && them) document.title = t('mp.title', { a: me.name, b: them.name });
   }, [me, them]);
 
   const set = (k: string, v: string | null) => {
@@ -92,7 +93,7 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
 
         <div className="relative mx-auto max-w-6xl px-4 pt-8">
           <Link to={me ? `/champions/${champSlug(me.id)}${role ? `?role=${role}` : ''}` : '/champions'} className="text-sm text-muted hover:text-text">
-            ← {me?.name ?? 'Champion'}
+            ← {me?.name ?? t('pc.fallback')}
           </Link>
 
           <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
@@ -102,22 +103,22 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
             <Link
               to={matchupPath(sd, opponentId, championId, m?.role ?? role)}
               className="ml-auto inline-flex items-center gap-2 rounded border border-line-strong bg-surface/70 px-3 py-1.5 text-sm font-medium backdrop-blur transition-colors hover:border-gold hover:text-gold"
-              title={`See it from ${them?.name ?? 'the other'}’s side`}
+              title={t('mp.otherSide', { champion: them?.name ?? '' })}
             >
               <ArrowLeftRight className="size-4" aria-hidden />
-              {them?.name} vs {me?.name}
+              {t('mp.vs', { a: them?.name ?? '', b: me?.name ?? '' })}
             </Link>
           </div>
           <p className="mt-2 text-sm text-muted">
-            {m ? `${roleName} lane` : ' '}
-            {m?.patch ? ` · Patch ${m.patch}` : ''} · Ranked
+            {m ? t('mp.lane', { role: roleName }) : ' '}
+            {m?.patch ? ` · ${t('patch.value', { patch: m.patch })}` : ''} · {t('mp.ranked')}
           </p>
 
           {m && <Verdict m={m} me={me?.name ?? ''} them={them?.name ?? ''} />}
 
           <div className="mt-6 flex flex-wrap items-end justify-between gap-3">
             {m && m.roles.length > 1 ? (
-              <div role="tablist" aria-label="Role" className="relative flex gap-5 overflow-x-auto">
+              <div role="tablist" aria-label={t('tl.role')} className="relative flex gap-5 overflow-x-auto">
                 <SlidingIndicator />
                 {m.roles.map((r) => (
                   <RoleTab key={r.role} role={r.role} active={m.role === r.role} onClick={() => set('role', r.role)}>
@@ -141,20 +142,20 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
           <ErrorState error={q.error} />
         ) : m.games === 0 ? (
           <div className="panel">
-            <EmptyState title={`No games yet where ${me?.name} met ${them?.name} in lane`}>
-              The server adds ranked games in the background; this page fills in once they’ve met.
+            <EmptyState title={t('mp.noGames', { a: me?.name ?? '', b: them?.name ?? '' })}>
+              {t('mp.noGamesBody')}
             </EmptyState>
           </div>
         ) : (
           <>
             <section className="panel panel-tick p-5" aria-labelledby="mu-build-h">
               <h2 id="mu-build-h" className="panel-title text-2xl">
-                How to play {me?.name} into {them?.name}
+                {t('mp.howTo', { a: me?.name ?? '', b: them?.name ?? '' })}
               </h2>
-              <p className="text-xs text-muted">What players chose in this exact lane matchup, with how often it won.</p>
+              <p className="text-xs text-muted">{t('mp.howToSub')}</p>
               {m.games < 30 && (
                 <p className="mt-3 rounded border border-kda-great/40 bg-kda-great/10 px-3 py-2 text-sm">
-                  Early numbers: {m.games} game{m.games === 1 ? '' : 's'} so far. Win rates marked * have fewer than {LOW_SAMPLE} games behind them.
+                  {t('mp.early', { count: m.games, min: LOW_SAMPLE })}
                 </p>
               )}
               <div className="mt-5 space-y-7">
@@ -169,7 +170,7 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
         {m && m.others.length > 0 && (
           <section className="panel p-5" aria-labelledby="mu-others-h">
             <h2 id="mu-others-h" className="panel-title">
-              Other {roleName.toLowerCase()} matchups for {me?.name}
+              {t('mp.others', { role: roleName.toLowerCase(), champion: me?.name ?? '' })}
             </h2>
             <ul className="mt-3 flex flex-wrap gap-2">
               {m.others.map((o) => {
@@ -212,7 +213,7 @@ function Side({ id }: { id: number }) {
 function Verdict({ m, me, them }: { m: MatchupStats; me: string; them: string }) {
   const low = m.games < LOW_SAMPLE;
   const edge = m.adjusted - 0.5;
-  const verdict = low ? 'Too few games to call yet' : edge > 0.02 ? `${me} is favoured` : edge < -0.02 ? `${them} is favoured` : 'An even matchup';
+  const verdict = low ? t('mp.tooFew') : edge > 0.02 ? t('mp.favoured', { champion: me }) : edge < -0.02 ? t('mp.favoured', { champion: them }) : t('mp.even');
   const vsUsual = m.baseline ? m.winRate - m.baseline.winRate : null;
   const tile = (label: string, value: React.ReactNode, note?: React.ReactNode) => (
     <div className="min-w-0">
@@ -226,22 +227,22 @@ function Verdict({ m, me, them }: { m: MatchupStats; me: string; them: string })
       <p className={clsx('font-display text-xl font-bold', low ? 'text-muted' : edge > 0.02 ? 'text-win' : edge < -0.02 ? 'text-loss' : 'text-text')}>{verdict}</p>
       <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3 lg:grid-cols-6">
         {tile(
-          `${me}’s win rate`,
+          t('mp.wr', { champion: me }),
           <span className={clsx(low ? 'text-faint' : m.winRate >= 0.5 ? 'text-win' : 'text-loss')}>
             {pct(m.winRate, 1)}
             {low && '*'}
           </span>,
-          `${thousands(m.games)} game${m.games === 1 ? '' : 's'}`,
+          t('common.games', { count: m.games }),
         )}
         {tile(
-          'Compared with usual',
+          t('mp.vsUsual'),
           vsUsual == null ? '–' : <Lead v={vsUsual * 100} unit="%" decimals={1} />,
-          m.baseline ? `${me} averages ${pct(m.baseline.winRate, 1)}` : undefined,
+          m.baseline ? t('mp.averages', { champion: me, rate: pct(m.baseline.winRate, 1) }) : undefined,
         )}
-        {tile('Gold at 15', <Lead v={m.goldDiff15} unit="" />, 'lead in lane')}
-        {tile('CS at 15', <Lead v={m.csDiff15} unit="" />)}
-        {tile('XP at 15', <Lead v={m.xpDiff15} unit="" />)}
-        {tile('Average KDA', m.kda ? formatKda((m.kda.kills + m.kda.assists) / Math.max(1, m.kda.deaths)) : '–', m.kda ? `${m.kda.kills.toFixed(1)} / ${m.kda.deaths.toFixed(1)} / ${m.kda.assists.toFixed(1)}` : undefined)}
+        {tile(t('mp.gold15'), <Lead v={m.goldDiff15} unit="" />, t('mp.leadInLane'))}
+        {tile(t('mp.cs15'), <Lead v={m.csDiff15} unit="" />)}
+        {tile(t('mp.xp15'), <Lead v={m.xpDiff15} unit="" />)}
+        {tile(t('mp.avgKda'), m.kda ? formatKda((m.kda.kills + m.kda.assists) / Math.max(1, m.kda.deaths)) : '–', m.kda ? `${m.kda.kills.toFixed(1)} / ${m.kda.deaths.toFixed(1)} / ${m.kda.assists.toFixed(1)}` : undefined)}
       </div>
     </div>
   );

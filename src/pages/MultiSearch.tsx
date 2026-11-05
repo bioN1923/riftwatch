@@ -6,7 +6,7 @@ import { ChevronDown, Users } from 'lucide-react';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api, ApiClientError } from '../lib/api';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
-import { formatKda, kdaRatio, kdaTone, pct, titleCase } from '../lib/format';
+import { formatKda, kdaRatio, kdaTone, pct, tierName } from '../lib/format';
 import { fromSlug, profilePath, toSlug, type RiotId } from '../lib/riotId';
 import { parseLobby } from '../lib/lobby';
 import { useRegion } from '../lib/storage';
@@ -16,6 +16,7 @@ import { GameImg } from '../components/ui/GameImg';
 import { TagList } from '../components/ui/TagList';
 import { Skeleton } from '../components/ui/States';
 import { fadeIn } from '../lib/motion';
+import { t } from '../i18n';
 
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
 
@@ -36,7 +37,7 @@ export function MultiSearchPage() {
   const parsed = parseLobby(text);
 
   useEffect(() => {
-    document.title = 'Multi-search — Riftwatch';
+    document.title = t('ms.title');
   }, []);
 
   const run = () => {
@@ -48,9 +49,9 @@ export function MultiSearchPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="font-display text-5xl font-extrabold leading-none tracking-tight">Multi-search</h1>
+      <h1 className="font-display text-5xl font-extrabold leading-none tracking-tight">{t('ms.heading')}</h1>
       <p className="mt-2 max-w-2xl text-sm text-muted">
-        In champion select, copy the lobby chat (the “joined the lobby” lines) and paste it here. You’ll see every teammate’s rank, recent form and best champions at once.
+        {t('ms.lead')}
       </p>
 
       <form
@@ -61,18 +62,18 @@ export function MultiSearchPage() {
         }}
       >
         <label className="block">
-          <span className="sr-only">Lobby text or Riot IDs</span>
+          <span className="sr-only">{t('ms.input')}</span>
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={5}
-            placeholder={'Hide on bush #KR1 joined the lobby\nCaps#EUW joined the lobby\n…or Riot IDs separated by commas'}
+            placeholder={t('ms.placeholder')}
             className="w-full resize-y rounded border border-line bg-surface px-3 py-2.5 font-mono text-sm leading-relaxed outline-none placeholder:text-faint focus:border-gold"
           />
         </label>
         <div className="flex flex-col gap-2 md:w-48">
           <label className="relative block">
-            <span className="mb-1 block text-xs text-muted">Region</span>
+            <span className="mb-1 block text-xs text-muted">{t('ms.region')}</span>
             <select
               value={region}
               onChange={(e) => {
@@ -93,10 +94,10 @@ export function MultiSearchPage() {
           </label>
           <button type="submit" disabled={!parsed.length} className="flex h-10 items-center justify-center gap-2 rounded bg-gold font-semibold text-gold-ink transition hover:brightness-110 disabled:opacity-40">
             <Users className="size-4" aria-hidden />
-            Scout {parsed.length || ''} player{parsed.length === 1 ? '' : 's'}
+            {parsed.length ? t('ms.scout', { count: parsed.length }) : t('ms.scoutNone')}
           </button>
           <p className="text-xs text-muted" aria-live="polite">
-            {parsed.length ? `Found ${parsed.map((p) => p.gameName).join(', ')}` : 'No Riot IDs found yet.'}
+            {parsed.length ? t('ms.found', { names: parsed.map((p) => p.gameName).join(', ') }) : t('ms.none')}
           </p>
         </div>
       </form>
@@ -138,7 +139,7 @@ function PlayerCard({ platform, id }: { platform: string; id: RiotId }) {
           {id.gameName}
           <span className="text-faint">#{id.tagLine}</span>
         </p>
-        <p className="mt-2 text-sm text-loss">{nf ? 'Not found on this server.' : 'Couldn’t load this player.'}</p>
+        <p className="mt-2 text-sm text-loss">{nf ? t('ms.notFound') : t('ms.failed')}</p>
       </div>
     );
   }
@@ -157,7 +158,7 @@ function PlayerCard({ platform, id }: { platform: string; id: RiotId }) {
         <span className="min-w-0">
           <span className="block truncate font-semibold group-hover:text-gold">{p.account.gameName}</span>
           <span className="block text-xs text-muted">
-            #{p.account.tagLine} · level {p.summoner.summonerLevel}
+            #{p.account.tagLine} · {t('ms.level', { level: p.summoner.summonerLevel })}
           </span>
         </span>
       </Link>
@@ -168,32 +169,32 @@ function PlayerCard({ platform, id }: { platform: string; id: RiotId }) {
             <img src={rankEmblem(solo.tier)} alt="" {...fadeIn()} className="size-11" />
             <div>
               <p className="font-display text-xl font-bold leading-tight">
-                {titleCase(solo.tier)} {APEX.has(solo.tier) ? '' : solo.rank}
+                {tierName(solo.tier)} {APEX.has(solo.tier) ? '' : solo.rank}
               </p>
               <p className="num text-xs text-muted">
-                {solo.leaguePoints} LP · <span className={clsx('font-semibold', wr >= 0.5 ? 'text-win' : 'text-loss')}>{pct(wr)}</span> of {games}
+                {t.rich('ms.lpOf', { lp: solo.leaguePoints, rate: <span className={clsx('font-semibold', wr >= 0.5 ? 'text-win' : 'text-loss')}>{pct(wr)}</span>, games })}
               </p>
             </div>
           </>
         ) : (
-          <p className="font-display text-xl font-bold text-faint">Unranked</p>
+          <p className="font-display text-xl font-bold text-faint">{t('common.unranked')}</p>
         )}
       </div>
 
       <div className="mt-3">
-        <p className="mb-1 text-xs text-muted">Last 10 ranked games</p>
+        <p className="mb-1 text-xs text-muted">{t('ms.last10')}</p>
         {matchesQ.isPending ? (
           <Skeleton className="h-4" />
         ) : matches && matches.length ? (
-          <ol className="flex gap-[3px]" aria-label="Recent ranked results, newest first">
+          <ol className="flex gap-[3px]" aria-label={t('ms.recentAria')}>
             {matches.map((m) => {
               const mp = me(m, p.account.puuid);
               const r = mp ? result(m, mp) : 'remake';
-              return <li key={m.id} title={r === 'win' ? 'Win' : r === 'loss' ? 'Loss' : 'Remake'} className={clsx('h-4 flex-1 rounded-[2px]', r === 'win' ? 'bg-win' : r === 'loss' ? 'bg-loss' : 'bg-faint')} />;
+              return <li key={m.id} title={t(`result.${r}`)} className={clsx('h-4 flex-1 rounded-[2px]', r === 'win' ? 'bg-win' : r === 'loss' ? 'bg-loss' : 'bg-faint')} />;
             })}
           </ol>
         ) : (
-          <p className="text-xs text-faint">No recent ranked games.</p>
+          <p className="text-xs text-faint">{t('ms.noRecent')}</p>
         )}
       </div>
 

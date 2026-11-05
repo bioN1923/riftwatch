@@ -7,6 +7,7 @@ import { profilePath } from '../../../lib/riotId';
 import { GameImg } from '../../ui/GameImg';
 import { Items, SpellsRunes } from '../Loadout';
 import { Badge, ordinal } from '../MatchRow';
+import { t } from '../../../i18n';
 
 interface Group {
   key: string;
@@ -23,14 +24,14 @@ function groups(m: MatchSummary): Group[] {
     for (const p of m.participants) by.set(p.subteam!, [...(by.get(p.subteam!) ?? []), p]);
     return [...by.values()]
       .sort((a, b) => (a[0].placement ?? 9) - (b[0].placement ?? 9))
-      .map((players) => ({ key: String(players[0].subteam), title: players[0].placement ? ordinal(players[0].placement) : 'Team', win: players[0].win, players }));
+      .map((players) => ({ key: String(players[0].subteam), title: players[0].placement ? ordinal(players[0].placement) : t('pg.team'), win: players[0].win, players }));
   }
-  return m.teams.map((t) => ({
-    key: String(t.teamId),
-    title: `${m.remake ? 'Remake' : t.win ? 'Victory' : 'Defeat'} · ${t.teamId === 100 ? 'Blue' : 'Red'} side`,
-    win: t.win,
-    team: t,
-    players: m.participants.filter((p) => p.teamId === t.teamId),
+  return m.teams.map((team) => ({
+    key: String(team.teamId),
+    title: t(team.teamId === 100 ? 'pg.blueSide' : 'pg.redSide', { result: m.remake ? t('result.remake') : team.win ? t('pg.victory') : t('pg.defeat') }),
+    win: team.win,
+    team,
+    players: m.participants.filter((p) => p.teamId === team.teamId),
   }));
 }
 
@@ -60,22 +61,22 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
                   </span>
                 </th>
                 <th scope="col" className="w-[104px] px-2 font-medium">
-                  KDA
+                  {t('pg.kda')}
                 </th>
                 <th scope="col" className="w-[112px] px-2 font-medium">
-                  Damage
+                  {t('pg.damage')}
                 </th>
                 <th scope="col" className="hidden w-[52px] px-2 text-right font-medium @[680px]:table-cell">
-                  Gold
+                  {t('pg.gold')}
                 </th>
                 <th scope="col" className="w-[60px] px-2 text-right font-medium">
-                  CS
+                  {t('pg.cs')}
                 </th>
                 <th scope="col" className="hidden w-[56px] px-2 text-right font-medium @[740px]:table-cell">
-                  Wards
+                  {t('pg.wards')}
                 </th>
                 <th scope="col" className="w-[170px] px-2 pr-3 font-medium">
-                  Items
+                  {t('pg.items')}
                 </th>
               </tr>
             </thead>
@@ -118,7 +119,7 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
                       <span className="flex items-center gap-1.5">
                         <span className={clsx('font-semibold', kdaTone(ratio))}>{formatKda(ratio)}</span>
                         {!match.remake && (
-                          <span className="text-muted" title="Performance score (0–10)">
+                          <span className="text-muted" title={t('pg.score')}>
                             {p.score.toFixed(1)}
                           </span>
                         )}
@@ -126,13 +127,13 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
                       </span>
                     </td>
                     <td className="px-2">
-                      <div className="flex w-24 items-center gap-1.5" title={`${thousands(p.damage)} damage to champions`}>
+                      <div className="flex w-24 items-center gap-1.5" title={t('pg.dmgDealt', { value: thousands(p.damage) })}>
                         <span className="num w-10 text-right">{compact(p.damage)}</span>
                         <span className="h-1.5 flex-1 rounded-full bg-sunken">
                           <span className="block h-full rounded-full bg-loss" style={{ width: `${(p.damage / maxDamage) * 100}%` }} />
                         </span>
                       </div>
-                      <div className="mt-1 flex w-24 items-center gap-1.5" title={`${thousands(p.damageTaken)} damage taken`}>
+                      <div className="mt-1 flex w-24 items-center gap-1.5" title={t('pg.dmgTaken', { value: thousands(p.damageTaken) })}>
                         <span className="num w-10 text-right text-muted">{compact(p.damageTaken)}</span>
                         <span className="h-1.5 flex-1 rounded-full bg-sunken">
                           <span className="block h-full rounded-full bg-faint" style={{ width: `${(p.damageTaken / maxTaken) * 100}%` }} />
@@ -142,9 +143,9 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
                     <td className="num hidden px-2 text-right @[680px]:table-cell">{compact(p.gold)}</td>
                     <td className="num px-2 text-right">
                       {p.cs}
-                      <span className="block text-muted">{(p.cs / minutes).toFixed(1)}/m</span>
+                      <span className="block text-muted">{t('pg.perMin', { value: (p.cs / minutes).toFixed(1) })}</span>
                     </td>
-                    <td className="num hidden px-2 text-right @[740px]:table-cell" title="Vision score · wards placed · control wards bought">
+                    <td className="num hidden px-2 text-right @[740px]:table-cell" title={t('pg.wardsTip')}>
                       {p.visionScore}
                       <span className="block text-muted">
                         {p.wardsPlaced} · {p.controlWards}
@@ -166,15 +167,15 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
 
 function TeamCompare({ blue, red }: { blue: TeamSummary; red: TeamSummary }) {
   const rows: { label: string; b: number; r: number; fmt?: (n: number) => string }[] = [
-    { label: 'Kills', b: blue.kills, r: red.kills },
-    { label: 'Gold', b: blue.gold, r: red.gold, fmt: compact },
+    { label: t('pg.kills'), b: blue.kills, r: red.kills },
+    { label: t('pg.gold'), b: blue.gold, r: red.gold, fmt: compact },
   ];
   const objectives: [string, keyof TeamSummary['objectives']][] = [
-    ['Towers', 'tower'],
-    ['Dragons', 'dragon'],
-    ['Barons', 'baron'],
-    ['Voidgrubs', 'grubs'],
-    ['Heralds', 'herald'],
+    [t('pg.towers'), 'tower'],
+    [t('pg.dragons'), 'dragon'],
+    [t('pg.barons'), 'baron'],
+    [t('pg.voidgrubs'), 'grubs'],
+    [t('pg.heralds'), 'herald'],
   ];
   return (
     <div className="grid gap-3 border-b border-line px-4 py-3 md:grid-cols-[1fr_auto] md:items-center">
@@ -184,7 +185,7 @@ function TeamCompare({ blue, red }: { blue: TeamSummary; red: TeamSummary }) {
           return (
             <div key={label} className="flex items-center gap-3 text-xs">
               <span className="num w-10 text-right font-semibold text-side-blue">{fmt ? fmt(b) : b}</span>
-              <div className="relative flex h-4 flex-1 overflow-hidden rounded-sm" role="img" aria-label={`${label}: blue ${b}, red ${r}`}>
+              <div className="relative flex h-4 flex-1 overflow-hidden rounded-sm" role="img" aria-label={t('pg.barAria', { label, b, r })}>
                 <span className="bg-side-blue" style={{ width: `${(b / total) * 100}%` }} />
                 <span className="flex-1 bg-side-red" />
                 <span className="absolute inset-0 grid place-items-center text-[10px] font-semibold text-on-accent">{label}</span>

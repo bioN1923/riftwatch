@@ -2,19 +2,15 @@ import { useId, useState } from 'react';
 import type { TimelineEvent } from '../../../shared/types';
 import { compact } from '../../lib/format';
 import { niceTicks, useWidth } from './useWidth';
+import { t } from '../../i18n';
 
 const PAD = { left: 46, right: 16, top: 14, bottom: 46 };
 
-const OBJ_LABEL: Record<string, string> = {
-  DRAGON: 'Dragon',
-  BARON_NASHOR: 'Baron',
-  RIFTHERALD: 'Herald',
-  HORDE: 'Voidgrubs',
-  ATAKHAN: 'Atakhan',
-  ELDER_DRAGON: 'Elder dragon',
-};
-export const objectiveLabel = (e: Extract<TimelineEvent, { type: 'objective' }>) =>
-  e.sub === 'ELDER_DRAGON' ? 'Elder dragon' : e.monster === 'DRAGON' && e.sub ? `${e.sub.replace('_DRAGON', '').toLowerCase().replace(/^\w/, (c) => c.toUpperCase())} dragon` : (OBJ_LABEL[e.monster] ?? e.monster);
+const OBJECTIVES = new Set(['DRAGON', 'BARON_NASHOR', 'RIFTHERALD', 'HORDE', 'ATAKHAN', 'ELDER_DRAGON', 'FIRE_DRAGON', 'WATER_DRAGON', 'EARTH_DRAGON', 'AIR_DRAGON', 'HEXTECH_DRAGON', 'CHEMTECH_DRAGON']);
+const objName = (k: string) => (OBJECTIVES.has(k) ? t(`obj.${k}` as 'obj.DRAGON') : k);
+/** Objective names in the current language; dragons by element (Infernal, Ocean …) when known. */
+export const objectiveLabel = (e: Extract<TimelineEvent, { type: 'objective' }>) => (e.monster === 'DRAGON' && e.sub ? objName(e.sub) : objName(e.monster));
+export const buildingLabel = (b: string) => (b === 'INHIBITOR' ? t('obj.inhibitor') : t('obj.tower'));
 
 /**
  * Blue-side gold lead over time. Above the zero line is Blue ahead, below is Red ahead.
@@ -47,30 +43,30 @@ export function GoldChart({ diff, events, height = 230 }: { diff: number[]; even
   const near = hover != null ? marks.filter((m) => Math.abs(m.t / 60 - hover) <= 0.5) : [];
 
   return (
-    <figure aria-label="Gold lead over time">
+    <figure aria-label={t('gold.aria')}>
       <div className="mb-2 flex gap-4 text-xs text-muted" aria-hidden>
         <span className="flex items-center gap-1.5">
-          <span className="size-2.5 rounded-sm bg-side-blue" /> Blue side ahead
+          <span className="size-2.5 rounded-sm bg-side-blue" /> {t('gold.blueAhead')}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="size-2.5 rounded-sm bg-side-red" /> Red side ahead
+          <span className="size-2.5 rounded-sm bg-side-red" /> {t('gold.redAhead')}
         </span>
         <span className="flex items-center gap-1.5">
           <svg width="10" height="10" viewBox="0 0 10 10">
             <path d="M5 0L10 5L5 10L0 5Z" fill="var(--muted)" />
           </svg>
-          Objective
+          {t('gold.objective')}
         </span>
         <span className="flex items-center gap-1.5">
           <svg width="10" height="10" viewBox="0 0 10 10">
             <rect x="1.5" y="1.5" width="7" height="7" fill="var(--muted)" />
           </svg>
-          Tower or inhibitor
+          {t('gold.building')}
         </span>
       </div>
       <div ref={ref} className="relative">
         {width > 0 && (
-          <svg width={width} height={height} role="img" aria-label="Gold lead chart" className="block">
+          <svg width={width} height={height} role="img" aria-label={t('gold.chart')} className="block">
             <defs>
               <clipPath id={`${clip}-up`}>
                 <rect x={0} y={0} width={width} height={zero} />
@@ -79,11 +75,11 @@ export function GoldChart({ diff, events, height = 230 }: { diff: number[]; even
                 <rect x={0} y={zero} width={width} height={height} />
               </clipPath>
             </defs>
-            {ticks.map((t) => (
-              <g key={t}>
-                <line x1={PAD.left} x2={PAD.left + w} y1={y(t)} y2={y(t)} stroke={t === 0 ? 'var(--line-strong)' : 'var(--line)'} />
-                <text x={PAD.left - 8} y={y(t)} dy="0.32em" textAnchor="end" className="num fill-[var(--faint)] text-[10px]">
-                  {t === 0 ? 'Even' : compact(Math.abs(t))}
+            {ticks.map((tick) => (
+              <g key={tick}>
+                <line x1={PAD.left} x2={PAD.left + w} y1={y(tick)} y2={y(tick)} stroke={tick === 0 ? 'var(--line-strong)' : 'var(--line)'} />
+                <text x={PAD.left - 8} y={y(tick)} dy="0.32em" textAnchor="end" className="num fill-[var(--faint)] text-[10px]">
+                  {tick === 0 ? t('gold.even') : compact(Math.abs(tick))}
                 </text>
               </g>
             ))}
@@ -91,7 +87,7 @@ export function GoldChart({ diff, events, height = 230 }: { diff: number[]; even
               .filter((i) => i % 5 === 0)
               .map((i) => (
                 <text key={i} x={x(i)} y={PAD.top + h + 12} textAnchor="middle" className="num fill-[var(--faint)] text-[10px]">
-                  {i}m
+                  {t('gold.minuteShort', { n: String(i) })}
                 </text>
               ))}
             <g clipPath={`url(#${clip}-up)`}>
@@ -106,7 +102,7 @@ export function GoldChart({ diff, events, height = 230 }: { diff: number[]; even
             {marks.map((m, i) => {
               const cx = xs(m.t);
               const fill = m.teamId === 100 ? 'var(--side-blue)' : 'var(--side-red)';
-              const label = m.type === 'objective' ? objectiveLabel(m) : `${m.building === 'INHIBITOR' ? 'Inhibitor' : 'Tower'}`;
+              const label = m.type === 'objective' ? objectiveLabel(m) : buildingLabel(m.building);
               return m.type === 'objective' ? (
                 <path key={i} d={`M${cx},${stripY - 6}L${cx + 6},${stripY}L${cx},${stripY + 6}L${cx - 6},${stripY}Z`} fill={fill} stroke="var(--surface)" strokeWidth="1.5">
                   <title>{label}</title>
@@ -131,15 +127,16 @@ export function GoldChart({ diff, events, height = 230 }: { diff: number[]; even
             className="pointer-events-none absolute top-1 z-10 min-w-40 rounded border border-line-strong bg-raised px-2.5 py-2 text-xs shadow-xl"
             style={{ left: x(hover) > width / 2 ? x(hover) - 180 : x(hover) + 12 }}
           >
-            <p className="font-semibold">Minute {hover}</p>
+            <p className="font-semibold">{t('gold.minute', { n: String(hover) })}</p>
             <p className="text-muted">
-              {diff[hover] === 0 ? 'Gold is even' : `${diff[hover] > 0 ? 'Blue' : 'Red'} side ahead by `}
-              {diff[hover] !== 0 && <span className="num font-medium text-text">{compact(Math.abs(diff[hover]))}</span>}
+              {diff[hover] === 0
+                ? t('gold.isEven')
+                : t.rich(diff[hover] > 0 ? 'gold.blueBy' : 'gold.redBy', { amount: <span className="num font-medium text-text">{compact(Math.abs(diff[hover]))}</span> })}
             </p>
             {near.map((m, i) => (
               <p key={i} className="mt-0.5 flex items-center gap-1.5">
                 <span className="size-2 rounded-full" style={{ background: m.teamId === 100 ? 'var(--side-blue)' : 'var(--side-red)' }} />
-                {m.type === 'objective' ? objectiveLabel(m) : m.building === 'INHIBITOR' ? 'Inhibitor' : 'Tower'}
+                {m.type === 'objective' ? objectiveLabel(m) : buildingLabel(m.building)}
               </p>
             ))}
           </div>

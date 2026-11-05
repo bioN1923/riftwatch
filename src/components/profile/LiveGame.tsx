@@ -6,7 +6,7 @@ import { Link2 } from 'lucide-react';
 import type { LiveGame as Live, LiveParticipant, ScoutInfo } from '../../../shared/types';
 import { api } from '../../lib/api';
 import { assets, rankEmblem, useStaticData } from '../../lib/ddragon';
-import { compact, duration, pct, titleCase } from '../../lib/format';
+import { compact, duration, pct, tierName } from '../../lib/format';
 import { queueName } from '../../lib/queues';
 import { profilePath } from '../../lib/riotId';
 import { GameImg } from '../ui/GameImg';
@@ -14,6 +14,7 @@ import { Skeleton } from '../ui/States';
 import { SpellsRunes } from '../match/Loadout';
 import { ladderValue } from '../../lib/ladder';
 import { fadeIn } from '../../lib/motion';
+import { t } from '../../i18n';
 
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
 const TIERS = ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'EMERALD', 'DIAMOND'];
@@ -48,9 +49,9 @@ function avgRank(scouts: (ScoutInfo | undefined)[]) {
   const vals = scouts.flatMap((s) => (s?.solo ? [ladderValue({ tier: s.solo.tier, rank: s.solo.rank, lp: s.solo.leaguePoints })] : []));
   if (!vals.length) return null;
   const v = vals.reduce((x, y) => x + y, 0) / vals.length;
-  if (v >= 2800) return 'Master+';
-  const t = TIERS[Math.floor(v / 400)] ?? 'IRON';
-  return `${titleCase(t)} ${DIV[Math.floor((v % 400) / 100)]}`;
+  if (v >= 2800) return t('live.masterPlus');
+  const tier = TIERS[Math.floor(v / 400)] ?? 'IRON';
+  return `${tierName(tier)} ${DIV[Math.floor((v % 400) / 100)]}`;
 }
 
 export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string; platform: string }) {
@@ -84,7 +85,7 @@ export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string;
     <section aria-labelledby="live-h" className="space-y-4">
       <div className="panel flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3">
         <span className="inline-flex items-center gap-1.5 rounded-sm bg-loss px-2 py-0.5 text-xs font-semibold text-on-accent">
-          <span className="live-dot size-1.5 rounded-full bg-on-accent" aria-hidden /> Live
+          <span className="live-dot size-1.5 rounded-full bg-on-accent" aria-hidden /> {t('live.badge')}
         </span>
         <h2 id="live-h" className="font-display text-xl font-bold">
           {queueName(game.queueId)}
@@ -92,31 +93,31 @@ export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string;
         <span className="num text-muted">
           {duration(elapsed)}
         </span>
-        <span className="text-xs text-faint md:ml-auto">Rank, mastery and premades are looked up for every player. Game time refreshes every minute.</span>
+        <span className="text-xs text-faint md:ml-auto">{t('live.note')}</span>
       </div>
 
       <div className="grid gap-4">
-        {teams.map((t) => {
-          const avg = avgRank(t.idx.map((i) => scouts[i]));
+        {teams.map((team) => {
+          const avg = avgRank(team.idx.map((i) => scouts[i]));
           return (
-            <div key={t.teamId} className="panel overflow-hidden">
-              <div className={clsx('flex flex-wrap items-center justify-between gap-2 px-4 py-2', t.teamId === 100 ? 'bg-side-blue/10' : 'bg-side-red/10')}>
-                <h3 className={clsx('font-display text-lg font-bold', t.teamId === 100 ? 'text-side-blue' : 'text-side-red')}>
-                  {t.teamId === 100 ? 'Blue side' : 'Red side'}
-                  {avg && <span className="ml-2 font-sans text-xs font-normal text-muted">average {avg}</span>}
+            <div key={team.teamId} className="panel overflow-hidden">
+              <div className={clsx('flex flex-wrap items-center justify-between gap-2 px-4 py-2', team.teamId === 100 ? 'bg-side-blue/10' : 'bg-side-red/10')}>
+                <h3 className={clsx('font-display text-lg font-bold', team.teamId === 100 ? 'text-side-blue' : 'text-side-red')}>
+                  {team.teamId === 100 ? t('live.blue') : t('live.red')}
+                  {avg && <span className="ml-2 font-sans text-xs font-normal text-muted">{t('live.average', { rank: avg })}</span>}
                 </h3>
-                {t.bans.length > 0 && (
-                  <div className="flex items-center gap-1" role="group" aria-label="Bans">
-                    <span className="mr-1 text-xs text-muted">Bans</span>
-                    {t.bans.map((b, i) => {
+                {team.bans.length > 0 && (
+                  <div className="flex items-center gap-1" role="group" aria-label={t('live.bans')}>
+                    <span className="mr-1 text-xs text-muted">{t('live.bans')}</span>
+                    {team.bans.map((b, i) => {
                       const c = a.champion(b.championId);
-                      return <GameImg key={i} src={c.url} alt={`Banned ${c.name}`} size={20} rounded="sm" className="opacity-60 grayscale" />;
+                      return <GameImg key={i} src={c.url} alt={t('live.banned', { champion: c.name })} size={20} rounded="sm" className="opacity-60 grayscale" />;
                     })}
                   </div>
                 )}
               </div>
               <ul>
-                {t.idx.map((i) => (
+                {team.idx.map((i) => (
                   <PlayerRow key={players[i].puuid + i} p={players[i]} s={scouts[i]} loading={scoutQs[i].isPending && !!players[i].puuid} self={players[i].puuid === puuid} group={groups.get(i)} platform={platform} />
                 ))}
               </ul>
@@ -136,9 +137,9 @@ function PlayerRow({ p, s, loading, self, group, platform }: { p: LiveParticipan
   const games = solo ? solo.wins + solo.losses : 0;
   const wr = games ? solo!.wins / games : 0;
   const tags: { label: string; tone: 'good' | 'bad' | 'neutral'; title: string }[] = [];
-  if (s?.mastery && s.mastery.points >= 300_000) tags.push({ label: 'Champion specialist', tone: 'good', title: `${compact(s.mastery.points)} mastery points` });
-  if (solo?.hotStreak) tags.push({ label: 'Hot streak', tone: 'good', title: 'On a ranked win streak' });
-  if (games >= 20 && wr >= 0.62) tags.push({ label: 'High win rate', tone: 'good', title: `${pct(wr)} over ${games} ranked games` });
+  if (s?.mastery && s.mastery.points >= 300_000) tags.push({ label: t('live.specialist'), tone: 'good', title: t('live.masteryPoints', { points: compact(s.mastery.points) }) });
+  if (solo?.hotStreak) tags.push({ label: t('live.hotStreak'), tone: 'good', title: t('live.hotStreakTip') });
+  if (games >= 20 && wr >= 0.62) tags.push({ label: t('live.highWr'), tone: 'good', title: t('live.highWrTip', { rate: pct(wr), count: games }) });
 
   return (
     <li className={clsx('grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-t border-line px-4 py-2.5 sm:grid-cols-[auto_minmax(0,1fr)_170px_100px]', self && 'bg-raised')}>
@@ -146,8 +147,8 @@ function PlayerRow({ p, s, loading, self, group, platform }: { p: LiveParticipan
         <span className="relative">
           <GameImg src={c.url} alt={c.name} size={42} rounded="md" />
           {group != null && (
-            <span className="absolute -left-1.5 -top-1.5 grid size-5 place-items-center rounded-full ring-2 ring-surface" style={{ background: GROUP_COLORS[group % GROUP_COLORS.length] }} title="Queued together (shared recent games)">
-              <Link2 className="size-3 text-bg" aria-label="Premade" />
+            <span className="absolute -left-1.5 -top-1.5 grid size-5 place-items-center rounded-full ring-2 ring-surface" style={{ background: GROUP_COLORS[group % GROUP_COLORS.length] }} title={t('live.premadeTip')}>
+              <Link2 className="size-3 text-bg" aria-label={t('live.premade')} />
             </span>
           )}
         </span>
@@ -155,7 +156,7 @@ function PlayerRow({ p, s, loading, self, group, platform }: { p: LiveParticipan
       </div>
       <div className="min-w-0">
         {self || !p.gameName ? (
-          <p className="truncate font-semibold">{p.gameName || 'Hidden player'}</p>
+          <p className="truncate font-semibold">{p.gameName || t('live.hidden')}</p>
         ) : (
           <Link to={profilePath(platform, p)} className="block truncate font-medium hover:text-gold hover:underline">
             {p.gameName}
@@ -164,13 +165,13 @@ function PlayerRow({ p, s, loading, self, group, platform }: { p: LiveParticipan
         )}
         <p className="truncate text-xs text-muted">
           {c.name}
-          {s?.mastery && <span className="num"> · {compact(s.mastery.points)} mastery</span>}
+          {s?.mastery && <span className="num"> · {t('live.mastery', { points: compact(s.mastery.points) })}</span>}
         </p>
         {tags.length > 0 && (
           <ul className="mt-1 flex flex-wrap gap-1">
-            {tags.map((t) => (
-              <li key={t.label} title={t.title} className={clsx('whitespace-nowrap rounded-sm border px-1 text-[10px] font-medium', t.tone === 'good' ? 'border-win/40 text-win' : t.tone === 'bad' ? 'border-loss/40 text-loss' : 'border-line-strong text-muted')}>
-                {t.label}
+            {tags.map((tag) => (
+              <li key={tag.label} title={tag.title} className={clsx('whitespace-nowrap rounded-sm border px-1 text-[10px] font-medium', tag.tone === 'good' ? 'border-win/40 text-win' : tag.tone === 'bad' ? 'border-loss/40 text-loss' : 'border-line-strong text-muted')}>
+                {tag.label}
               </li>
             ))}
           </ul>
@@ -184,13 +185,13 @@ function PlayerRow({ p, s, loading, self, group, platform }: { p: LiveParticipan
             <img src={rankEmblem(solo.tier)} alt="" {...fadeIn()} className="size-8" />
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">
-                {titleCase(solo.tier)} {APEX.has(solo.tier) ? '' : solo.rank}
+                {tierName(solo.tier)} {APEX.has(solo.tier) ? '' : solo.rank}
               </p>
-              <p className="num text-xs text-muted">{solo.leaguePoints} LP</p>
+              <p className="num text-xs text-muted">{t('common.lp', { lp: solo.leaguePoints })}</p>
             </div>
           </>
         ) : (
-          <span className="text-sm text-faint">Unranked</span>
+          <span className="text-sm text-faint">{t('common.unranked')}</span>
         )}
       </div>
       <div className="text-right">
@@ -199,10 +200,10 @@ function PlayerRow({ p, s, loading, self, group, platform }: { p: LiveParticipan
         ) : solo ? (
           <>
             <p className={clsx('num text-sm font-semibold', wr >= 0.55 ? 'text-win' : wr < 0.47 ? 'text-loss' : 'text-text')}>{pct(wr)}</p>
-            <p className="num text-xs text-muted">{games} games</p>
+            <p className="num text-xs text-muted">{t('common.games', { count: games })}</p>
           </>
         ) : (
-          <span className="text-xs text-faint sm:hidden">Unranked</span>
+          <span className="text-xs text-faint sm:hidden">{t('common.unranked')}</span>
         )}
       </div>
     </li>

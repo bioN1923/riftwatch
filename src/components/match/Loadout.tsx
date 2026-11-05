@@ -2,6 +2,7 @@ import type { Participant } from '../../../shared/types';
 import { assets, useStaticData } from '../../lib/ddragon';
 import { GameImg } from '../ui/GameImg';
 import { ItemTip } from '../ui/ItemTip';
+import { t } from '../../i18n';
 
 type Assets = ReturnType<typeof assets>;
 
@@ -40,14 +41,14 @@ export function Items({ items, size = 22 }: { items: number[]; size?: number }) 
   const { data } = useStaticData();
   const a = assets(data);
   return (
-    <div className="flex gap-0.5" role="group" aria-label="Items">
+    <div className="flex gap-0.5" role="group" aria-label={t('loadout.items')}>
       {items.map((id, i) => {
         const it = a.item(id);
         return (
           <GameImg
             key={i}
             src={id ? it.url : undefined}
-            alt={id ? it.name || `Item ${id}` : ''}
+            alt={id ? it.name || t('item.fallback', { id: String(id) }) : ''}
             size={size}
             rounded={i === 6 ? 'full' : 'sm'}
             className={i === 6 ? 'ml-0.5' : undefined}

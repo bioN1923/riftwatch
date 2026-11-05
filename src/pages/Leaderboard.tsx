@@ -6,18 +6,19 @@ import { ChevronDown, ChevronLeft, ChevronRight, Flame } from 'lucide-react';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api } from '../lib/api';
 import { rankEmblem } from '../lib/ddragon';
-import { pct, thousands } from '../lib/format';
+import { pct, thousands, regionName, tierName } from '../lib/format';
 import { profilePath } from '../lib/riotId';
 import { useRegion } from '../lib/storage';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { WinRateBar } from '../components/champions/common';
 import { fadeIn } from '../lib/motion';
 import { SlidingIndicator } from '../components/ui/Motion';
+import { t } from '../i18n';
 
 const TIERS = [
-  { id: 'challenger', label: 'Challenger' },
-  { id: 'grandmaster', label: 'Grandmaster' },
-  { id: 'master', label: 'Master' },
+  { id: 'challenger', label: () => tierName('CHALLENGER') },
+  { id: 'grandmaster', label: () => tierName('GRANDMASTER') },
+  { id: 'master', label: () => tierName('MASTER') },
 ] as const;
 
 export function LeaderboardPage() {
@@ -29,7 +30,7 @@ export function LeaderboardPage() {
   const page = Math.max(1, Number(params.get('page') ?? 1) || 1);
 
   useEffect(() => {
-    document.title = `${getPlatform(region)?.label} ladder — Riftwatch`;
+    document.title = t('lb.docTitle', { region: getPlatform(region)?.label ?? region });
   }, [region]);
 
   const q = useQuery({
@@ -50,12 +51,12 @@ export function LeaderboardPage() {
     <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-5xl font-extrabold leading-none tracking-tight">Ladder</h1>
-          <p className="mt-2 text-sm text-muted">The top of ranked on {getPlatform(region)?.name}, ordered by LP.</p>
+          <h1 className="font-display text-5xl font-extrabold leading-none tracking-tight">{t('lb.heading')}</h1>
+          <p className="mt-2 text-sm text-muted">{t('lb.sub', { region: regionName(region) })}</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <label className="relative">
-            <span className="sr-only">Region</span>
+            <span className="sr-only">{t('lb.region')}</span>
             <select
               value={region}
               onChange={(e) => {
@@ -72,11 +73,11 @@ export function LeaderboardPage() {
             </select>
             <ChevronDown className="pointer-events-none absolute right-2.5 top-2.5 size-4 text-muted" aria-hidden />
           </label>
-          <div role="radiogroup" aria-label="Queue" className="flex rounded border border-line bg-surface p-0.5">
+          <div role="radiogroup" aria-label={t('lb.queue')} className="flex rounded border border-line bg-surface p-0.5">
             {(
               [
-                ['solo', 'Solo/Duo'],
-                ['flex', 'Flex'],
+                ['solo', t('lb.solo')],
+                ['flex', t('lb.flex')],
               ] as const
             ).map(([id, label]) => (
               <button
@@ -93,18 +94,18 @@ export function LeaderboardPage() {
         </div>
       </div>
 
-      <div role="tablist" aria-label="Tier" className="relative mt-6 flex gap-5 border-b border-line">
+      <div role="tablist" aria-label={t('lb.tier')} className="relative mt-6 flex gap-5 border-b border-line">
         <SlidingIndicator />
-        {TIERS.map((t) => (
+        {TIERS.map((tr) => (
           <button
-            key={t.id}
+            key={tr.id}
             role="tab"
-            aria-selected={tier === t.id}
-            onClick={() => set({ tier: t.id === 'challenger' ? null : t.id, page: null })}
-            className={clsx('-mb-px flex items-center gap-2 border-b-2 pb-2 text-sm font-medium transition-colors', tier === t.id ? 'border-transparent text-text' : 'border-transparent text-muted hover:text-text')}
+            aria-selected={tier === tr.id}
+            onClick={() => set({ tier: tr.id === 'challenger' ? null : tr.id, page: null })}
+            className={clsx('-mb-px flex items-center gap-2 border-b-2 pb-2 text-sm font-medium transition-colors', tier === tr.id ? 'border-transparent text-text' : 'border-transparent text-muted hover:text-text')}
           >
-            <img src={rankEmblem(t.id)} alt="" {...fadeIn()} className="size-6" />
-            {t.label}
+            <img src={rankEmblem(tr.id)} alt="" {...fadeIn()} className="size-6" />
+            {tr.label()}
           </button>
         ))}
       </div>
@@ -121,31 +122,31 @@ export function LeaderboardPage() {
         </div>
       ) : q.data.entries.length === 0 ? (
         <div className="panel mt-6">
-          <EmptyState title="Nobody here yet">This tier is empty on this server right now — early in a season it can take a while to fill.</EmptyState>
+          <EmptyState title={t('lb.empty')}>{t('lb.emptyBody')}</EmptyState>
         </div>
       ) : (
         <>
           <div className={clsx('mt-2 overflow-x-auto transition-opacity', q.isPlaceholderData && 'opacity-60')}>
             <table className="w-full min-w-[640px] text-sm">
               <caption className="sr-only">
-                {TIERS.find((t) => t.id === tier)?.label} ladder, page {page} of {pages}
+                {t('lb.caption', { tier: TIERS.find((x) => x.id === tier)?.label() ?? '', page: String(page), pages: String(pages) })}
               </caption>
               <thead className="text-xs text-muted">
                 <tr>
                   <th scope="col" className="w-16 px-3 py-2 text-left font-medium">
-                    Rank
+                    {t('lb.rank')}
                   </th>
                   <th scope="col" className="px-3 py-2 text-left font-medium">
-                    Player
+                    {t('lb.player')}
                   </th>
                   <th scope="col" className="px-3 py-2 text-right font-medium">
-                    LP
+                    {t('lb.lp')}
                   </th>
                   <th scope="col" className="px-3 py-2 text-right font-medium">
-                    Win rate
+                    {t('lb.wr')}
                   </th>
                   <th scope="col" className="px-3 py-2 text-right font-medium">
-                    Games
+                    {t('lb.games')}
                   </th>
                 </tr>
               </thead>
@@ -163,9 +164,9 @@ export function LeaderboardPage() {
                             <span className="text-faint">#{e.tagLine}</span>
                           </Link>
                         ) : (
-                          <span className="text-faint">Name unavailable</span>
+                          <span className="text-faint">{t('lb.noName')}</span>
                         )}
-                        {e.hotStreak && <Flame className="ml-1.5 inline size-3.5 text-kda-great" aria-label="On a win streak" />}
+                        {e.hotStreak && <Flame className="ml-1.5 inline size-3.5 text-kda-great" aria-label={t('lb.hot')} />}
                       </td>
                       <td className="num px-3 py-2.5 text-right font-semibold">{thousands(e.lp)}</td>
                       <td className="px-3 py-2.5 text-right">
@@ -177,7 +178,7 @@ export function LeaderboardPage() {
                       <td className="num px-3 py-2.5 text-right text-muted">
                         {thousands(games)}
                         <span className="ml-1 text-xs text-faint">
-                          ({e.wins}W {e.losses}L)
+                          ({t('common.wins', { count: e.wins })} {t('common.losses', { count: e.losses })})
                         </span>
                       </td>
                     </tr>
@@ -186,16 +187,16 @@ export function LeaderboardPage() {
               </tbody>
             </table>
           </div>
-          <nav aria-label="Pages" className="mt-4 flex items-center justify-between text-sm text-muted">
+          <nav aria-label={t('lb.pages')} className="mt-4 flex items-center justify-between text-sm text-muted">
             <span className="num">
-              {thousands(q.data.total)} players · page {page} of {pages}
+              {t('lb.pageOf', { players: thousands(q.data.total), page: String(page), pages: String(pages) })}
             </span>
             <span className="flex gap-2">
               <button disabled={page <= 1} onClick={() => set({ page: page - 1 <= 1 ? null : String(page - 1) })} className="inline-flex items-center gap-1 rounded border border-line px-3 py-1.5 hover:border-line-strong hover:text-text disabled:opacity-40">
-                <ChevronLeft className="size-4" aria-hidden /> Previous
+                <ChevronLeft className="size-4" aria-hidden /> {t('lb.prev')}
               </button>
               <button disabled={page >= pages} onClick={() => set({ page: String(page + 1) })} className="inline-flex items-center gap-1 rounded border border-line px-3 py-1.5 hover:border-line-strong hover:text-text disabled:opacity-40">
-                Next <ChevronRight className="size-4" aria-hidden />
+                {t('lb.next')} <ChevronRight className="size-4" aria-hidden />
               </button>
             </span>
           </nav>

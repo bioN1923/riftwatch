@@ -8,6 +8,7 @@ import { HomePage } from './pages/Home';
 import { NotFoundPage } from './pages/NotFound';
 import { RouteError } from './pages/RouteError';
 import { ApiClientError } from './lib/api';
+import { initI18n, useLang } from './i18n';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,10 +51,17 @@ const router = createBrowserRouter([
   },
 ]);
 
+/** Switching language remounts the app (the URL and cached data are kept), so all text re-renders. */
+function App() {
+  const lang = useLang();
+  return <RouterProvider key={lang} router={router} />;
+}
+
+await initI18n();
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <App />
     </QueryClientProvider>
   </StrictMode>,
 );

@@ -4,6 +4,7 @@ import { assets, SHARD_INFO, SHARD_ROWS, shardIcon, useStaticData, type StaticDa
 import { GameImg } from '../ui/GameImg';
 import { Tip } from '../match/Loadout';
 import { ItemTip } from '../ui/ItemTip';
+import { t } from '../../i18n';
 
 const KEYS = ['Q', 'W', 'E', 'R'];
 
@@ -42,7 +43,7 @@ export function SkillGrid({ skills, icons }: { skills: number[]; icons?: (string
   return (
     <div className="overflow-x-auto">
       <table className="border-separate border-spacing-[3px] text-xs">
-        <caption className="sr-only">Ability levelled at each champion level</caption>
+        <caption className="sr-only">{t('bp.skillCaption')}</caption>
         <tbody>
           {[1, 2, 3, 4].map((slot) => (
             <tr key={slot}>
@@ -97,7 +98,7 @@ export function RuneTrees({ primaryStyle, secondaryStyle, picked, shards }: { pr
 export function ShardGrid({ shards }: { shards: number[] }) {
   return (
     <div>
-      <p className="mb-2 text-sm font-semibold">Stat shards</p>
+      <p className="mb-2 text-sm font-semibold">{t('bp.shards')}</p>
       <div className="space-y-1.5">
         {SHARD_ROWS.map((row, ri) => {
           const picked = shards[ri];
@@ -112,11 +113,11 @@ export function ShardGrid({ shards }: { shards: number[] }) {
                   <GameImg
                     key={`${id}-${k}`}
                     src={shardIcon(id)}
-                    alt={on ? info?.name ?? `Shard ${id}` : ''}
+                    alt={on ? (info?.name ?? '') : ''}
                     size={24}
                     rounded="full"
                     className={clsx('bg-[#0e1b1d]! p-[3px] transition duration-300', on ? 'ring-2 ring-gold' : 'opacity-30 grayscale')}
-                    tip={info ? <Tip title={`${row.label}: ${info.name}`} body={info.desc} /> : undefined}
+                    tip={info ? <Tip title={t('bp.shardTip', { row: row.label, name: info.name })} body={info.desc} /> : undefined}
                   />
                 );
               })}

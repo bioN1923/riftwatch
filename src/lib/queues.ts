@@ -1,44 +1,48 @@
-export const QUEUE_NAMES: Record<number, string> = {
-  0: 'Custom',
-  400: 'Normal Draft',
-  420: 'Ranked Solo/Duo',
-  430: 'Normal Blind',
-  440: 'Ranked Flex',
+import { t, type MessageKey } from '../i18n';
+
+/** Queue names: translated where the name is a description, kept where it's a proper name (ARAM, URF, Clash). */
+const QUEUE_KEYS: Record<number, MessageKey | string> = {
+  0: 'queue.custom',
+  400: 'queue.normalDraft',
+  420: 'queue.soloDuo',
+  430: 'queue.normalBlind',
+  440: 'queue.flex',
   450: 'ARAM',
-  480: 'Swiftplay',
-  490: 'Quickplay',
+  480: 'queue.swiftplay',
+  490: 'queue.quickplay',
   700: 'Clash',
-  720: 'ARAM Clash',
-  830: 'Co-op vs AI',
-  840: 'Co-op vs AI',
-  850: 'Co-op vs AI',
-  870: 'Co-op vs AI',
-  880: 'Co-op vs AI',
-  890: 'Co-op vs AI',
+  720: 'queue.aramClash',
+  830: 'queue.coop',
+  840: 'queue.coop',
+  850: 'queue.coop',
+  870: 'queue.coop',
+  880: 'queue.coop',
+  890: 'queue.coop',
   900: 'ARURF',
-  1020: 'One for All',
-  1300: 'Nexus Blitz',
-  1700: 'Arena',
-  1710: 'Arena',
+  1020: 'queue.oneForAll',
+  1300: 'queue.nexusBlitz',
+  1700: 'queue.arena',
+  1710: 'queue.arena',
   1900: 'URF',
-  2300: 'Brawl',
-  2400: 'ARAM Mayhem',
+  2300: 'queue.brawl',
+  2400: 'queue.aramMayhem',
 };
 
-export const queueName = (id: number) => QUEUE_NAMES[id] ?? 'Special mode';
-
-export const QUEUE_FILTERS = [
-  { id: 'all', label: 'All' },
-  { id: 'solo', label: 'Ranked Solo' },
-  { id: 'flex', label: 'Ranked Flex' },
-  { id: 'normal', label: 'Normal' },
-  { id: 'aram', label: 'ARAM' },
-  { id: 'arena', label: 'Arena' },
-] as const;
-
-export type QueueFilter = (typeof QUEUE_FILTERS)[number]['id'];
-
-export const RANKED_QUEUE_LABEL: Record<string, string> = {
-  RANKED_SOLO_5x5: 'Ranked Solo/Duo',
-  RANKED_FLEX_SR: 'Ranked Flex',
+export const queueName = (id: number) => {
+  const k = QUEUE_KEYS[id];
+  return k == null ? t('queue.special') : k.startsWith('queue.') ? t(k as MessageKey) : k;
 };
+
+const FILTER_IDS = ['all', 'solo', 'flex', 'normal', 'aram', 'arena'] as const;
+export const QUEUE_FILTERS = FILTER_IDS.map((id) => ({
+  id,
+  get label() {
+    return t(`queueFilter.${id}`);
+  },
+}));
+
+export type QueueFilter = (typeof FILTER_IDS)[number];
+
+export const RANKED_QUEUE_LABEL: Record<string, string> = new Proxy({} as Record<string, string>, {
+  get: (_, k) => (k === 'RANKED_SOLO_5x5' ? t('queue.soloDuo') : k === 'RANKED_FLEX_SR' ? t('queue.flex') : undefined),
+});

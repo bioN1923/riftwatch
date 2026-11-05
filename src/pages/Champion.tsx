@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import type { ChampionStats, Rated, StatsGroup } from '../../shared/types';
 import { api, ApiClientError } from '../lib/api';
 import { assets, championBySlug, champSlug, matchupPath, useChampionDetail, useStaticData, type ChampionDetail } from '../lib/ddragon';
-import { formatKda, kdaTone, pct, thousands } from '../lib/format';
+import { formatKda, kdaTone, pct, thousands, champClass } from '../lib/format';
 import { profilePath } from '../lib/riotId';
 import { getPlatform } from '../../shared/regions';
 import { GameImg, Tooltip } from '../components/ui/GameImg';
@@ -16,6 +16,7 @@ import { ItemRow, MaxOrder, RuneTrees, SkillGrid } from '../components/build/Bui
 import { GroupToggle, PatchSelect, RoleTab, TierBadge, WinRateBar } from '../components/champions/common';
 import { fadeIn } from '../lib/motion';
 import { SlidingIndicator, useSlideDirection } from '../components/ui/Motion';
+import { t } from '../i18n';
 
 export function ChampionPage() {
   const { slug = '' } = useParams();
@@ -28,11 +29,11 @@ export function ChampionPage() {
       <div className="mx-auto max-w-6xl px-4 py-10">
         <ErrorState
           page
-          title="Champion not found"
-          error={new ApiClientError(404, 'NOT_FOUND', `There’s no champion called “${slug}”.`)}
+          title={t('cp.notFound')}
+          error={new ApiClientError(404, 'NOT_FOUND', t('cp.notFoundBody', { slug }))}
           action={
             <Link to="/champions" className="rounded bg-gold px-4 py-2 font-semibold text-gold-ink">
-              Browse all champions
+              {t('cp.browse')}
             </Link>
           }
         />
@@ -60,7 +61,7 @@ function ChampionView({ championId }: { championId: number }) {
   const s = q.data;
 
   useEffect(() => {
-    if (info) document.title = `${info.name} build, runes and stats — Riftwatch`;
+    if (info) document.title = t('cp.title', { champion: info.name });
   }, [info]);
 
   const set = (k: string, v: string | null) => {
@@ -91,7 +92,7 @@ function ChampionView({ championId }: { championId: number }) {
 
         <div className="relative mx-auto max-w-6xl px-4 pb-0 pt-8">
           <Link to="/champions" className="text-sm text-muted hover:text-text">
-            ← Tier list
+            {t('cp.back')}
           </Link>
           <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="flex items-center gap-5">
@@ -100,9 +101,9 @@ function ChampionView({ championId }: { championId: number }) {
                 <h1 className="font-display text-5xl font-extrabold leading-none tracking-tight sm:text-6xl">{info?.name}</h1>
                 <p className="mt-1 text-muted first-letter:uppercase">{info?.title}</p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  {(detail?.tags ?? info?.tags ?? []).map((t) => (
-                    <span key={t} className="rounded-sm border border-line-strong px-1.5 py-px text-xs text-muted">
-                      {t}
+                  {(detail?.tags ?? info?.tags ?? []).map((tag) => (
+                    <span key={tag} className="rounded-sm border border-line-strong px-1.5 py-px text-xs text-muted">
+                      {champClass(tag)}
                     </span>
                   ))}
                 </div>
@@ -119,7 +120,7 @@ function ChampionView({ championId }: { championId: number }) {
           {detail && <Abilities detail={detail} />}
 
           {group === 'ranked' && s && s.roles.length > 0 && (
-            <div role="tablist" aria-label="Role" className="relative mt-6 flex gap-5 overflow-x-auto">
+            <div role="tablist" aria-label={t('tl.role')} className="relative mt-6 flex gap-5 overflow-x-auto">
               <SlidingIndicator />
               {s.roles.map((r) => (
                 <RoleTab key={r.role} role={r.role} active={s.role === r.role} onClick={() => set('role', r.role)}>
@@ -143,8 +144,8 @@ function ChampionView({ championId }: { championId: number }) {
           <ErrorState error={q.error} />
         ) : !s?.summary ? (
           <div className="panel">
-            <EmptyState title={`No ${group === 'aram' ? 'ARAM' : 'ranked'} games with ${info?.name} yet`}>
-              Stats appear once the server has read games with this champion. Check back soon, or try the other queue.
+            <EmptyState title={t(group === 'aram' ? 'cp.noAram' : 'cp.noRanked', { champion: info?.name ?? '' })}>
+              {t('cp.noGamesBody')}
             </EmptyState>
           </div>
         ) : (
@@ -161,7 +162,7 @@ function ChampionView({ championId }: { championId: number }) {
               {detail && <BaseStats d={detail} />}
               {detail?.blurb && (
                 <section className="panel p-4">
-                  <h2 className="panel-title">Lore</h2>
+                  <h2 className="panel-title">{t('cp.lore')}</h2>
                   <p className="mt-2 text-sm leading-relaxed text-muted">{detail.blurb}</p>
                 </section>
               )}
@@ -178,15 +179,15 @@ function StatStrip({ s, loading }: { s?: ChampionStats; loading: boolean }) {
   const sum = s?.summary;
   if (!sum) return <div className="mt-6" />;
   const items: [string, string, string?][] = [
-    ['Win rate', pct(sum.winRate, 1), sum.winRate >= 0.5 ? 'text-win' : 'text-loss'],
-    ['Pick rate', pct(sum.pickRate, 1)],
-    ['Ban rate', pct(sum.banRate, 1)],
-    ['Games', thousands(sum.games)],
+    [t('cp.winRate'), pct(sum.winRate, 1), sum.winRate >= 0.5 ? 'text-win' : 'text-loss'],
+    [t('cp.pickRate'), pct(sum.pickRate, 1)],
+    [t('cp.banRate'), pct(sum.banRate, 1)],
+    [t('cp.games'), thousands(sum.games)],
   ];
   return (
     <dl className="mt-7 flex flex-wrap items-end gap-x-8 gap-y-3">
       <div>
-        <dt className="text-xs text-muted">Tier</dt>
+        <dt className="text-xs text-muted">{t('cp.tier')}</dt>
         <dd className="mt-1">
           <TierBadge tier={sum.tier} size="lg" />
         </dd>
@@ -197,15 +198,15 @@ function StatStrip({ s, loading }: { s?: ChampionStats; loading: boolean }) {
           <dd className={clsx('display-num mt-0.5 text-4xl font-extrabold leading-none', tone)}>{value}</dd>
         </div>
       ))}
-      {sum.lowSample && <p className="text-xs text-faint">Small sample — numbers will settle as more games come in.</p>}
+      {sum.lowSample && <p className="text-xs text-faint">{t('cp.smallSample')}</p>}
     </dl>
   );
 }
 
 function Abilities({ detail }: { detail: ChampionDetail }) {
-  const list = [{ key: 'Passive', name: detail.passive.name, description: detail.passive.description, cooldown: '', icon: detail.passive.icon }, ...detail.spells];
+  const list = [{ key: t('cp.passive'), name: detail.passive.name, description: detail.passive.description, cooldown: '', icon: detail.passive.icon }, ...detail.spells];
   return (
-    <ul className="mt-6 flex flex-wrap gap-2" aria-label="Abilities">
+    <ul className="mt-6 flex flex-wrap gap-2" aria-label={t('cp.abilities')}>
       {list.map((sp) => (
         <li key={sp.key}>
           <Tooltip
@@ -214,7 +215,7 @@ function Abilities({ detail }: { detail: ChampionDetail }) {
                 <span className="block font-semibold">
                   {sp.name} <span className="font-normal text-muted">({sp.key})</span>
                 </span>
-                {sp.cooldown && <span className="block text-gold">Cooldown {sp.cooldown}s</span>}
+                {sp.cooldown && <span className="block text-gold">{t('cp.cooldown', { value: sp.cooldown })}</span>}
                 <span className="mt-0.5 block text-muted">{sp.description.length > 260 ? `${sp.description.slice(0, 257)}…` : sp.description}</span>
               </>
             }
@@ -222,7 +223,7 @@ function Abilities({ detail }: { detail: ChampionDetail }) {
             <span className="relative block">
               <GameImg src={sp.icon} alt={`${sp.key}: ${sp.name}`} size={42} rounded="md" className="ring-1 ring-line-strong transition-transform duration-150 hover:-translate-y-0.5" />
               <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 rounded-sm bg-bg px-1 font-display text-[11px] font-bold leading-tight text-gold">
-                {sp.key === 'Passive' ? 'P' : sp.key}
+                {sp.key === t('cp.passive') ? t('cp.passiveKey') : sp.key}
               </span>
             </span>
           </Tooltip>
@@ -238,14 +239,14 @@ export const LOW_SAMPLE = 10;
 export function Rate({ r, className, share }: { r: Rated; className?: string; share?: number }) {
   const low = r.games < LOW_SAMPLE;
   return (
-    <span className={clsx('num shrink-0 text-right text-xs', className)} title={low ? `Only ${r.games} game${r.games === 1 ? '' : 's'} so far` : undefined}>
+    <span className={clsx('num shrink-0 text-right text-xs', className)} title={low ? t('cp.only', { count: r.games }) : undefined}>
       <span className={clsx('block text-sm font-semibold', low ? 'text-faint' : r.winRate >= 0.5 ? 'text-win' : 'text-loss')}>
         {pct(r.winRate, 1)}
         {low && <span aria-hidden>*</span>}
       </span>
       <span className="text-faint">
         {share != null ? `${pct(share)} · ` : ''}
-        {thousands(r.games)} game{r.games === 1 ? '' : 's'}
+        {t('common.games', { count: r.games })}
       </span>
     </span>
   );
@@ -273,11 +274,11 @@ export function RunesBlock({ s }: { s: BuildData }) {
   const runeDir = useSlideDirection(page);
   if (!rune) return null;
   return (
-    <Block title="Runes" aside={s.runes.length > 1 ? `${s.runes.length} most played pages` : undefined}>
+    <Block title={t('cp.runes')} aside={s.runes.length > 1 ? t('cp.pagesAside', { count: s.runes.length }) : undefined}>
       {s.runes.length > 1 && (
         <VariationCards
-          label="Rune pages"
-          name="Page"
+          label={t('cp.runePages')}
+          name={t('cp.page')}
           pick={page}
           onPick={setPage}
           items={s.runes.map((r) => ({
@@ -302,7 +303,7 @@ export function SpellsAndStart({ s }: { s: BuildData }) {
   return (
     <div className="grid gap-6 sm:grid-cols-2">
       {s.spells.length > 0 && (
-        <Block title="Summoner spells">
+        <Block title={t('cp.spells')}>
           <ul className="space-y-2">
             {s.spells.map((sp, i) => (
               <li key={i} className="flex items-center justify-between gap-3">
@@ -319,7 +320,7 @@ export function SpellsAndStart({ s }: { s: BuildData }) {
         </Block>
       )}
       {s.starting.length > 0 && (
-        <Block title="Starting items">
+        <Block title={t('cp.starting')}>
           <ul className="space-y-2">
             {s.starting.map((st, i) => (
               <li key={i} className="flex items-center justify-between gap-3">
@@ -338,13 +339,12 @@ function BuildPanel({ s, abilityIcons }: { s: ChampionStats; abilityIcons?: stri
   return (
     <section className="panel panel-tick p-5" aria-labelledby="build-h">
       <h2 id="build-h" className="panel-title text-2xl">
-        Recommended build
+        {t('cp.recommended')}
       </h2>
-      <p className="text-xs text-muted">The most played choices, with how often they win.</p>
+      <p className="text-xs text-muted">{t('cp.recommendedSub')}</p>
       {s.summary && s.summary.games < 50 && (
         <p className="mt-3 rounded border border-kda-great/40 bg-kda-great/10 px-3 py-2 text-sm">
-          Early numbers: built from {s.summary.games} game{s.summary.games === 1 ? '' : 's'} so far. Win rates marked * have fewer than {LOW_SAMPLE} games behind them and will
-          settle as more games come in.
+          {t('cp.early', { count: s.summary.games, min: LOW_SAMPLE })}
         </p>
       )}
 
@@ -357,17 +357,17 @@ function BuildPanel({ s, abilityIcons }: { s: ChampionStats; abilityIcons?: stri
 
         {s.skills.path.length > 0 && (
           <Block
-            title="Skill order"
+            title={t('cp.skillOrder')}
             aside={
               <span className="flex items-center gap-2">
-                Max <MaxOrder order={s.skills.order.split('').map((k) => 'QWE'.indexOf(k) + 1)} icons={abilityIcons} />
+                {t('cp.max')} <MaxOrder order={s.skills.order.split('').map((k) => 'QWE'.indexOf(k) + 1)} icons={abilityIcons} />
               </span>
             }
           >
             <SkillGrid skills={s.skills.path} icons={abilityIcons} />
             {s.skills.maxOrders.length > 1 && (
               <p className="mt-2 text-xs text-muted">
-                Max orders:{' '}
+                {t('cp.maxOrders')}{' '}
                 {s.skills.maxOrders.map((m, i) => (
                   <span key={m.order}>
                     {i > 0 && ' · '}
@@ -383,11 +383,11 @@ function BuildPanel({ s, abilityIcons }: { s: ChampionStats; abilityIcons?: stri
   );
 }
 
-const ORDINAL: Record<number, string> = { 4: '4th', 5: '5th', 6: '6th' };
+const nthItem = (slot: number) => t(`cp.nth.${slot}` as 'cp.nth.4');
 
 function ItemName({ id }: { id: number }) {
   const { data: sd } = useStaticData();
-  return <>{assets(sd).item(id).name || `Item ${id}`}</>;
+  return <>{assets(sd).item(id).name || t('item.fallback', { id: String(id) })}</>;
 }
 
 /** Core build, boots and late-game options, laid out the way a game actually goes. */
@@ -441,8 +441,8 @@ export function VariationCards({ label, name, items, pick, onPick }: { label: st
                 {name} {i + 1}
               </span>
               <span className="flex gap-1">
-                {v.tags.includes('popular') && <span className="rounded-sm bg-sunken px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-muted">Most played</span>}
-                {v.tags.includes('best') && <span className="rounded-sm bg-win/15 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-win">Best win rate</span>}
+                {v.tags.includes('popular') && <span className="rounded-sm bg-sunken px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-muted">{t('cp.mostPlayed')}</span>}
+                {v.tags.includes('best') && <span className="rounded-sm bg-win/15 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-win">{t('cp.bestWr')}</span>}
               </span>
             </span>
             {content}
@@ -452,7 +452,7 @@ export function VariationCards({ label, name, items, pick, onPick }: { label: st
                 {low && <span aria-hidden>*</span>}
               </span>
               <span className="text-faint">
-                {thousands(v.games)} game{v.games === 1 ? '' : 's'} · {pct(v.share)}
+                {t('common.games', { count: v.games })} · {pct(v.share)}
               </span>
             </span>
           </button>
@@ -489,11 +489,11 @@ export function ItemsBlock({ s }: { s: BuildData }) {
   };
 
   return (
-    <Block title="Items" aside={s.coreTotal ? `${thousands(s.coreTotal)} games with three or more completed items` : undefined}>
+    <Block title={t('cp.items')} aside={s.coreTotal ? t('cp.itemsAside', { count: s.coreTotal }) : undefined}>
       {builds.length > 1 && (
         <VariationCards
-          label="Build variations"
-          name="Build"
+          label={t('cp.buildVariations')}
+          name={t('cp.build')}
           pick={pick}
           onPick={setPick}
           items={builds.map((v) => ({ key: v.ids.join(), r: v, content: <ItemRow ids={v.ids} size={30} arrows /> }))}
@@ -505,7 +505,7 @@ export function ItemsBlock({ s }: { s: BuildData }) {
           <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_240px]">
             <div className="rounded border border-line bg-raised/40 p-4">
               <p className="mb-3 text-xs font-medium text-muted">
-                {builds.length > 1 ? `Build ${pick + 1} core` : 'Core build'} — first three completed items, in buying order
+                {builds.length > 1 ? t('cp.coreN', { n: String(pick + 1) }) : t('cp.core')}
               </p>
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <ol className="flex items-start gap-2">
@@ -527,8 +527,8 @@ export function ItemsBlock({ s }: { s: BuildData }) {
 
             <div className="rounded border border-line bg-raised/40 p-4">
               <p className="mb-3 flex items-baseline justify-between text-xs font-medium text-muted">
-                Boots
-                {!boots.own && boots.list.length > 0 && builds.length > 1 && <span className="font-normal text-faint">all builds</span>}
+                {t('cp.boots')}
+                {!boots.own && boots.list.length > 0 && builds.length > 1 && <span className="font-normal text-faint">{t('cp.allBuilds')}</span>}
               </p>
               {boots.list.length ? (
                 <ul className="space-y-2.5">
@@ -537,7 +537,7 @@ export function ItemsBlock({ s }: { s: BuildData }) {
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm text-muted">No boots data yet.</p>
+                <p className="text-sm text-muted">{t('cp.noBoots')}</p>
               )}
             </div>
           </div>
@@ -548,12 +548,9 @@ export function ItemsBlock({ s }: { s: BuildData }) {
               return (
                 <div key={slot} className="rounded border border-line p-4">
                   <p className="mb-3 flex items-baseline justify-between text-xs font-medium text-muted">
-                    {ORDINAL[slot]} item
+                    {nthItem(slot)}
                     {l.total ? (
-                      <span className="font-normal text-faint">
-                        {!l.own && builds.length > 1 ? 'all builds · ' : ''}
-                        {thousands(l.total)} games
-                      </span>
+                      <span className="font-normal text-faint">{!l.own && builds.length > 1 ? t('cp.allBuildsGames', { count: l.total }) : t('common.games', { count: l.total })}</span>
                     ) : null}
                   </p>
                   {l.options.length ? (
@@ -563,7 +560,7 @@ export function ItemsBlock({ s }: { s: BuildData }) {
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-sm text-muted">No game has reached a {ORDINAL[slot]} item yet.</p>
+                    <p className="text-sm text-muted">{t('cp.noNth', { nth: nthItem(slot).toLowerCase() })}</p>
                   )}
                 </div>
               );
@@ -571,7 +568,7 @@ export function ItemsBlock({ s }: { s: BuildData }) {
           </div>
         </div>
       ) : (
-        <p className="rounded border border-line bg-raised/40 p-4 text-sm text-muted">No game has reached three completed items yet.</p>
+        <p className="rounded border border-line bg-raised/40 p-4 text-sm text-muted">{t('cp.noCore')}</p>
       )}
     </Block>
   );
@@ -586,13 +583,13 @@ export function OptionRow({ o, share }: { o: Rated & { id: number }; share?: num
         <span className="line-clamp-2 break-words text-[13px] leading-tight">
           <ItemName id={o.id} />
         </span>
-        <span className="num mt-0.5 block text-xs text-faint" title={low ? `Only ${o.games} game${o.games === 1 ? '' : 's'} so far` : undefined}>
+        <span className="num mt-0.5 block text-xs text-faint" title={low ? t('cp.only', { count: o.games }) : undefined}>
           <span className={clsx('font-semibold', low ? 'text-faint' : o.winRate >= 0.5 ? 'text-win' : 'text-loss')}>
             {pct(o.winRate, 1)}
             {low && '*'}
           </span>
           {' · '}
-          {share != null ? `${pct(share)} pick · ` : ''}
+          {share != null ? `${t('cp.pick', { rate: pct(share) })} · ` : ''}
           {thousands(o.games)}
         </span>
       </span>
@@ -630,7 +627,7 @@ function CountersStrip({ s }: { s?: ChampionStats }) {
                 <Link
                   to={matchupPath(sd, s.championId, m.championId, s.role)}
                   className={clsx('group flex items-center gap-2 rounded border bg-surface/70 py-1 pl-1 pr-2.5 backdrop-blur transition-colors hover:bg-raised', tone === 'loss' ? 'border-loss/40' : 'border-win/40')}
-                  title={`${pct(m.winRate, 1)} win rate against ${c.name} over ${m.games} game${m.games === 1 ? '' : 's'}`}
+                  title={t('cp.counterTip', { rate: pct(m.winRate, 1), champion: c.name, games: t('common.games', { count: m.games }) })}
                 >
                   <GameImg src={c.url} alt="" size={28} rounded="sm" />
                   <span className="text-sm font-medium group-hover:text-gold">{c.name}</span>
@@ -641,22 +638,22 @@ function CountersStrip({ s }: { s?: ChampionStats }) {
           })}
         </ul>
       ) : (
-        <p className="text-sm text-muted">Not enough games yet.</p>
+        <p className="text-sm text-muted">{t('cp.notEnough')}</p>
       )}
     </div>
   );
   return (
     <div className="mt-6 grid gap-4 sm:grid-cols-2">
-      {group('Countered by', hardest, 'loss')}
-      {group('Strong against', easiest, 'win')}
+      {group(t('cp.counteredBy'), hardest, 'loss')}
+      {group(t('cp.strongAgainst'), easiest, 'win')}
     </div>
   );
 }
 
 const MU_TABS = [
-  { id: 'hard', label: 'Hardest' },
-  { id: 'easy', label: 'Easiest' },
-  { id: 'all', label: 'All' },
+  { id: 'hard', label: () => t('mu.hard') },
+  { id: 'easy', label: () => t('mu.easy') },
+  { id: 'all', label: () => t('mu.all') },
 ] as const;
 type MuSort = 'winRate' | 'games' | 'goldDiff15' | 'csDiff15' | 'xpDiff15';
 
@@ -703,23 +700,21 @@ function Matchups({ s }: { s: ChampionStats }) {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 id="mu-h" className="panel-title text-2xl">
-            Lane matchups
+            {t('mu.title')}
           </h2>
-          <p className="text-xs text-muted">
-            {s.summary ? `${ROLE_LABEL[s.role] ?? s.role} vs the enemy ${ROLE_LABEL[s.role]?.toLowerCase() ?? 'laner'}. ` : ''}Leads are averages at 15 minutes.
-          </p>
+          <p className="text-xs text-muted">{s.summary ? t('mu.sub', { role: ROLE_LABEL[s.role] ?? s.role, lane: (ROLE_LABEL[s.role] ?? s.role).toLowerCase() }) : t('mu.subNoRole')}</p>
         </div>
-        <div role="tablist" aria-label="Matchup list" className="flex rounded border border-line bg-surface p-0.5">
-          {MU_TABS.map((t) => (
+        <div role="tablist" aria-label={t('mu.list')} className="flex rounded border border-line bg-surface p-0.5">
+          {MU_TABS.map((mt) => (
             <button
-              key={t.id}
+              key={mt.id}
               role="tab"
-              aria-selected={tab === t.id}
-              onClick={() => setTab(t.id)}
-              className={clsx('rounded-sm px-3 py-1 text-sm font-medium transition-colors', tab === t.id ? 'bg-raised text-text' : 'text-muted hover:text-text')}
+              aria-selected={tab === mt.id}
+              onClick={() => setTab(mt.id)}
+              className={clsx('rounded-sm px-3 py-1 text-sm font-medium transition-colors', tab === mt.id ? 'bg-raised text-text' : 'text-muted hover:text-text')}
             >
-              {t.label}
-              {t.id === 'all' && <span className="num ml-1 text-xs text-faint">{s.matchups.length}</span>}
+              {mt.label()}
+              {mt.id === 'all' && <span className="num ml-1 text-xs text-faint">{s.matchups.length}</span>}
             </button>
           ))}
         </div>
@@ -727,31 +722,31 @@ function Matchups({ s }: { s: ChampionStats }) {
 
       {list.length === 0 ? (
         <p className="mt-4 text-sm text-muted">
-          {usable.length === 0 ? 'Not enough games against any single opponent yet. Check the All tab, or come back once more games are collected.' : tab === 'hard' ? 'No losing matchups so far.' : 'No winning matchups so far.'}
+          {usable.length === 0 ? t('mu.noneUsable') : tab === 'hard' ? t('mu.noLosing') : t('mu.noWinning')}
         </p>
       ) : (
         <div className="mt-4 overflow-x-auto">
           <table key={tab} className="fade-in w-full min-w-[560px] text-sm">
-            <caption className="sr-only">Lane matchups</caption>
+            <caption className="sr-only">{t('mu.title')}</caption>
             <thead className="text-xs text-muted">
               <tr className="border-b border-line">
                 <th scope="col" className="py-2 pr-2 text-left font-medium">
-                  Opponent
+                  {t('mu.opponent')}
                 </th>
                 <th scope="col" className="px-2 text-right font-medium">
-                  {head('winRate', 'Win rate')}
+                  {head('winRate', t('cp.winRate'))}
                 </th>
                 <th scope="col" className="px-2 text-right font-medium">
-                  {head('games', 'Games')}
+                  {head('games', t('cp.games'))}
                 </th>
                 <th scope="col" className="px-2 text-right font-medium">
-                  {head('goldDiff15', 'Gold @15')}
+                  {head('goldDiff15', t('mu.gold15'))}
                 </th>
                 <th scope="col" className="px-2 text-right font-medium">
-                  {head('csDiff15', 'CS @15')}
+                  {head('csDiff15', t('mu.cs15'))}
                 </th>
                 <th scope="col" className="pl-2 text-right font-medium">
-                  {head('xpDiff15', 'XP @15')}
+                  {head('xpDiff15', t('mu.xp15'))}
                 </th>
               </tr>
             </thead>
@@ -770,7 +765,7 @@ function Matchups({ s }: { s: ChampionStats }) {
                     <td className="num px-2 text-right">
                       <span className="inline-flex items-center gap-2">
                         <WinRateBar value={m.winRate} />
-                        <span className={clsx('w-12 font-semibold', low ? 'text-faint' : m.winRate >= 0.5 ? 'text-win' : 'text-loss')} title={low ? `Only ${m.games} games` : undefined}>
+                        <span className={clsx('w-12 font-semibold', low ? 'text-faint' : m.winRate >= 0.5 ? 'text-win' : 'text-loss')} title={low ? t('cp.only', { count: m.games }) : undefined}>
                           {pct(m.winRate, 1)}
                           {low && '*'}
                         </span>
@@ -793,10 +788,14 @@ function Matchups({ s }: { s: ChampionStats }) {
           </table>
         </div>
       )}
-      {tab !== 'all' && <p className="mt-3 text-xs text-faint">Ranked by win rate adjusted for sample size, so a couple of lucky games don’t top the list.</p>}
+      {tab !== 'all' && <p className="mt-3 text-xs text-faint">{t('mu.adjustedNote')}</p>}
     </section>
   );
 }
+
+const LEN_LABELS = ['Under 20 min', '20–25 min', '25–30 min', '30–35 min', '35+ min'];
+/** The server labels length buckets in English; show them in the current language. */
+const lenLabel = (label: string) => (LEN_LABELS.includes(label) ? t(`len.${LEN_LABELS.indexOf(label)}` as 'len.0') : label);
 
 /** Win rate by game length: one bar per bucket, around a 50% line. */
 function LengthChart({ rows }: { rows: (Rated & { label: string })[] }) {
@@ -809,18 +808,18 @@ function LengthChart({ rows }: { rows: (Rated & { label: string })[] }) {
     <section className="panel p-5" aria-labelledby="len-h">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="len-h" className="panel-title text-2xl">
-          Win rate by game length
+          {t('len.title')}
         </h2>
-        <span className="text-xs text-muted">Does this champion want short or long games?</span>
+        <span className="text-xs text-muted">{t('len.sub')}</span>
       </div>
       <div className="relative mt-5 h-44">
         <div className="absolute inset-x-0 border-t border-dashed border-line-strong" style={{ bottom: `${y(0.5) * 100}%` }}>
           <span className="absolute -top-2.5 right-0 bg-surface pl-1 text-[10px] text-faint">50%</span>
         </div>
-        <ul className="relative flex h-full items-end gap-3" aria-label="Win rate by game length">
+        <ul className="relative flex h-full items-end gap-3" aria-label={t('len.title')}>
           {data.map((r, i) => (
             <li key={r.label} className="flex h-full flex-1 flex-col items-center justify-end">
-              <Tooltip content={`${r.label}: ${pct(r.winRate, 1)} over ${thousands(r.games)} games`}>
+              <Tooltip content={t('len.tip', { label: lenLabel(r.label), rate: pct(r.winRate, 1), games: t('common.games', { count: r.games }) })}>
                 <span className="flex flex-col items-center" style={{ height: '100%' }}>
                   <span className="num mb-1 text-xs font-semibold">{pct(r.winRate)}</span>
                 </span>
@@ -829,7 +828,7 @@ function LengthChart({ rows }: { rows: (Rated & { label: string })[] }) {
                 className={clsx('grow-y w-full max-w-16 rounded-t-[4px]', r.winRate >= 0.5 ? 'bg-win/80' : 'bg-loss/70')}
                 style={{ height: `${Math.max(4, y(r.winRate) * 100)}%`, animationDelay: `${i * 60}ms` }}
                 role="img"
-                aria-label={`${r.label}: ${pct(r.winRate, 1)}`}
+                aria-label={`${lenLabel(r.label)}: ${pct(r.winRate, 1)}`}
               />
             </li>
           ))}
@@ -838,7 +837,7 @@ function LengthChart({ rows }: { rows: (Rated & { label: string })[] }) {
       <ul className="mt-2 flex gap-3" aria-hidden>
         {data.map((r) => (
           <li key={r.label} className="flex-1 text-center text-[11px] text-muted">
-            {r.label}
+            {lenLabel(r.label)}
             <span className="block text-faint">{thousands(r.games)}</span>
           </li>
         ))}
@@ -851,15 +850,15 @@ function Averages({ s }: { s: ChampionStats }) {
   const v = s.avg;
   if (!v) return null;
   const rows: [string, string][] = [
-    ['K / D / A', `${v.kills.toFixed(1)} / ${v.deaths.toFixed(1)} / ${v.assists.toFixed(1)}`],
-    ['CS per minute', v.csPerMin.toFixed(1)],
-    ['Damage per minute', v.damagePerMin.toFixed(0)],
-    ['Gold per minute', v.goldPerMin.toFixed(0)],
-    ['Game length', `${Math.floor(v.minutes)}:${String(Math.round((v.minutes % 1) * 60)).padStart(2, '0')}`],
+    [t('avg.kda'), `${v.kills.toFixed(1)} / ${v.deaths.toFixed(1)} / ${v.assists.toFixed(1)}`],
+    [t('avg.cs'), v.csPerMin.toFixed(1)],
+    [t('avg.dmg'), v.damagePerMin.toFixed(0)],
+    [t('avg.gold'), v.goldPerMin.toFixed(0)],
+    [t('avg.length'), `${Math.floor(v.minutes)}:${String(Math.round((v.minutes % 1) * 60)).padStart(2, '0')}`],
   ];
   return (
     <section className="panel panel-tick p-4">
-      <h2 className="panel-title">Average game</h2>
+      <h2 className="panel-title">{t('avg.title')}</h2>
       <dl className="mt-2 space-y-1.5 text-sm">
         {rows.map(([k, val]) => (
           <div key={k} className="flex justify-between gap-3">
@@ -869,7 +868,7 @@ function Averages({ s }: { s: ChampionStats }) {
         ))}
       </dl>
       <p className="mt-3 text-xs text-faint">
-        {s.role !== 'ALL' ? `${ROLE_LABEL[s.role]}, ` : ''}patch {s.patch}
+        {s.role !== 'ALL' ? t('avg.rolePatch', { role: ROLE_LABEL[s.role], patch: s.patch ?? '' }) : t('avg.patch', { patch: s.patch ?? '' })}
       </p>
     </section>
   );
@@ -878,30 +877,30 @@ function Averages({ s }: { s: ChampionStats }) {
 function BaseStats({ d }: { d: ChampionDetail }) {
   const st = d.stats;
   const rows: [string, number, number?][] = [
-    ['Health', st.hp, st.hpperlevel],
-    [d.partype || 'Resource', st.mp, st.mpperlevel],
-    ['Attack damage', st.attackdamage, st.attackdamageperlevel],
-    ['Attack speed', st.attackspeed, st.attackspeedperlevel],
-    ['Armor', st.armor, st.armorperlevel],
-    ['Magic resist', st.spellblock, st.spellblockperlevel],
-    ['Move speed', st.movespeed],
-    ['Attack range', st.attackrange],
+    [t('base.health'), st.hp, st.hpperlevel],
+    [d.partype || t('base.resource'), st.mp, st.mpperlevel],
+    [t('base.ad'), st.attackdamage, st.attackdamageperlevel],
+    [t('base.as'), st.attackspeed, st.attackspeedperlevel],
+    [t('base.armor'), st.armor, st.armorperlevel],
+    [t('base.mr'), st.spellblock, st.spellblockperlevel],
+    [t('base.ms'), st.movespeed],
+    [t('base.range'), st.attackrange],
   ];
   const bars: [string, number][] = [
-    ['Damage', d.info.attack],
-    ['Toughness', d.info.defense],
-    ['Magic', d.info.magic],
-    ['Difficulty', d.info.difficulty],
+    [t('base.damage'), d.info.attack],
+    [t('base.toughness'), d.info.defense],
+    [t('base.magic'), d.info.magic],
+    [t('base.difficulty'), d.info.difficulty],
   ];
   return (
     <section className="panel p-4">
-      <h2 className="panel-title">Profile</h2>
+      <h2 className="panel-title">{t('base.title')}</h2>
       <dl className="mt-2 space-y-1.5">
         {bars.map(([k, v]) => (
           <div key={k} className="grid grid-cols-[80px_1fr] items-center gap-3 text-sm">
             <dt className="text-muted">{k}</dt>
             <dd className="flex gap-0.5">
-              <span className="sr-only">{v} out of 10</span>
+              <span className="sr-only">{t('base.outOf10', { value: String(v) })}</span>
               {Array.from({ length: 10 }, (_, i) => (
                 <span key={i} aria-hidden className={clsx('h-1.5 flex-1 rounded-[1px]', i < v ? 'bg-gold' : 'bg-sunken')} />
               ))}
@@ -909,7 +908,7 @@ function BaseStats({ d }: { d: ChampionDetail }) {
           </div>
         ))}
       </dl>
-      <h3 className="mt-4 text-xs font-semibold text-muted">Base stats (per level)</h3>
+      <h3 className="mt-4 text-xs font-semibold text-muted">{t('base.perLevel')}</h3>
       <dl className="mt-1.5 space-y-1 text-sm">
         {rows
           .filter(([, v]) => v != null && v > 0)
@@ -922,7 +921,7 @@ function BaseStats({ d }: { d: ChampionDetail }) {
                   <span className="text-faint">
                     {' '}
                     +{Number.isInteger(per) ? per : per.toFixed(per < 1 ? 2 : 1)}
-                    {k === 'Attack speed' ? '%' : ''}
+                    {k === t('base.as') ? '%' : ''}
                   </span>
                 ) : null}
               </dd>
@@ -952,14 +951,14 @@ function Synergy({ s }: { s: ChampionStats }) {
   const { data: sd } = useStaticData();
   const a = assets(sd);
   if (!s.synergy || s.synergy.list.length < 2) return null;
-  const partner = ROLE_LABEL[s.synergy.role]?.toLowerCase() ?? 'partner';
+  const partner = ROLE_LABEL[s.synergy.role]?.toLowerCase() ?? t('syn.partner');
   return (
     <section className="panel p-5" aria-labelledby="syn-h">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="syn-h" className="panel-title text-2xl">
-          Best with
+          {t('syn.title')}
         </h2>
-        <span className="text-xs text-muted">Win rate with each {partner} on the same team</span>
+        <span className="text-xs text-muted">{t('syn.sub', { partner })}</span>
       </div>
       <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
         {s.synergy.list.map((m) => {
@@ -974,7 +973,7 @@ function Synergy({ s }: { s: ChampionStats }) {
                 <GameImg src={c.url} alt="" size={36} rounded="md" />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium group-hover:text-gold">{c.name}</span>
-                  <span className="num text-xs text-muted">{thousands(m.games)} games</span>
+                  <span className="num text-xs text-muted">{t('common.games', { count: m.games })}</span>
                 </span>
                 <span className={clsx('num text-sm font-semibold', m.winRate >= 0.5 ? 'text-win' : 'text-loss')}>{pct(m.winRate, 1)}</span>
               </Link>
@@ -992,9 +991,9 @@ function TopPlayers({ s }: { s: ChampionStats }) {
   return (
     <section className="panel p-4" aria-labelledby="tp-h">
       <h2 id="tp-h" className="panel-title">
-        Who plays it most
+        {t('top.title')}
       </h2>
-      <p className="text-xs text-muted">From games this server has read</p>
+      <p className="text-xs text-muted">{t('top.sub')}</p>
       <ol className="mt-3 space-y-1">
         {s.players.map((p, i) => (
           <li key={`${p.gameName}#${p.tagLine}`}>

@@ -10,8 +10,9 @@ import { removeRecent, useFavorites, useRecent, useRegion, type SavedPlayer } fr
 import { GameImg } from './ui/GameImg';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
 import { api } from '../lib/api';
-import { titleCase } from '../lib/format';
+import { champClass, regionName, tierName } from '../lib/format';
 import { fadeIn } from '../lib/motion';
+import { t } from '../i18n';
 
 type Option =
   | { kind: 'player'; player: PlayerHit; source: 'favorite' | 'recent' | 'match' }
@@ -163,7 +164,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
 
   function choose(o: Option | undefined) {
     if (!o) {
-      setHint('Type a champion or a Riot ID, like Hide on bush#KR1.');
+      setHint(t('search.hintEmpty'));
       return;
     }
     if (o.kind === 'champion') navigate(`/champions/${o.slug}`);
@@ -209,7 +210,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
         )}
       >
         <label className="relative flex items-center border-r border-line">
-          <span className="sr-only">Region</span>
+          <span className="sr-only">{t('search.region')}</span>
           <select
             value={platform.id}
             onChange={(e) => setRegion(e.target.value)}
@@ -220,7 +221,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
           >
             {PLATFORMS.map((p) => (
               <option key={p.id} value={p.id}>
-                {hero && wide ? `${p.label} — ${p.name}` : p.label}
+                {hero && wide ? `${p.label} — ${regionName(p.id)}` : p.label}
               </option>
             ))}
           </select>
@@ -234,7 +235,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
           aria-controls={listId}
           aria-autocomplete="list"
           aria-activedescendant={showList && options[active] ? `${listId}-${active}` : undefined}
-          aria-label="Search players or champions"
+          aria-label={t('search.aria')}
           autoComplete="off"
           spellCheck={false}
           value={query}
@@ -249,23 +250,23 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
             if (query) setOpen(true);
           }}
           onKeyDown={onKeyDown}
-          placeholder={hero ? (wide ? 'Search a champion or Riot ID' : 'Champion or Riot ID') : 'Players or champions'}
+          placeholder={hero ? (wide ? t('search.phHeroWide') : t('search.phHero')) : t('search.phCompact')}
           className={clsx('min-w-0 flex-1 bg-transparent text-text outline-none placeholder:text-faint', hero ? 'px-4 text-base sm:px-5 sm:text-lg' : 'px-3 text-sm')}
         />
-        {searching && <LoaderCircle className="mr-2 size-4 animate-spin self-center text-faint" aria-label="Searching" />}
+        {searching && <LoaderCircle className="mr-2 size-4 animate-spin self-center text-faint" aria-label={t('search.searching')} />}
         {!hero && !searching && (
           <kbd className="mr-2 hidden self-center rounded border border-line px-1.5 text-xs text-faint sm:block" aria-hidden>
             /
           </kbd>
         )}
-        <button type="submit" aria-label="Search" className={clsx('grid place-items-center bg-gold text-gold-ink transition hover:brightness-110', hero ? 'w-14 sm:w-16' : 'w-10')}>
+        <button type="submit" aria-label={t('search.submit')} className={clsx('grid place-items-center bg-gold text-gold-ink transition hover:brightness-110', hero ? 'w-14 sm:w-16' : 'w-10')}>
           <Search className={hero ? 'size-6' : 'size-4'} strokeWidth={2.5} aria-hidden />
         </button>
       </form>
 
       {hero && (
         <p className={clsx('mt-2 h-5 px-1 text-left text-sm', hint ? 'text-loss' : 'text-muted')} aria-live="polite">
-          {hint ?? (missingTag ? `Pick a suggestion, or add the tag after # (we’ll try #${platform.defaultTag}).` : '')}
+          {hint ?? (missingTag ? t('search.hintTag', { tag: platform.defaultTag }) : '')}
         </p>
       )}
 
@@ -273,7 +274,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
         <ul
           id={listId}
           role="listbox"
-          aria-label="Suggestions"
+          aria-label={t('search.suggestions')}
           className="drop-in absolute inset-x-0 top-[calc(100%+6px)] z-40 max-h-[70vh] overflow-y-auto rounded-md border border-line-strong bg-surface py-1 text-left shadow-2xl"
         >
           {options.map((o, i) => {
@@ -299,10 +300,10 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
                     <span className="block truncate text-xs capitalize text-faint">{o.title}</span>
                   </span>
                   <span className="flex shrink-0 items-center gap-1.5 text-xs text-muted">
-                    <span className="hidden sm:inline">{o.tags.slice(0, 2).join(' · ')}</span>
+                    <span className="hidden sm:inline">{o.tags.slice(0, 2).map(champClass).join(' · ')}</span>
                     <span className="flex items-center gap-1 rounded bg-sunken px-1.5 py-0.5 font-display text-sm font-bold text-gold">
                       <Swords className="size-3.5" aria-hidden />
-                      Champion
+                      {t('search.champion')}
                     </span>
                   </span>
                 </li>
@@ -315,7 +316,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
                     <Search className="size-4 text-gold" aria-hidden />
                   </span>
                   <span className="truncate text-muted">
-                    Look up <strong className="font-semibold text-text">{o.label}</strong>
+                    {t.rich('search.lookUp', { id: <strong className="font-semibold text-text">{o.label}</strong> })}
                   </span>
                   <span className="ml-auto rounded bg-sunken px-1.5 py-0.5 font-display text-sm font-bold text-muted">{platform.label}</span>
                 </li>
@@ -336,29 +337,29 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
                       <Highlight text={p.gameName} query={q} />
                     </span>
                     <span className="shrink-0">#{p.tagLine}</span>
-                    {p.verified && <BadgeCheck className="size-3.5 shrink-0 text-win" aria-label="Found on Riot just now" />}
+                    {p.verified && <BadgeCheck className="size-3.5 shrink-0 text-win" aria-label={t('search.verified')} />}
                   </span>
                   <span className="flex items-center gap-1 text-xs text-muted">
                     {p.tier ? (
                       <>
                         <img src={rankEmblem(p.tier)} alt="" {...fadeIn()} className="size-4" />
-                        {titleCase(p.tier)} {APEX.has(p.tier) ? '' : p.rank}
+                        {tierName(p.tier)} {APEX.has(p.tier) ? '' : p.rank}
                         {p.lp != null && <span className="num text-faint"> · {p.lp} LP</span>}
                       </>
                     ) : (
-                      <span className="text-faint">{p.level != null ? 'Rank not loaded yet' : 'Seen in a recent match'}</span>
+                      <span className="text-faint">{p.level != null ? t('search.rankNotLoaded') : t('search.seenInMatch')}</span>
                     )}
                   </span>
                 </span>
                 <span className="flex shrink-0 items-center gap-2 text-xs text-muted">
                   <span className="font-display text-sm font-bold">{getPlatform(p.platform)?.label}</span>
-                  {o.source === 'favorite' && <Star className="size-3.5 fill-gold text-gold" aria-label="Favorite" />}
+                  {o.source === 'favorite' && <Star className="size-3.5 fill-gold text-gold" aria-label={t('search.favorite')} />}
                   {o.source === 'recent' && (
                     <>
-                      <Clock className="size-3.5" aria-label="Recent" />
+                      <Clock className="size-3.5" aria-label={t('search.recent')} />
                       <button
                         type="button"
-                        aria-label={`Remove ${p.gameName} from recent searches`}
+                        aria-label={t('search.removeRecent', { name: p.gameName })}
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -374,7 +375,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
               </li>
             );
           })}
-          {options.length === 0 && searching && <li className="px-3 py-3 text-sm text-muted">Searching…</li>}
+          {options.length === 0 && searching && <li className="px-3 py-3 text-sm text-muted">{t('search.searchingDots')}</li>}
         </ul>
       )}
     </div>

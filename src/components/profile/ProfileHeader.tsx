@@ -8,12 +8,13 @@ import { GameImg, Tooltip } from '../ui/GameImg';
 import { assets, rankEmblem, useStaticData } from '../../lib/ddragon';
 import { isFavorite, toggleFavorite, useFavorites } from '../../lib/storage';
 import { profilePath } from '../../lib/riotId';
-import { pct, timeAgo, titleCase } from '../../lib/format';
+import { pct, timeAgo, tierName, regionName } from '../../lib/format';
 import { me, result } from '../../lib/stats';
 import { playerTags } from '../../lib/tags';
 import { TagList } from '../ui/TagList';
 import { fadeIn } from '../../lib/motion';
 import { SlidingIndicator } from '../ui/Motion';
+import { t } from '../../i18n';
 
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
 
@@ -85,14 +86,14 @@ export function ProfileHeader({
                 <button
                   onClick={() => toggleFavorite(saved)}
                   aria-pressed={fav}
-                  aria-label={fav ? 'Remove from favorites' : 'Add to favorites'}
-                  title={fav ? 'Remove from favorites' : 'Add to favorites'}
+                  aria-label={fav ? t('profile.favRemove') : t('profile.favAdd')}
+                  title={fav ? t('profile.favRemove') : t('profile.favAdd')}
                   className="grid size-9 shrink-0 place-items-center rounded text-muted hover:bg-raised hover:text-gold"
                 >
                   <Star className={clsx('size-5', fav && 'fill-gold text-gold')} aria-hidden />
                 </button>
               </div>
-              <p className="mt-1.5 text-sm text-muted">{platform?.name}</p>
+              <p className="mt-1.5 text-sm text-muted">{platform ? regionName(platform.id) : ''}</p>
               <TagList
                 className="mt-2"
                 tags={playerTags({ matches, puuid: profile.account.puuid, solo, level: profile.summoner.summonerLevel, champName: (cid) => a.champion(cid).name })}
@@ -101,43 +102,43 @@ export function ProfileHeader({
                 <button
                   onClick={onUpdate}
                   disabled={updating || cooling}
-                  title={cooling ? `You can update again in ${waitLabel}` : 'Get the latest games and rank'}
+                  title={cooling ? t('profile.updateWait', { time: waitLabel }) : t('profile.updateHint')}
                   className="inline-flex h-8 items-center gap-2 rounded bg-gold px-3.5 text-sm font-semibold text-gold-ink transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <RefreshCw className={clsx('size-3.5', updating && 'animate-spin')} aria-hidden />
-                  {updating ? 'Updating…' : 'Update'}
+                  {updating ? t('profile.updating') : t('profile.update')}
                 </button>
                 <CopyLink />
                 <span className="text-xs text-muted" aria-live="polite">
-                  Updated {timeAgo(readyAt - (profile.updateIn ?? 0) - (profile.age ?? 0), now)}
-                  {cooling && !updating && <span className="num text-faint"> · next update in {waitLabel}</span>}
+                  {t('profile.updated', { ago: timeAgo(readyAt - (profile.updateIn ?? 0) - (profile.age ?? 0), now) })}
+                  {cooling && !updating && <span className="num text-faint"> · {t('profile.nextUpdate', { time: waitLabel })}</span>}
                 </span>
               </div>
             </div>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 lg:flex lg:gap-6">
-            <RankBlock label="Ranked Solo/Duo" entry={solo} big />
-            <RankBlock label="Ranked Flex" entry={flex} />
+            <RankBlock label={t('profile.solo')} entry={solo} big />
+            <RankBlock label={t('profile.flex')} entry={flex} />
           </div>
         </div>
 
         <FormRibbon matches={matches} puuid={profile.account.puuid} />
 
-        <nav aria-label="Profile sections" className="relative mt-2 flex gap-1">
+        <nav aria-label={t('profile.sections')} className="relative mt-2 flex gap-1">
           <SlidingIndicator className="h-[3px]" />
           <TabLink to={profilePath(profile.platform, id)} active={tab === 'overview'}>
-            Overview
+            {t('profile.tab.overview')}
           </TabLink>
           <TabLink to={profilePath(profile.platform, id, 'stats')} active={tab === 'stats'}>
-            Stats
+            {t('profile.tab.stats')}
           </TabLink>
           <TabLink to={profilePath(profile.platform, id, 'live')} active={tab === 'live'}>
-            Live game
+            {t('profile.tab.live')}
             {inGame && (
               <span className="ml-2 inline-flex items-center gap-1 rounded-sm bg-loss px-1.5 py-px font-sans text-[11px] font-semibold text-on-accent">
                 <span className="live-dot size-1.5 rounded-full bg-on-accent" aria-hidden />
-                In game
+                {t('profile.inGame')}
               </span>
             )}
           </TabLink>
@@ -163,7 +164,7 @@ function CopyLink() {
       className="inline-flex h-8 items-center gap-1.5 rounded border border-line-strong px-3 text-sm font-medium text-muted transition-colors hover:border-gold/60 hover:text-text"
     >
       {done ? <Check className="pop-in size-3.5 text-win" aria-hidden /> : <Link2 className="size-3.5" aria-hidden />}
-      <span aria-live="polite">{done ? 'Copied' : 'Copy link'}</span>
+      <span aria-live="polite">{done ? t('profile.copied') : t('profile.copyLink')}</span>
     </button>
   );
 }
@@ -177,7 +178,7 @@ function RankBlock({ label, entry, big }: { label: string; entry?: LeagueEntry; 
         </span>
         <div>
           <p className="text-xs text-muted">{label}</p>
-          <p className="font-display text-xl font-bold text-faint">Unranked</p>
+          <p className="font-display text-xl font-bold text-faint">{t('common.unranked')}</p>
         </div>
       </div>
     );
@@ -191,14 +192,14 @@ function RankBlock({ label, entry, big }: { label: string; entry?: LeagueEntry; 
       <div>
         <p className="flex items-center gap-1.5 text-xs text-muted">
           {label}
-          {entry.hotStreak && <Flame className="size-3.5 text-kda-great" aria-label="On a win streak" />}
+          {entry.hotStreak && <Flame className="size-3.5 text-kda-great" aria-label={t('profile.hotStreak')} />}
         </p>
         <p className={clsx('font-display font-extrabold leading-tight', big ? 'text-3xl' : 'text-2xl')}>
-          {titleCase(entry.tier)} {APEX.has(entry.tier) ? '' : entry.rank}
-          <span className="num ml-2 text-base font-semibold text-muted">{entry.leaguePoints} LP</span>
+          {tierName(entry.tier)} {APEX.has(entry.tier) ? '' : entry.rank}
+          <span className="num ml-2 text-base font-semibold text-muted">{t('common.lp', { lp: entry.leaguePoints })}</span>
         </p>
         <p className="num text-xs text-muted">
-          {entry.wins}W {entry.losses}L · <span className={clsx('font-semibold', wr >= 0.5 ? 'text-win' : 'text-loss')}>{pct(wr)}</span>
+          {t('common.wins', { count: entry.wins })} {t('common.losses', { count: entry.losses })} · <span className={clsx('font-semibold', wr >= 0.5 ? 'text-win' : 'text-loss')}>{pct(wr)}</span>
         </p>
       </div>
     </div>
@@ -244,10 +245,10 @@ function FormRibbon({ matches, puuid }: { matches: MatchSummary[] | undefined; p
 
   return (
     <div className="mt-7 flex flex-wrap items-end gap-x-5 gap-y-2">
-      <ol className="flex items-end gap-1 overflow-x-auto pb-1" aria-label={`Last ${recent.length} games, oldest first: ${wins} wins, ${counted.length - wins} losses`}>
+      <ol className="flex items-end gap-1 overflow-x-auto pb-1" aria-label={t('form.aria', { total: recent.length, wins, losses: counted.length - wins })}>
         {ordered.map(({ m, p, r }, i) => {
           const c = a.champion(p.championId);
-          const label = `${r === 'win' ? 'Win' : r === 'loss' ? 'Loss' : 'Remake'} on ${c.name}, ${p.kills}/${p.deaths}/${p.assists}`;
+          const label = t(r === 'win' ? 'form.win' : r === 'loss' ? 'form.loss' : 'form.remake', { champion: c.name, kda: `${p.kills}/${p.deaths}/${p.assists}` });
           return (
             <li key={m.id} className="form-tile shrink-0" style={{ animationDelay: `${i * 18}ms` }}>
               <Tooltip content={label}>
@@ -264,12 +265,9 @@ function FormRibbon({ matches, puuid }: { matches: MatchSummary[] | undefined; p
         <span className="font-display text-xl font-bold text-text">
           {wins}–{counted.length - wins}
         </span>{' '}
-        in the last {recent.length}
-        {streak >= 3 && (
-          <span className={clsx('ml-2 font-semibold', latest === 'win' ? 'text-win' : 'text-loss')}>
-            · {streak} {latest === 'win' ? 'wins' : 'losses'} in a row
-          </span>
-        )}
+        {t('form.inLast', { count: recent.length })}
+        {/* Win streaks only: Riot's policy doesn't allow shaming players for losing runs. */}
+        {streak >= 3 && latest === 'win' && <span className="ml-2 font-semibold text-win">· {t('form.winStreak', { count: streak })}</span>}
       </p>
     </div>
   );

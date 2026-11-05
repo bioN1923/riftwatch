@@ -12,8 +12,9 @@ import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
 import { profilePath } from '../lib/riotId';
 import { useFavorites, useRecent, type SavedPlayer } from '../lib/storage';
 import { getPlatform } from '../../shared/regions';
-import { titleCase } from '../lib/format';
+import { tierName } from '../lib/format';
 import { fadeIn } from '../lib/motion';
+import { t } from '../i18n';
 
 function PlayerChip({ p }: { p: SavedPlayer }) {
   const { data } = useStaticData();
@@ -34,7 +35,7 @@ function PlayerChip({ p }: { p: SavedPlayer }) {
           {p.tier && (
             <>
               <img src={rankEmblem(p.tier)} alt="" {...fadeIn()} className="size-4" />
-              {titleCase(p.tier)} {['MASTER', 'GRANDMASTER', 'CHALLENGER'].includes(p.tier) ? '' : p.rank}
+              {tierName(p.tier)} {['MASTER', 'GRANDMASTER', 'CHALLENGER'].includes(p.tier) ? '' : p.rank}
             </>
           )}
         </span>
@@ -47,7 +48,7 @@ export function HomePage() {
   const favorites = useFavorites();
   const recent = useRecent();
   useEffect(() => {
-    document.title = 'Riftwatch — League of Legends stats';
+    document.title = t('home.title');
   }, []);
 
   const saved = favorites.length + recent.length > 0;
@@ -56,12 +57,12 @@ export function HomePage() {
       <section className="grid grid-cols-[minmax(0,1fr)] gap-10 pb-16 pt-14 sm:pt-24 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-end">
         <div>
           <h1 className="font-display text-6xl font-extrabold leading-[0.9] tracking-tight sm:text-8xl">
-            Scout any
+            {t('home.heroLine1')}
             <br />
-            summoner.
+            {t('home.heroLine2')}
           </h1>
           <p className="mt-5 max-w-lg text-base text-muted sm:text-lg">
-            Rank, every recent game broken down minute by minute, champion pools and live matches — for any account on any server.
+            {t('home.lead')}
           </p>
           <div className="mt-9">
             <SearchBox variant="hero" autoFocus />
@@ -72,7 +73,7 @@ export function HomePage() {
           {favorites.length > 0 && (
             <section aria-labelledby="fav-h">
               <h2 id="fav-h" className="mb-2 flex items-center gap-2 font-display text-lg font-bold text-muted">
-                <Star className="size-4" aria-hidden /> Favorites
+                <Star className="size-4" aria-hidden /> {t('home.favorites')}
               </h2>
               <div className="grid gap-1.5">
                 {favorites.slice(0, 5).map((p) => (
@@ -84,7 +85,7 @@ export function HomePage() {
           {recent.length > 0 && (
             <section aria-labelledby="recent-h">
               <h2 id="recent-h" className="mb-2 flex items-center gap-2 font-display text-lg font-bold text-muted">
-                <Clock className="size-4" aria-hidden /> Recently viewed
+                <Clock className="size-4" aria-hidden /> {t('home.recent')}
               </h2>
               <div className="grid gap-1.5">
                 {recent.slice(0, 5).map((p) => (
@@ -95,10 +96,10 @@ export function HomePage() {
           )}
           {!saved && (
             <div className="panel panel-tick p-5 text-sm text-muted">
-              <p className="font-display text-lg font-bold text-text">Nobody saved yet</p>
-              <p className="mt-1">Players you open appear here, and starred ones stay at the top.</p>
+              <p className="font-display text-lg font-bold text-text">{t('home.emptyTitle')}</p>
+              <p className="mt-1">{t('home.emptyBody')}</p>
               <Link to={profilePath('kr', { gameName: 'Hide on bush', tagLine: 'KR1' })} className="mt-3 inline-block font-medium text-gold underline-offset-4 hover:underline">
-                Start with Faker’s profile
+                {t('home.emptyCta')}
               </Link>
             </div>
           )}
@@ -123,10 +124,10 @@ function StrongestPicks() {
     <section aria-labelledby="picks-h" className="pb-20">
       <div className="mb-3 flex items-baseline justify-between gap-3">
         <h2 id="picks-h" className="font-display text-2xl font-bold">
-          Strongest picks{q.data?.patch ? ` on ${q.data.patch}` : ''}
+          {q.data?.patch ? t('home.strongestOn', { patch: q.data.patch }) : t('home.strongest')}
         </h2>
         <Link to="/champions" className="text-sm font-medium text-gold hover:underline">
-          Full tier list
+          {t('home.fullTierList')}
         </Link>
       </div>
       <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
@@ -149,7 +150,7 @@ function StrongestPicks() {
                   </span>
                   <span>
                     <span className="block font-display text-2xl font-bold leading-none group-hover:text-gold">{a.champion(r.championId).name}</span>
-                    <span className="num text-xs text-muted">{pct(r.winRate, 1)} win rate</span>
+                    <span className="num text-xs text-muted">{t('home.winRate', { rate: pct(r.winRate, 1) })}</span>
                   </span>
                 </div>
               </Link>

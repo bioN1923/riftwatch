@@ -12,6 +12,7 @@ import { GameImg } from '../ui/GameImg';
 import { ItemTip } from '../ui/ItemTip';
 import { ROLE_LABEL } from '../ui/RoleIcon';
 import { Tip } from '../match/Loadout';
+import { t } from '../../i18n';
 
 /**
  * A player's record on one champion, next to the average for that champion in the same
@@ -75,71 +76,71 @@ export function PlayerChampionDialog({
           <GameImg src={a.champion(championId).url} alt="" size={56} rounded="md" className="ring-1 ring-line-strong" />
           <div className="min-w-0 flex-1">
             <h2 id="pc-title" className="truncate font-display text-3xl font-extrabold leading-none">
-              {champ?.name ?? 'Champion'}
+              {champ?.name ?? t('pc.fallback')}
             </h2>
             <p className="mt-1 truncate text-sm text-muted">
               {name}
               {pc && (
                 <>
-                  {role && ` · ${ROLE_LABEL[role] ?? role}`} · {pc.games} game{pc.games === 1 ? '' : 's'}
+                  {role && ` · ${ROLE_LABEL[role] ?? role}`} · {t('common.games', { count: pc.games })}
                 </>
               )}
             </p>
           </div>
-          <button onClick={() => ref.current?.close()} aria-label="Close" className="grid size-9 place-items-center rounded text-muted hover:bg-raised hover:text-text">
+          <button onClick={() => ref.current?.close()} aria-label={t('pc.close')} className="grid size-9 place-items-center rounded text-muted hover:bg-raised hover:text-text">
             <X className="size-5" aria-hidden />
           </button>
         </header>
 
         <div className="overflow-y-auto px-5 py-4">
           {!pc ? (
-            <p className="py-6 text-center text-sm text-muted">No games on this champion in the loaded matches.</p>
+            <p className="py-6 text-center text-sm text-muted">{t('pc.none')}</p>
           ) : (
             <div className="space-y-6">
               <div className="grid grid-cols-3 gap-3">
-                <Big label="Win rate" value={<span className={winRateTone(wr)}>{pct(wr)}</span>} note={`${pc.wins}W ${pc.games - pc.wins}L`} />
+                <Big label={t('pc.winRate')} value={<span className={winRateTone(wr)}>{pct(wr)}</span>} note={`${t('common.wins', { count: pc.wins })} ${t('common.losses', { count: pc.games - pc.wins })}`} />
                 <Big
-                  label="KDA"
+                  label={t('pc.kda')}
                   value={<span className={kdaTone(ratio)}>{formatKda(ratio)}</span>}
                   note={`${(pc.kills / pc.games).toFixed(1)} / ${(pc.deaths / pc.games).toFixed(1)} / ${(pc.assists / pc.games).toFixed(1)}`}
                 />
-                <Big label="Kill share" value={pct(pc.killShare)} note={`${pc.visionPerMin.toFixed(2)} vision/min`} />
+                <Big label={t('pc.killShare')} value={pct(pc.killShare)} note={t('pc.visionMin', { value: pc.visionPerMin.toFixed(2) })} />
               </div>
 
               <section aria-labelledby="pc-cmp">
                 <h3 id="pc-cmp" className="mb-2 font-display text-lg font-bold">
-                  Compared with the average {champ?.name}
+                  {t('pc.compare', { champion: champ?.name ?? '' })}
                 </h3>
                 {avg?.avg && avg.summary ? (
                   <table className="w-full text-sm">
                     <thead className="text-xs text-muted">
                       <tr>
                         <th className="pb-1.5 text-left font-medium" scope="col">
-                          <span className="sr-only">Stat</span>
+                          <span className="sr-only">{t('pc.stat')}</span>
                         </th>
                         <th className="pb-1.5 text-right font-medium" scope="col">
                           {name}
                         </th>
                         <th className="pb-1.5 text-right font-medium" scope="col">
-                          Average{role ? ` (${ROLE_LABEL[role] ?? role})` : ''}
+                          {role ? t('pc.averageRole', { role: ROLE_LABEL[role] ?? role }) : t('pc.average')}
                         </th>
                         <th className="w-16 pb-1.5" scope="col">
-                          <span className="sr-only">Difference</span>
+                          <span className="sr-only">{t('pc.diff')}</span>
                         </th>
                       </tr>
                     </thead>
                     <tbody className="num">
-                      <Cmp label="Win rate" mine={wr} avg={avg.summary.winRate} fmt={(v) => pct(v, 1)} />
-                      <Cmp label="Kills" mine={pc.kills / pc.games} avg={avg.avg.kills} fmt={(v) => v.toFixed(1)} />
-                      <Cmp label="Deaths" mine={pc.deaths / pc.games} avg={avg.avg.deaths} fmt={(v) => v.toFixed(1)} lowerIsBetter />
-                      <Cmp label="Assists" mine={pc.assists / pc.games} avg={avg.avg.assists} fmt={(v) => v.toFixed(1)} />
-                      <Cmp label="CS per minute" mine={pc.csPerMin} avg={avg.avg.csPerMin} fmt={(v) => v.toFixed(1)} />
-                      <Cmp label="Damage per minute" mine={pc.damagePerMin} avg={avg.avg.damagePerMin} fmt={(v) => v.toFixed(0)} />
-                      <Cmp label="Gold per minute" mine={pc.goldPerMin} avg={avg.avg.goldPerMin} fmt={(v) => v.toFixed(0)} />
+                      <Cmp label={t('pc.row.wr')} mine={wr} avg={avg.summary.winRate} fmt={(v) => pct(v, 1)} />
+                      <Cmp label={t('pc.row.kills')} mine={pc.kills / pc.games} avg={avg.avg.kills} fmt={(v) => v.toFixed(1)} />
+                      <Cmp label={t('pc.row.deaths')} mine={pc.deaths / pc.games} avg={avg.avg.deaths} fmt={(v) => v.toFixed(1)} lowerIsBetter />
+                      <Cmp label={t('pc.row.assists')} mine={pc.assists / pc.games} avg={avg.avg.assists} fmt={(v) => v.toFixed(1)} />
+                      <Cmp label={t('pc.row.cs')} mine={pc.csPerMin} avg={avg.avg.csPerMin} fmt={(v) => v.toFixed(1)} />
+                      <Cmp label={t('pc.row.dmg')} mine={pc.damagePerMin} avg={avg.avg.damagePerMin} fmt={(v) => v.toFixed(0)} />
+                      <Cmp label={t('pc.row.gold')} mine={pc.goldPerMin} avg={avg.avg.goldPerMin} fmt={(v) => v.toFixed(0)} />
                     </tbody>
                   </table>
                 ) : (
-                  <p className="text-sm text-muted">{avgQ.isPending ? 'Loading the average…' : 'Not enough games on this champion collected yet to compare.'}</p>
+                  <p className="text-sm text-muted">{avgQ.isPending ? t('pc.loadingAvg') : t('pc.noAvg')}</p>
                 )}
               </section>
 
@@ -147,7 +148,7 @@ export function PlayerChampionDialog({
                 {pc.items.length > 0 && (
                   <section aria-labelledby="pc-items">
                     <h3 id="pc-items" className="mb-2 font-display text-lg font-bold">
-                      Most built items
+                      {t('pc.items')}
                     </h3>
                     <ul className="grid grid-cols-3 gap-2">
                       {pc.items.map((it) => (
@@ -163,7 +164,7 @@ export function PlayerChampionDialog({
                 )}
                 <section aria-labelledby="pc-runes">
                   <h3 id="pc-runes" className="mb-2 font-display text-lg font-bold">
-                    Runes and spells
+                    {t('pc.runes')}
                   </h3>
                   <ul className="space-y-1.5">
                     {pc.keystones.map((k) => {
@@ -197,7 +198,7 @@ export function PlayerChampionDialog({
               {pc.opponents.length > 0 && (
                 <section aria-labelledby="pc-opps">
                   <h3 id="pc-opps" className="mb-2 font-display text-lg font-bold">
-                    Lane opponents
+                    {t('pc.opponents')}
                   </h3>
                   <ul className="flex flex-wrap gap-1.5">
                     {pc.opponents.map((o) => {
@@ -207,12 +208,12 @@ export function PlayerChampionDialog({
                           <Link
                             to={matchupPath(sd, championId, o.championId, role)}
                             className="group flex items-center gap-2 rounded border border-line bg-raised/40 py-1 pl-1 pr-2.5 transition-colors hover:border-line-strong hover:bg-raised"
-                            title={`${champ?.name} vs ${c.name}: build and win rate`}
+                            title={t('pc.vsTitle', { a: champ?.name ?? '', b: c.name })}
                           >
                             <GameImg src={c.url} alt="" size={24} rounded="sm" />
                             <span className="text-sm group-hover:text-gold">{c.name}</span>
                             <span className="num text-xs">
-                              <span className="text-win">{o.wins}W</span> <span className="text-loss">{o.games - o.wins}L</span>
+                              <span className="text-win">{t('common.wins', { count: o.wins })}</span> <span className="text-loss">{t('common.losses', { count: o.games - o.wins })}</span>
                             </span>
                           </Link>
                         </li>
@@ -224,21 +225,21 @@ export function PlayerChampionDialog({
 
               <section aria-labelledby="pc-recent">
                 <h3 id="pc-recent" className="mb-2 font-display text-lg font-bold">
-                  Recent games
+                  {t('pc.recent')}
                 </h3>
                 <ul className="space-y-1">
                   {pc.recent.map(({ match: m, p, opponent }) => {
                     const r = kdaRatio(p.kills, p.deaths, p.assists);
                     return (
                       <li key={m.id} className={clsx('flex items-center gap-3 rounded border-l-[3px] bg-raised/40 px-3 py-1.5 text-sm', p.win ? 'border-win' : 'border-loss')}>
-                        <span className={clsx('w-9 shrink-0 text-xs font-semibold', p.win ? 'text-win' : 'text-loss')}>{p.win ? 'Win' : 'Loss'}</span>
+                        <span className={clsx('w-9 shrink-0 text-xs font-semibold', p.win ? 'text-win' : 'text-loss')}>{p.win ? t('pc.win') : t('pc.loss')}</span>
                         <span className="num w-24 shrink-0">
                           {p.kills}/<span className="text-loss">{p.deaths}</span>/{p.assists}
                           <span className={clsx('ml-1.5 text-xs', kdaTone(r))}>{formatKda(r)}</span>
                         </span>
                         {opponent && (
                           <span className="hidden items-center gap-1.5 text-xs text-muted sm:flex">
-                            vs <GameImg src={a.champion(opponent.championId).url} alt={a.champion(opponent.championId).name} size={20} rounded="sm" />
+                            {t('pc.vs')} <GameImg src={a.champion(opponent.championId).url} alt={a.champion(opponent.championId).name} size={20} rounded="sm" />
                           </span>
                         )}
                         <span className="ml-auto flex gap-0.5">
@@ -257,15 +258,15 @@ export function PlayerChampionDialog({
         </div>
 
         <footer className="flex flex-wrap items-center gap-3 border-t border-line px-5 py-3 text-sm">
-          <span className="text-xs text-faint">From the {matches.length} games loaded on this profile.</span>
+          <span className="text-xs text-faint">{t('pc.from', { count: matches.length })}</span>
           {hasMore && (
             <button onClick={onLoadMore} disabled={loadingMore} className="rounded border border-line-strong px-2.5 py-1 text-xs font-medium hover:bg-raised disabled:opacity-50">
-              {loadingMore ? 'Loading…' : 'Load more games'}
+              {loadingMore ? t('common.loading') : t('pc.loadMore')}
             </button>
           )}
           {champ && (
             <Link to={`/champions/${champSlug(champ.id)}${role ? `?role=${role}` : ''}`} className="ml-auto font-medium text-gold hover:underline">
-              {champ.name} builds and runes →
+              {t('pc.buildsLink', { champion: champ.name })}
             </Link>
           )}
         </footer>
@@ -305,7 +306,7 @@ function Cmp({ label, mine, avg, fmt, lowerIsBetter }: { label: string; mine: nu
       <td className="py-1.5 text-right text-muted">{fmt(avg)}</td>
       <td className="py-1.5 pl-2 text-right text-xs">
         {better || worse ? (
-          <span className={clsx('inline-flex items-center gap-0.5', better ? 'text-win' : 'text-loss')} aria-label={better ? 'better than average' : 'worse than average'}>
+          <span className={clsx('inline-flex items-center gap-0.5', better ? 'text-win' : 'text-loss')} aria-label={better ? t('pc.better') : t('pc.worse')}>
             {mine > avg ? <ArrowUp className="size-3" aria-hidden /> : <ArrowDown className="size-3" aria-hidden />}
             {Math.round(Math.abs(diff) * 100)}%
           </span>
