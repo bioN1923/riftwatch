@@ -191,6 +191,13 @@ export function useChampionDetail(sd: StaticData | undefined, championId: number
 
 /** URL slug for a champion, e.g. "MissFortune" → "missfortune". */
 export const champSlug = (id: string) => id.toLowerCase();
+/** Link to a lane matchup page, e.g. /champions/ahri/vs/zed?role=MIDDLE. */
+export function matchupPath(sd: StaticData | undefined, championId: number, opponentId: number, role?: string) {
+  const a = sd?.champions.get(championId)?.id;
+  const b = sd?.champions.get(opponentId)?.id;
+  if (!a || !b) return '#';
+  return `/champions/${champSlug(a)}/vs/${champSlug(b)}${role && role !== 'ALL' ? `?role=${role}` : ''}`;
+}
 export function championBySlug(sd: StaticData | undefined, slug: string) {
   if (!sd) return undefined;
   for (const [key, c] of sd.champions) if (c.id.toLowerCase() === slug.toLowerCase()) return { key, ...c };

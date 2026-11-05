@@ -376,6 +376,16 @@ app.get('/api/champions/:id', (req, res) => {
   );
 });
 
+app.get('/api/champions/:id/vs/:opp', (req, res) => {
+  res.setHeader('Cache-Control', 'public, max-age=60');
+  const id = Number(req.params.id);
+  const opp = Number(req.params.opp);
+  if (!Number.isFinite(id) || !Number.isFinite(opp) || id === opp) throw new ApiError(400, 'BAD_REQUEST', 'Unknown matchup.');
+  res.json(
+    champStats.matchup(id, opp, groupParam(req.query.group), req.query.role ? String(req.query.role) : undefined, req.query.patch ? String(req.query.patch) : undefined),
+  );
+});
+
 /**
  * Autocomplete. Returns players from the local index, and — when the query is a full
  * Riot ID (Name#TAG) and `resolve=1` — also checks Riot directly so brand-new players appear.

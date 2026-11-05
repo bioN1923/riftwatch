@@ -40,6 +40,7 @@ const router = createBrowserRouter([
           { path: '/lol/:region/:slug/stats', lazy: profileRoute('stats') },
           { path: '/champions', lazy: async () => ({ Component: (await import('./pages/Champions')).ChampionsPage }) },
           { path: '/champions/:slug', lazy: async () => ({ Component: (await import('./pages/Champion')).ChampionPage }) },
+          { path: '/champions/:slug/vs/:opp', lazy: async () => ({ Component: (await import('./pages/Matchup')).MatchupPage }) },
           { path: '/leaderboard', lazy: async () => ({ Component: (await import('./pages/Leaderboard')).LeaderboardPage }) },
           { path: '/multisearch', lazy: async () => ({ Component: (await import('./pages/MultiSearch')).MultiSearchPage }) },
           { path: '*', element: <NotFoundPage /> },

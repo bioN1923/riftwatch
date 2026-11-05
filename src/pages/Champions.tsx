@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { ArrowDown, ArrowUp, Search } from 'lucide-react';
 import type { StatsGroup, TierRow } from '../../shared/types';
 import { api } from '../lib/api';
-import { assets, champSlug, useStaticData } from '../lib/ddragon';
+import { assets, champSlug, useStaticData, matchupPath } from '../lib/ddragon';
 import { useRegion } from '../lib/storage';
 import { pct, thousands } from '../lib/format';
 import { GameImg } from '../components/ui/GameImg';
@@ -228,10 +228,9 @@ export function ChampionsPage() {
                           <span className="flex gap-1">
                             {r.counters.map((cid) => {
                               const cc = a.champion(cid);
-                              const cslug = sd?.champions.get(cid)?.id;
                               return (
-                                <Link key={cid} to={cslug ? `/champions/${champSlug(cslug)}?role=${r.role}` : '#'} onClick={(e) => e.stopPropagation()} className="rounded-[5px] ring-1 ring-loss/40 transition hover:ring-loss">
-                                  <GameImg src={cc.url} alt={`Weak against ${cc.name}`} size={26} rounded="md" tip={cc.name} />
+                                <Link key={cid} to={matchupPath(sd, r.championId, cid, r.role)} onClick={(e) => e.stopPropagation()} className="rounded-[5px] ring-1 ring-loss/40 transition hover:ring-loss">
+                                  <GameImg src={cc.url} alt={`Weak against ${cc.name}`} size={26} rounded="md" tip={`${a.champion(r.championId).name} vs ${cc.name}`} />
                                 </Link>
                               );
                             })}

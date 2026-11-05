@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type { ChampionStats, MatchSummary, MatchTimeline, Rated, StatsGroup, TierList, TierRow } from '../shared/types';
+import type { ChampionStats, MatchSummary, MatchTimeline, MatchupStats, Rated, StatsGroup, TierList, TierRow } from '../shared/types';
 import { itemKind } from './items';
 import { getPlatform } from '../shared/regions';
 
@@ -59,6 +59,7 @@ interface RoleAgg {
   len: C[];
   duo?: Record<string, C>; // same-team champion in the partner role
   bv?: Record<string, BuildVar>; // per core build (first three items): its boots and 4th–6th items
+  mu?: Record<string, MatchupAgg>; // per lane opponent: what was played into them
   pl?: Record<string, { n: string; t: string; pf: string; g: number; w: number; k: number; d: number; a: number }>;
 }
 
@@ -68,6 +69,25 @@ interface BuildVar {
   s5: Record<string, C>;
   s6: Record<string, C>;
 }
+
+/** Builds, runes and spells used against one lane opponent. */
+interface MatchupAgg {
+  runes: Record<string, C>;
+  spells: Record<string, C>;
+  start: Record<string, C>;
+  core: Record<string, C>;
+  boots: Record<string, C>;
+  s4: Record<string, C>;
+  s5: Record<string, C>;
+  s6: Record<string, C>;
+  bv?: Record<string, BuildVar>;
+  k: number;
+  d: number;
+  a: number;
+}
+const newMatchup = (): MatchupAgg => ({ runes: {}, spells: {}, start: {}, core: {}, boots: {}, s4: {}, s5: {}, s6: {}, k: 0, d: 0, a: 0 });
+/** Anything that tallies builds: a whole champion-role, or one of its matchups. */
+type BuildTally = Pick<RoleAgg, 'core' | 's4' | 's5' | 's6' | 'bv'>;
 
 /** The teammate role whose champion matters most for each role. */
 const PARTNER: Record<string, string> = { TOP: 'JUNGLE', JUNGLE: 'MIDDLE', MIDDLE: 'JUNGLE', BOTTOM: 'UTILITY', UTILITY: 'BOTTOM' };
@@ -132,7 +152,7 @@ function purchaseBuild(items: number[], purchases: { t: number; itemId: number; 
   return order;
 }
 
-function countBuild(r: RoleAgg, legendaries: number[], boots: number | undefined, win: boolean, delta: 1 | -1) {
+function countBuild(r: BuildTally, legendaries: number[], boots: number | undefined, win: boolean, delta: 1 | -1) {
   if (legendaries.length >= 3) {
     const key = legendaries.slice(0, 3).join(',');
     bump(r.core, key, win, delta);
@@ -194,7 +214,7 @@ export function runeVariations(runes: Record<string, C>): ChampionStats['runes']
  * plus the best-performing one if it isn't among them. Each carries the boots and 4th–6th
  * items bought after that specific core.
  */
-export function buildVariations(r: RoleAgg): ChampionStats['builds'] {
+export function buildVariations(r: BuildTally): ChampionStats['builds'] {
   const chosen = pickVariations(Object.entries(r.core));
   const opts = (m: Record<string, C> | undefined, n: number) =>
     Object.entries(m ?? {})
@@ -318,6 +338,16 @@ export class ChampionStatsStore {
           const v = (r.vs[opp.championId] ??= { g: 0, w: 0, gd: 0, gn: 0 });
           v.g++;
           if (p.win) v.w++;
+          const mu = ((r.mu ??= {})[opp.championId] ??= newMatchup());
+          mu.k += p.kills;
+          mu.d += p.deaths;
+          mu.a += p.assists;
+          if (p.runes?.primary?.length) {
+            bump(mu.runes, `${p.primaryStyle}:${p.runes.primary.join(',')}|${p.secondaryStyle}:${p.runes.secondary.join(',')}|${p.runes.shards.join(',')}`, p.win);
+          }
+          bump(mu.spells, [...p.spells].sort((x, y) => x - y).join(','), p.win);
+          if (boots) bump(mu.boots, String(boots), p.win);
+          countBuild(mu, legendaries, boots, p.win, 1);
         }
       }
     }
@@ -339,15 +369,24 @@ export class ChampionStatsStore {
       const r = this.role(g, p.championId, aram ? 'ALL' : p.position);
       r.tl++;
 
+      const laneOpp = aram ? undefined : m.participants.find((x) => x.teamId !== p.teamId && x.position === p.position);
+      const mu = laneOpp ? r.mu?.[laneOpp.championId] : undefined;
+
       const { legendaries: bySlot, boots } = slotBuild(p.items);
       const byPurchase = purchaseBuild(p.items, tl.items[i] ?? []);
       if (byPurchase.length === bySlot.length && byPurchase.join() !== bySlot.join()) {
-        countBuild(r, bySlot, boots, p.win, -1);
-        countBuild(r, byPurchase, boots, p.win, 1);
+        for (const t of mu ? [r, mu] : [r]) {
+          countBuild(t, bySlot, boots, p.win, -1);
+          countBuild(t, byPurchase, boots, p.win, 1);
+        }
       }
 
       const start = (tl.items[i] ?? []).filter((it) => it.t <= 60 && !it.sold && itemKind(it.itemId) === 'starter').map((it) => it.itemId);
-      if (start.length) bump(r.start, start.sort((x, y) => x - y).join(','), p.win);
+      if (start.length) {
+        const key = start.sort((x, y) => x - y).join(',');
+        bump(r.start, key, p.win);
+        if (mu) bump(mu.start, key, p.win);
+      }
 
       const skills = tl.skills[i] ?? [];
       skills.slice(0, 18).forEach((slot, lvl) => {
@@ -427,6 +466,57 @@ export class ChampionStatsStore {
       });
     }
     return rows;
+  }
+
+  matchup(championId: number, opponentId: number, group: StatsGroup, role?: string, patch?: string): MatchupStats {
+    const patches = this.patches(group);
+    const pt = patch && patches.includes(patch) ? patch : (patches[0] ?? null);
+    const g = pt ? this.s.patches[pt][group] : undefined;
+    const c = g?.champs[championId];
+    const roles = Object.entries(c?.roles ?? {})
+      .map(([r, a]) => ({ role: r, games: a.vs[opponentId]?.g ?? 0 }))
+      .filter((r) => r.games > 0)
+      .sort((a, b) => b.games - a.games);
+    const chosen = role && roles.some((r) => r.role === role) ? role : (roles[0]?.role ?? role ?? 'MIDDLE');
+    const r = c?.roles[chosen];
+    const v = r?.vs[opponentId];
+    const mu = r?.mu?.[opponentId];
+    const rated = (x: C): Rated => ({ games: x.g, winRate: x.w / Math.max(1, x.g) });
+    const top = (m: Record<string, C> | undefined, n: number) => Object.entries(m ?? {}).sort((a, b) => b[1].g - a[1].g).slice(0, n);
+    const ids = (k: string) => k.split(',').map(Number);
+    const sum = (m: Record<string, C> | undefined) => Object.values(m ?? {}).reduce((n, x) => n + x.g, 0);
+    const out: MatchupStats = {
+      championId,
+      opponentId,
+      group,
+      patch: pt,
+      patches,
+      role: chosen,
+      roles,
+      games: v?.g ?? 0,
+      winRate: v && v.g ? v.w / v.g : 0,
+      adjusted: v ? shrunk(v.w, v.g) : 0.5,
+      kda: mu && v?.g ? { kills: mu.k / v.g, deaths: mu.d / v.g, assists: mu.a / v.g } : null,
+      goldDiff15: v?.gn ? v.gd / v.gn : null,
+      csDiff15: v?.gn && v.cd != null ? v.cd / v.gn : null,
+      xpDiff15: v?.gn && v.xd != null ? v.xd / v.gn : null,
+      baseline: r?.g ? rated(r) : null,
+      others: Object.entries(r?.vs ?? {})
+        .filter(([id]) => Number(id) !== opponentId)
+        .sort((a, b) => b[1].g - a[1].g)
+        .slice(0, 12)
+        .map(([id, x]) => ({ ...rated(x), championId: Number(id) })),
+      runes: mu ? runeVariations(mu.runes) : [],
+      spells: top(mu?.spells, 2).map(([k, x]) => ({ ...rated(x), ids: ids(k) })),
+      starting: top(mu?.start, 2).map(([k, x]) => ({ ...rated(x), ids: ids(k) })),
+      core: top(mu?.core, 5).map(([k, x]) => ({ ...rated(x), ids: ids(k) })),
+      builds: mu ? buildVariations(mu) : [],
+      boots: top(mu?.boots, 3).map(([k, x]) => ({ ...rated(x), id: Number(k) })),
+      later: (['s4', 's5', 's6'] as const).map((key, i) => ({ slot: i + 4, total: sum(mu?.[key]), options: top(mu?.[key], 4).map(([k, x]) => ({ ...rated(x), id: Number(k) })) })),
+      coreTotal: sum(mu?.core),
+      bootsTotal: sum(mu?.boots),
+    };
+    return out;
   }
 
   champion(championId: number, group: StatsGroup, role?: string, patch?: string): ChampionStats {
@@ -564,6 +654,13 @@ export class ChampionStatsStore {
               if (entries.length > 60) r[key] = Object.fromEntries(entries.sort((a, b) => b[1].g - a[1].g).slice(0, 40));
             }
             if (r.bv) for (const k of Object.keys(r.bv)) if (!r.core[k]) delete r.bv[k];
+            for (const mu of Object.values(r.mu ?? {})) {
+              for (const key of ['runes', 'spells', 'start', 'core', 'boots', 's4', 's5', 's6'] as const) {
+                const entries = Object.entries(mu[key]);
+                if (entries.length > 24) mu[key] = Object.fromEntries(entries.sort((a, b) => b[1].g - a[1].g).slice(0, 16));
+              }
+              if (mu.bv) for (const k of Object.keys(mu.bv)) if (!mu.core[k]) delete mu.bv[k];
+            }
           }
         }
       }

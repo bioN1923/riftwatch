@@ -87,6 +87,18 @@ describe('lane counters', () => {
     expect(m?.csDiff15).not.toBeNull();
     expect(m?.xpDiff15).not.toBeNull();
   });
+  it('reports a single matchup consistently with the champion page', () => {
+    const row = store.tierList('ranked').rows.sort((a, b) => b.games - a.games)[0];
+    const c = store.champion(row.championId, 'ranked', row.role);
+    const top = c.matchups[0];
+    const mu = store.matchup(row.championId, top.championId, 'ranked', row.role);
+    expect(mu.games).toBe(top.games);
+    expect(mu.winRate).toBeCloseTo(top.winRate, 6);
+    expect(mu.runes.reduce((n, r) => n + r.games, 0)).toBeLessThanOrEqual(mu.games);
+    expect(mu.coreTotal).toBeLessThanOrEqual(mu.games);
+    expect(mu.others.some((o) => o.championId === top.championId)).toBe(false);
+    expect(store.matchup(row.championId, 99999, 'ranked', row.role).games).toBe(0);
+  });
 });
 
 describe('player index', () => {

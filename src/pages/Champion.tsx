@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import type { ChampionStats, Rated, StatsGroup } from '../../shared/types';
 import { api, ApiClientError } from '../lib/api';
-import { assets, championBySlug, champSlug, useChampionDetail, useStaticData, type ChampionDetail } from '../lib/ddragon';
+import { assets, championBySlug, champSlug, matchupPath, useChampionDetail, useStaticData, type ChampionDetail } from '../lib/ddragon';
 import { formatKda, kdaTone, pct, thousands } from '../lib/format';
 import { profilePath } from '../lib/riotId';
 import { getPlatform } from '../../shared/regions';
@@ -232,10 +232,10 @@ function Abilities({ detail }: { detail: ChampionDetail }) {
   );
 }
 
-const LOW_SAMPLE = 10;
+export const LOW_SAMPLE = 10;
 
 /** Win rate plus how many games back it. Small samples are shown muted, since "100% over 2 games" means nothing. */
-function Rate({ r, className, share }: { r: Rated; className?: string; share?: number }) {
+export function Rate({ r, className, share }: { r: Rated; className?: string; share?: number }) {
   const low = r.games < LOW_SAMPLE;
   return (
     <span className={clsx('num shrink-0 text-right text-xs', className)} title={low ? `Only ${r.games} game${r.games === 1 ? '' : 's'} so far` : undefined}>
@@ -251,7 +251,7 @@ function Rate({ r, className, share }: { r: Rated; className?: string; share?: n
   );
 }
 
-function Block({ title, aside, children, className }: { title: string; aside?: React.ReactNode; children: React.ReactNode; className?: string }) {
+export function Block({ title, aside, children, className }: { title: string; aside?: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
     <div className={className}>
       <div className="mb-2.5 flex items-baseline justify-between gap-2">
@@ -263,14 +263,78 @@ function Block({ title, aside, children, className }: { title: string; aside?: R
   );
 }
 
-function BuildPanel({ s, abilityIcons }: { s: ChampionStats; abilityIcons?: string[] }) {
-  const { data: sd } = useStaticData();
-  const a = assets(sd);
+/** What the build sections need: a whole champion-role, or one matchup. */
+export type BuildData = Pick<ChampionStats, 'championId' | 'role' | 'patch' | 'group' | 'runes' | 'spells' | 'starting' | 'builds' | 'core' | 'coreTotal' | 'boots' | 'bootsTotal' | 'later'>;
+
+export function RunesBlock({ s }: { s: BuildData }) {
   const [page, setPage] = useState(0);
   useEffect(() => setPage(0), [s.championId, s.role, s.patch, s.group]);
   const rune = s.runes[page] ?? s.runes[0];
   const runeDir = useSlideDirection(page);
+  if (!rune) return null;
+  return (
+    <Block title="Runes" aside={s.runes.length > 1 ? `${s.runes.length} most played pages` : undefined}>
+      {s.runes.length > 1 && (
+        <VariationCards
+          label="Rune pages"
+          name="Page"
+          pick={page}
+          onPick={setPage}
+          items={s.runes.map((r) => ({
+            key: `${r.primary.join()}|${r.secondary.join()}`,
+            r: r.share != null ? r : { ...r, share: 0, tags: [] },
+            content: <RunePageSummary r={r} />,
+          }))}
+        />
+      )}
+      <div key={page} className="tab-in flex flex-wrap items-start justify-between gap-4 rounded border border-line bg-raised/40 p-4" style={{ '--dir': runeDir } as React.CSSProperties}>
+        <RuneTrees primaryStyle={rune.primaryStyle} secondaryStyle={rune.secondaryStyle} picked={[...rune.primary, ...rune.secondary]} shards={rune.shards} />
+        <Rate r={rune} share={rune.share} />
+      </div>
+    </Block>
+  );
+}
 
+export function SpellsAndStart({ s }: { s: BuildData }) {
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  if (!s.spells.length && !s.starting.length) return null;
+  return (
+    <div className="grid gap-6 sm:grid-cols-2">
+      {s.spells.length > 0 && (
+        <Block title="Summoner spells">
+          <ul className="space-y-2">
+            {s.spells.map((sp, i) => (
+              <li key={i} className="flex items-center justify-between gap-3">
+                <span className="flex gap-1">
+                  {sp.ids.map((id) => {
+                    const x = a.spell(id);
+                    return <GameImg key={id} src={x.url} alt={x.name} size={32} rounded="sm" tip={x.name ? <Tip title={x.name} body={x.description} /> : undefined} />;
+                  })}
+                </span>
+                <Rate r={sp} />
+              </li>
+            ))}
+          </ul>
+        </Block>
+      )}
+      {s.starting.length > 0 && (
+        <Block title="Starting items">
+          <ul className="space-y-2">
+            {s.starting.map((st, i) => (
+              <li key={i} className="flex items-center justify-between gap-3">
+                <ItemRow ids={st.ids} />
+                <Rate r={st} />
+              </li>
+            ))}
+          </ul>
+        </Block>
+      )}
+    </div>
+  );
+}
+
+function BuildPanel({ s, abilityIcons }: { s: ChampionStats; abilityIcons?: string[] }) {
   return (
     <section className="panel panel-tick p-5" aria-labelledby="build-h">
       <h2 id="build-h" className="panel-title text-2xl">
@@ -285,59 +349,9 @@ function BuildPanel({ s, abilityIcons }: { s: ChampionStats; abilityIcons?: stri
       )}
 
       <div className="mt-5 space-y-7">
-        {rune && (
-          <Block title="Runes" aside={s.runes.length > 1 ? `${s.runes.length} most played pages` : undefined}>
-            {s.runes.length > 1 && (
-              <VariationCards
-                label="Rune pages"
-                name="Page"
-                pick={page}
-                onPick={setPage}
-                items={s.runes.map((r) => ({
-                  key: `${r.primary.join()}|${r.secondary.join()}`,
-                  r: r.share != null ? r : { ...r, share: 0, tags: [] },
-                  content: <RunePageSummary r={r} />,
-                }))}
-              />
-            )}
-            <div key={page} className="tab-in flex flex-wrap items-start justify-between gap-4 rounded border border-line bg-raised/40 p-4" style={{ '--dir': runeDir } as React.CSSProperties}>
-              <RuneTrees primaryStyle={rune.primaryStyle} secondaryStyle={rune.secondaryStyle} picked={[...rune.primary, ...rune.secondary]} shards={rune.shards} />
-              <Rate r={rune} share={rune.share} />
-            </div>
-          </Block>
-        )}
+        <RunesBlock s={s} />
 
-        <div className="grid gap-6 sm:grid-cols-2">
-          {s.spells.length > 0 && (
-            <Block title="Summoner spells">
-              <ul className="space-y-2">
-                {s.spells.map((sp, i) => (
-                  <li key={i} className="flex items-center justify-between gap-3">
-                    <span className="flex gap-1">
-                      {sp.ids.map((id) => {
-                        const x = a.spell(id);
-                        return <GameImg key={id} src={x.url} alt={x.name} size={32} rounded="sm" tip={x.name ? <Tip title={x.name} body={x.description} /> : undefined} />;
-                      })}
-                    </span>
-                    <Rate r={sp} />
-                  </li>
-                ))}
-              </ul>
-            </Block>
-          )}
-          {s.starting.length > 0 && (
-            <Block title="Starting items">
-              <ul className="space-y-2">
-                {s.starting.map((st, i) => (
-                  <li key={i} className="flex items-center justify-between gap-3">
-                    <ItemRow ids={st.ids} />
-                    <Rate r={st} />
-                  </li>
-                ))}
-              </ul>
-            </Block>
-          )}
-        </div>
+        <SpellsAndStart s={s} />
 
         <ItemsBlock s={s} />
 
@@ -378,7 +392,7 @@ function ItemName({ id }: { id: number }) {
 
 /** Core build, boots and late-game options, laid out the way a game actually goes. */
 /** Compact rune page for a card: keystone, the three other primary runes, and the secondary tree. */
-function RunePageSummary({ r }: { r: ChampionStats['runes'][number] }) {
+export function RunePageSummary({ r }: { r: ChampionStats['runes'][number] }) {
   const { data } = useStaticData();
   const a = assets(data);
   const tree = (id: number) => data?.trees.find((t) => t.id === id);
@@ -401,7 +415,7 @@ function RunePageSummary({ r }: { r: ChampionStats['runes'][number] }) {
 type Variation = Rated & { share: number; tags: ('popular' | 'best')[] };
 
 /** A row of cards to choose between variations (builds, rune pages). Swipeable on phones. */
-function VariationCards({ label, name, items, pick, onPick }: { label: string; name: string; items: { key: string; r: Variation; content: React.ReactNode }[]; pick: number; onPick: (i: number) => void }) {
+export function VariationCards({ label, name, items, pick, onPick }: { label: string; name: string; items: { key: string; r: Variation; content: React.ReactNode }[]; pick: number; onPick: (i: number) => void }) {
   return (
     <div
       role="tablist"
@@ -449,7 +463,7 @@ function VariationCards({ label, name, items, pick, onPick }: { label: string; n
 }
 
 /** Build variations to choose from; older saved stats without them fall back to the overall core list. */
-function variationsOf(s: ChampionStats): ChampionStats['builds'] {
+function variationsOf(s: BuildData): ChampionStats['builds'] {
   if (s.builds?.length) return s.builds;
   return s.core.slice(0, 3).map((c, i) => ({
     ...c,
@@ -461,7 +475,7 @@ function variationsOf(s: ChampionStats): ChampionStats['builds'] {
   }));
 }
 
-function ItemsBlock({ s }: { s: ChampionStats }) {
+export function ItemsBlock({ s }: { s: BuildData }) {
   const builds = variationsOf(s);
   const [pick, setPick] = useState(0);
   useEffect(() => setPick(0), [s.championId, s.role, s.patch, s.group]);
@@ -563,7 +577,7 @@ function ItemsBlock({ s }: { s: ChampionStats }) {
   );
 }
 
-function OptionRow({ o, share }: { o: Rated & { id: number }; share?: number }) {
+export function OptionRow({ o, share }: { o: Rated & { id: number }; share?: number }) {
   const low = o.games < LOW_SAMPLE;
   return (
     <li className="flex items-start gap-2.5">
@@ -597,11 +611,6 @@ function laneMatchups(s: ChampionStats) {
   return { usable, easiest, hardest };
 }
 
-function champLink(sd: ReturnType<typeof useStaticData>['data'], id: number, role: string) {
-  const slug = sd?.champions.get(id)?.id;
-  return slug ? `/champions/${champSlug(slug)}?role=${role}` : '#';
-}
-
 /** The headline answer: who beats this champion in lane, and who it beats. */
 function CountersStrip({ s }: { s?: ChampionStats }) {
   const { data: sd } = useStaticData();
@@ -619,7 +628,7 @@ function CountersStrip({ s }: { s?: ChampionStats }) {
             return (
               <li key={m.championId}>
                 <Link
-                  to={champLink(sd, m.championId, s.role)}
+                  to={matchupPath(sd, s.championId, m.championId, s.role)}
                   className={clsx('group flex items-center gap-2 rounded border bg-surface/70 py-1 pl-1 pr-2.5 backdrop-blur transition-colors hover:bg-raised', tone === 'loss' ? 'border-loss/40' : 'border-win/40')}
                   title={`${pct(m.winRate, 1)} win rate against ${c.name} over ${m.games} game${m.games === 1 ? '' : 's'}`}
                 >
@@ -651,13 +660,14 @@ const MU_TABS = [
 ] as const;
 type MuSort = 'winRate' | 'games' | 'goldDiff15' | 'csDiff15' | 'xpDiff15';
 
-function Lead({ v, unit }: { v: number | null; unit: string }) {
+export function Lead({ v, unit, decimals = 0 }: { v: number | null; unit: string; decimals?: number }) {
   if (v == null) return <span className="text-faint">–</span>;
-  const r = Math.round(v);
+  const f = 10 ** decimals;
+  const r = Math.round(v * f) / f;
   return (
     <span className={clsx(r > 0 ? 'text-win' : r < 0 ? 'text-loss' : 'text-muted')}>
       {r > 0 ? '+' : r < 0 ? '−' : '±'}
-      {Math.abs(r)}
+      {Math.abs(r).toFixed(decimals)}
       {unit}
     </span>
   );
@@ -752,7 +762,7 @@ function Matchups({ s }: { s: ChampionStats }) {
                 return (
                   <tr key={m.championId} className="border-b border-line/60 last:border-0 hover:bg-raised">
                     <td className="py-1.5 pr-2">
-                      <Link to={champLink(sd, m.championId, s.role)} className="group flex items-center gap-2.5">
+                      <Link to={matchupPath(sd, s.championId, m.championId, s.role)} className="group flex items-center gap-2.5">
                         <GameImg src={c.url} alt="" size={30} rounded="md" />
                         <span className="font-medium group-hover:text-gold">{c.name}</span>
                       </Link>

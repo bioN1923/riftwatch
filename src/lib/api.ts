@@ -1,4 +1,5 @@
-import type { ApiErrorBody, ApiErrorCode, ChampionStats, HealthResponse, Ladder, LiveResponse, LpHistory, ServerStatus, MatchPage, MatchTimeline, PlayerHit, Profile, ScoutInfo, StatsGroup, TierList } from '../../shared/types';
+import type { ApiErrorBody, ApiErrorCode, ChampionStats,
+  MatchupStats, HealthResponse, Ladder, LiveResponse, LpHistory, ServerStatus, MatchPage, MatchTimeline, PlayerHit, Profile, ScoutInfo, StatsGroup, TierList } from '../../shared/types';
 
 export class ApiClientError extends Error {
   constructor(
@@ -53,6 +54,8 @@ export const api = {
   tierList: (group: StatsGroup, patch?: string, signal?: AbortSignal) => request<TierList>(`/champions?group=${group}${patch ? `&patch=${patch}` : ''}`, signal),
   champion: (id: number, p: { group: StatsGroup; role?: string; patch?: string }, signal?: AbortSignal) =>
     request<ChampionStats>(`/champions/${id}?group=${p.group}${p.role ? `&role=${p.role}` : ''}${p.patch ? `&patch=${p.patch}` : ''}`, signal),
+  matchup: (id: number, opp: number, p: { role?: string; patch?: string }, signal?: AbortSignal) =>
+    request<MatchupStats>(`/champions/${id}/vs/${opp}?group=ranked${p.role ? `&role=${p.role}` : ''}${p.patch ? `&patch=${p.patch}` : ''}`, signal),
   lp: (platform: string, puuid: string, signal?: AbortSignal) => request<LpHistory>(`/lp/${platform}/${enc(puuid)}`, signal),
   track: (p: { platform: string; puuid: string; gameName: string; tagLine: string }) =>
     request<{ tracked: boolean }>('/track', undefined, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) }),

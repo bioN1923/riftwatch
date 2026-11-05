@@ -260,6 +260,27 @@ export interface ChampionStats {
   players: (Rated & { gameName: string; tagLine: string; platform: string; kda: number })[];
 }
 
+/** One lane matchup (champion vs a lane opponent): result, laning leads and what was played into it. */
+export interface MatchupStats
+  extends Pick<ChampionStats, 'group' | 'patch' | 'patches' | 'runes' | 'spells' | 'starting' | 'core' | 'builds' | 'boots' | 'later' | 'coreTotal' | 'bootsTotal'> {
+  championId: number;
+  opponentId: number;
+  role: string;
+  /** Roles where these two met in lane, most games first. */
+  roles: { role: string; games: number }[];
+  games: number;
+  winRate: number;
+  adjusted: number; // win rate pulled toward 50% for small samples
+  kda: { kills: number; deaths: number; assists: number } | null;
+  goldDiff15: number | null;
+  csDiff15: number | null;
+  xpDiff15: number | null;
+  /** The champion's overall win rate in this role, for comparison. */
+  baseline: Rated | null;
+  /** Other common lane opponents, for quick switching. */
+  others: (Rated & { championId: number })[];
+}
+
 /* ---------- Ranked history, tracking and scouting ---------- */
 
 export interface LpPoint {
