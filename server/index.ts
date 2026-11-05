@@ -15,6 +15,7 @@ import { loadItemKinds } from './items';
 import { startCrawler } from './crawler';
 import { TtlCache } from './cache';
 import { getPlatform } from '../shared/regions';
+import { championBySlug, championCard, loadOgData, matchupCard, profileCard, siteCard, type ProfileCard } from './og';
 import type { ApiErrorBody, HealthResponse, Ladder, LadderEntry, LpHistory, MatchPage, MatchSummary, MatchTimeline, PlayerHit, Profile, ScoutInfo, ServerStatus, StatsGroup } from '../shared/types';
 
 const PORT = Number(process.env.PORT ?? 3001);
@@ -62,6 +63,8 @@ function indexMatches(platform: string, matches: MatchSummary[]) {
 }
 
 const app = express();
+// Behind Fly's proxy: use the forwarded protocol/host for absolute link-preview URLs.
+app.set('trust proxy', true);
 app.disable('x-powered-by');
 app.use(compression());
 
@@ -440,6 +443,73 @@ app.get(
   }),
 );
 
+/* ---------- Link-preview images ---------- */
+
+void loadOgData();
+const ogCache = new Map<string, { png: Buffer; t: number }>();
+const OG_ROLES: Record<string, string> = { TOP: 'Top', JUNGLE: 'Jungle', MIDDLE: 'Mid', BOTTOM: 'Bot', UTILITY: 'Support' };
+async function sendOg(res: Response, key: string, draw: () => Promise<Buffer> | Buffer) {
+  let hit = ogCache.get(key);
+  if (!hit || Date.now() - hit.t > 30 * 60_000) {
+    hit = { png: await draw(), t: Date.now() };
+    if (ogCache.size > 300) ogCache.delete(ogCache.keys().next().value!);
+    ogCache.set(key, hit);
+  }
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.type('jpeg').send(hit.png);
+}
+
+app.get('/og/site.jpg', wrap(async (_req, res) => sendOg(res, 'site', siteCard)));
+
+app.get(
+  '/og/profile/:platform/:slug.jpg',
+  wrap(async (req, res) => {
+    const p = platformOr400(String(req.params.platform));
+    const slug = decodeURIComponent(String(req.params.slug));
+    const i = slug.lastIndexOf('-');
+    if (i <= 0) throw new ApiError(404, 'NOT_FOUND', 'Unknown player.');
+    const gameName = slug.slice(0, i);
+    const tagLine = slug.slice(i + 1);
+    let card: ProfileCard = { gameName, tagLine, platform: p.label };
+    if (DEMO) {
+      const m = mockProfile(p.id, gameName, tagLine);
+      const solo = m?.ranked.find((r) => r.queueType === 'RANKED_SOLO_5x5');
+      if (m) card = { ...card, gameName: m.account.gameName, tagLine: m.account.tagLine, level: m.summoner.summonerLevel, profileIconId: m.summoner.profileIconId, tier: solo?.tier, rank: solo?.rank, lp: solo?.leaguePoints, wins: solo?.wins, losses: solo?.losses };
+    } else {
+      const hit = players.search(`${gameName}#${tagLine}`, p.id, 1)[0];
+      if (hit && hit.gameName.toLowerCase() === gameName.toLowerCase() && hit.tagLine.toLowerCase() === tagLine.toLowerCase()) {
+        card = { ...card, gameName: hit.gameName, tagLine: hit.tagLine, level: hit.level, profileIconId: hit.profileIconId, tier: hit.tier, rank: hit.rank, lp: hit.lp };
+      }
+    }
+    await sendOg(res, `p:${p.id}:${slug.toLowerCase()}:${card.tier}:${card.rank}:${card.lp}`, () => profileCard(card));
+  }),
+);
+
+app.get(
+  '/og/champion/:slug.jpg',
+  wrap(async (req, res) => {
+    const c = championBySlug(String(req.params.slug));
+    if (!c) throw new ApiError(404, 'NOT_FOUND', 'Unknown champion.');
+    const s = champStats.champion(c.key, 'ranked');
+    await sendOg(res, `c:${c.key}:${s.patch}:${s.summary?.games}`, () =>
+      championCard({ champion: c, role: OG_ROLES[s.role], tier: s.summary?.tier, winRate: s.summary?.winRate, games: s.summary?.games, patch: s.patch }),
+    );
+  }),
+);
+
+app.get(
+  '/og/vs/:a/:b.jpg',
+  wrap(async (req, res) => {
+    const a = championBySlug(String(req.params.a));
+    const b = championBySlug(String(req.params.b));
+    if (!a || !b) throw new ApiError(404, 'NOT_FOUND', 'Unknown matchup.');
+    const m = champStats.matchup(a.key, b.key, 'ranked', req.query.role ? String(req.query.role) : undefined);
+    const edge = m.adjusted - 0.5;
+    const verdict = m.games < 10 ? undefined : edge > 0.02 ? `${a.name} is favoured` : edge < -0.02 ? `${b.name} is favoured` : 'An even matchup';
+    await sendOg(res, `v:${a.key}:${b.key}:${m.role}:${m.games}`, () => matchupCard({ a, b, role: OG_ROLES[m.role], winRate: m.games ? m.winRate : undefined, games: m.games, verdict }));
+  }),
+);
+
 app.use('/api', (_req, res) => {
   res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Unknown API route.' } } satisfies ApiErrorBody);
 });
@@ -451,17 +521,30 @@ if (fs.existsSync(dist)) {
   // fallthrough: false → a missing (e.g. outdated) asset is a real 404, not the HTML page.
   app.use('/assets', express.static(path.join(dist, 'assets'), { maxAge: '1y', immutable: true, fallthrough: false }));
   app.use(express.static(dist, { maxAge: '1h', index: false }));
-  app.get(/^(?!\/api).*/, (req, res) => res.type('html').send(withMeta(indexHtml, req.path)));
+  app.get(/^(?!\/api|\/og\/).*/, (req, res) => res.type('html').send(withMeta(indexHtml, req)));
 }
 
 /** Page titles and link-preview tags (Discord, Slack, X …) for shared profile and champion links. */
-function withMeta(html: string, urlPath: string) {
+function withMeta(html: string, req: Request) {
+  const urlPath = req.path;
+  const origin = `${req.protocol}://${req.get('host')}`;
+  let image = '/og/site.jpg';
   const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
   let title = 'Riftwatch — League of Legends stats';
   let desc = 'Rank, match history, champion stats and live games for any League of Legends account.';
   const prof = /^\/lol\/([a-z0-9]+)\/([^/]+)/.exec(urlPath);
   const champ = /^\/champions\/([a-z0-9]+)/i.exec(urlPath);
-  if (prof) {
+  const vs = /^\/champions\/([a-z0-9]+)\/vs\/([a-z0-9]+)/i.exec(urlPath);
+  if (vs) {
+    const a = championBySlug(vs[1]);
+    const b = championBySlug(vs[2]);
+    if (a && b) {
+      title = `${a.name} vs ${b.name}: build, runes and win rate · Riftwatch`;
+      desc = `How to play ${a.name} into ${b.name}: who's favoured, lane leads at 15 minutes, and the runes and items that win.`;
+      const role = typeof req.query.role === 'string' ? `?role=${encodeURIComponent(req.query.role)}` : '';
+      image = `/og/vs/${vs[1].toLowerCase()}/${vs[2].toLowerCase()}.jpg${role}`;
+    }
+  } else if (prof) {
     const slug = decodeURIComponent(prof[2]);
     const i = slug.lastIndexOf('-');
     if (i > 0) {
@@ -473,9 +556,11 @@ function withMeta(html: string, urlPath: string) {
       const rank = known?.tier ? `${known.tier.charAt(0)}${known.tier.slice(1).toLowerCase()} ${['MASTER', 'GRANDMASTER', 'CHALLENGER'].includes(known.tier) ? '' : known.rank ?? ''}`.trim() : null;
       title = `${known?.gameName ?? gameName}#${known?.tagLine ?? tagLine}${rank ? ` — ${rank}` : ''} · Riftwatch`;
       desc = `${rank ? `${rank}${known?.lp != null ? ` ${known.lp} LP` : ''} on ${platform?.label ?? prof[1]}. ` : ''}Match history, champion stats, rank history and live game.`;
+      image = `/og/profile/${prof[1]}/${encodeURIComponent(`${gameName}-${tagLine}`)}.jpg`;
     }
   } else if (champ) {
-    const name = champ[1].charAt(0).toUpperCase() + champ[1].slice(1);
+    const name = championBySlug(champ[1])?.name ?? champ[1].charAt(0).toUpperCase() + champ[1].slice(1);
+    if (championBySlug(champ[1])) image = `/og/champion/${champ[1].toLowerCase()}.jpg`;
     title = `${name} build, runes and counters · Riftwatch`;
     desc = `Win rate, best build, runes, skill order and matchups for ${name}.`;
   } else if (urlPath.startsWith('/champions')) {
@@ -490,7 +575,12 @@ function withMeta(html: string, urlPath: string) {
     `<meta property="og:title" content="${esc(title)}" />`,
     `<meta property="og:description" content="${esc(desc)}" />`,
     `<meta property="og:type" content="website" />`,
-    `<meta name="twitter:card" content="summary" />`,
+    `<meta property="og:url" content="${esc(origin + req.originalUrl)}" />`,
+    `<meta property="og:image" content="${esc(origin + image)}" />`,
+    `<meta property="og:image:width" content="1200" />`,
+    `<meta property="og:image:height" content="630" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    `<meta name="twitter:image" content="${esc(origin + image)}" />`,
     `<meta name="theme-color" content="#091315" />`,
   ].join('\n    ');
   return html
