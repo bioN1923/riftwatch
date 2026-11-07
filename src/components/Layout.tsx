@@ -242,7 +242,18 @@ export function Layout() {
           {t('nav.lobby')}
         </NavLink>
       </nav>
-      <footer className="border-t border-line py-6 text-center text-xs text-faint">
+      <footer className="border-t border-line px-4 py-6 text-center text-xs text-faint">
+        <nav aria-label={t('footer.nav')} className="mb-2 flex justify-center gap-4">
+          <Link to="/privacy" className="hover:text-text hover:underline">
+            {t('footer.privacy')}
+          </Link>
+          <Link to="/privacy#visibility" className="hover:text-text hover:underline">
+            {t('footer.hide')}
+          </Link>
+          <Link to="/api-usage" className="hover:text-text hover:underline">
+            {t('footer.api')}
+          </Link>
+        </nav>
         {t('footer.legal')}
       </footer>
     </div>

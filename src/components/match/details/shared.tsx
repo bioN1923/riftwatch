@@ -58,8 +58,8 @@ export function PlayerPicker({ match, value, onChange }: { match: MatchSummary; 
                 key={p.puuid + p.championId}
                 role="radio"
                 aria-checked={on}
-                aria-label={`${c.name} (${p.gameName})`}
-                title={`${c.name} · ${p.gameName}`}
+                aria-label={p.hidden ? c.name : `${c.name} (${p.gameName})`}
+                title={p.hidden ? c.name : `${c.name} · ${p.gameName}`}
                 onClick={() => onChange(p.puuid)}
                 className={clsx('rounded-[5px] p-0.5 transition', on ? 'bg-gold' : 'opacity-55 hover:opacity-100')}
               >

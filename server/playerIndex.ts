@@ -36,8 +36,12 @@ export class PlayerIndex {
     setInterval(() => this.flush(), 15_000).unref();
   }
 
+  /** Players who hid their profile: never suggested, never stored. */
+  isBlocked: (puuid: string) => boolean = () => false;
+
   add(p: PlayerHit & { puuid?: string }, opts: { viewed?: boolean } = {}) {
     if (!p.gameName || !p.tagLine) return;
+    if (p.puuid && this.isBlocked(p.puuid)) return;
     const key = norm(`${p.gameName}#${p.tagLine}`);
     const id = `${p.platform}:${key}`;
     const prev = this.entries.get(id);
@@ -63,6 +67,15 @@ export class PlayerIndex {
       const oldest = this.entries.keys().next().value;
       if (oldest) this.entries.delete(oldest);
     }
+    this.dirty = true;
+  }
+
+  /** Forget a player completely (they hid their profile), by id and by name. */
+  remove(puuid: string, name?: { platform: string; gameName: string; tagLine: string }) {
+    const id = this.byPuuid.get(puuid);
+    if (id) this.entries.delete(id);
+    if (name) this.entries.delete(`${name.platform}:${norm(`${name.gameName}#${name.tagLine}`)}`);
+    this.byPuuid.delete(puuid);
     this.dirty = true;
   }
 

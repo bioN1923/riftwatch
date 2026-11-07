@@ -1,4 +1,4 @@
-import type { ApiErrorBody, Augment, ApiErrorCode, ChampionStats,
+import type { ApiErrorBody, Augment, PrivacyChallenge, PrivacyResult, ApiErrorCode, ChampionStats,
   MatchupStats, HealthResponse, Ladder, LiveResponse, LpHistory, ServerStatus, MatchPage, MatchTimeline, PlayerHit, Profile, ScoutInfo, StatsGroup, TierList } from '../../shared/types';
 
 export class ApiClientError extends Error {
@@ -11,6 +11,9 @@ export class ApiClientError extends Error {
     super(message);
   }
 }
+
+const send = <T,>(path: string, body: unknown) =>
+  request<T>(path, undefined, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 
 async function request<T>(path: string, signal?: AbortSignal, init?: RequestInit): Promise<T> {
   let res: Response;
@@ -66,6 +69,10 @@ export const api = {
     request<Ladder>(`/leaderboard/${platform}?queue=${p.queue}&tier=${p.tier}&page=${p.page}`, signal),
   rotation: (platform: string, signal?: AbortSignal) => request<{ championIds: number[] }>(`/rotation/${platform}`, signal),
   status: (platform: string, signal?: AbortSignal) => request<ServerStatus>(`/status/${platform}`, signal),
+  privacyChallenge: (body: { platform: string; gameName: string; tagLine: string; action: 'hide' | 'show' }) =>
+    send<PrivacyChallenge>('/privacy/challenge', body),
+  privacyVerify: (body: { platform: string; puuid: string }) => send<PrivacyResult>('/privacy/verify', body),
+  demoSetIcon: (puuid: string, iconId: number) => send<{ ok: boolean }>('/privacy/demo-set-icon', { puuid, iconId }),
   augments: (lang: string, signal?: AbortSignal) => request<Augment[]>(`/augments?lang=${lang}`, signal),
   live: (platform: string, puuid: string, signal?: AbortSignal) => request<LiveResponse>(`/live/${platform}/${enc(puuid)}`, signal),
 };

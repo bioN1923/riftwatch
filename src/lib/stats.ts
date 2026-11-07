@@ -55,7 +55,7 @@ export function overview(matches: MatchSummary[], puuid: string): Overview {
     champs.set(p.championId, c);
 
     for (const mate of teammates(m, p)) {
-      if (!mate.puuid || mate.puuid.startsWith('BOT')) continue;
+      if (!mate.puuid || mate.puuid.startsWith('BOT') || mate.hidden) continue;
       const d = duos.get(mate.puuid) ?? { puuid: mate.puuid, gameName: mate.gameName, tagLine: mate.tagLine, games: 0, wins: 0 };
       d.games++;
       d.wins += p.win ? 1 : 0;

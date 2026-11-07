@@ -270,6 +270,9 @@ function arenaSummary(ar: ArenaAgg, games: number): NonNullable<ChampionStats['a
 }
 
 export class ChampionStatsStore {
+  /** Players who hid their profile are left out of "who plays it most". */
+  isHidden: (puuid: string) => boolean = () => false;
+
   private s: Store = { v: 1, patches: {}, seen: [], seenTl: [] };
   private seen = new Set<string>();
   private seenTl = new Set<string>();
@@ -369,7 +372,7 @@ export class ChampionStatsStore {
       countBuild(r, legendaries, boots, p.win, 1);
 
       // Who plays this champion most (and best): a per-champion leaderboard.
-      if (p.puuid && !p.puuid.startsWith('demo-rand') && p.gameName) {
+      if (p.puuid && !p.puuid.startsWith('demo-rand') && p.gameName && !this.isHidden(p.puuid)) {
         const pl = (r.pl ??= {});
         const e = (pl[p.puuid] ??= { n: p.gameName, t: p.tagLine, pf: getPlatform(m.id.split('_')[0].toLowerCase())?.id ?? 'euw1', g: 0, w: 0, k: 0, d: 0, a: 0 });
         e.n = p.gameName;
@@ -691,6 +694,13 @@ export class ChampionStatsStore {
         .slice(0, 10),
       arena: r.ar ? arenaSummary(r.ar, r.g) : undefined,
     };
+  }
+
+  /** Remove a player from every "who plays it most" list (they hid their profile). */
+  forgetPlayer(puuid: string) {
+    for (const groups of Object.values(this.s.patches))
+      for (const g of Object.values(groups)) for (const c of Object.values(g!.champs)) for (const r of Object.values(c.roles)) if (r.pl?.[puuid]) delete r.pl[puuid];
+    this.dirty = true;
   }
 
   flush() {

@@ -64,6 +64,12 @@ export class LpStore {
     this.dirty = true;
   }
 
+  /** Delete everything stored about a player (they hid their profile). */
+  forget(puuid: string) {
+    delete this.s.history[puuid];
+    this.untrack(puuid);
+  }
+
   flush() {
     if (!this.dirty || !this.file) return;
     this.dirty = false;

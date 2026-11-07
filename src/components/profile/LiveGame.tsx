@@ -156,7 +156,7 @@ function PlayerRow({ p, s, loading, self, group, platform }: { p: LiveParticipan
       </div>
       <div className="min-w-0">
         {self || !p.gameName ? (
-          <p className="truncate font-semibold">{p.gameName || t('live.hidden')}</p>
+          <p className={clsx('truncate font-semibold', p.hidden && 'italic text-faint')}>{p.hidden ? t('live.hidden') : p.gameName || t('live.hidden')}</p>
         ) : (
           <Link to={profilePath(platform, p)} className="block truncate font-medium hover:text-gold hover:underline">
             {p.gameName}

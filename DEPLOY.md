@@ -63,7 +63,16 @@ fly secrets set ALERT_WEBHOOK_URL=https://discord.com/api/webhooks/... ADMIN_TOK
 Each new problem is posted once (repeats are counted, and re-posted at most hourly). The full
 list is at `https://<your-app-name>.fly.dev/admin/errors?token=<your token>`.
 
-## 6. Apply for a Riot production key
+## 6. Privacy contact
+
+The privacy page (`/privacy`) lets players hide their profile themselves. Give an address for
+other privacy or data requests, so Riot's reviewers (and players) can reach you:
+
+```powershell
+fly secrets set CONTACT_EMAIL=you@example.com
+```
+
+## 7. Apply for a Riot production key
 
 On https://developer.riotgames.com, register a product, describe the site and give the `fly.dev`
 link plus the login as the working prototype. When it's approved:

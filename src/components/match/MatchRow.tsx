@@ -130,6 +130,8 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
                         <GameImg src={c.url} alt={c.name} size={16} rounded="sm" className={ti === 0 ? 'ring-1 ring-side-blue/50' : 'ring-1 ring-side-red/50'} />
                         {self ? (
                           <span className="w-[70px] truncate font-semibold text-text">{x.gameName}</span>
+                        ) : x.hidden ? (
+                          <span className="w-[70px] truncate italic text-faint">{t('live.hidden')}</span>
                         ) : (
                           <Link to={profilePath(platform, x)} className="w-[70px] truncate text-muted hover:text-text hover:underline" title={`${x.gameName}#${x.tagLine}`}>
                             {x.gameName}

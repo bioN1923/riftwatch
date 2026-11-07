@@ -16,27 +16,41 @@ import { startCrawler } from './crawler';
 import { TtlCache } from './cache';
 import { getPlatform } from '../shared/regions';
 import { augments } from './augments';
+import { MatchStore } from './matchStore';
+import { CHALLENGE_MS, PrivacyStore } from './privacy';
 import { ErrorLog, errorsPage } from './errorLog';
 import { timingSafeEqual } from 'node:crypto';
 import { HTML_LANG, OG_LOCALE, alternateLinks, pickLang, seoText, sitemapXml } from './seo';
 import { allChampions, championByKey, championBySlug, championCard, loadOgData, matchupCard, profileCard, siteCard, type ProfileCard } from './og';
-import type { ApiErrorBody, HealthResponse, Ladder, LadderEntry, LpHistory, MatchPage, MatchSummary, MatchTimeline, PlayerHit, Profile, ScoutInfo, ServerStatus, StatsGroup } from '../shared/types';
+import type { ApiErrorBody, HealthResponse, PrivacyChallenge, PrivacyResult, Ladder, LadderEntry, LpHistory, MatchPage, MatchSummary, MatchTimeline, PlayerHit, Profile, ScoutInfo, ServerStatus, StatsGroup } from '../shared/types';
 
 const PORT = Number(process.env.PORT ?? 3001);
 const API_KEY = process.env.RIOT_API_KEY?.trim() ?? '';
 const DEMO = process.env.DEMO_MODE === 'true' || !API_KEY || API_KEY.startsWith('RGAPI-xxxx');
 
-const riot = new RiotClient(API_KEY, {
-  perSecond: Number(process.env.RIOT_RATE_PER_SECOND ?? 20),
-  perTwoMinutes: Number(process.env.RIOT_RATE_PER_2MIN ?? 100),
-});
-
 const here = path.dirname(fileURLToPath(import.meta.url));
+const riot = new RiotClient(
+  API_KEY,
+  {
+    perSecond: Number(process.env.RIOT_RATE_PER_SECOND ?? 20),
+    perTwoMinutes: Number(process.env.RIOT_RATE_PER_2MIN ?? 100),
+  },
+  DEMO ? undefined : new MatchStore(path.resolve(here, 'data', 'matches')),
+);
 const players = new PlayerIndex(path.resolve(here, 'data', DEMO ? 'players.demo.json' : 'players.json'));
 if (DEMO) DEMO_SEED.forEach((p) => players.add(p));
 
 const champStats = new ChampionStatsStore(DEMO ? null : path.resolve(here, 'data', 'champions.json'));
 const timelines = new TtlCache<MatchTimeline>(300);
+const privacy = new PrivacyStore(DEMO ? null : path.resolve(here, 'data', 'privacy.json'));
+players.isBlocked = (puuid) => privacy.isHidden(puuid);
+champStats.isHidden = (puuid) => privacy.isHidden(puuid);
+const PRIVATE_MSG = 'This player has chosen to keep their profile private.';
+/** Hidden players stay in other people's games (Riot's data), but without their name. */
+function scrubMatch(m: MatchSummary): MatchSummary {
+  if (!m.participants.some((x) => privacy.isHidden(x.puuid))) return m;
+  return { ...m, participants: m.participants.map((x) => (privacy.isHidden(x.puuid) ? { ...x, gameName: '', tagLine: '', hidden: true } : x)) };
+}
 const errorLog = new ErrorLog(DEMO ? null : path.resolve(here, 'data', 'errors.json'));
 const lp = new LpStore(path.resolve(here, 'data', DEMO ? 'lp.demo.json' : 'lp.json'));
 let lastUserRequest = 0;
@@ -164,7 +178,7 @@ app.use('/api', (req, _res, next) => {
 });
 
 app.get('/api/health', (_req, res) => {
-  res.json({ ok: true, mode: DEMO ? 'demo' : 'live' } satisfies HealthResponse);
+  res.json({ ok: true, mode: DEMO ? 'demo' : 'live', contact: process.env.CONTACT_EMAIL || undefined } satisfies HealthResponse);
 });
 
 const UPDATE_COOLDOWN_MS = 3 * 60_000;
@@ -199,6 +213,7 @@ app.get(
     if (DEMO) {
       const profile = mockProfile(p.id, gameName, tagLine);
       if (!profile) throw new ApiError(404, 'NOT_FOUND', `No player called ${gameName}#${tagLine} on ${p.label}.`);
+      if (privacy.isHidden(profile.account.puuid)) throw new ApiError(403, 'PRIVATE', PRIVATE_MSG);
       indexProfile(profile);
       return res.json({ ...profile, ...timing() });
     }
@@ -212,6 +227,8 @@ app.get(
       }
       throw e;
     }
+
+    if (privacy.isHidden(account.puuid)) throw new ApiError(403, 'PRIVATE', PRIVATE_MSG);
 
     let summoner;
     try {
@@ -253,13 +270,14 @@ app.get(
     const count = Math.min(20, Math.max(1, Number(req.query.count ?? 10) || 10));
     const filter = QUEUE_FILTERS[String(req.query.queue ?? 'all')] ?? {};
     const fresh = req.query.fresh === '1';
+    if (privacy.isHidden(puuid)) throw new ApiError(403, 'PRIVATE', PRIVATE_MSG);
 
     if (DEMO) {
       const name = nameFromDemoPuuid(puuid);
       if (!name) throw new ApiError(404, 'NOT_FOUND', 'Unknown player.');
       const page = mockMatches(name, start, count, filter);
       indexMatches(p.id, page.matches);
-      return res.json(page);
+      return res.json({ ...page, matches: page.matches.map(scrubMatch) });
     }
 
     const ids = await riot.matchIds(p, puuid, start, count, filter, fresh);
@@ -271,7 +289,7 @@ app.get(
     const page: MatchPage = { matches, nextStart: ids.length === count ? start + count : null };
     indexMatches(p.id, matches);
     matches.forEach((m) => champStats.addMatch(m));
-    res.json(page);
+    res.json({ ...page, matches: matches.map(scrubMatch) });
   }),
 );
 
@@ -299,6 +317,7 @@ app.get(
 
 app.get('/api/lp/:platform/:puuid', (req, res) => {
   const puuid = String(req.params.puuid);
+  if (privacy.isHidden(puuid)) return res.json({ points: [], tracked: false } satisfies LpHistory);
   let points = lp.history(puuid);
   if (DEMO && points.length < 2) {
     const name = nameFromDemoPuuid(puuid);
@@ -312,6 +331,7 @@ app.post('/api/track', (req, res) => {
   if (!getPlatform(platform) || typeof puuid !== 'string' || !puuid || typeof gameName !== 'string' || typeof tagLine !== 'string') {
     throw new ApiError(400, 'BAD_REQUEST', 'Missing player details.');
   }
+  if (privacy.isHidden(puuid)) throw new ApiError(403, 'PRIVATE', PRIVATE_MSG);
   lp.track({ platform, puuid, gameName, tagLine });
   res.json({ tracked: true });
 });
@@ -328,6 +348,9 @@ app.get(
     const p = platformOr400(String(req.params.platform));
     const puuid = String(req.params.puuid);
     const championId = Number(req.query.champion ?? 0);
+    if (privacy.isHidden(puuid)) {
+      return res.json({ puuid, hidden: true, level: null, profileIconId: null, solo: null, flex: null, mastery: null, recentMatchIds: [] } satisfies ScoutInfo);
+    }
     if (DEMO) return res.json(mockScout(puuid, championId));
     const [summoner, league, mastery, ids] = await Promise.all([
       riot.summoner(p, puuid).catch(() => null),
@@ -349,6 +372,73 @@ app.get(
     res.json(info);
   }),
 );
+
+/* ---------- Privacy: players can hide their profile ---------- */
+
+const challengesByIp = new Map<string, number[]>();
+/** Step 1: look the player up and name a starter icon to equip. */
+app.post(
+  '/api/privacy/challenge',
+  wrap(async (req, res) => {
+    // Each check reads Riot twice, so one visitor may start a few per ten minutes.
+    const ip = req.ip ?? '';
+    const recent = (challengesByIp.get(ip) ?? []).filter((t) => Date.now() - t < 10 * 60_000);
+    if (recent.length >= 5) throw new ApiError(429, 'RATE_LIMITED', 'Too many checks started. Try again in a few minutes.', 120);
+    challengesByIp.set(ip, [...recent, Date.now()]);
+    if (challengesByIp.size > 5000) challengesByIp.clear();
+    const { platform, gameName, tagLine, action } = (req.body ?? {}) as Record<string, unknown>;
+    const p = platformOr400(String(platform));
+    if (typeof gameName !== 'string' || typeof tagLine !== 'string' || !gameName.trim() || !tagLine.trim() || (action !== 'hide' && action !== 'show')) {
+      throw new ApiError(400, 'BAD_REQUEST', 'Enter your Riot ID as Name#TAG.');
+    }
+    let account: { puuid: string; gameName: string; tagLine: string };
+    let icon: number;
+    if (DEMO) {
+      const prof = mockProfile(p.id, gameName.trim(), tagLine.trim());
+      if (!prof) throw new ApiError(404, 'NOT_FOUND', `No player called ${gameName}#${tagLine}.`);
+      account = prof.account;
+      icon = demoIcons.get(account.puuid) ?? prof.summoner.profileIconId;
+    } else {
+      account = await riot.account(p, gameName.trim(), tagLine.trim(), true);
+      icon = (await riot.summoner(p, account.puuid, true)).profileIconId;
+    }
+    const c = privacy.challenge(account, p.id, icon, action);
+    res.json({ puuid: account.puuid, gameName: account.gameName, tagLine: account.tagLine, action, iconId: c.iconId, expiresIn: CHALLENGE_MS, hidden: privacy.isHidden(account.puuid) } satisfies PrivacyChallenge);
+  }),
+);
+
+/** Step 2: read the profile icon back from Riot; if it matches, hide (and delete stored data) or show. */
+const verifyTries = new Map<string, number>();
+app.post(
+  '/api/privacy/verify',
+  wrap(async (req, res) => {
+    const { platform, puuid } = (req.body ?? {}) as Record<string, unknown>;
+    const p = platformOr400(String(platform));
+    if (typeof puuid !== 'string' || !privacy.pending(puuid)) throw new ApiError(400, 'BAD_REQUEST', 'This check has expired. Start again.');
+    // Each check reads Riot once; a few seconds apart at most.
+    const last = verifyTries.get(puuid) ?? 0;
+    if (Date.now() - last < 5000) throw new ApiError(429, 'RATE_LIMITED', 'Wait a few seconds before checking again.', 5);
+    verifyTries.set(puuid, Date.now());
+    const iconNow = DEMO ? (demoIcons.get(puuid) ?? -1) : (await riot.summoner(p, puuid, true)).profileIconId;
+    const done = privacy.verify(puuid, iconNow);
+    if (done?.action === 'hide') {
+      players.remove(puuid, done);
+      lp.forget(puuid);
+      champStats.forgetPlayer(puuid);
+    }
+    res.json({ done: !!done, hidden: privacy.isHidden(puuid), iconNow } satisfies PrivacyResult);
+  }),
+);
+
+/** Demo mode only: pretend the player changed their icon in the client, so the flow can be tried. */
+const demoIcons = new Map<string, number>();
+if (DEMO) {
+  app.post('/api/privacy/demo-set-icon', (req, res) => {
+    const { puuid, iconId } = (req.body ?? {}) as Record<string, unknown>;
+    if (typeof puuid === 'string' && typeof iconId === 'number') demoIcons.set(puuid, iconId);
+    res.json({ ok: true });
+  });
+}
 
 const LADDER_PAGE = 50;
 
@@ -373,6 +463,7 @@ app.get(
     // Names: from the player index when known, otherwise one account lookup each (cached for a day).
     const entries: LadderEntry[] = await Promise.all(
       slice.map(async (e, i) => {
+        if (privacy.isHidden(e.puuid)) return { ...e, rank: (page - 1) * LADDER_PAGE + i + 1, gameName: null, tagLine: null };
         let name = e.gameName ? { gameName: e.gameName, tagLine: e.tagLine! } : players.nameOf(e.puuid);
         if (!name && !DEMO && e.puuid) {
           try {
@@ -479,6 +570,7 @@ app.get(
           if (prof) found = { platform: p.id, gameName, tagLine, profileIconId: prof.summoner.profileIconId, level: prof.summoner.summonerLevel, tier: prof.ranked[0]?.tier, rank: prof.ranked[0]?.rank, lp: prof.ranked[0]?.leaguePoints };
         } else {
           const acc = await riot.account(p, gameName, tagLine);
+          if (privacy.isHidden(acc.puuid)) return res.json(hits.slice(0, 8));
           const sum = await riot.summoner(p, acc.puuid);
           found = { platform: p.id, gameName: acc.gameName, tagLine: acc.tagLine, profileIconId: sum.profileIconId, level: sum.summonerLevel };
         }
@@ -499,14 +591,18 @@ app.get(
   wrap(async (req, res) => {
     const p = platformOr400(String(req.params.platform));
     const puuid = String(req.params.puuid);
+    if (privacy.isHidden(puuid)) throw new ApiError(403, 'PRIVATE', PRIVATE_MSG);
+    let live: any;
     if (DEMO) {
       const name = nameFromDemoPuuid(puuid);
-      return res.json(name ? mockLive(name.gameName, name.tagLine) : { inGame: false });
+      live = name ? mockLive(name.gameName, name.tagLine) : { inGame: false };
+    } else {
+      const raw = await riot.live(p, puuid);
+      live = raw ? shapeLive(raw) : { inGame: false };
+      live.participants?.forEach((x: any) => players.add({ platform: p.id, puuid: x.puuid, gameName: x.gameName, tagLine: x.tagLine, profileIconId: x.profileIconId }));
     }
-    const raw = await riot.live(p, puuid);
-    const live = raw ? shapeLive(raw) : null;
-    live?.participants.forEach((x) => players.add({ platform: p.id, puuid: x.puuid, gameName: x.gameName, tagLine: x.tagLine, profileIconId: x.profileIconId }));
-    res.json(live ?? { inGame: false });
+    if (live.participants) live = { ...live, participants: live.participants.map((x: any) => (privacy.isHidden(x.puuid) ? { ...x, gameName: '', tagLine: '', hidden: true } : x)) };
+    res.json(live);
   }),
 );
 
@@ -592,7 +688,7 @@ let sitemapCache: { at: number; xml: string } | null = null;
 app.get('/sitemap.xml', (req, res) => {
   if (SITE_PASSWORD) return res.status(404).type('text/plain').send('Not found');
   if (!sitemapCache || Date.now() - sitemapCache.at > 6 * 3600_000) {
-    const paths = ['/', '/champions', '/champions?queue=aram', '/champions?queue=arena', '/leaderboard', '/multisearch', '/compare'];
+    const paths = ['/', '/champions', '/champions?queue=aram', '/champions?queue=arena', '/leaderboard', '/multisearch', '/compare', '/privacy', '/api-usage'];
     for (const c of allChampions()) paths.push(`/champions/${c.id.toLowerCase()}`);
     // The most played lane matchups, which are the ones people search for.
     const tier = champStats.tierList('ranked');
@@ -619,7 +715,7 @@ if (fs.existsSync(dist)) {
   // fallthrough: false → a missing (e.g. outdated) asset is a real 404, not the HTML page.
   app.use('/assets', express.static(path.join(dist, 'assets'), { maxAge: '1y', immutable: true, fallthrough: false }));
   app.use(express.static(dist, { maxAge: '1h', index: false }));
-  app.get(/^(?!\/api|\/og\/).*/, (req, res) => res.type('html').send(withMeta(indexHtml, req)));
+  app.get(/^(?!\/api\/|\/og\/).*/, (req, res) => res.type('html').send(withMeta(indexHtml, req)));
 }
 
 /** Page titles, descriptions, language alternates and link-preview tags, translated for the page's language. */
@@ -684,6 +780,12 @@ function withMeta(html: string, req: Request) {
     title = T('msTitle');
     desc = T('msDesc');
     if (req.query.players) indexable = false;
+  } else if (urlPath === '/privacy') {
+    title = 'Privacy · Riftwatch';
+    desc = 'What Riftwatch stores, for how long, and how to hide your profile.';
+  } else if (urlPath === '/api-usage') {
+    title = 'How we use the Riot API · Riftwatch';
+    desc = 'Caching, rate-limit handling and privacy controls on Riftwatch.';
   } else if (urlPath.startsWith('/compare')) {
     title = T('cmpTitle');
     desc = T('cmpDesc');

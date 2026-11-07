@@ -55,6 +55,8 @@ export interface Participant {
   teamId: number;
   subteam?: number; // Arena only
   placement?: number; // Arena only
+  /** The player hid their profile: name removed, no link. */
+  hidden?: boolean;
   augments?: number[]; // Arena only
   win: boolean;
   championId: number;
@@ -162,6 +164,7 @@ export interface MatchPage {
 
 export interface LiveParticipant {
   puuid: string;
+  hidden?: boolean;
   gameName: string;
   tagLine: string;
   teamId: number;
@@ -184,7 +187,7 @@ export interface LiveGame {
 
 export type LiveResponse = LiveGame | { inGame: false };
 
-export type ApiErrorCode = 'NOT_FOUND' | 'RATE_LIMITED' | 'KEY_INVALID' | 'BAD_REQUEST' | 'UPSTREAM' | 'NO_KEY';
+export type ApiErrorCode = 'NOT_FOUND' | 'RATE_LIMITED' | 'KEY_INVALID' | 'BAD_REQUEST' | 'UPSTREAM' | 'NO_KEY' | 'PRIVATE';
 
 export interface ApiErrorBody {
   error: { code: ApiErrorCode; message: string; retryAfter?: number };
@@ -193,6 +196,8 @@ export interface ApiErrorBody {
 export interface HealthResponse {
   ok: true;
   mode: 'live' | 'demo';
+  /** Where players can send privacy or data requests (CONTACT_EMAIL). */
+  contact?: string;
 }
 
 /* ---------- Champion statistics (aggregated by the server from matches it has seen) ---------- */
@@ -332,6 +337,23 @@ export interface ScoutInfo {
   flex: LeagueEntry | null;
   mastery: { level: number; points: number } | null; // on the requested champion
   recentMatchIds: string[]; // for premade detection
+  hidden?: boolean;
+}
+
+/** Hiding or showing a profile: the icon the player must equip to prove the account is theirs. */
+export interface PrivacyChallenge {
+  puuid: string;
+  gameName: string;
+  tagLine: string;
+  action: 'hide' | 'show';
+  iconId: number;
+  expiresIn: number; // ms
+  hidden: boolean; // current state
+}
+export interface PrivacyResult {
+  done: boolean;
+  hidden: boolean;
+  iconNow?: number;
 }
 
 /* ---------- Leaderboards, rotation, status ---------- */

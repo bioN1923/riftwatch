@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.5 — Riot application readiness
+
+### New
+- **Hide my profile** (`/privacy`): players prove ownership by equipping a starter icon (checked via summoner-v4). Hidden players can't be opened, are anonymised in other players' games, live games, the ladder and search, and their stored data is deleted. Reversible the same way.
+- **Privacy policy** (`/privacy`) and **How we use the Riot API** (`/api-usage`) pages, linked in the footer.
+- **Finished matches are stored on disk** (`server/data/matches`, up to `MATCH_STORE_MAX`), so restarts and deploys never re-download them.
+
+### Improved
+- **Rate limits**: per-region and per-endpoint queues from Riot's `X-App-Rate-Limit` and `X-Method-Rate-Limit`; a 429's `Retry-After` pauses the whole queue; exponential backoff with jitter when there's no `Retry-After`, and for 5xx and network errors.
+
 ## 3.4
 
 ### New

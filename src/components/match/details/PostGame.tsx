@@ -103,12 +103,14 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
                             <span className="block truncate font-semibold" title={`${p.gameName}#${p.tagLine}`}>
                               {p.gameName}
                             </span>
+                          ) : p.hidden ? (
+                            <span className="block truncate italic text-faint">{t('live.hidden')}</span>
                           ) : (
                             <Link to={profilePath(platform, p)} title={`${p.gameName}#${p.tagLine}`} className="block truncate hover:underline">
                               {p.gameName}
                             </Link>
                           )}
-                          <span className="block truncate text-faint">#{p.tagLine}</span>
+                          {!p.hidden && <span className="block truncate text-faint">#{p.tagLine}</span>}
                         </div>
                       </div>
                     </td>

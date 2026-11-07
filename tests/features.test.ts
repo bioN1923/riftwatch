@@ -105,3 +105,41 @@ describe('player comparison', () => {
     expect(together([m], [], puuid, foe.puuid)).toMatchObject({ sameGames: 0, vsGames: 1, vsWinsA: me.win ? 1 : 0 });
   });
 });
+
+describe('profile privacy', async () => {
+  const fs = await import('node:fs');
+  const os = await import('node:os');
+  const path = await import('node:path');
+  const { PrivacyStore } = await import('../server/privacy');
+  const { PlayerIndex } = await import('../server/playerIndex');
+
+  it('hides only after the named icon is equipped, and remembers it', () => {
+    const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'rw-priv-')), 'privacy.json');
+    const store = new PrivacyStore(file);
+    const acc = { puuid: 'p1', gameName: 'Faker', tagLine: 'KR1' };
+    const c = store.challenge(acc, 'kr', 5, 'hide');
+    expect(c.iconId).not.toBe(5);
+    expect(c.iconId).toBeGreaterThanOrEqual(0);
+    expect(c.iconId).toBeLessThanOrEqual(28);
+    expect(store.verify('p1', 5)).toBeNull();
+    expect(store.isHidden('p1')).toBe(false);
+    expect(store.verify('p1', c.iconId)?.action).toBe('hide');
+    expect(store.isHidden('p1')).toBe(true);
+    expect(store.verify('p1', c.iconId)).toBeNull(); // one use only
+    expect(new PrivacyStore(file).isHidden('p1')).toBe(true);
+    const s2 = store.challenge(acc, 'kr', c.iconId, 'show');
+    store.verify('p1', s2.iconId);
+    expect(store.isHidden('p1')).toBe(false);
+  });
+
+  it('removes a hidden player from search and keeps them out', () => {
+    const idx = new PlayerIndex(path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'rw-idx-')), 'players.json'));
+    idx.add({ platform: 'kr', puuid: 'p1', gameName: 'Faker', tagLine: 'KR1' });
+    idx.add({ platform: 'kr', gameName: 'Faker', tagLine: 'KR1' });
+    expect(idx.search('Faker', 'kr')).toHaveLength(1);
+    idx.remove('p1', { platform: 'kr', gameName: 'Faker', tagLine: 'KR1' });
+    idx.isBlocked = (id) => id === 'p1';
+    idx.add({ platform: 'kr', puuid: 'p1', gameName: 'Faker', tagLine: 'KR1' });
+    expect(idx.search('Faker', 'kr')).toHaveLength(0);
+  });
+});
