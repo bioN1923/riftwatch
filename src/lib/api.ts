@@ -1,4 +1,4 @@
-import type { ApiErrorBody, Augment, PrivacyChallenge, PrivacyResult, ApiErrorCode, ChampionStats,
+import type { ApiErrorBody, PrivacyChallenge, PrivacyResult, ApiErrorCode, ChampionStats,
   MatchupStats, HealthResponse, Ladder, LiveResponse, LpHistory, ServerStatus, MatchPage, MatchTimeline, PlayerHit, Profile, ScoutInfo, StatsGroup, TierList } from '../../shared/types';
 
 export class ApiClientError extends Error {
@@ -73,6 +73,5 @@ export const api = {
     send<PrivacyChallenge>('/privacy/challenge', body),
   privacyVerify: (body: { platform: string; puuid: string }) => send<PrivacyResult>('/privacy/verify', body),
   demoSetIcon: (puuid: string, iconId: number) => send<{ ok: boolean }>('/privacy/demo-set-icon', { puuid, iconId }),
-  augments: (lang: string, signal?: AbortSignal) => request<Augment[]>(`/augments?lang=${lang}`, signal),
   live: (platform: string, puuid: string, signal?: AbortSignal) => request<LiveResponse>(`/live/${platform}/${enc(puuid)}`, signal),
 };

@@ -229,6 +229,20 @@ export interface TierList {
   matches: number;
   rows: TierRow[];
   collecting: boolean; // a background collector is adding matches
+  /** Biggest win-rate changes against the previous patch (only champion+role pairs with enough games in both). */
+  movers: { against: string; up: PatchMover[]; down: PatchMover[] } | null;
+}
+
+export interface PatchMover {
+  championId: number;
+  role: string;
+  winRate: number;
+  prevWinRate: number;
+  delta: number; // winRate - prevWinRate
+  games: number;
+  prevGames: number;
+  pickRate: number;
+  prevPickRate: number;
 }
 
 export interface ChampionStats {
@@ -264,23 +278,18 @@ export interface ChampionStats {
   byLength: (Rated & { label: string })[];
   synergy: { role: string; list: (Rated & { championId: number })[] } | null;
   players: (Rated & { gameName: string; tagLine: string; platform: string; kda: number })[];
-  /** Arena only: placements, augments and duo partners. Win rate counts a top-four finish as a win. */
+  /**
+   * Arena only: placements, duo partners and the most bought items. Win rate counts a top-four
+   * finish as a win. Riot's policy: no win rates for Augments or Arena items, so items carry
+   * only how often they're bought, and item/rune/spell builds are left empty for Arena.
+   */
   arena?: {
     avgPlacement: number;
     firstRate: number;
     placements: number[]; // games finishing 1st … 8th
-    augments: (Rated & { id: number; pickRate: number; avgPlacement: number; firstRate: number })[];
+    items: { id: number; pickRate: number }[];
     partners: (Rated & { championId: number; avgPlacement: number })[];
   };
-}
-
-/** One Arena augment, in the requested language. */
-export interface Augment {
-  id: number;
-  name: string;
-  rarity: 'silver' | 'gold' | 'prismatic' | 'other';
-  icon: string;
-  desc: string;
 }
 
 /** One lane matchup (champion vs a lane opponent): result, laning leads and what was played into it. */
@@ -336,7 +345,6 @@ export interface ScoutInfo {
   solo: LeagueEntry | null;
   flex: LeagueEntry | null;
   mastery: { level: number; points: number } | null; // on the requested champion
-  recentMatchIds: string[]; // for premade detection
   hidden?: boolean;
 }
 

@@ -153,8 +153,8 @@ function ChampionView({ championId }: { championId: number }) {
         ) : (
           <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
             <div className="min-w-0 space-y-5">
-              {group === 'arena' && <ArenaPanel s={s} />}
-              <BuildPanel s={s} abilityIcons={abilityIcons} />
+              {/* Arena: no item, rune or augment win rates (Riot policy), so no build panel. */}
+              {group === 'arena' ? <ArenaPanel s={s} /> : <BuildPanel s={s} abilityIcons={abilityIcons} />}
               {group === 'ranked' && <Matchups s={s} />}
               {group === 'ranked' && <Synergy s={s} />}
               <LengthChart rows={s.byLength} />

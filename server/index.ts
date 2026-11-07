@@ -15,7 +15,6 @@ import { loadItemKinds } from './items';
 import { startCrawler } from './crawler';
 import { TtlCache } from './cache';
 import { getPlatform } from '../shared/regions';
-import { augments } from './augments';
 import { MatchStore } from './matchStore';
 import { CHALLENGE_MS, PrivacyStore } from './privacy';
 import { ErrorLog, errorsPage } from './errorLog';
@@ -45,11 +44,12 @@ const timelines = new TtlCache<MatchTimeline>(300);
 const privacy = new PrivacyStore(DEMO ? null : path.resolve(here, 'data', 'privacy.json'));
 players.isBlocked = (puuid) => privacy.isHidden(puuid);
 champStats.isHidden = (puuid) => privacy.isHidden(puuid);
+champStats.currentName = (puuid) => players.nameOf(puuid);
 const PRIVATE_MSG = 'This player has chosen to keep their profile private.';
 /** Hidden players stay in other people's games (Riot's data), but without their name. */
 function scrubMatch(m: MatchSummary): MatchSummary {
-  if (!m.participants.some((x) => privacy.isHidden(x.puuid))) return m;
-  return { ...m, participants: m.participants.map((x) => (privacy.isHidden(x.puuid) ? { ...x, gameName: '', tagLine: '', hidden: true } : x)) };
+  if (!m.participants.some((x) => privacy.isHiddenPlayer(x))) return m;
+  return { ...m, participants: m.participants.map((x) => (privacy.isHiddenPlayer(x) ? { ...x, gameName: '', tagLine: '', hidden: true } : x)) };
 }
 const errorLog = new ErrorLog(DEMO ? null : path.resolve(here, 'data', 'errors.json'));
 const lp = new LpStore(path.resolve(here, 'data', DEMO ? 'lp.demo.json' : 'lp.json'));
@@ -66,6 +66,11 @@ if (DEMO) {
     }
   }
   for (let i = 0; i < 1500; i++) champStats.addMatch(mockArenaMatch(i));
+  // A smaller previous patch, so the tier list can show which champions moved.
+  for (let i = 0; i < 140; i++) {
+    const page = mockMatches({ gameName: `Earlier${i}`, tagLine: 'DEMO' }, 0, 20, {});
+    for (const m of page.matches) champStats.addMatch({ ...m, id: `PREV_${m.id}`, version: '15.19.1', startedAt: m.startedAt - 14 * 86_400_000 });
+  }
   console.log(`Demo champion stats ready (${Date.now() - t0} ms).`);
 } else {
   void loadItemKinds();
@@ -141,6 +146,19 @@ app.get('/api/admin/errors', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.json(errorLog.entries());
 });
+/** Delete everything stored about a player — for deletion requests Riot forwards to developers. */
+app.post('/admin/forget', express.urlencoded({ extended: false, limit: '2kb' }), (req, res) => {
+  if (!adminOk(req)) return res.status(404).type('text/plain').send('Not found');
+  const puuid = String(req.body?.puuid ?? '').trim();
+  if (puuid) {
+    players.remove(puuid);
+    lp.forget(puuid);
+    champStats.forgetPlayer(puuid);
+    console.log('Deleted stored data for a player on request.');
+  }
+  res.redirect(303, `/admin/errors?token=${encodeURIComponent(String(req.query.token))}&forgot=${puuid ? 1 : 0}`);
+});
+
 app.post('/admin/errors/clear', (req, res) => {
   if (!adminOk(req)) return res.status(404).type('text/plain').send('Not found');
   errorLog.clear();
@@ -171,6 +189,26 @@ const QUEUE_FILTERS: Record<string, { queue?: number; type?: string }> = {
   aram: { queue: 450 },
   arena: { queue: 1700 },
 };
+
+// Fair use per visitor: the site's API is for the site's own pages, not for scraping or
+// re-selling Riot data (Riot forbids acting as a data broker), and every lookup can cost Riot calls.
+const API_PER_MINUTE = Number(process.env.API_PER_MINUTE ?? 150);
+const apiHits = new Map<string, number[]>();
+app.use('/api', (req, res, next) => {
+  if (req.path === '/health' || req.path === '/client-error') return next();
+  const ip = req.ip ?? '';
+  const now = Date.now();
+  const recent = (apiHits.get(ip) ?? []).filter((t) => now - t < 60_000);
+  if (recent.length >= API_PER_MINUTE) {
+    const retryAfter = Math.ceil((60_000 - (now - recent[0])) / 1000);
+    res.setHeader('Retry-After', String(retryAfter));
+    return res.status(429).json({ error: { code: 'RATE_LIMITED', message: 'Too many requests. Slow down a little and try again.', retryAfter } } satisfies ApiErrorBody);
+  }
+  recent.push(now);
+  apiHits.set(ip, recent);
+  if (apiHits.size > 20_000) apiHits.clear();
+  next();
+});
 
 app.use('/api', (req, _res, next) => {
   if (!req.path.startsWith('/champions') && req.path !== '/health') lastUserRequest = Date.now();
@@ -213,7 +251,7 @@ app.get(
     if (DEMO) {
       const profile = mockProfile(p.id, gameName, tagLine);
       if (!profile) throw new ApiError(404, 'NOT_FOUND', `No player called ${gameName}#${tagLine} on ${p.label}.`);
-      if (privacy.isHidden(profile.account.puuid)) throw new ApiError(403, 'PRIVATE', PRIVATE_MSG);
+      if (privacy.isHiddenPlayer(profile.account)) throw new ApiError(403, 'PRIVATE', PRIVATE_MSG);
       indexProfile(profile);
       return res.json({ ...profile, ...timing() });
     }
@@ -228,7 +266,7 @@ app.get(
       throw e;
     }
 
-    if (privacy.isHidden(account.puuid)) throw new ApiError(403, 'PRIVATE', PRIVATE_MSG);
+    if (privacy.isHiddenPlayer(account)) throw new ApiError(403, 'PRIVATE', PRIVATE_MSG);
 
     let summoner;
     try {
@@ -239,6 +277,10 @@ app.get(
       }
       throw e;
     }
+
+    // Rank history saved under a previous API key's PUUID follows the player to the new one.
+    const oldPuuid = players.puuidOf(p.id, account.gameName, account.tagLine);
+    if (oldPuuid && oldPuuid !== account.puuid) lp.rekey(oldPuuid, account.puuid);
 
     const [league, mastery] = await Promise.all([riot.league(p, account.puuid, fresh, summoner.id), riot.mastery(p, account.puuid, fresh).catch(() => [])]);
 
@@ -281,11 +323,12 @@ app.get(
     }
 
     const ids = await riot.matchIds(p, puuid, start, count, filter, fresh);
-    const settled = await Promise.allSettled(ids.map((id) => riot.match(p, id)));
+    const settled = await Promise.allSettled(ids.map((id) => riot.match(p, id, true, puuid)));
     const firstFatal = settled.find((s) => s.status === 'rejected' && !(s.reason instanceof ApiError && s.reason.code === 'NOT_FOUND'));
     if (firstFatal && settled.every((s) => s.status === 'rejected')) throw (firstFatal as PromiseRejectedResult).reason;
 
-    const matches = settled.flatMap((s) => (s.status === 'fulfilled' && s.value ? [shapeMatch(s.value)] : []));
+    // Custom games (queue 0) are private to the player under Riot's policy, so they're never shown publicly.
+    const matches = settled.flatMap((s) => (s.status === 'fulfilled' && s.value && s.value.info?.queueId !== 0 ? [shapeMatch(s.value)] : []));
     const page: MatchPage = { matches, nextStart: ids.length === count ? start + count : null };
     indexMatches(p.id, matches);
     matches.forEach((m) => champStats.addMatch(m));
@@ -349,14 +392,13 @@ app.get(
     const puuid = String(req.params.puuid);
     const championId = Number(req.query.champion ?? 0);
     if (privacy.isHidden(puuid)) {
-      return res.json({ puuid, hidden: true, level: null, profileIconId: null, solo: null, flex: null, mastery: null, recentMatchIds: [] } satisfies ScoutInfo);
+      return res.json({ puuid, hidden: true, level: null, profileIconId: null, solo: null, flex: null, mastery: null } satisfies ScoutInfo);
     }
     if (DEMO) return res.json(mockScout(puuid, championId));
-    const [summoner, league, mastery, ids] = await Promise.all([
+    const [summoner, league, mastery] = await Promise.all([
       riot.summoner(p, puuid).catch(() => null),
       riot.league(p, puuid).catch(() => [] as any[]),
       championId ? riot.masteryOn(p, puuid, championId).catch(() => null) : Promise.resolve(null),
-      riot.matchIds(p, puuid, 0, 10, {}).catch(() => [] as string[]),
     ]);
     const ranked = shapeLeague(league ?? []);
     lp.record(puuid, ranked);
@@ -367,7 +409,6 @@ app.get(
       solo: ranked.find((e) => e.queueType === 'RANKED_SOLO_5x5') ?? null,
       flex: ranked.find((e) => e.queueType === 'RANKED_FLEX_SR') ?? null,
       mastery: mastery ? { level: mastery.championLevel, points: mastery.championPoints } : null,
-      recentMatchIds: ids,
     };
     res.json(info);
   }),
@@ -403,7 +444,7 @@ app.post(
       icon = (await riot.summoner(p, account.puuid, true)).profileIconId;
     }
     const c = privacy.challenge(account, p.id, icon, action);
-    res.json({ puuid: account.puuid, gameName: account.gameName, tagLine: account.tagLine, action, iconId: c.iconId, expiresIn: CHALLENGE_MS, hidden: privacy.isHidden(account.puuid) } satisfies PrivacyChallenge);
+    res.json({ puuid: account.puuid, gameName: account.gameName, tagLine: account.tagLine, action, iconId: c.iconId, expiresIn: CHALLENGE_MS, hidden: privacy.isHiddenPlayer(account) } satisfies PrivacyChallenge);
   }),
 );
 
@@ -474,6 +515,7 @@ app.get(
             /* leave unnamed */
           }
         }
+        if (name && privacy.isHiddenPlayer({ puuid: e.puuid, ...name })) name = undefined;
         return { ...e, rank: (page - 1) * LADDER_PAGE + i + 1, gameName: name?.gameName ?? null, tagLine: name?.tagLine ?? null };
       }),
     );
@@ -514,19 +556,6 @@ app.get('/api/champions', (req, res) => {
   res.setHeader('Cache-Control', 'public, max-age=60');
   res.json(champStats.tierList(groupParam(req.query.group), req.query.patch ? String(req.query.patch) : undefined));
 });
-
-app.get(
-  '/api/augments',
-  wrap(async (req, res) => {
-    try {
-      const list = await augments(String(req.query.lang ?? 'en'));
-      res.setHeader('Cache-Control', 'public, max-age=3600');
-      res.json(list);
-    } catch {
-      throw new ApiError(502, 'UPSTREAM', 'Augment data is unavailable right now.');
-    }
-  }),
-);
 
 app.get('/api/champions/:id', (req, res) => {
   res.setHeader('Cache-Control', 'public, max-age=60');
@@ -570,7 +599,7 @@ app.get(
           if (prof) found = { platform: p.id, gameName, tagLine, profileIconId: prof.summoner.profileIconId, level: prof.summoner.summonerLevel, tier: prof.ranked[0]?.tier, rank: prof.ranked[0]?.rank, lp: prof.ranked[0]?.leaguePoints };
         } else {
           const acc = await riot.account(p, gameName, tagLine);
-          if (privacy.isHidden(acc.puuid)) return res.json(hits.slice(0, 8));
+          if (privacy.isHiddenPlayer(acc)) return res.json(hits.slice(0, 8));
           const sum = await riot.summoner(p, acc.puuid);
           found = { platform: p.id, gameName: acc.gameName, tagLine: acc.tagLine, profileIconId: sum.profileIconId, level: sum.summonerLevel };
         }
@@ -601,7 +630,7 @@ app.get(
       live = raw ? shapeLive(raw) : { inGame: false };
       live.participants?.forEach((x: any) => players.add({ platform: p.id, puuid: x.puuid, gameName: x.gameName, tagLine: x.tagLine, profileIconId: x.profileIconId }));
     }
-    if (live.participants) live = { ...live, participants: live.participants.map((x: any) => (privacy.isHidden(x.puuid) ? { ...x, gameName: '', tagLine: '', hidden: true } : x)) };
+    if (live.participants) live = { ...live, participants: live.participants.map((x: any) => (privacy.isHiddenPlayer(x) ? { ...x, gameName: '', tagLine: '', hidden: true } : x)) };
     res.json(live);
   }),
 );

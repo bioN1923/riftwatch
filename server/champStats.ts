@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type { ChampionStats, MatchSummary, MatchTimeline, MatchupStats, Rated, StatsGroup, TierList, TierRow } from '../shared/types';
+import type { ChampionStats, MatchSummary, MatchTimeline, MatchupStats, PatchMover, Rated, StatsGroup, TierList, TierRow } from '../shared/types';
 import { itemKind } from './items';
 import { getPlatform } from '../shared/regions';
 
@@ -64,13 +64,18 @@ interface RoleAgg {
   ar?: ArenaAgg;
 }
 
-/** Arena: finishing places, augments (with the places they led to) and duo partners. */
+/**
+ * Arena: finishing places, duo partners and how often each item is bought.
+ * Riot's policy forbids win rates for Augments and Arena items, so augments aren't recorded at all
+ * and items are only counted (popularity), never tied to results.
+ */
 interface ArenaAgg {
   pl: number[]; // games per place, index 0 = 1st
-  aug: Record<string, C & { p: number; f: number }>; // p = summed placement, f = first places
   par: Record<string, C & { p: number }>;
+  it?: Record<string, number>; // item id -> games it was in the final inventory
+  aug?: unknown; // older saves recorded augments; dropped on the next save
 }
-const newArena = (): ArenaAgg => ({ pl: [0, 0, 0, 0, 0, 0, 0, 0], aug: {}, par: {} });
+const newArena = (): ArenaAgg => ({ pl: [0, 0, 0, 0, 0, 0, 0, 0], par: {}, it: {} });
 
 interface BuildVar {
   boots: Record<string, C>;
@@ -250,17 +255,14 @@ export function buildVariations(r: BuildTally): ChampionStats['builds'] {
 
 function arenaSummary(ar: ArenaAgg, games: number): NonNullable<ChampionStats['arena']> {
   const placed = ar.pl.reduce((s, n) => s + n, 0) || 1;
-  const minAug = Math.max(2, Math.round(games * 0.01));
   return {
     avgPlacement: ar.pl.reduce((s, n, i) => s + n * (i + 1), 0) / placed,
     firstRate: ar.pl[0] / placed,
     placements: ar.pl,
-    augments: Object.entries(ar.aug)
-      .filter(([, a]) => a.g >= minAug)
-      .map(([id, a]) => ({ id: Number(id), games: a.g, winRate: a.w / a.g, pickRate: a.g / games, avgPlacement: a.p / a.g, firstRate: a.f / a.g }))
-      // Pull small samples towards an average 4.5th place so a lucky handful doesn't top the list.
-      .sort((a, b) => (a.avgPlacement * a.games + 4.5 * 10) / (a.games + 10) - (b.avgPlacement * b.games + 4.5 * 10) / (b.games + 10) || b.games - a.games)
-      .slice(0, 40),
+    items: Object.entries(ar.it ?? {})
+      .map(([id, n]) => ({ id: Number(id), pickRate: n / Math.max(1, games) }))
+      .sort((a, b) => b.pickRate - a.pickRate)
+      .slice(0, 18),
     partners: Object.entries(ar.par)
       .filter(([, c]) => c.g >= Math.max(2, Math.round(games * 0.01)))
       .map(([id, c]) => ({ championId: Number(id), games: c.g, winRate: c.w / c.g, avgPlacement: c.p / c.g }))
@@ -269,9 +271,33 @@ function arenaSummary(ar: ArenaAgg, games: number): NonNullable<ChampionStats['a
   };
 }
 
+/**
+ * Champions whose win rate moved most since the previous patch. Small samples swing wildly, so
+ * a pair needs a decent number of games on both patches, and the change is shrunk towards zero
+ * by sample size before ranking.
+ */
+export function movers(now: TierRow[], before: TierRow[], against: string, minGames = 30): NonNullable<TierList['movers']> {
+  const prev = new Map(before.map((r) => [`${r.championId}:${r.role}`, r]));
+  const list: PatchMover[] = [];
+  for (const r of now) {
+    const p = prev.get(`${r.championId}:${r.role}`);
+    if (!p || r.games < minGames || p.games < minGames) continue;
+    list.push({ championId: r.championId, role: r.role, winRate: r.winRate, prevWinRate: p.winRate, delta: r.winRate - p.winRate, games: r.games, prevGames: p.games, pickRate: r.pickRate, prevPickRate: p.pickRate });
+  }
+  const score = (m: PatchMover) => m.delta * (Math.min(m.games, m.prevGames) / (Math.min(m.games, m.prevGames) + 100));
+  const sorted = [...list].sort((a, b) => score(b) - score(a));
+  return {
+    against,
+    up: sorted.filter((m) => m.delta > 0.005).slice(0, 15),
+    down: sorted.filter((m) => m.delta < -0.005).reverse().slice(0, 15),
+  };
+}
+
 export class ChampionStatsStore {
   /** Players who hid their profile are left out of "who plays it most". */
   isHidden: (puuid: string) => boolean = () => false;
+  /** A player's current Riot ID, so "who plays it most" never shows an old name. */
+  currentName: (puuid: string) => { gameName: string; tagLine: string } | undefined = () => undefined;
 
   private s: Store = { v: 1, patches: {}, seen: [], seenTl: [] };
   private seen = new Set<string>();
@@ -350,13 +376,8 @@ export class ChampionStatsStore {
         const place = Math.min(8, Math.max(1, p.placement));
         const ar = (r.ar ??= newArena());
         ar.pl[place - 1]++;
-        for (const id of new Set(p.augments ?? [])) {
-          const a = (ar.aug[id] ??= { g: 0, w: 0, p: 0, f: 0 });
-          a.g++;
-          if (p.win) a.w++;
-          a.p += place;
-          if (place === 1) a.f++;
-        }
+        const it = (ar.it ??= {});
+        for (const id of new Set(p.items.filter((x) => x > 0))) it[id] = (it[id] ?? 0) + 1;
         const mate = m.participants.find((x) => x !== p && x.subteam === p.subteam);
         if (mate) {
           const c = (ar.par[mate.championId] ??= { g: 0, w: 0, p: 0 });
@@ -483,7 +504,10 @@ export class ChampionStatsStore {
     const patches = this.patches(group);
     const pt = patch && patches.includes(patch) ? patch : (patches[0] ?? null);
     const g = pt ? this.s.patches[pt][group] : undefined;
-    return { group, patch: pt, patches, matches: g?.matches ?? 0, rows: g ? this.rows(g) : [], collecting: this.collecting };
+    const rows = g ? this.rows(g) : [];
+    const prevPatch = pt ? patches[patches.indexOf(pt) + 1] : undefined;
+    const prev = prevPatch ? this.s.patches[prevPatch][group] : undefined;
+    return { group, patch: pt, patches, matches: g?.matches ?? 0, rows, collecting: this.collecting, movers: g && prev ? movers(rows, this.rows(prev), prevPatch!) : null };
   }
 
   private rows(g: GroupAgg): TierRow[] {
@@ -628,7 +652,7 @@ export class ChampionStatsStore {
     });
     const sample = r.tl;
 
-    return {
+    const out: ChampionStats = {
       ...empty,
       summary: this.rows(g).find((x) => x.championId === championId && x.role === chosen) ?? {
         // Played in this role too rarely to be ranked, but the games still count.
@@ -687,13 +711,20 @@ export class ChampionStatsStore {
                 .slice(0, 6),
             }
           : null,
-      players: Object.values(r.pl ?? {})
-        .filter((e) => e.g >= 3)
+      players: Object.entries(r.pl ?? {})
+        .filter(([puuid, e]) => e.g >= 3 && !this.isHidden(puuid))
+        .map(([puuid, e]) => ({ ...e, ...(this.currentName(puuid) && { n: this.currentName(puuid)!.gameName, t: this.currentName(puuid)!.tagLine }) }))
         .map((e) => ({ gameName: e.n, tagLine: e.t, platform: e.pf, games: e.g, winRate: e.w / e.g, kda: (e.k + e.a) / Math.max(1, e.d) }))
         .sort((a, b) => b.games - a.games || b.winRate - a.winRate)
         .slice(0, 10),
       arena: r.ar ? arenaSummary(r.ar, r.g) : undefined,
     };
+    // Riot policy: no win rates for Arena items (or augments). Arena has no runes or lanes either,
+    // so the item, rune, spell and matchup breakdowns are simply not offered for Arena.
+    if (group === 'arena') {
+      Object.assign(out, { runes: [], spells: [], starting: [], core: [], builds: [], boots: [], later: [], coreTotal: 0, bootsTotal: 0, matchups: [], synergy: null });
+    }
+    return out;
   }
 
   /** Remove a player from every "who plays it most" list (they hid their profile). */
@@ -718,6 +749,8 @@ export class ChampionStatsStore {
             }
             if (r.bv) for (const k of Object.keys(r.bv)) if (!r.core[k]) delete r.bv[k];
             if (r.ar) {
+              delete r.ar.aug;
+              if (r.ar.it && Object.keys(r.ar.it).length > 60) r.ar.it = Object.fromEntries(Object.entries(r.ar.it).sort((a, b) => b[1] - a[1]).slice(0, 40));
               const par = Object.entries(r.ar.par);
               if (par.length > 80) r.ar.par = Object.fromEntries(par.sort((a, b) => b[1].g - a[1].g).slice(0, 60));
             }

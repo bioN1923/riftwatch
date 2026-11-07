@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { useQueries } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { Link2 } from 'lucide-react';
 import type { LiveGame as Live, LiveParticipant, ScoutInfo } from '../../../shared/types';
 import { api } from '../../lib/api';
 import { assets, rankEmblem, useStaticData } from '../../lib/ddragon';
@@ -19,32 +18,6 @@ import { t } from '../../i18n';
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
 const TIERS = ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'EMERALD', 'DIAMOND'];
 const DIV = ['IV', 'III', 'II', 'I'];
-const GROUP_COLORS = ['var(--kda-great)', 'var(--kda-good)', 'var(--kda-ok)', 'var(--gold)'];
-
-/** Players on the same team who shared at least two of their last ten games are probably queued together. */
-function premadeGroups(players: LiveParticipant[], scouts: (ScoutInfo | undefined)[]) {
-  const parent = players.map((_, i) => i);
-  const find = (i: number): number => (parent[i] === i ? i : (parent[i] = find(parent[i])));
-  for (let i = 0; i < players.length; i++)
-    for (let j = i + 1; j < players.length; j++) {
-      if (players[i].teamId !== players[j].teamId) continue;
-      const a = scouts[i]?.recentMatchIds ?? [];
-      const b = new Set(scouts[j]?.recentMatchIds ?? []);
-      if (a.filter((id) => b.has(id)).length >= 2) parent[find(i)] = find(j);
-    }
-  const groups = new Map<number, number[]>();
-  players.forEach((_, i) => groups.set(find(i), [...(groups.get(find(i)) ?? []), i]));
-  // player index -> group number, only for groups of two or more
-  const out = new Map<number, number>();
-  let g = 0;
-  for (const members of groups.values()) {
-    if (members.length < 2) continue;
-    members.forEach((m) => out.set(m, g));
-    g++;
-  }
-  return out;
-}
-
 function avgRank(scouts: (ScoutInfo | undefined)[]) {
   const vals = scouts.flatMap((s) => (s?.solo ? [ladderValue({ tier: s.solo.tier, rank: s.solo.rank, lp: s.solo.leaguePoints })] : []));
   if (!vals.length) return null;
@@ -69,12 +42,12 @@ export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string;
     queries: players.map((p) => ({
       queryKey: ['scout', platform, p.puuid, p.championId],
       queryFn: ({ signal }: { signal: AbortSignal }) => api.scout(platform, p.puuid, p.championId, signal),
-      enabled: !!p.puuid,
+      // Players the game itself hides (e.g. streamer mode come through without a name) are not looked up.
+      enabled: !!p.puuid && !!p.gameName && !p.hidden,
       staleTime: 5 * 60_000,
     })),
   });
   const scouts = scoutQs.map((q) => q.data);
-  const groups = premadeGroups(players, scouts);
   const teams = [100, 200].map((t) => ({
     teamId: t,
     idx: players.map((p, i) => (p.teamId === t ? i : -1)).filter((i) => i >= 0),
@@ -118,7 +91,7 @@ export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string;
               </div>
               <ul>
                 {team.idx.map((i) => (
-                  <PlayerRow key={players[i].puuid + i} p={players[i]} s={scouts[i]} loading={scoutQs[i].isPending && !!players[i].puuid} self={players[i].puuid === puuid} group={groups.get(i)} platform={platform} />
+                  <PlayerRow key={players[i].puuid + i} p={players[i]} s={scouts[i]} loading={scoutQs[i].isPending && scoutQs[i].fetchStatus !== 'idle'} self={players[i].puuid === puuid} platform={platform} />
                 ))}
               </ul>
             </div>
@@ -129,7 +102,7 @@ export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string;
   );
 }
 
-function PlayerRow({ p, s, loading, self, group, platform }: { p: LiveParticipant; s?: ScoutInfo; loading: boolean; self: boolean; group?: number; platform: string }) {
+function PlayerRow({ p, s, loading, self, platform }: { p: LiveParticipant; s?: ScoutInfo; loading: boolean; self: boolean; platform: string }) {
   const { data } = useStaticData();
   const a = assets(data);
   const c = a.champion(p.championId);
@@ -144,14 +117,7 @@ function PlayerRow({ p, s, loading, self, group, platform }: { p: LiveParticipan
   return (
     <li className={clsx('grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-t border-line px-4 py-2.5 sm:grid-cols-[auto_minmax(0,1fr)_170px_100px]', self && 'bg-raised')}>
       <div className="flex items-center gap-2">
-        <span className="relative">
-          <GameImg src={c.url} alt={c.name} size={42} rounded="md" />
-          {group != null && (
-            <span className="absolute -left-1.5 -top-1.5 grid size-5 place-items-center rounded-full ring-2 ring-surface" style={{ background: GROUP_COLORS[group % GROUP_COLORS.length] }} title={t('live.premadeTip')}>
-              <Link2 className="size-3 text-bg" aria-label={t('live.premade')} />
-            </span>
-          )}
-        </span>
+        <GameImg src={c.url} alt={c.name} size={42} rounded="md" />
         <SpellsRunes p={p} a={a} size={19} />
       </div>
       <div className="min-w-0">

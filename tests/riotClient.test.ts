@@ -92,3 +92,21 @@ describe('match storage', () => {
     expect(store.get('EUW1_0')).toBeUndefined();
   });
 });
+
+describe('match storage across API keys', () => {
+  it('refetches a stored match that was saved under another key', async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rw-matches-'));
+    const store = new MatchStore(dir);
+    store.set('EUW1_9', { metadata: { participants: ['dev-puuid'] } });
+    await new Promise((r) => setTimeout(r, 50));
+    const spy = vi.fn(async () => json({ metadata: { participants: ['prod-puuid'] } }));
+    vi.stubGlobal('fetch', spy);
+    const riot = new RiotClient('k', undefined, store);
+    expect(await riot.match(euw, 'EUW1_9', true, 'dev-puuid')).toEqual({ metadata: { participants: ['dev-puuid'] } });
+    expect(spy).not.toHaveBeenCalled();
+    expect(await riot.match(euw, 'EUW1_9', true, 'prod-puuid')).toEqual({ metadata: { participants: ['prod-puuid'] } });
+    expect(spy).toHaveBeenCalledTimes(1);
+    await new Promise((r) => setTimeout(r, 50));
+    expect(store.get('EUW1_9')).toEqual({ metadata: { participants: ['prod-puuid'] } });
+  });
+});

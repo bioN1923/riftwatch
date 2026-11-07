@@ -8,6 +8,10 @@ import { api } from '../lib/api';
 import { useRegion, useTheme, type Theme } from '../lib/storage';
 import { LANGS, setLang, t, useLang, type Lang } from '../i18n';
 
+/** Riot Games' required legal boilerplate (developer.riotgames.com/policies/general). */
+export const RIOT_LEGAL =
+  "Riftwatch isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc.";
+
 export function Logo({ className }: { className?: string }) {
   return (
     <Link to="/" className={clsx('flex items-center gap-2 font-display text-2xl font-extrabold tracking-tight', className)}>
@@ -254,7 +258,10 @@ export function Layout() {
             {t('footer.api')}
           </Link>
         </nav>
-        {t('footer.legal')}
+        {/* Riot's required legal notice, kept in its exact English wording in every language. */}
+        <p lang="en" className="mx-auto max-w-3xl">
+          {RIOT_LEGAL}
+        </p>
       </footer>
     </div>
   );

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
+import { PatchMovers } from '../components/champions/PatchMovers';
 import { ArrowDown, ArrowUp, Search } from 'lucide-react';
 import type { StatsGroup, TierRow } from '../../shared/types';
 import { api } from '../lib/api';
@@ -107,6 +108,7 @@ export function ChampionsPage() {
       </div>
 
       <FreeRotation />
+      {q.data && <PatchMovers data={q.data} role={role} group={group} />}
 
       <div className="mt-6 flex flex-wrap items-end justify-between gap-4 border-b border-line">
         {group === 'ranked' ? (

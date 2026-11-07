@@ -35,12 +35,13 @@ export class MatchStore {
     }
   }
 
-  set(id: string, data: unknown) {
+  set(id: string, data: unknown, replace = false) {
     const f = this.file(id);
-    if (fs.existsSync(f)) return;
+    const existed = fs.existsSync(f);
+    if (existed && !replace) return;
     fs.writeFile(f, zlib.gzipSync(JSON.stringify(data)), (err) => {
       if (err) return console.warn('Could not store match', id, err.message);
-      if (++this.count > this.max) this.prune();
+      if (!existed && ++this.count > this.max) this.prune();
     });
   }
 

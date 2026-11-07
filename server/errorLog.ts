@@ -148,6 +148,11 @@ pre{white-space:pre-wrap;font-size:12px;color:var(--mu)}button{background:none;c
 </style></head><body><main>
 <h1>Errors</h1>
 <p>${entries.length ? `${entries.length} distinct problems, newest first.` : 'Nothing has gone wrong. 🎉'} ${process.env.ALERT_WEBHOOK_URL ? 'Alerts go to your webhook.' : 'Set ALERT_WEBHOOK_URL to get alerts in Discord or Slack.'}</p>
+<details style="margin:0 0 20px"><summary>Delete a player's data (deletion requests from Riot)</summary>
+<form method="post" action="/admin/forget?token=${encodeURIComponent(token)}" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+<input name="puuid" placeholder="PUUID" required style="flex:1;min-width:260px;background:none;color:var(--fg);border:1px solid var(--ln);border-radius:4px;padding:6px 8px">
+<button>Delete stored data</button></form>
+<p style="margin-top:8px;font-size:12px">Removes the player's search entry, rank history and "who plays it most" entries. Finished matches stay (they're other players' games too), and the player can hide their profile on /privacy.</p></details>
 ${entries.length ? `<form method="post" action="/admin/errors/clear?token=${encodeURIComponent(token)}"><button>Clear all</button></form><div class="wrap"><table><thead><tr><th>Source</th><th>Problem</th><th class="n">Times</th><th>When</th></tr></thead><tbody>${rows}</tbody></table></div>` : ''}
 </main></body></html>`;
 }

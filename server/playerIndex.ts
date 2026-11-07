@@ -58,6 +58,9 @@ export class PlayerIndex {
     for (const k of ['profileIconId', 'level', 'tier', 'rank', 'lp'] as const) if (p[k] !== undefined) (next as any)[k] = p[k];
     delete (next as any).verified;
     if (p.puuid && !p.puuid.startsWith('demo-rand')) {
+      // A changed Riot ID replaces the old one: Riot's policy forbids exposing historic Riot IDs.
+      const old = this.byPuuid.get(p.puuid);
+      if (old && old !== id) this.entries.delete(old);
       next.puuid = p.puuid;
       this.byPuuid.set(p.puuid, id);
     }
@@ -77,6 +80,11 @@ export class PlayerIndex {
     if (name) this.entries.delete(`${name.platform}:${norm(`${name.gameName}#${name.tagLine}`)}`);
     this.byPuuid.delete(puuid);
     this.dirty = true;
+  }
+
+  /** The PUUID stored for a Riot ID, if any. */
+  puuidOf(platform: string, gameName: string, tagLine: string) {
+    return this.entries.get(`${platform}:${norm(`${gameName}#${tagLine}`)}`)?.puuid;
   }
 
   /** Riot ID for a puuid, if this server has seen the player. */

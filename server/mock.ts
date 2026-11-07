@@ -490,8 +490,6 @@ export function mockScout(puuid: string, championId: number): ScoutInfo {
     const wins = int(r, 15, 180);
     solo = { queueType: 'RANKED_SOLO_5x5', tier, rank: pick(r, ['I', 'II', 'III', 'IV']), leaguePoints: int(r, 0, 99), wins, losses: Math.round(wins * (0.8 + r() * 0.45)), hotStreak: r() < 0.2, veteran: r() < 0.25, freshBlood: r() < 0.1 };
   }
-  const group = demoPremades.get(puuid);
-  const own = Array.from({ length: 10 }, (_, i) => `DEMO_SOLO_${hash(puuid)}_${i}`);
   return {
     puuid,
     level: prof?.summoner.summonerLevel ?? int(r, 35, 520),
@@ -499,7 +497,6 @@ export function mockScout(puuid: string, championId: number): ScoutInfo {
     solo,
     flex: prof?.ranked.find((e) => e.queueType === 'RANKED_FLEX_SR') ?? null,
     mastery: r() < 0.9 ? { level: int(r, 1, 40), points: Math.round(Math.pow(r(), 2) * 900_000) } : null,
-    recentMatchIds: group ? [`${group}_1`, `${group}_2`, `${group}_3`, ...own.slice(3)] : own,
   };
 }
 

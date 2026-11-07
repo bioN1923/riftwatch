@@ -268,7 +268,8 @@ function Policy({ contact }: { contact?: string }) {
         All data shown is public game data from Riot. If you don’t want your profile on Riftwatch, use the tool at the top of this page. Once hidden: your
         profile page and match history can’t be opened, your name is removed from other players’ games, live games, the ladder and search, and we delete the
         rank history, search entry and champion-list entries we stored for you. You can make it visible again the same way. If we add accounts in the future,
-        we will use Riot Sign-On (RSO) and you’ll be able to do this by signing in.
+        we will use Riot Sign-On (RSO) and you’ll be able to do this by signing in. Data deletion requests made to Riot Games and passed on to us are
+        carried out the same way. Custom games are never shown publicly.
       </P>
 
       <H>Contact</H>

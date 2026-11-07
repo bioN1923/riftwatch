@@ -1,5 +1,21 @@
 # Changelog
 
+## 3.6 — Riot policy review
+
+### Policy fixes
+- **Arena**: no augment or Arena item win rates (League policy). Augments are no longer recorded or shown (and CommunityDragon is no longer used); items show pick rate only; item/rune/build panels are off for Arena.
+- **Live game**: premade detection removed (session-specific information), and players the game hides are not looked up. Scouting no longer fetches match lists.
+- **Custom games** (queue 0) are never shown in public match history.
+- **No historic Riot IDs**: a renamed player's old Riot ID is dropped from search; "who plays it most" uses current names.
+- **Legal notice**: full Riot boilerplate (including the trademark sentence), in its exact English wording.
+- **Fair use**: 150 API requests a minute per visitor, so the site can't be used to scrape or resell data.
+- **Deletion requests** forwarded by Riot: delete a player's stored data from `/admin/errors`.
+- **Production key switch**: hidden players stay hidden (matched by Riot ID too), stored matches saved under the old key are refetched, and rank history moves to the new PUUID.
+- Multi-search copy says plainly that it never reveals names hidden in ranked champion select.
+
+### New
+- **Patch movers** on the tier list: champions whose win rate rose or fell most since the previous patch, by role.
+
 ## 3.5 — Riot application readiness
 
 ### New

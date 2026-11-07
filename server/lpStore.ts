@@ -64,6 +64,15 @@ export class LpStore {
     this.dirty = true;
   }
 
+  /** Move a player's history to a new PUUID (Riot encrypts PUUIDs per API key). */
+  rekey(from: string, to: string) {
+    if (from === to || !this.s.history[from]) return;
+    this.s.history[to] = [...(this.s.history[from] ?? []), ...(this.s.history[to] ?? [])].sort((a, b) => a.t - b.t);
+    delete this.s.history[from];
+    for (const t of this.s.tracked) if (t.puuid === from) t.puuid = to;
+    this.dirty = true;
+  }
+
   /** Delete everything stored about a player (they hid their profile). */
   forget(puuid: string) {
     delete this.s.history[puuid];

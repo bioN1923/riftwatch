@@ -37,7 +37,7 @@ export class RiotClient {
   constructor(
     private apiKey: string,
     limits = { perSecond: 20, perTwoMinutes: 100 },
-    private matchStore?: { get(id: string): unknown | undefined; set(id: string, data: unknown): void },
+    private matchStore?: { get(id: string): unknown | undefined; set(id: string, data: unknown, replace?: boolean): void },
   ) {
     this.limiter = new RateLimiter([
       { limit: limits.perSecond, ms: 1000 },
@@ -192,12 +192,14 @@ export class RiotClient {
   }
 
   /** Finished matches never change, so they are cached for a long time. */
-  async match(p: Platform, matchId: string, store = true) {
+  async match(p: Platform, matchId: string, store = true, expectPuuid?: string) {
     // Finished matches never change: once stored on disk they are never requested again.
-    const saved = this.matchStore?.get(matchId);
-    if (saved) return saved as any;
+    // PUUIDs are encrypted per API key, so a match saved under another key (e.g. the development
+    // key, before the production key) won't contain the player's current PUUID: fetch it again.
+    const saved = this.matchStore?.get(matchId) as any;
+    if (saved && (!expectPuuid || saved.metadata?.participants?.includes(expectPuuid))) return saved;
     const data = await this.get<any>(p.regional, `/lol/match/v5/matches/${matchId}`, store ? 6 * 60 * MINUTE : 0, { method: 'match' });
-    if (data && store) this.matchStore?.set(matchId, data);
+    if (data && store) this.matchStore?.set(matchId, data, !!saved);
     return data as any;
   }
 
