@@ -259,7 +259,6 @@ const dict: Record<string, string> = {
   "lp.star": "Marque com estrela para acompanhar o elo automaticamente",
   "lp.tracked": "Acompanhado: o elo é verificado a cada 20 minutos enquanto o servidor estiver ligado.",
   "live.badge": "Ao vivo",
-  "live.note": "Elo, maestria e duos são consultados para cada jogador. O tempo de partida atualiza a cada minuto.",
   "live.blue": "Lado azul",
   "live.red": "Lado vermelho",
   "live.average": "média {rank}",
@@ -271,8 +270,6 @@ const dict: Record<string, string> = {
   "live.hotStreakTip": "Em sequência de vitórias na ranqueada",
   "live.highWr": "Taxa de vitória alta",
   "live.highWrTip": "{rate} em {count} partidas ranqueadas",
-  "live.premadeTip": "Na fila juntos (partidas recentes em comum)",
-  "live.premade": "Duo/grupo",
   "live.hidden": "Jogador oculto",
   "live.mastery": "{points} de maestria",
   "live.masterPlus": "Mestre+",
@@ -816,5 +813,6 @@ const dict: Record<string, string> = {
   "mv.none": "Nenhuma grande mudança.",
   "mv.was": "Taxa de vitória {from} → {to}",
   "ms.lead": "Busque vários jogadores de uma vez: cole Riot IDs (Nome#TAG), um por linha ou separados por vírgula, ou as linhas “entrou no saguão” de um saguão onde os nomes aparecem. A seleção de campeões ranqueada esconde os nomes, e o Riftwatch nunca tenta revelá-los.",
+  "live.note": "O elo e a maestria de campeão de cada jogador são consultados. O tempo de jogo atualiza a cada minuto.",
 };
 export default dict;

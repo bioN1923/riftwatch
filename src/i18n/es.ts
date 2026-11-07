@@ -259,7 +259,6 @@ const dict: Record<string, string> = {
   "lp.star": "Marca con estrella para seguir el rango automáticamente",
   "lp.tracked": "Seguido: el rango se comprueba cada 20 minutos mientras el servidor esté en marcha.",
   "live.badge": "En directo",
-  "live.note": "Se consultan el rango, la maestría y los grupos de cada jugador. El tiempo de partida se actualiza cada minuto.",
   "live.blue": "Lado azul",
   "live.red": "Lado rojo",
   "live.average": "media {rank}",
@@ -271,8 +270,6 @@ const dict: Record<string, string> = {
   "live.hotStreakTip": "En racha de victorias en clasificatoria",
   "live.highWr": "Alto porcentaje de victorias",
   "live.highWrTip": "{rate} en {count} partidas clasificatorias",
-  "live.premadeTip": "En cola juntos (partidas recientes en común)",
-  "live.premade": "Grupo",
   "live.hidden": "Jugador oculto",
   "live.mastery": "{points} de maestría",
   "live.masterPlus": "Maestro+",
@@ -816,5 +813,6 @@ const dict: Record<string, string> = {
   "mv.none": "Sin cambios importantes.",
   "mv.was": "Tasa de victorias {from} → {to}",
   "ms.lead": "Busca varios jugadores a la vez: pega Riot ID (Nombre#TAG), uno por línea o separados por comas, o las líneas «se ha unido a la sala» de una sala donde se ven los nombres. La selección de campeones de clasificatoria oculta los nombres y Riftwatch nunca intenta revelarlos.",
+  "live.note": "Se consultan el rango y la maestría de campeón de cada jugador. El tiempo de partida se actualiza cada minuto.",
 };
 export default dict;

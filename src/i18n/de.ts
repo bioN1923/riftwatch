@@ -259,7 +259,6 @@ const dict: Record<string, string> = {
   "lp.star": "Mit Stern markieren, um den Rang automatisch zu verfolgen",
   "lp.tracked": "Verfolgt: Der Rang wird alle 20 Minuten geprüft, solange der Server läuft.",
   "live.badge": "Live",
-  "live.note": "Rang, Meisterschaft und Premades werden für jeden Spieler nachgeschlagen. Die Spielzeit aktualisiert sich jede Minute.",
   "live.blue": "Blaue Seite",
   "live.red": "Rote Seite",
   "live.average": "Schnitt {rank}",
@@ -271,8 +270,6 @@ const dict: Record<string, string> = {
   "live.hotStreakTip": "Auf einer Ranglisten-Siegesserie",
   "live.highWr": "Hohe Siegrate",
   "live.highWrTip": "{rate} aus {count} Ranglistenspielen",
-  "live.premadeTip": "Zusammen in der Warteschlange (gemeinsame letzte Spiele)",
-  "live.premade": "Premade",
   "live.hidden": "Verborgener Spieler",
   "live.mastery": "{points} Meisterschaft",
   "live.masterPlus": "Meister+",
@@ -816,5 +813,6 @@ const dict: Record<string, string> = {
   "mv.none": "Keine großen Änderungen.",
   "mv.was": "Siegrate {from} → {to}",
   "ms.lead": "Mehrere Spieler auf einmal suchen: Füge Riot-IDs (Name#TAG) ein, eine pro Zeile oder durch Kommas getrennt, oder die „ist der Lobby beigetreten“-Zeilen aus einer Lobby, in der Namen sichtbar sind. Die Ranglisten-Championauswahl verbirgt Namen, und Riftwatch versucht nie, sie aufzudecken.",
+  "live.note": "Rang und Champion-Meisterschaft werden für jeden Spieler abgerufen. Die Spielzeit wird jede Minute aktualisiert.",
 };
 export default dict;

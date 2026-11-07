@@ -265,7 +265,6 @@ const dict: Record<string, string> = {
   "lp.star": "Oznacz gwiazdką, aby automatycznie śledzić rangę",
   "lp.tracked": "Śledzony: ranga jest sprawdzana co 20 minut, dopóki działa serwer.",
   "live.badge": "Na żywo",
-  "live.note": "Ranga, maestria i grupy są sprawdzane dla każdego gracza. Czas gry odświeża się co minutę.",
   "live.blue": "Strona niebieska",
   "live.red": "Strona czerwona",
   "live.average": "średnio {rank}",
@@ -277,8 +276,6 @@ const dict: Record<string, string> = {
   "live.hotStreakTip": "W serii zwycięstw w rankingu",
   "live.highWr": "Wysoki odsetek wygranych",
   "live.highWrTip": "{rate} z {count} gier rankingowych",
-  "live.premadeTip": "W kolejce razem (wspólne ostatnie gry)",
-  "live.premade": "Premade",
   "live.hidden": "Ukryty gracz",
   "live.mastery": "{points} maestrii",
   "live.masterPlus": "Mistrz+",
@@ -834,5 +831,6 @@ const dict: Record<string, string> = {
   "mv.none": "Brak dużych zmian.",
   "mv.was": "Współczynnik zwycięstw {from} → {to}",
   "ms.lead": "Wyszukaj kilku graczy naraz: wklej Riot ID (Nazwa#TAG), po jednym w linii lub oddzielone przecinkami, albo linie „dołączył do lobby” z lobby, w którym widać nazwy. Wybór bohaterów w rankingowych ukrywa nazwy, a Riftwatch nigdy nie próbuje ich ujawnić.",
+  "live.note": "Ranga i maestria bohatera są sprawdzane dla każdego gracza. Czas gry odświeża się co minutę.",
 };
 export default dict;

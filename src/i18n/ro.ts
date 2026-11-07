@@ -262,7 +262,6 @@ const dict: Record<string, string> = {
   "lp.star": "Marchează cu stea ca să urmărești rangul automat",
   "lp.tracked": "Urmărit: rangul e verificat la fiecare 20 de minute cât timp rulează serverul.",
   "live.badge": "Live",
-  "live.note": "Rangul, măiestria și premade-urile sunt căutate pentru fiecare jucător. Timpul meciului se actualizează în fiecare minut.",
   "live.blue": "Echipa albastră",
   "live.red": "Echipa roșie",
   "live.average": "medie {rank}",
@@ -274,8 +273,6 @@ const dict: Record<string, string> = {
   "live.hotStreakTip": "Într-o serie de victorii în clasat",
   "live.highWr": "Rată de victorii mare",
   "live.highWrTip": "{rate} din {count} meciuri clasate",
-  "live.premadeTip": "Intrați împreună în coadă (meciuri recente comune)",
-  "live.premade": "Premade",
   "live.hidden": "Jucător ascuns",
   "live.mastery": "{points} măiestrie",
   "live.masterPlus": "Maestru+",
@@ -825,5 +822,6 @@ const dict: Record<string, string> = {
   "mv.none": "Nicio schimbare mare.",
   "mv.was": "Rată de victorie {from} → {to}",
   "ms.lead": "Caută mai mulți jucători deodată: lipește Riot ID-uri (Nume#TAG), câte unul pe rând sau separate prin virgulă, ori rândurile „a intrat în lobby” dintr-un lobby în care numele sunt vizibile. Champion select-ul ranked ascunde numele, iar Riftwatch nu încearcă niciodată să le dezvăluie.",
+  "live.note": "Rankul și maestria pe campion sunt căutate pentru fiecare jucător. Timpul meciului se actualizează în fiecare minut.",
 };
 export default dict;

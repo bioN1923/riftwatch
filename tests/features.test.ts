@@ -185,7 +185,7 @@ describe('policy safeguards', async () => {
 
 describe('patch movers', async () => {
   const { movers } = await import('../server/champStats');
-  const row = (championId: number, winRate: number, games: number) => ({ championId, role: 'MIDDLE', winRate, games, pickRate: 0.05, banRate: 0, tier: 'A', rank: 1, lowSample: false });
+  const row = (championId: number, winRate: number, games: number) => ({ championId, role: 'MIDDLE', winRate, games, pickRate: 0.05, banRate: 0, tier: 'A' as const, rank: 1, lowSample: false });
   it('ranks real changes and ignores small samples', () => {
     const m = movers([row(1, 0.55, 400), row(2, 0.45, 400), row(3, 0.7, 10), row(4, 0.501, 400)], [row(1, 0.5, 400), row(2, 0.5, 400), row(3, 0.4, 10), row(4, 0.5, 400)], '15.19');
     expect(m.up.map((x) => x.championId)).toEqual([1]);
