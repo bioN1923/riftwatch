@@ -89,7 +89,10 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
               <span className="text-faint" aria-hidden>
                 /
               </span>
-              <span className="whitespace-nowrap">{timeAgo(ended)}</span>
+              {/* "6 days ago" on screen; the exact day and time when it ended on hover. */}
+              <time dateTime={new Date(ended).toISOString()} title={exactTime(ended)} className="whitespace-nowrap">
+                {timeAgo(ended)}
+              </time>
             </p>
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
@@ -184,4 +187,9 @@ export function ordinal(n: number) {
   const s = ['th', 'st', 'nd', 'rd'];
   const v = n % 100;
   return `${n}${s[(v - 20) % 10] || s[v] || s[0]}`;
+}
+
+/** "Saturday 7 November, 21:34" in the visitor's language and time zone. */
+export function exactTime(ms: number) {
+  return new Date(ms).toLocaleString(getLang(), { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 }
