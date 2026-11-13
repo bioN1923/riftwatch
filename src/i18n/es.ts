@@ -806,7 +806,7 @@ const dict: Record<string, string> = {
   "arena.itemsNote": "Con qué frecuencia acaba cada objeto en el inventario final. Riot no permite tasas de victoria de objetos ni aumentos de Arena, así que solo mostramos su popularidad.",
   "arena.boughtIn": "Comprado en el {pct} de las partidas",
   "mv.title": "Cambios del parche: {from} → {to}",
-  "mv.sub": "Los mayores cambios de tasa de victorias desde el parche anterior, entre campeones con suficientes partidas en ambos.",
+  "mv.sub": "Cambios de tasa de victorias desde el parche anterior demasiado grandes para ser casualidad, entre campeones con suficientes partidas en ambos. Los más seguros primero.",
   "mv.up": "Al alza",
   "mv.down": "A la baja",
   "mv.none": "Sin cambios importantes.",
@@ -938,5 +938,6 @@ const dict: Record<string, string> = {
   "cl.new": "Nuevo",
   "cp.didYouMean": "¿Quisiste decir {name}?",
   "mp.didYouMean": "¿Quisiste decir {a} contra {b}?",
+  "mv.gamesTip": "Partidas parche anterior → este parche",
 };
 export default dict;

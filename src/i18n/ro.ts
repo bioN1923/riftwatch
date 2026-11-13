@@ -815,7 +815,7 @@ const dict: Record<string, string> = {
   "arena.itemsNote": "Cât de des ajunge fiecare item în inventarul final. Riot nu permite rate de victorie pentru itemele sau augmentele din Arena, așa că arătăm doar popularitatea.",
   "arena.boughtIn": "Cumpărat în {pct} din meciuri",
   "mv.title": "Schimbări de patch: {from} → {to}",
-  "mv.sub": "Cele mai mari schimbări ale ratei de victorie față de patch-ul anterior, la campionii cu destule meciuri pe ambele.",
+  "mv.sub": "Schimbări de rată de victorie față de patch-ul anterior prea mari ca să fie întâmplare, la campionii cu destule meciuri pe ambele. Schimbările sigure apar primele.",
   "mv.up": "În creștere",
   "mv.down": "În scădere",
   "mv.none": "Nicio schimbare mare.",
@@ -956,5 +956,6 @@ const dict: Record<string, string> = {
   "cl.new": "Nou",
   "cp.didYouMean": "Te referi la {name}?",
   "mp.didYouMean": "Te referi la {a} vs {b}?",
+  "mv.gamesTip": "Meciuri patch-ul trecut → patch-ul acesta",
 };
 export default dict;

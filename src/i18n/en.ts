@@ -808,7 +808,7 @@ const en = {
   "arena.itemsNote": "How often each item ends up in the final inventory. Riot doesn’t allow win rates for Arena items or augments, so we only show popularity.",
   "arena.boughtIn": "Bought in {pct} of games",
   "mv.title": "Patch movers: {from} → {to}",
-  "mv.sub": "Biggest win-rate changes since the previous patch, among champions with enough games on both.",
+  "mv.sub": "Win-rate changes since the previous patch that are too big to be chance, among champions with enough games on both. Sure changes rank first.",
   "mv.up": "Rising",
   "mv.down": "Falling",
   "mv.none": "No big changes.",
@@ -938,5 +938,6 @@ const en = {
   "cl.new": "New",
   "cp.didYouMean": "Did you mean {name}?",
   "mp.didYouMean": "Did you mean {a} vs {b}?",
+  "mv.gamesTip": "Games last patch → this patch",
 };
 export default en;

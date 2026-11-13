@@ -806,7 +806,7 @@ const dict: Record<string, string> = {
   "arena.itemsNote": "Wie oft jedes Item im finalen Inventar landet. Riot erlaubt keine Siegraten für Arena-Items oder Augments, daher zeigen wir nur die Beliebtheit.",
   "arena.boughtIn": "In {pct} der Spiele gekauft",
   "mv.title": "Patch-Gewinner und -Verlierer: {from} → {to}",
-  "mv.sub": "Größte Siegraten-Änderungen seit dem letzten Patch, bei Champions mit genug Spielen auf beiden.",
+  "mv.sub": "Siegraten-Änderungen seit dem letzten Patch, die zu groß für Zufall sind, bei Champions mit genug Spielen auf beiden. Sichere Änderungen zuerst.",
   "mv.up": "Aufsteiger",
   "mv.down": "Absteiger",
   "mv.none": "Keine großen Änderungen.",
@@ -938,5 +938,6 @@ const dict: Record<string, string> = {
   "cl.new": "Neu",
   "cp.didYouMean": "Meintest du {name}?",
   "mp.didYouMean": "Meintest du {a} gegen {b}?",
+  "mv.gamesTip": "Spiele letzter Patch → dieser Patch",
 };
 export default dict;

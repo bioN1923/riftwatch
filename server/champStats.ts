@@ -306,21 +306,25 @@ function arenaSummary(ar: ArenaAgg, games: number): NonNullable<ChampionStats['a
 }
 
 /**
- * Champions whose win rate moved most since the previous patch. Small samples swing wildly, so
- * a pair needs a decent number of games on both patches, and the change is shrunk towards zero
- * by sample size before ranking.
+ * Champions whose win rate moved most since the previous patch. Small samples swing wildly, and
+ * with a couple of hundred champion-role pairs some will look like big movers by chance alone. So a
+ * pair needs a decent number of games on both patches and a change of at least two standard errors
+ * (about a 1-in-20 fluke for any one pair), and the list is ranked by the change we can be fairly
+ * sure of: the measured change minus one standard error.
  */
+/** Standard error of the difference between two win rates (around 50%) on g1 and g2 games. */
+const moverSe = (g1: number, g2: number) => Math.sqrt(0.25 / g1 + 0.25 / g2);
+
 export function movers(now: TierRow[], before: TierRow[], against: string, minGames = 100): NonNullable<TierList['movers']> {
   const prev = new Map(before.map((r) => [`${r.championId}:${r.role}`, r]));
   const list: PatchMover[] = [];
   for (const r of now) {
     const p = prev.get(`${r.championId}:${r.role}`);
     if (!p || r.games < minGames || p.games < minGames) continue;
-    // A change smaller than one standard error of the difference is mostly sampling noise.
-    if (Math.abs(r.winRate - p.winRate) < Math.sqrt(0.25 / r.games + 0.25 / p.games)) continue;
+    if (Math.abs(r.winRate - p.winRate) < 2 * moverSe(r.games, p.games)) continue;
     list.push({ championId: r.championId, role: r.role, winRate: r.winRate, prevWinRate: p.winRate, delta: r.winRate - p.winRate, games: r.games, prevGames: p.games, pickRate: r.pickRate, prevPickRate: p.pickRate });
   }
-  const score = (m: PatchMover) => m.delta * (Math.min(m.games, m.prevGames) / (Math.min(m.games, m.prevGames) + 300));
+  const score = (m: PatchMover) => Math.sign(m.delta) * (Math.abs(m.delta) - moverSe(m.games, m.prevGames));
   const sorted = [...list].sort((a, b) => score(b) - score(a));
   return {
     against,

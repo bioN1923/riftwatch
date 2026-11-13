@@ -824,7 +824,7 @@ const dict: Record<string, string> = {
   "arena.itemsNote": "Jak często każdy przedmiot trafia do końcowego ekwipunku. Riot nie pozwala pokazywać współczynnika zwycięstw przedmiotów ani ulepszeń na Arenie, więc pokazujemy tylko popularność.",
   "arena.boughtIn": "Kupowany w {pct} gier",
   "mv.title": "Zmiany po patchu: {from} → {to}",
-  "mv.sub": "Największe zmiany współczynnika zwycięstw od poprzedniego patcha, wśród bohaterów z wystarczającą liczbą gier w obu.",
+  "mv.sub": "Zmiany współczynnika zwycięstw od poprzedniego patcha zbyt duże, by były przypadkiem, wśród bohaterów z wystarczającą liczbą gier w obu. Najpewniejsze zmiany najpierw.",
   "mv.up": "Zyskują",
   "mv.down": "Tracą",
   "mv.none": "Brak dużych zmian.",
@@ -974,5 +974,6 @@ const dict: Record<string, string> = {
   "cl.new": "Nowe",
   "cp.didYouMean": "Czy chodziło o {name}?",
   "mp.didYouMean": "Czy chodziło o {a} vs {b}?",
+  "mv.gamesTip": "Gry w poprzednim patchu → w tym patchu",
 };
 export default dict;

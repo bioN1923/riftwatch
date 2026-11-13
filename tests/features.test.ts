@@ -187,7 +187,7 @@ describe('patch movers', async () => {
   const { movers } = await import('../server/champStats');
   const row = (championId: number, winRate: number, games: number) => ({ championId, role: 'MIDDLE', winRate, games, pickRate: 0.05, banRate: 0, tier: 'A' as const, rank: 1, lowSample: false });
   it('ranks real changes and ignores small samples', () => {
-    const m = movers([row(1, 0.55, 400), row(2, 0.45, 400), row(3, 0.7, 10), row(4, 0.501, 400)], [row(1, 0.5, 400), row(2, 0.5, 400), row(3, 0.4, 10), row(4, 0.5, 400)], '15.19');
+    const m = movers([row(1, 0.55, 1200), row(2, 0.45, 1200), row(3, 0.7, 10), row(4, 0.501, 1200)], [row(1, 0.5, 1200), row(2, 0.5, 1200), row(3, 0.4, 10), row(4, 0.5, 1200)], '15.19');
     expect(m.up.map((x) => x.championId)).toEqual([1]);
     expect(m.down.map((x) => x.championId)).toEqual([2]);
     expect(m.up[0].delta).toBeCloseTo(0.05);
@@ -395,9 +395,18 @@ describe('patch movers noise filter', async () => {
   const { movers } = await import('../server/champStats');
   const row = (championId: number, winRate: number, games: number) => ({ championId, role: 'MIDDLE', winRate, games, pickRate: 0.05 }) as any;
   it('drops changes smaller than their sampling noise', () => {
-    // 3 points on 120 games each is well inside one standard error (6.5 points): noise.
-    const m = movers([row(1, 0.53, 120), row(2, 0.6, 120)], [row(1, 0.5, 120), row(2, 0.5, 120)], '16.21');
-    expect(m.up.map((x) => x.championId)).toEqual([2]);
+    // On 120 games a side one standard error is 6.5 points: +3 and +10 are noise, +15 is not.
+    const m = movers([row(1, 0.53, 120), row(2, 0.6, 120), row(3, 0.65, 120)], [row(1, 0.5, 120), row(2, 0.5, 120), row(3, 0.5, 120)], '16.21');
+    expect(m.up.map((x) => x.championId)).toEqual([3]);
+  });
+  it('ranks a solid change above a bigger swing on few games', () => {
+    // +20 on 105 games a side (SE 6.9) is "at least +13"; +17 on 1500 a side (SE 1.8) is "at least +15".
+    const m = movers(
+      [row(1, 0.7, 105), row(2, 0.67, 1500)],
+      [row(1, 0.5, 105), row(2, 0.5, 1500)],
+      '16.21',
+    );
+    expect(m.up.map((x) => x.championId)).toEqual([2, 1]);
   });
 });
 

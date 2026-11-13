@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.38](v3.38/CHANGES.md) | 13 Nov 2026 | Patch movers: 2-SE filter, ranked by the change we can be sure of (Δ − 1 SE), games on both patches shown |
 | [v3.37](v3.37/CHANGES.md) | 13 Nov 2026 | Server side of v3.36: real 404 + "not found" titles for unknown champion/matchup addresses, 302 redirect for nicknames; champSearch moved to shared/ |
 | [v3.36](v3.36/CHANGES.md) | 13 Nov 2026 | Champion and matchup addresses forgive nicknames and typos (redirect when sure, "Did you mean" otherwise) |
 | [v3.35](v3.35/CHANGES.md) | 13 Nov 2026 | "What's new" dot + NEW badges since your last visit; pages open at the top (scroll restoration) |

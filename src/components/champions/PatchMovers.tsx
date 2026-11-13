@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import type { PatchMover, TierList } from '../../../shared/types';
 import { assets, champSlug, useStaticData } from '../../lib/ddragon';
-import { pct } from '../../lib/format';
+import { pct, thousands } from '../../lib/format';
 import { GameImg } from '../ui/GameImg';
 import { ROLE_LABEL, RoleIcon } from '../ui/RoleIcon';
 import { t } from '../../i18n';
@@ -14,12 +14,9 @@ export function PatchMovers({ data, role, group }: { data: TierList; role: strin
   const m = data.movers;
   if (!m || !data.patch) return null;
   const [all, setAll] = useState(false);
-  // The server picks movers by a sample-weighted score; show them ordered by the change itself.
-  const pick = (list: PatchMover[]) =>
-    list
-      .filter((x) => role === 'ALL' || x.role === role)
-      .slice(0, 5)
-      .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+  // Kept in the server's order: by the change we can be fairly sure of, so a big swing on few games
+  // doesn't jump ahead of a smaller, solid one.
+  const pick = (list: PatchMover[]) => list.filter((x) => role === 'ALL' || x.role === role).slice(0, 5);
   const up = pick(m.up);
   const down = pick(m.down);
   if (!up.length && !down.length) return null;
@@ -76,7 +73,9 @@ function Column({ title, icon, list, group, all }: { title: string; icon: ReactN
                     </span>
                     <span className="num block text-[11px] text-muted">{t('mv.was', { from: pct(x.prevWinRate, 1), to: pct(x.winRate, 1) })}</span>
                   </span>
-                  <span className="num hidden text-xs text-faint sm:block">{t('common.games', { count: x.games })}</span>
+                  <span className="num hidden text-xs text-faint sm:block" title={t('mv.gamesTip')}>
+                    {thousands(x.prevGames)} → {t('common.games', { count: x.games })}
+                  </span>
                   <span className={clsx('num w-14 text-right text-sm font-bold', x.delta > 0 ? 'text-win' : 'text-loss')}>
                     {x.delta > 0 ? '+' : '−'}
                     {pct(Math.abs(x.delta), 1)}

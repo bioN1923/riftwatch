@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.38',
+    date: '2026-11-13',
+    items: ['Patch movers are stricter: a change has to be too big to be chance (about twice the normal swing for its number of games), solid changes rank above big swings on few games, and each row shows the games on both patches.'],
+  },
+  {
     version: '3.37',
     date: '2026-11-13',
     items: ['A mistyped champion address now shows "Champion not found" in the browser tab and in link previews, instead of a page title for a champion that doesn\'t exist. Nickname links like /champions/mf open the right page even when shared in chats.'],
