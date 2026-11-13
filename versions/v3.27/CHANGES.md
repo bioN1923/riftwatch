@@ -17,3 +17,7 @@
 ## Checks
 - 72 tests pass (new: picks only strong, unplayed, same-role, same-class champions with real samples; needs a real main). Typecheck, build and a11y check clean.
 - Demo profiles: Humanoid → Hwei (S+) and Mel (A), both "Like Syndra · Mage"; Faker (support) → Thresh "Like Lux · Support"; two profiles with no match → no panel (`demo/tn-*.png`).
+
+## Live check (after deploy)
+- The user ran `deploy.bat`: finished 13 Nov 2026 18:33 (EXIT CODE 0).
+- `/lol/euw1/Annie IRL-Annie` (EUW Challenger, Annie main in Mid): "Try next" → Ahri (S+, 52.9%), Ekko (S+, 53.7%), Orianna (S, 51.5%), each "Like Annie · Mage", under "Your champions on 16.22" (`live/profile-try-next.jpg`).
