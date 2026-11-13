@@ -4,3 +4,4 @@ dist
 *.tsbuildinfo
 server/data
 deploy.log
+deploy.request

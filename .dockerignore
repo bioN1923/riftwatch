@@ -6,3 +6,5 @@ server/data
 versions
 deploy.bat
 deploy.log
+watch-deploy.bat
+deploy.request
