@@ -11,3 +11,7 @@
 
 ## Checks
 - 73 tests pass (new: queue names, including the fallback for queues not in Riot's list). Typecheck, build and a11y check clean. Demo screenshots in `demo/`.
+
+## Live check (after deploy)
+- The user ran `deploy.bat`: finished 13 Nov 2026 18:50 (EXIT CODE 0).
+- `Annie IRL#Annie`: the queue-1740 Tristana game ("Special mode") shows Kill share 92% and Damage only, without "CS 0 · 0.0/m" or vision. The ranked games below still show CS and vision (`live/special-mode-no-zero-cs.jpg`).
