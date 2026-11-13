@@ -920,5 +920,7 @@ const dict: Record<string, string> = {
   "draft.blindWorst": "Peor enfrentamiento: {name} {rate}",
   "draft.blindNone": "Aún no hay suficientes partidas clasificatorias en este rol.",
   "draft.inPool": "En tu pool",
+  "cl.title": "Novedades",
+  "cl.lead": "Lo que ha cambiado en Riftwatch, de lo más reciente a lo más antiguo.",
 };
 export default dict;

@@ -822,7 +822,7 @@ let sitemapCache: { at: number; xml: string } | null = null;
 app.get('/sitemap.xml', (req, res) => {
   if (SITE_PASSWORD) return res.status(404).type('text/plain').send('Not found');
   if (!sitemapCache || Date.now() - sitemapCache.at > 6 * 3600_000) {
-    const paths = ['/', '/champions', '/champions?queue=aram', '/champions?queue=arena', '/leaderboard', '/multisearch', '/compare', '/draft', '/privacy', '/api-usage'];
+    const paths = ['/', '/champions', '/champions?queue=aram', '/champions?queue=arena', '/leaderboard', '/multisearch', '/compare', '/draft', '/privacy', '/api-usage', '/changelog'];
     for (const c of allChampions()) paths.push(`/champions/${c.id.toLowerCase()}`);
     // The most played lane matchups, which are the ones people search for.
     const tier = champStats.tierList('ranked');
@@ -920,6 +920,9 @@ function withMeta(html: string, req: Request) {
   } else if (urlPath === '/api-usage') {
     title = 'How we use the Riot API · Riftwatch';
     desc = 'Caching, rate-limit handling and privacy controls on Riftwatch.';
+  } else if (urlPath === '/changelog') {
+    title = "What's new · Riftwatch";
+    desc = 'What changed on Riftwatch, newest first.';
   } else if (urlPath === '/draft') {
     title = 'Draft helper · Riftwatch';
     desc = 'Pick your role and the enemy laner: the best answers from real matchup data, and the best pick from your own champion pool.';

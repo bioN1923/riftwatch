@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.25](v3.25/CHANGES.md) | 13 Nov 2026 | Public "What's new" page (/changelog) with a player-facing entry per version |
 | [v3.24](v3.24/CHANGES.md) | 13 Nov 2026 | Search dropdown: champion names no longer cut off (class under the name; icon-only badge on phones) |
 | [v3.23](v3.23/CHANGES.md) | 13 Nov 2026 | Champion search understands nicknames (mf, tf, j4, asol, lb, ww…) everywhere |
 | [v3.22](v3.22/CHANGES.md) | 13 Nov 2026 | Collector: only players with new games, Master tier added: more fresh games per API call |
@@ -31,6 +32,9 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 3. Build, test (`npm test`), check pages in demo mode, run `scripts/a11y-check.cjs`.
 4. Take demo screenshots (`scripts/shoot-version.cjs versions/vX/demo`), write `CHANGES.md`.
 5. Commit, deploy (`deploy.bat` → `deploy.log`), check the live site, save `live/` screenshots.
+
+## Every iteration also
+- Add a short, player-facing entry to `src/data/changelog.ts` (a test fails if its newest entry doesn't match `package.json`).
 
 ## Backlog (ideas, roughly by value)
 - **More data** once the production key arrives: lower-elo tier lists (Emerald+, Diamond+).

@@ -320,6 +320,9 @@ export function Layout() {
           <Link to="/api-usage" className="hover:text-text hover:underline">
             {t('footer.api')}
           </Link>
+          <Link to="/changelog" className="hover:text-text hover:underline">
+            {t('cl.title')}
+          </Link>
         </nav>
         {/* Riot's required legal notice, kept in its exact English wording in every language. */}
         <p lang="en" className="mx-auto max-w-3xl">

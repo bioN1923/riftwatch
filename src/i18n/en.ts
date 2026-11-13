@@ -920,5 +920,7 @@ const en = {
   "draft.blindWorst": "Worst matchup: {name} {rate}",
   "draft.blindNone": "Not enough ranked games in this role yet.",
   "draft.inPool": "In your pool",
+  "cl.title": "What's new",
+  "cl.lead": "What changed on Riftwatch, newest first.",
 };
 export default en;

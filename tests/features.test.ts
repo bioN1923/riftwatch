@@ -452,3 +452,18 @@ describe('champion search nicknames', async () => {
     expect(champHit('  ', C('Teemo', 'Teemo'))).toBe(null);
   });
 });
+
+describe("what's new page", async () => {
+  const { CHANGELOG } = await import('../src/data/changelog');
+  const pkg = (await import('../package.json')).default as { version: string };
+  it('is newest first, one entry per version, and up to date with the app version', () => {
+    const v = (s: string) => s.split('.').map(Number);
+    for (let i = 1; i < CHANGELOG.length; i++) {
+      const [a1, a2] = v(CHANGELOG[i - 1].version);
+      const [b1, b2] = v(CHANGELOG[i].version);
+      expect(a1 * 1000 + a2).toBeGreaterThan(b1 * 1000 + b2);
+    }
+    expect(CHANGELOG[0].version).toBe(pkg.version.split('.').slice(0, 2).join('.'));
+    for (const e of CHANGELOG) expect(e.items.length).toBeGreaterThan(0);
+  });
+});

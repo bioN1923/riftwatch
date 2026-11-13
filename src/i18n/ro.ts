@@ -937,5 +937,7 @@ const dict: Record<string, string> = {
   "draft.blindWorst": "Cel mai prost matchup: {name} {rate}",
   "draft.blindNone": "Încă nu sunt destule meciuri ranked pe acest rol.",
   "draft.inPool": "În pool-ul tău",
+  "cl.title": "Noutăți",
+  "cl.lead": "Ce s-a schimbat pe Riftwatch, de la cele mai noi.",
 };
 export default dict;
