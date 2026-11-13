@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.37',
+    date: '2026-11-13',
+    items: ['A mistyped champion address now shows "Champion not found" in the browser tab and in link previews, instead of a page title for a champion that doesn\'t exist. Nickname links like /champions/mf open the right page even when shared in chats.'],
+  },
+  {
     version: '3.36',
     date: '2026-11-13',
     items: ['Champion addresses forgive typos and nicknames: riftwatch.fly.dev/champions/mf opens Miss Fortune, and a typo like "yasou" asks "Did you mean Yasuo?". Matchup links too.'],

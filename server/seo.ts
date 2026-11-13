@@ -22,6 +22,8 @@ interface Strings {
   cmpDesc: string;
   champTitle: string; // {name}
   champDesc: string; // {name}
+  champNotFound: string;
+  vsNotFound: string;
   aramTitle: string; // {name}
   vsTitle: string; // {a} {b}
   vsDesc: string; // {a} {b}
@@ -43,6 +45,8 @@ const S: Record<SeoLang, Strings> = {
     cmpDesc: 'Put two League of Legends players side by side: rank, recent form, per-game stats and champions.',
     champTitle: '{name} build, runes and counters · Riftwatch',
     champDesc: 'Win rate, best build, runes, skill order and matchups for {name}.',
+    champNotFound: 'Champion not found · Riftwatch',
+    vsNotFound: 'Matchup not found · Riftwatch',
     aramTitle: '{name} ARAM build and runes · Riftwatch',
     vsTitle: '{a} vs {b}: build, runes and win rate · Riftwatch',
     vsDesc: 'How to play {a} into {b}: who’s favoured, lane leads at 15 minutes, and the runes and items that win.',
@@ -62,6 +66,8 @@ const S: Record<SeoLang, Strings> = {
     cmpDesc: 'Pune doi jucători de League of Legends față în față: rank, formă recentă, statistici pe meci și campioni.',
     champTitle: '{name}: build, rune și counteri · Riftwatch',
     champDesc: 'Rată de victorie, cel mai bun build, rune, ordinea abilităților și matchup-uri pentru {name}.',
+    champNotFound: 'Campion negăsit · Riftwatch',
+    vsNotFound: 'Matchup negăsit · Riftwatch',
     aramTitle: '{name}: build și rune ARAM · Riftwatch',
     vsTitle: '{a} vs {b}: build, rune și rată de victorie · Riftwatch',
     vsDesc: 'Cum joci {a} contra {b}: cine e favorit, avantajul pe lane la minutul 15 și runele și itemele care câștigă.',
@@ -81,6 +87,8 @@ const S: Record<SeoLang, Strings> = {
     cmpDesc: 'Zwei League-of-Legends-Spieler im direkten Vergleich: Rang, aktuelle Form, Werte pro Spiel und Champions.',
     champTitle: '{name} Build, Runen und Konter · Riftwatch',
     champDesc: 'Siegrate, bester Build, Runen, Skill-Reihenfolge und Matchups für {name}.',
+    champNotFound: 'Champion nicht gefunden · Riftwatch',
+    vsNotFound: 'Matchup nicht gefunden · Riftwatch',
     aramTitle: '{name} ARAM-Build und Runen · Riftwatch',
     vsTitle: '{a} gegen {b}: Build, Runen und Siegrate · Riftwatch',
     vsDesc: 'So spielst du {a} gegen {b}: wer im Vorteil ist, Lane-Vorsprung nach 15 Minuten und die Runen und Items, die gewinnen.',
@@ -100,6 +108,8 @@ const S: Record<SeoLang, Strings> = {
     cmpDesc: 'Deux joueurs de League of Legends côte à côte : rang, forme récente, statistiques par partie et champions.',
     champTitle: '{name} : build, runes et counters · Riftwatch',
     champDesc: 'Taux de victoire, meilleur build, runes, ordre des compétences et matchups pour {name}.',
+    champNotFound: 'Champion introuvable · Riftwatch',
+    vsNotFound: 'Matchup introuvable · Riftwatch',
     aramTitle: '{name} : build et runes ARAM · Riftwatch',
     vsTitle: '{a} contre {b} : build, runes et taux de victoire · Riftwatch',
     vsDesc: 'Comment jouer {a} contre {b} : qui est favori, l’avance en voie à 15 minutes et les runes et objets qui gagnent.',
@@ -119,6 +129,8 @@ const S: Record<SeoLang, Strings> = {
     cmpDesc: 'Dos jugadores de League of Legends cara a cara: rango, forma reciente, estadísticas por partida y campeones.',
     champTitle: '{name}: build, runas y counters · Riftwatch',
     champDesc: 'Tasa de victorias, mejor build, runas, orden de habilidades y enfrentamientos de {name}.',
+    champNotFound: 'Campeón no encontrado · Riftwatch',
+    vsNotFound: 'Enfrentamiento no encontrado · Riftwatch',
     aramTitle: '{name}: build y runas de ARAM · Riftwatch',
     vsTitle: '{a} contra {b}: build, runas y tasa de victorias · Riftwatch',
     vsDesc: 'Cómo jugar {a} contra {b}: quién es favorito, la ventaja en línea al minuto 15 y las runas y objetos que ganan.',
@@ -138,6 +150,8 @@ const S: Record<SeoLang, Strings> = {
     cmpDesc: 'Dwóch graczy League of Legends obok siebie: ranga, ostatnia forma, statystyki na mecz i bohaterowie.',
     champTitle: '{name}: build, runy i kontry · Riftwatch',
     champDesc: 'Współczynnik zwycięstw, najlepszy build, runy, kolejność umiejętności i matchupy dla {name}.',
+    champNotFound: 'Nie znaleziono bohatera · Riftwatch',
+    vsNotFound: 'Nie znaleziono matchupu · Riftwatch',
     aramTitle: '{name}: build i runy na ARAM · Riftwatch',
     vsTitle: '{a} vs {b}: build, runy i współczynnik zwycięstw · Riftwatch',
     vsDesc: 'Jak grać {a} przeciwko {b}: kto ma przewagę, prowadzenie na linii w 15. minucie oraz runy i przedmioty, które wygrywają.',
@@ -157,6 +171,8 @@ const S: Record<SeoLang, Strings> = {
     cmpDesc: 'Dois jogadores de League of Legends lado a lado: elo, fase recente, estatísticas por partida e campeões.',
     champTitle: '{name}: build, runas e counters · Riftwatch',
     champDesc: 'Taxa de vitória, melhor build, runas, ordem de habilidades e confrontos de {name}.',
+    champNotFound: 'Campeão não encontrado · Riftwatch',
+    vsNotFound: 'Confronto não encontrado · Riftwatch',
     aramTitle: '{name}: build e runas de ARAM · Riftwatch',
     vsTitle: '{a} contra {b}: build, runas e taxa de vitória · Riftwatch',
     vsDesc: 'Como jogar de {a} contra {b}: quem é favorito, a vantagem na rota aos 15 minutos e as runas e itens que vencem.',

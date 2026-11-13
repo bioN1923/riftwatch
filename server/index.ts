@@ -19,6 +19,7 @@ import { MatchStore } from './matchStore';
 import { CHALLENGE_MS, PrivacyStore } from './privacy';
 import { ErrorLog, errorsPage } from './errorLog';
 import { timingSafeEqual } from 'node:crypto';
+import { champAddressFix } from '../shared/champSearch';
 import { HTML_LANG, OG_LOCALE, alternateLinks, pickLang, seoText, sitemapXml } from './seo';
 import { allChampions, championByKey, championBySlug, championCard, compareCard, draftCard, loadOgData, matchupCard, profileCard, siteCard, type CompareSide, type ProfileCard } from './og';
 import type { ApiErrorBody, HealthResponse, PrivacyChallenge, PrivacyResult, Ladder, LadderEntry, LpHistory, MatchPage, MatchSummary, MatchTimeline, PlayerHit, Profile, ScoutInfo, ServerStatus, StatsGroup } from '../shared/types';
@@ -887,7 +888,21 @@ if (fs.existsSync(dist)) {
   // fallthrough: false → a missing (e.g. outdated) asset is a real 404, not the HTML page.
   app.use('/assets', express.static(path.join(dist, 'assets'), { maxAge: '1y', immutable: true, fallthrough: false }));
   app.use(express.static(dist, { maxAge: '1h', index: false }));
-  app.get(/^(?!\/api\/|\/og\/).*/, (req, res) => res.type('html').send(withMeta(indexHtml, req)));
+  app.get(/^(?!\/api\/|\/og\/).*/, (req, res) => {
+    const to = champRedirect(req);
+    if (to) return res.redirect(302, to);
+    const page = withMeta(indexHtml, req);
+    res.status(page.status).type('html').send(page.html);
+  });
+}
+
+/**
+ * "/champions/mf" or "/champions/miss-fortune/vs/kai'sa": when every champion in the address can be
+ * guessed without doubt, send the visitor (and link previews) to the real address, query kept.
+ */
+function champRedirect(req: Request): string | null {
+  const q = req.originalUrl.indexOf('?');
+  return champAddressFix(req.path, q >= 0 ? req.originalUrl.slice(q) : '', allChampions());
 }
 
 /** Page titles, descriptions, language alternates and link-preview tags, translated for the page's language. */
@@ -901,11 +916,12 @@ function withMeta(html: string, req: Request) {
   let title = T('siteTitle');
   let desc = T('siteDesc');
   let indexable = true;
+  let status = 200;
   // Query parameters that make a different page (the rest are view state and stay out of canonical URLs).
   const keep = new URLSearchParams();
   const prof = /^\/lol\/([a-z0-9]+)\/([^/]+)/.exec(urlPath);
-  const champ = /^\/champions\/([a-z0-9]+)\/?$/i.exec(urlPath);
-  const vs = /^\/champions\/([a-z0-9]+)\/vs\/([a-z0-9]+)/i.exec(urlPath);
+  const champ = /^\/champions\/([^/]+)\/?$/i.exec(urlPath);
+  const vs = /^\/champions\/([^/]+)\/vs\/([^/]+)/i.exec(urlPath);
   if (vs) {
     const a = championBySlug(vs[1]);
     const b = championBySlug(vs[2]);
@@ -915,7 +931,14 @@ function withMeta(html: string, req: Request) {
       const role = typeof req.query.role === 'string' ? req.query.role : undefined;
       if (role) keep.set('role', role);
       image = `/og/vs/${vs[1].toLowerCase()}/${vs[2].toLowerCase()}.jpg${role ? `?role=${encodeURIComponent(role)}` : ''}`;
-    } else indexable = false;
+    } else {
+      indexable = false;
+      // A real 404 once we know the champions (the page itself offers "Did you mean").
+      if (allChampions().length) {
+        status = 404;
+        title = T('vsNotFound');
+      }
+    }
   } else if (prof) {
     const slug = decodeURIComponent(prof[2]);
     const i = slug.lastIndexOf('-');
@@ -934,13 +957,21 @@ function withMeta(html: string, req: Request) {
     }
   } else if (champ) {
     const c = championBySlug(champ[1]);
-    const name = c?.name ?? champ[1].charAt(0).toUpperCase() + champ[1].slice(1);
-    if (c) image = `/og/champion/${champ[1].toLowerCase()}.jpg`;
-    else indexable = false;
-    const queue = req.query.queue === 'aram' || req.query.queue === 'arena' ? req.query.queue : undefined;
-    if (queue) keep.set('queue', queue);
-    title = queue === 'aram' ? T('aramTitle', { name }) : queue === 'arena' ? T('aramTitle', { name }).replace('ARAM', 'Arena') : T('champTitle', { name });
-    desc = T('champDesc', { name });
+    const loaded = allChampions().length > 0;
+    if (c || !loaded) {
+      // Before the champion list loads (right after a restart) we can't tell, so trust the address.
+      const name = c?.name ?? champ[1].charAt(0).toUpperCase() + champ[1].slice(1);
+      if (c) image = `/og/champion/${champ[1].toLowerCase()}.jpg`;
+      else indexable = false;
+      const queue = req.query.queue === 'aram' || req.query.queue === 'arena' ? req.query.queue : undefined;
+      if (queue) keep.set('queue', queue);
+      title = queue === 'aram' ? T('aramTitle', { name }) : queue === 'arena' ? T('aramTitle', { name }).replace('ARAM', 'Arena') : T('champTitle', { name });
+      desc = T('champDesc', { name });
+    } else {
+      indexable = false;
+      status = 404;
+      title = T('champNotFound');
+    }
   } else if (urlPath === '/champions') {
     if (req.query.queue === 'aram' || req.query.queue === 'arena') keep.set('queue', req.query.queue);
     title = T('tierTitle');
@@ -1002,11 +1033,12 @@ function withMeta(html: string, req: Request) {
     `<meta name="theme-color" content="#091315" />`,
     ...(urlPath === '/' ? [`<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Riftwatch', url: `${origin}/`, inLanguage: HTML_LANG[lang], description: desc }).replace(/</g, '\\u003c')}</script>`] : []),
   ].join('\n    ');
-  return html
+  const out = html
     .replace(/<html lang="[^"]*">/, `<html lang="${HTML_LANG[lang]}">`)
     .replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`)
     .replace(/<meta name="description" content="[^"]*" \/>/, `<meta name="description" content="${esc(desc)}" />`)
     .replace('</head>', `    ${tags}\n  </head>`);
+  return { html: out, status };
 }
 
 /** The public address: SITE_URL when set (behind proxies and custom domains), otherwise the request's host. */

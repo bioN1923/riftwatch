@@ -34,6 +34,7 @@ export function MatchupPage() {
     const gb = side(opp, b);
     const fixed = ga && gb && ga.champ.id !== gb.champ.id ? `/champions/${champSlug(ga.champ.id)}/vs/${champSlug(gb.champ.id)}${search}` : null;
     if (fixed && ga?.sure && gb?.sure) return <Navigate replace to={fixed} />;
+    document.title = `${t('mp.notFound')} · Riftwatch`;
     return (
       <div className="mx-auto max-w-6xl px-4 py-10">
         <ErrorState

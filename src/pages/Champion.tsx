@@ -32,6 +32,7 @@ export function ChampionPage() {
     // "/champions/mf" or "/champions/miss-fortune" just goes there; a typo gets a "Did you mean".
     const guess = sd ? guessChampion(slug, [...sd.champions.values()]) : null;
     if (guess?.sure) return <Navigate replace to={`/champions/${champSlug(guess.champ.id)}${search}`} />;
+    document.title = `${t('cp.notFound')} · Riftwatch`;
     return (
       <div className="mx-auto max-w-6xl px-4 py-10">
         <ErrorState

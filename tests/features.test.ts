@@ -436,7 +436,7 @@ describe('collector visits only players with new games', async () => {
 });
 
 describe('champion search nicknames', async () => {
-  const { champHit } = await import('../src/lib/champSearch');
+  const { champHit } = await import('../shared/champSearch');
   const C = (id: string, name: string) => ({ id, name });
   it('finds champions the way players type them', () => {
     expect(champHit('mf', C('MissFortune', 'Miss Fortune'))).toBe(0);
@@ -552,7 +552,7 @@ describe('riot id slugs in links', async () => {
 });
 
 describe('mistyped champion addresses', async () => {
-  const { guessChampion } = await import('../src/lib/champSearch');
+  const { guessChampion } = await import('../shared/champSearch');
   const L = [
     { id: 'Yasuo', name: 'Yasuo' },
     { id: 'Yone', name: 'Yone' },
@@ -580,5 +580,26 @@ describe('mistyped champion addresses', async () => {
     expect(g('xyzzy')).toBe(null);
     expect(g('ahli')).toBe('Ahri:false');
     expect(g('zad')).toBe(null); // Zac and Zed are both one letter away
+  });
+});
+
+describe('server redirects for mistyped champion addresses', async () => {
+  const { champAddressFix } = await import('../shared/champSearch');
+  const L = [
+    { id: 'MissFortune', name: 'Miss Fortune' },
+    { id: 'TwistedFate', name: 'Twisted Fate' },
+    { id: 'AurelionSol', name: 'Aurelion Sol' },
+    { id: 'Yasuo', name: 'Yasuo' },
+    { id: 'Ahri', name: 'Ahri' },
+  ];
+  it('redirects only when sure, and keeps the query', () => {
+    expect(champAddressFix('/champions/mf', '?role=BOTTOM', L)).toBe('/champions/missfortune?role=BOTTOM');
+    expect(champAddressFix('/champions/tf/vs/asol', '', L)).toBe('/champions/twistedfate/vs/aurelionsol');
+    expect(champAddressFix('/champions/ahri/vs/miss-fortune', '', L)).toBe('/champions/ahri/vs/missfortune');
+    expect(champAddressFix('/champions/ahri', '', L)).toBe(null); // already right
+    expect(champAddressFix('/champions/yasou', '', L)).toBe(null); // only a suggestion: the page asks
+    expect(champAddressFix('/champions/mf/vs/missfortune', '', L)).toBe(null); // same champion twice
+    expect(champAddressFix('/champions/mf', '', [])).toBe(null); // list not loaded yet
+    expect(champAddressFix('/champions', '', L)).toBe(null);
   });
 });
