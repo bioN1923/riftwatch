@@ -15,3 +15,11 @@ On `bioN1923#EUNE`'s profile, the header asked for `/api/status/euw1`. The statu
 
 ## Checks
 - Typecheck clean, a11y `{}`. The demo has no server notices, so the standard screenshots show no banner (`demo/`).
+
+## Live check (00:04)
+- Deployed automatically (EXIT CODE 0, 00:03:50).
+- Network log:
+  - on `/lol/eun1/bioN1923-EUNE` the header now asks for **`/api/status/eun1`** (it used to ask for euw1);
+  - on `/champions` (not about a server) it asks for `/api/status/euw1`, the saved search region.
+- Neither server has notices right now, so no banner shows. The label rendering is covered by the code review and tests only.
+- Screenshot: `live/tier-list.jpg`.
