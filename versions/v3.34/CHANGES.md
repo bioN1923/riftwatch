@@ -10,3 +10,8 @@
 
 ## Checks
 - 76 tests pass; typecheck, build and a11y check clean (the button keeps its "Language: English" label).
+
+## Live check (19:33)
+- Deployed automatically through `deploy.request` (deploy.log: EXIT CODE 0, 19:31).
+- `/changelog` lists v3.34 first. The language button's globe has `hidden sm:block`: it shows on desktop (1920 px, checked) and is hidden on phones. The phone width was checked in the demo screenshots, because the Chrome window could not be resized below desktop width.
+- Screenshot: `live/changelog-desktop.jpg`.
