@@ -124,7 +124,8 @@ export function ProfileHeader({
             </div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2 lg:flex lg:gap-6">
+          {/* Side by side even on phones (emblem above the text there), so the match list isn't a full screen away. */}
+          <div className="grid grid-cols-2 gap-3 lg:flex lg:gap-6">
             <RankBlock label={t('profile.solo')} entry={solo} big />
             <RankBlock label={t('profile.flex')} entry={flex} />
           </div>
@@ -179,7 +180,7 @@ function CopyLink() {
 function RankBlock({ label, entry, big }: { label: string; entry?: LeagueEntry; big?: boolean }) {
   if (!entry) {
     return (
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col items-start gap-1.5 sm:flex-row sm:items-center sm:gap-3">
         <span className="grid size-12 place-items-center rounded-full border border-dashed border-line-strong text-faint" aria-hidden>
           –
         </span>
@@ -194,16 +195,23 @@ function RankBlock({ label, entry, big }: { label: string; entry?: LeagueEntry; 
   const wr = games ? entry.wins / games : 0;
   const size = big ? 76 : 56;
   return (
-    <div className="flex items-center gap-3">
-      <img src={rankEmblem(entry.tier)} alt="" {...fadeIn()} width={size} height={size} style={{ width: size, height: size }} className="shrink-0 drop-shadow-[0_6px_14px_rgba(0,0,0,0.45)]" />
-      <div>
+    <div className="flex min-w-0 flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-3">
+      <img
+        src={rankEmblem(entry.tier)}
+        alt=""
+        {...fadeIn()}
+        width={size}
+        height={size}
+        className={clsx('size-12 shrink-0 drop-shadow-[0_6px_14px_rgba(0,0,0,0.45)]', big ? 'sm:size-[76px]' : 'sm:size-14')}
+      />
+      <div className="min-w-0">
         <p className="flex items-center gap-1.5 text-xs text-muted">
           {label}
           {entry.hotStreak && <Flame className="size-3.5 text-kda-great" aria-label={t('profile.hotStreak')} />}
         </p>
-        <p className={clsx('font-display font-extrabold leading-tight', big ? 'text-3xl' : 'text-2xl')}>
+        <p className={clsx('font-display text-xl font-extrabold leading-tight', big ? 'sm:text-3xl' : 'sm:text-2xl')}>
           {tierName(entry.tier)} {APEX.has(entry.tier) ? '' : entry.rank}
-          <span className="num ml-2 whitespace-nowrap text-base font-semibold text-muted">{t('common.lp', { lp: entry.leaguePoints })}</span>
+          <span className="num ml-2 whitespace-nowrap text-sm font-semibold text-muted sm:text-base">{t('common.lp', { lp: entry.leaguePoints })}</span>
         </p>
         <p className="num text-xs text-muted">
           {t('common.wins', { count: entry.wins })} {t('common.losses', { count: entry.losses })} · <span className={clsx('font-semibold', wr >= 0.5 ? 'text-win' : 'text-loss')}>{pct(wr)}</span>

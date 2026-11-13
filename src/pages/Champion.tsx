@@ -205,7 +205,8 @@ function StatStrip({ s, loading }: { s?: ChampionStats; loading: boolean }) {
     [t('cp.games'), thousands(sum.games)],
   ];
   return (
-    <dl className="mt-7 flex flex-wrap items-end gap-x-8 gap-y-3">
+    // Phones: a tidy 3-column grid (dividers only make sense in a single row, so they start at sm).
+    <dl className="mt-7 grid grid-cols-3 items-end gap-x-4 gap-y-4 sm:flex sm:flex-wrap sm:gap-x-8 sm:gap-y-3">
       <div>
         <dt className="text-xs text-muted">{t('cp.tier')}</dt>
         <dd className="mt-1">
@@ -213,12 +214,12 @@ function StatStrip({ s, loading }: { s?: ChampionStats; loading: boolean }) {
         </dd>
       </div>
       {items.map(([label, value, tone]) => (
-        <div key={label} className="border-l border-line pl-8 first-of-type:border-0">
-          <dt className="text-xs text-muted">{label}</dt>
-          <dd className={clsx('display-num mt-0.5 text-4xl font-extrabold leading-none', tone)}>{value}</dd>
+        <div key={label} className="min-w-0 sm:border-l sm:border-line sm:pl-8">
+          <dt className="truncate text-xs text-muted">{label}</dt>
+          <dd className={clsx('display-num mt-0.5 text-3xl font-extrabold leading-none sm:text-4xl', tone)}>{value}</dd>
         </div>
       ))}
-      {sum.lowSample && <p className="text-xs text-faint">{t('cp.smallSample')}</p>}
+      {sum.lowSample && <p className="col-span-3 text-xs text-faint">{t('cp.smallSample')}</p>}
     </dl>
   );
 }
