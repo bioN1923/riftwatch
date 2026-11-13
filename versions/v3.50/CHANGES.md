@@ -20,3 +20,8 @@ On iPhone SE the profile tabs are now on the first screen.
 ## Checks
 - 94 tests pass, typecheck clean, a11y `{}` (icon-only buttons keep their accessible names), no horizontal overflow.
 - Screenshots in `demo/`: `before-phone-profile-*` and `phone-profile-*` for iPhone SE and iPhone 13, plus the standard set.
+
+## Live check (00:25)
+- Deployed automatically (EXIT CODE 0, 00:24:30).
+- bioN1923#EUNE on desktop: unchanged, and the Copy link and Compare buttons show their labels, now with title tooltips (`live/profile-desktop.jpg`).
+- The phone layout was checked in the demo (the Chrome window can't be resized to phone width).
