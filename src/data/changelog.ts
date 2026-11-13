@@ -10,6 +10,11 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.31',
+    date: '2026-11-13',
+    items: ['Home: your favourites show the same, up-to-date rank as Recently viewed (they used to keep the rank from when you starred them).'],
+  },
+  {
     version: '3.30',
     date: '2026-11-13',
     items: ['Ladder: find a player by Riot ID. It jumps to their page and highlights them.'],

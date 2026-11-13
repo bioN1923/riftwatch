@@ -58,10 +58,14 @@ const regionStore = createStore<string>('rw:region', 'euw1');
 
 export const useRecent = () => useStore(recentStore);
 export const useFavorites = () => useStore(favoriteStore);
+export const getFavorites = () => favoriteStore.get();
 export const useRegion = () => [useStore(regionStore), regionStore.set] as const;
 
 export function addRecent(p: SavedPlayer) {
   recentStore.set((list) => [p, ...list.filter((x) => !samePlayer(x, p))].slice(0, 8));
+  // A favourite keeps the rank and icon it had when it was starred; refresh them on every visit
+  // so Favorites and Recently viewed never disagree about the same player.
+  favoriteStore.set((list) => (list.some((x) => samePlayer(x, p)) ? list.map((x) => (samePlayer(x, p) ? { ...x, ...p } : x)) : list));
 }
 export function removeRecent(p: SavedPlayer) {
   recentStore.set((list) => list.filter((x) => !samePlayer(x, p)));

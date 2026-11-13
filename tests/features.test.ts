@@ -495,3 +495,18 @@ describe('queue names', async () => {
     expect(queueName(1740)).toBe(queueName(99999)); // not in Riot's list: the generic "special mode" label
   });
 });
+
+describe('saved players stay in sync', async () => {
+  const { addRecent, toggleFavorite, getFavorites } = await import('../src/lib/storage');
+  it('a visit refreshes a favourite’s rank and icon, and leaves other favourites alone', () => {
+    const base = { platform: 'eun1', gameName: 'Sync', tagLine: 'TEST' };
+    toggleFavorite({ ...base, tier: 'SILVER', rank: 'I', profileIconId: 1 });
+    toggleFavorite({ platform: 'euw1', gameName: 'Other', tagLine: 'X', tier: 'GOLD', rank: 'IV' });
+    addRecent({ ...base, tier: 'SILVER', rank: 'II', profileIconId: 7 });
+    const favs = getFavorites();
+    expect(favs.find((f) => f.gameName === 'Sync')).toMatchObject({ tier: 'SILVER', rank: 'II', profileIconId: 7 });
+    expect(favs.find((f) => f.gameName === 'Other')).toMatchObject({ tier: 'GOLD', rank: 'IV' });
+    addRecent({ platform: 'kr', gameName: 'NotFav', tagLine: 'KR1' });
+    expect(getFavorites().some((f) => f.gameName === 'NotFav')).toBe(false);
+  });
+});
