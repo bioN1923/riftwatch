@@ -10,6 +10,11 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.28',
+    date: '2026-11-13',
+    items: ['Match details: a link to how your lane matchup usually goes, so you can tell whether it was the matchup or the game.'],
+  },
+  {
     version: '3.27',
     date: '2026-11-13',
     items: ['Profiles: "Try next" suggests up to 3 champions you haven\'t been playing that fit your main role and style and are strong this patch.'],

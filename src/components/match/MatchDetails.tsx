@@ -1,4 +1,6 @@
 import { useRef, useState } from 'react';
+import { Link } from 'react-router';
+import { Swords } from 'lucide-react';
 import clsx from 'clsx';
 import type { MatchSummary } from '../../../shared/types';
 import { PostGame } from './details/PostGame';
@@ -8,6 +10,10 @@ import { TimelineTab } from './details/TimelineTab';
 import { Metrics } from './details/Metrics';
 import { SlidingIndicator, useSlideDirection } from '../ui/Motion';
 import { t } from '../../i18n';
+import { assets, matchupPath, useStaticData } from '../../lib/ddragon';
+import { SR_QUEUES } from '../../lib/lanes';
+import { me } from '../../lib/stats';
+import { ROLE_LABEL } from '../ui/RoleIcon';
 
 const TABS = [
   { id: 'post', label: () => t('details.post') },
@@ -66,6 +72,25 @@ export function MatchDetails({ match, puuid, platform }: { match: MatchSummary; 
         {tab === 'timeline' && <TimelineTab match={match} puuid={puuid} platform={platform} />}
         {tab === 'metrics' && <Metrics match={match} puuid={puuid} platform={platform} />}
       </div>
+      <LaneMatchupLink match={match} puuid={puuid} />
+    </div>
+  );
+}
+
+/** After a game: was it the matchup or the game? A link to how this lane matchup usually goes. */
+function LaneMatchupLink({ match, puuid }: { match: MatchSummary; puuid: string }) {
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  const p = me(match, puuid);
+  if (!sd || !p?.position || match.remake || !SR_QUEUES.has(match.queueId)) return null;
+  const opp = match.participants.find((x) => x.teamId !== p.teamId && x.position === p.position);
+  if (!opp) return null;
+  return (
+    <div className="border-t border-line px-4 py-2.5 text-sm">
+      <Link to={matchupPath(sd, p.championId, opp.championId, p.position)} className="inline-flex items-center gap-1.5 text-gold underline-offset-2 hover:underline">
+        <Swords className="size-3.5" aria-hidden />
+        {t('md.matchup', { a: a.champion(p.championId).name, b: a.champion(opp.championId).name, role: ROLE_LABEL[p.position] })}
+      </Link>
     </div>
   );
 }

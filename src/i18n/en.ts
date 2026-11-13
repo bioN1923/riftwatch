@@ -927,5 +927,6 @@ const en = {
   "tn.title": "Try next",
   "tn.sub": "Champions you haven't played lately that suit your {role} pool and are strong on patch {patch}.",
   "tn.like": "Like {name} · {cls}",
+  "md.matchup": "{a} vs {b} in {role}: how this matchup usually goes",
 };
 export default en;

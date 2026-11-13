@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.28](v3.28/CHANGES.md) | 13 Nov 2026 | Match details link to the lane matchup page ("was it the matchup or the game?") |
 | [v3.27](v3.27/CHANGES.md) | 13 Nov 2026 | Profiles: "Try next" suggests strong unplayed champions that fit the player's role and style |
 | [v3.26](v3.26/CHANGES.md) | 13 Nov 2026 | Tier list: stars and a "My pool" filter for the champions saved in the draft helper |
 | [v3.25](v3.25/CHANGES.md) | 13 Nov 2026 | Public "What's new" page (/changelog) with a player-facing entry per version |

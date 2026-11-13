@@ -961,5 +961,6 @@ const dict: Record<string, string> = {
   "tn.title": "Warto spróbować",
   "tn.sub": "Bohaterowie, którymi ostatnio nie grałeś, pasujący do twojej puli na {role} i mocni na patchu {patch}.",
   "tn.like": "Jak {name} · {cls}",
+  "md.matchup": "{a} vs {b} na {role}: jak zwykle wygląda to starcie",
 };
 export default dict;
