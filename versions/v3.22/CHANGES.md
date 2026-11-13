@@ -20,3 +20,7 @@
 - Deployed 13 Nov 2026 14:07 (deploy.log EXIT CODE 0). The site stays responsive with the bigger Master league list: tier list API 0.17 s, a profile 0.24 s.
 - Baseline for measuring the new collection rate: **6,718 ranked games on 16.22 at 12:10 UTC** (6,692 at about 11:30 UTC). The next iteration compares.
 - Nothing visual changed this round, so there are no live screenshots.
+
+## Result (measured in v3.23)
+- 6,718 at 12:10 UTC → 6,742 at 12:17 → **6,777 at 12:22**: +59 ranked games in about 12 minutes, **about 300/hour** against about 17/hour before v3.22.
+- Some of that is the first pass reading each newly added Master player's last 10 games, so the steady rate will be lower; check again in a later iteration. Each deploy restarts the collector and so repeats that first pass.
