@@ -481,3 +481,18 @@ select option {
   background-color: var(--surface);
   color: var(--text);
 }
+
+/* Visitors who ask their system for less motion get none: no slides, fades, pulses or growing
+   bars, and content appears in its final state straight away (WCAG 2.3.3). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
