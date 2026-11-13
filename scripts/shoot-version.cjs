@@ -19,6 +19,7 @@ const PAGES = [
   ['08-compare', '/compare?a=euw1/Caps-EUW&b=euw1/Rekkles-EUW'],
   ['09-ladder', '/leaderboard'],
   ['10-arena', '/champions/ahri?queue=arena'],
+  ['13-draft', '/draft?role=MIDDLE&enemy=zed&pool=ahri,syndra,orianna'],
 ];
 
 (async () => {

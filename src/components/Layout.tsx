@@ -204,6 +204,9 @@ function MainNav() {
       <NavLink to="/compare" className={link}>
         {t('nav.compare')}
       </NavLink>
+      <NavLink to="/draft" className={link}>
+        {t('nav.draft')}
+      </NavLink>
     </nav>
   );
 }

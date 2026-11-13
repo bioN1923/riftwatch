@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import clsx from 'clsx';
 import { TrendingDown, TrendingUp } from 'lucide-react';
@@ -13,7 +13,13 @@ import { t } from '../../i18n';
 export function PatchMovers({ data, role, group }: { data: TierList; role: string; group: string }) {
   const m = data.movers;
   if (!m || !data.patch) return null;
-  const pick = (list: PatchMover[]) => list.filter((x) => role === 'ALL' || x.role === role).slice(0, 5);
+  const [all, setAll] = useState(false);
+  // The server picks movers by a sample-weighted score; show them ordered by the change itself.
+  const pick = (list: PatchMover[]) =>
+    list
+      .filter((x) => role === 'ALL' || x.role === role)
+      .slice(0, 5)
+      .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
   const up = pick(m.up);
   const down = pick(m.down);
   if (!up.length && !down.length) return null;
@@ -24,14 +30,19 @@ export function PatchMovers({ data, role, group }: { data: TierList; role: strin
       </h2>
       <p className="text-xs text-muted">{t('mv.sub')}</p>
       <div className="mt-3 grid gap-3 md:grid-cols-2">
-        <Column title={t('mv.up')} icon={<TrendingUp className="size-4 text-win" aria-hidden />} list={up} group={group} />
-        <Column title={t('mv.down')} icon={<TrendingDown className="size-4 text-loss" aria-hidden />} list={down} group={group} />
+        <Column title={t('mv.up')} icon={<TrendingUp className="size-4 text-win" aria-hidden />} list={up} group={group} all={all} />
+        <Column title={t('mv.down')} icon={<TrendingDown className="size-4 text-loss" aria-hidden />} list={down} group={group} all={all} />
       </div>
+      {(up.length > 3 || down.length > 3) && (
+        <button onClick={() => setAll((v) => !v)} aria-expanded={all} className="mt-2 text-sm font-medium text-gold hover:underline sm:hidden">
+          {all ? t('mv.fewer') : t('mv.all')}
+        </button>
+      )}
     </section>
   );
 }
 
-function Column({ title, icon, list, group }: { title: string; icon: ReactNode; list: PatchMover[]; group: string }) {
+function Column({ title, icon, list, group, all }: { title: string; icon: ReactNode; list: PatchMover[]; group: string; all: boolean }) {
   const { data: sd } = useStaticData();
   const a = assets(sd);
   return (
@@ -44,14 +55,15 @@ function Column({ title, icon, list, group }: { title: string; icon: ReactNode; 
         <p className="px-1 py-2 text-sm text-faint">{t('mv.none')}</p>
       ) : (
         <ol className="space-y-0.5">
-          {list.map((x) => {
+          {list.map((x, i) => {
             const c = a.champion(x.championId);
             const slug = sd?.champions.get(x.championId)?.id;
             const q = new URLSearchParams();
             if (group !== 'ranked') q.set('queue', group);
             else if (x.role !== 'ALL') q.set('role', x.role);
             return (
-              <li key={`${x.championId}-${x.role}`}>
+              // On phones only the top three show until "show all", so the tier list isn't pushed off screen.
+              <li key={`${x.championId}-${x.role}`} className={clsx(i >= 3 && !all && 'hidden sm:block')}>
                 <Link
                   to={slug ? `/champions/${champSlug(slug)}${q.size ? `?${q}` : ''}` : '#'}
                   className="grid grid-cols-[32px_minmax(0,1fr)_auto_auto] items-center gap-2.5 rounded px-1 py-1.5 transition-colors hover:bg-raised"
