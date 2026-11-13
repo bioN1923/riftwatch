@@ -16,3 +16,9 @@
 
 ## Checks
 - 57 tests pass (new "lane curve backfill" test: an old-format store is backfilled to exactly the same lane curves, and reading a game twice doesn't count it twice). Typecheck and build pass.
+
+## Live check (after deploy)
+- Deployed 13 Nov 2026 09:43 (deploy.log EXIT CODE 0).
+- `/draft?role=MIDDLE&enemy=zed` has the title "Answers to Zed (Mid) · Draft helper" and its own preview image (`live/share-draft-zed.jpg`: Zed's splash with Ahri, Yasuo, Yone and Syndra).
+- `/compare?a=…&b=…` names both players in the title and points to `/og/compare.jpg` (200, about 0.3 s).
+- The backfill had just started, so the lane chart wasn't on Ahri vs Syndra yet; check again next iteration.
