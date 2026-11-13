@@ -890,5 +890,11 @@ const en = {
   "today.record": "Won–lost",
   "today.lp": "LP",
   "today.best": "Best game: {champion} {kda}",
+  "mp.laneTitle": "How the lane goes",
+  "mp.laneSub_one": "{a}’s average lead over {b} at 5, 10 and 15 minutes, from {count} game with a timeline.",
+  "mp.laneSub_other": "{a}’s average lead over {b} at 5, 10 and 15 minutes, from {count} games with a timeline.",
+  "mp.laneGold": "Gold lead",
+  "mp.laneCs": "CS lead",
+  "mp.minute": "{n} min",
 };
 export default en;

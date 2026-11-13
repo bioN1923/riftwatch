@@ -210,3 +210,25 @@ describe('benchmarks', async () => {
     expect(store.benchmarks('TOP', 999999).avg).toBeNull();
   });
 });
+
+describe('lane curve', async () => {
+  const { ChampionStatsStore } = await import('../server/champStats');
+  const { mockMatches, mockTimeline } = await import('../server/mock');
+  it('averages gold and CS leads at 5, 10 and 15 minutes', () => {
+    const store = new ChampionStatsStore(null);
+    for (let i = 0; i < 40; i++)
+      for (const m of mockMatches({ gameName: `Lane${i}`, tagLine: 'X' }, 0, 20, {}).matches) {
+        store.addMatch(m);
+        store.addTimeline(m, mockTimeline(m));
+      }
+    const list = store.tierList('ranked').rows.filter((r) => r.role === 'MIDDLE');
+    const found = list
+      .flatMap((r) => store.champion(r.championId, 'ranked', 'MIDDLE').matchups.map((mu) => store.matchup(r.championId, mu.championId, 'ranked', 'MIDDLE')))
+      .find((x) => x.lane);
+    expect(found?.lane?.minutes).toEqual([5, 10, 15]);
+    expect(found!.lane!.gold).toHaveLength(3);
+    expect(found!.lane!.games).toBeGreaterThanOrEqual(5);
+    expect(found!.lane!.gold.every(Number.isFinite)).toBe(true);
+    expect(found!.lane!.cs.every(Number.isFinite)).toBe(true);
+  });
+});

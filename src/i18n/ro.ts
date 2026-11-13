@@ -903,5 +903,12 @@ const dict: Record<string, string> = {
   "today.record": "Câștigate–pierdute",
   "today.lp": "LP",
   "today.best": "Cel mai bun meci: {champion} {kda}",
+  "mp.laneTitle": "Cum decurge lane-ul",
+  "mp.laneSub_one": "Avantajul mediu al lui {a} față de {b} la minutele 5, 10 și 15, din {count} meci cu timeline.",
+  "mp.laneSub_few": "Avantajul mediu al lui {a} față de {b} la minutele 5, 10 și 15, din {count} meciuri cu timeline.",
+  "mp.laneSub_other": "Avantajul mediu al lui {a} față de {b} la minutele 5, 10 și 15, din {count} de meciuri cu timeline.",
+  "mp.laneGold": "Avantaj de gold",
+  "mp.laneCs": "Avantaj de CS",
+  "mp.minute": "min. {n}",
 };
 export default dict;

@@ -890,5 +890,11 @@ const dict: Record<string, string> = {
   "today.record": "Siege–Niederlagen",
   "today.lp": "LP",
   "today.best": "Bestes Spiel: {champion} {kda}",
+  "mp.laneTitle": "So läuft die Lane",
+  "mp.laneSub_one": "Durchschnittlicher Vorsprung von {a} gegen {b} nach 5, 10 und 15 Minuten, aus {count} Spiel mit Zeitleiste.",
+  "mp.laneSub_other": "Durchschnittlicher Vorsprung von {a} gegen {b} nach 5, 10 und 15 Minuten, aus {count} Spielen mit Zeitleiste.",
+  "mp.laneGold": "Gold-Vorsprung",
+  "mp.laneCs": "CS-Vorsprung",
+  "mp.minute": "{n} Min.",
 };
 export default dict;

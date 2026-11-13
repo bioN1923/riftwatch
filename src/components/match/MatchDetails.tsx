@@ -35,7 +35,7 @@ export function MatchDetails({ match, puuid, platform }: { match: MatchSummary; 
 
   return (
     <div className="border-t border-line-strong bg-bg/40">
-      <div role="tablist" aria-label={t('details.tabs')} className="relative flex gap-1 overflow-x-auto border-b border-line px-3">
+      <div role="tablist" aria-label={t('details.tabs')} className="relative flex gap-1 overflow-x-auto overflow-y-hidden border-b border-line px-3">
         <SlidingIndicator />
         {TABS.map((item, i) => (
           <button

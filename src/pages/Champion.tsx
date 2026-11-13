@@ -122,7 +122,7 @@ function ChampionView({ championId }: { championId: number }) {
           {detail && <Abilities detail={detail} />}
 
           {group === 'ranked' && s && s.roles.length > 0 && (
-            <div role="tablist" aria-label={t('tl.role')} className="relative mt-6 flex gap-5 overflow-x-auto">
+            <div role="tablist" aria-label={t('tl.role')} className="relative mt-6 flex gap-5 overflow-x-auto overflow-y-hidden">
               <SlidingIndicator />
               {s.roles.map((r) => (
                 <RoleTab key={r.role} role={r.role} active={s.role === r.role} onClick={() => set('role', r.role)}>

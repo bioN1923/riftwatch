@@ -116,7 +116,7 @@ export function ChampionsPage() {
 
       <div className="mt-6 flex flex-wrap items-end justify-between gap-4 border-b border-line">
         {group === 'ranked' ? (
-          <div role="tablist" aria-label={t('tl.role')} className="relative flex gap-5 overflow-x-auto">
+          <div role="tablist" aria-label={t('tl.role')} className="relative flex gap-5 overflow-x-auto overflow-y-hidden">
             <SlidingIndicator />
             {ROLE_TABS.map((tab) => (
               <RoleTab key={tab.id} role={tab.id} active={role === tab.id} onClick={() => set('role', tab.id === 'ALL' ? null : tab.id)}>

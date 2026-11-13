@@ -319,6 +319,8 @@ export interface MatchupStats
   goldDiff15: number | null;
   csDiff15: number | null;
   xpDiff15: number | null;
+  /** Average gold and CS lead over the lane opponent at 5, 10 and 15 minutes (5+ games with timelines). */
+  lane: { minutes: number[]; gold: number[]; cs: number[]; games: number } | null;
   /** The champion's overall win rate in this role, for comparison. */
   baseline: Rated | null;
   /** Other common lane opponents, for quick switching. */

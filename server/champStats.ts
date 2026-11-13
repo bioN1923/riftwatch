@@ -19,7 +19,11 @@ interface Vs extends C {
   gn: number; // games with a timeline
   cd?: number; // summed CS diff at 15
   xd?: number; // summed XP diff at 15
+  /** Lane curve: summed [gold@5, gold@10, gold@15, cs@5, cs@10, cs@15] leads, over `ln` games. */
+  ld?: number[];
+  ln?: number;
 }
+export const LANE_MINUTES = [5, 10, 15];
 
 /** Win rate pulled towards 50% for small samples, so one lucky game doesn't top a ranking. */
 export const shrunk = (w: number, g: number, k = 10) => (w + 0.5 * k) / (g + k);
@@ -491,6 +495,15 @@ export class ChampionStatsStore {
             v.cd = (v.cd ?? 0) + (f15.cs[i] - f15.cs[j]);
             v.xd = (v.xd ?? 0) + (f15.xp[i] - f15.xp[j]);
             v.gn++;
+            const fs = LANE_MINUTES.map((t) => tl.frames[t]);
+            if (fs.every(Boolean)) {
+              const ld = (v.ld ??= [0, 0, 0, 0, 0, 0]);
+              fs.forEach((f, k) => {
+                ld[k] += f.gold[i] - f.gold[j];
+                ld[k + 3] += f.cs[i] - f.cs[j];
+              });
+              v.ln = (v.ln ?? 0) + 1;
+            }
           }
         }
       }
@@ -626,6 +639,10 @@ export class ChampionStatsStore {
       goldDiff15: v?.gn ? v.gd / v.gn : null,
       csDiff15: v?.gn && v.cd != null ? v.cd / v.gn : null,
       xpDiff15: v?.gn && v.xd != null ? v.xd / v.gn : null,
+      lane:
+        v?.ld && v.ln && v.ln >= 5
+          ? { minutes: LANE_MINUTES, gold: v.ld.slice(0, 3).map((x) => x / v.ln!), cs: v.ld.slice(3).map((x) => x / v.ln!), games: v.ln }
+          : null,
       baseline: r?.g ? rated(r) : null,
       others: Object.entries(r?.vs ?? {})
         .filter(([id]) => Number(id) !== opponentId)
