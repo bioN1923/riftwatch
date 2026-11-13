@@ -10,6 +10,11 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.26',
+    date: '2026-11-13',
+    items: ['Tier list: the champions you saved in the draft helper get a star, and "My pool" shows just them.'],
+  },
+  {
     version: '3.25',
     date: '2026-11-13',
     items: ['This page: a short list of what changed on Riftwatch, newest first.'],

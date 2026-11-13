@@ -922,5 +922,7 @@ const dict: Record<string, string> = {
   "draft.inPool": "Dans ton pool",
   "cl.title": "Nouveautés",
   "cl.lead": "Ce qui a changé sur Riftwatch, du plus récent au plus ancien.",
+  "tl.myPool": "Mon pool",
+  "tl.myPoolHint": "Afficher seulement les champions enregistrés dans l'aide à la draft",
 };
 export default dict;

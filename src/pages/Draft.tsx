@@ -10,6 +10,7 @@ import { assets, champSlug, useStaticData } from '../lib/ddragon';
 import { pct } from '../lib/format';
 import { banSuggestions } from '../lib/draft';
 import { champHit } from '../lib/champSearch';
+import { readPool, savePool } from '../lib/pool';
 import { parseRiotId } from '../lib/riotId';
 import { me } from '../lib/stats';
 import { useRegion } from '../lib/storage';
@@ -25,7 +26,6 @@ import { t } from '../i18n';
  */
 const ROLES = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'] as const;
 type Role = (typeof ROLES)[number];
-const POOL_KEY = 'rw:draft-pool';
 const MAX_POOL = 8;
 
 export function DraftPage() {
@@ -110,22 +110,6 @@ export function DraftPage() {
   );
 }
 
-function readPool(role: string) {
-  try {
-    return (JSON.parse(localStorage.getItem(POOL_KEY) ?? '{}') as Record<string, string>)[role] ?? '';
-  } catch {
-    return '';
-  }
-}
-function savePool(role: string, slugs: string) {
-  try {
-    const all = JSON.parse(localStorage.getItem(POOL_KEY) ?? '{}') as Record<string, string>;
-    all[role] = slugs;
-    localStorage.setItem(POOL_KEY, JSON.stringify(all));
-  } catch {
-    /* storage blocked */
-  }
-}
 
 /* --------------------------------------------------------- champion grid */
 

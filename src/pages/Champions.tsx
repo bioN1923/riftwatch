@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { PatchMovers } from '../components/champions/PatchMovers';
 import { PatchDelta } from '../components/ui/PatchDelta';
-import { ArrowDown, ArrowUp, Search, Swords } from 'lucide-react';
+import { ArrowDown, ArrowUp, Search, Star, Swords } from 'lucide-react';
 import type { StatsGroup, TierRow } from '../../shared/types';
 import { api } from '../lib/api';
 import { assets, champSlug, useStaticData, matchupPath } from '../lib/ddragon';
@@ -17,6 +17,7 @@ import { GroupToggle, PatchSelect, ROLE_TABS, RoleTab, TierBadge, WinRateBar } f
 import { SlidingIndicator } from '../components/ui/Motion';
 import { t } from '../i18n';
 import { champHit } from '../lib/champSearch';
+import { readPools } from '../lib/pool';
 
 type SortKey = 'rank' | 'name' | 'tier' | 'winRate' | 'pickRate' | 'banRate' | 'games';
 const TIER_ORDER = { 'S+': 0, S: 1, A: 2, B: 3, C: 4, D: 5, '–': 6 };
@@ -29,6 +30,11 @@ export function ChampionsPage() {
   const role = group !== 'ranked' ? 'ALL' : (params.get('role') ?? 'ALL');
   const patch = params.get('patch') ?? undefined;
   const [query, setQuery] = useState('');
+  // The champions the player saved in the draft helper, per role; only on ranked, where roles exist.
+  const [pools] = useState(readPools);
+  const [onlyPool, setOnlyPool] = useState(false);
+  const inPool = (r: TierRow) => !!sd && !!pools.get(r.role)?.has(champSlug(sd.champions.get(r.championId)?.id ?? ''));
+  const showPool = group === 'ranked' && pools.size > 0;
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: 'tier', dir: 1 });
   const { data: sd } = useStaticData();
   const a = assets(sd);
@@ -56,7 +62,8 @@ export function ChampionsPage() {
     const needle = query.trim();
     const named = list
       .map((r) => ({ ...r, name: a.champion(r.championId).name }))
-      .filter((r) => !needle || champHit(needle, { id: sd?.champions.get(r.championId)?.id ?? r.name, name: r.name }) != null);
+      .filter((r) => !needle || champHit(needle, { id: sd?.champions.get(r.championId)?.id ?? r.name, name: r.name }) != null)
+      .filter((r) => !(showPool && onlyPool) || inPool(r));
     const val = (r: TierRow & { name: string }) =>
       sort.key === 'name' ? r.name : sort.key === 'tier' ? TIER_ORDER[r.tier] * 1000 + r.rank : sort.key === 'rank' ? r.rank : (r[sort.key] as number);
     return named.sort((x, y) => {
@@ -65,7 +72,7 @@ export function ChampionsPage() {
       const c = typeof vx === 'string' ? vx.localeCompare(vy as string) : (vx as number) - (vy as number);
       return c * sort.dir;
     });
-  }, [q.data, role, query, sort, a]);
+  }, [q.data, role, query, sort, a, onlyPool, showPool, sd]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const header = (key: SortKey, label: string, align: 'left' | 'right' = 'right', defaultDir: 1 | -1 = -1) => {
     const active = sort.key === key;
@@ -128,7 +135,23 @@ export function ChampionsPage() {
         ) : (
           <span />
         )}
-        <label className="relative mb-2 flex items-center">
+        <div className="mb-2 flex items-center gap-2">
+        {showPool && (
+          <button
+            type="button"
+            aria-pressed={onlyPool}
+            onClick={() => setOnlyPool((v) => !v)}
+            title={t('tl.myPoolHint')}
+            className={clsx(
+              'flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded border px-3 text-sm font-medium transition-colors',
+              onlyPool ? 'border-gold bg-gold/10 text-gold' : 'border-line text-muted hover:text-text',
+            )}
+          >
+            <Star className={clsx('size-3.5', onlyPool && 'fill-current')} aria-hidden />
+            {t('tl.myPool')}
+          </button>
+        )}
+        <label className="relative flex items-center">
           <span className="sr-only">{t('tl.filter')}</span>
           <Search className="pointer-events-none absolute left-2.5 size-4 text-faint" aria-hidden />
           <input
@@ -138,6 +161,7 @@ export function ChampionsPage() {
             className="h-9 w-56 rounded border border-line bg-surface pl-8 pr-3 text-sm outline-none placeholder:text-faint focus:border-gold"
           />
         </label>
+        </div>
       </div>
 
       {q.isPending ? (
@@ -198,6 +222,9 @@ export function ChampionsPage() {
                       <Link to={href} onClick={(e) => e.stopPropagation()} className="flex items-center gap-3 font-medium">
                         <GameImg src={c.url} alt="" size={34} rounded="md" />
                         <span className="group-hover:text-gold">{c.name}</span>
+                        {showPool && inPool(r) && (
+                          <Star className="size-3.5 shrink-0 fill-gold text-gold" aria-label={t('draft.inPool')} role="img" />
+                        )}
                       </Link>
                     </td>
                     {role === 'ALL' && group === 'ranked' && (

@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.26](v3.26/CHANGES.md) | 13 Nov 2026 | Tier list: stars and a "My pool" filter for the champions saved in the draft helper |
 | [v3.25](v3.25/CHANGES.md) | 13 Nov 2026 | Public "What's new" page (/changelog) with a player-facing entry per version |
 | [v3.24](v3.24/CHANGES.md) | 13 Nov 2026 | Search dropdown: champion names no longer cut off (class under the name; icon-only badge on phones) |
 | [v3.23](v3.23/CHANGES.md) | 13 Nov 2026 | Champion search understands nicknames (mf, tf, j4, asol, lb, ww…) everywhere |

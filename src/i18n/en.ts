@@ -922,5 +922,7 @@ const en = {
   "draft.inPool": "In your pool",
   "cl.title": "What's new",
   "cl.lead": "What changed on Riftwatch, newest first.",
+  "tl.myPool": "My pool",
+  "tl.myPoolHint": "Show only the champions you saved in the draft helper",
 };
 export default en;
