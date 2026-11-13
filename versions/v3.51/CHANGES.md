@@ -20,3 +20,7 @@ I ran a script over 15 pages on the iPhone SE demo: home, tier list, champion, m
 ## Checks
 - **Re-sweep:** the tier list and Stats tab have no small targets left except the hidden skip link. On draft, only links inside text rows remain.
 - 94 tests pass, typecheck clean, a11y `{}`, standard screenshots in `demo/`.
+
+## Live check (00:38)
+- Deployed automatically (EXIT CODE 0, 00:37:23).
+- Tier list header buttons on the live site measure **#: 24×24, Champion 53×24, Tier 35×24 … Games 36×24**. They used to be 15 px tall, and "#" 8 px wide. The table looks the same (`live/tier-list.jpg`).
