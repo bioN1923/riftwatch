@@ -13,3 +13,7 @@
 
 ## Checks
 - 67 tests pass; typecheck, build and a11y check clean. Demo screenshots in `demo/`.
+
+## Live check (after deploy)
+- Deployed 13 Nov 2026 13:50 (deploy.log EXIT CODE 0).
+- `/champions/ahri` live stylesheet contains the `@media (prefers-reduced-motion: reduce)` rule (read from the page's CSS; the check browser itself doesn't ask for reduced motion, so the page looks unchanged there, as intended). Nothing to screenshot this round: the change is invisible unless the setting is on.
