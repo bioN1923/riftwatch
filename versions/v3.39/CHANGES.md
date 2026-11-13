@@ -16,3 +16,9 @@ Every tier-list row shows the change since last patch (e.g. Kennen "+7.2%"), in 
 - Typecheck clean, a11y `{}`.
 - Demo: 44 deltas → 0 green, 2 red, 42 grey. The demo data is random, so that's expected.
 - Screenshot: `demo/tier-deltas-desktop.png` plus the standard set.
+
+## Live check (22:47)
+- Deployed automatically (EXIT CODE 0, 22:46:55).
+- Tier list on 16.22: 221 deltas → **7 green, 10 red, 204 grey**. Before this, every one of them was green or red.
+- Mordekaiser's +15.5% still shows green; the small top-of-list changes (Kennen, Draven, Yone…) are now grey.
+- Screenshot: `live/tier-deltas.jpg`.
