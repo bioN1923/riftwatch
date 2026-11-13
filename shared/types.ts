@@ -273,7 +273,7 @@ export interface BlindPicks {
     championId: number;
     games: number;
     winRate: number;
-    /** Average shrunk win rate of its three worst lane matchups with enough games. */
+    /** Cautious estimate (shrunk win rate minus ~1 standard error) averaged over its three worst lane matchups. */
     floor: number;
     matchups: number;
     worst: { championId: number; games: number; winRate: number };

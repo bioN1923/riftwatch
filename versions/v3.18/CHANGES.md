@@ -18,3 +18,8 @@
 ## Checks
 - 65 tests pass (new: ranking by floor, worst matchup is the lowest of the three averaged, 5-matchup minimum). Typecheck, build and a11y check clean.
 - Demo: `demo/blind-*.png`.
+
+## Live check (after deploy) and v3.18.1 fix
+- Deployed 13 Nov 2026 13:06 (deploy.log EXIT CODE 0). All five roles return 8 safe picks.
+- **Flaw found on live data:** with today's small samples, Hwei topped Mid with "worst matchup: Viktor 50% · 10 games". Shrinking toward 50% made thin data look *safe*, which a floor ranking rewards.
+- **v3.18.1:** each matchup now counts as its shrunk win rate **minus about one standard error** (0.5/√(games+25)), a cautious estimate, so a matchup seen 10 times can't look safe just because there's too little data to show it's bad. Tests updated (65 pass).

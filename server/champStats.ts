@@ -627,8 +627,8 @@ export class ChampionStatsStore {
   }
 
   /**
-   * Safe blind picks for a role: rank champions by their three worst lane matchups (shrunk win
-   * rate, enough games each), so a first pick with no hard counters rises above one that wins a
+   * Safe blind picks for a role: rank champions by their three worst lane matchups (a cautious
+   * estimate of each: shrunk win rate minus about one standard error, enough games each), so a first pick with no hard counters rises above one that wins a
    * lot on average but gets crushed by a few champions.
    */
   blindPicks(role: string, limit = 8): BlindPicks {
@@ -644,7 +644,9 @@ export class ChampionStatsStore {
       const min = matchupMin(r.g);
       const mus = Object.entries(r.vs)
         .filter(([, v]) => v.g >= min)
-        .map(([opp, v]) => ({ championId: Number(opp), games: v.g, winRate: v.w / v.g, adj: shrunk(v.w, v.g, MATCHUP_K) }))
+        // Pessimistic: the shrunk rate minus about one standard error, so a matchup seen 10 times
+        // can't look safe just because there's too little data to show it's bad.
+        .map(([opp, v]) => ({ championId: Number(opp), games: v.g, winRate: v.w / v.g, adj: shrunk(v.w, v.g, MATCHUP_K) - 0.5 / Math.sqrt(v.g + MATCHUP_K) }))
         .sort((x, y) => x.adj - y.adj);
       if (mus.length < 5) continue;
       const floor = (mus[0].adj + mus[1].adj + mus[2].adj) / 3;

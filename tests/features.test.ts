@@ -368,7 +368,7 @@ describe('safe blind picks', async () => {
     for (const p of b.picks) {
       expect(p.matchups).toBeGreaterThanOrEqual(5);
       // The worst matchup shown is the lowest of the three averaged into the floor.
-      expect(shrunk(p.worst.winRate * p.worst.games, p.worst.games, MATCHUP_K)).toBeLessThanOrEqual(p.floor + 1e-9);
+      expect(shrunk(p.worst.winRate * p.worst.games, p.worst.games, MATCHUP_K) - 0.5 / Math.sqrt(p.worst.games + MATCHUP_K)).toBeLessThanOrEqual(p.floor + 1e-9);
       expect(p.worst.championId).not.toBe(p.championId);
     }
     expect(store.blindPicks('NOPE').picks).toEqual([]);
