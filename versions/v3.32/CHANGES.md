@@ -15,3 +15,8 @@
 ## Checks
 - 75 tests pass (new: keeps 3, newest first, no duplicates in any order, ignores empty lobbies). Typecheck, build and a11y check clean.
 - Playwright (desktop and iPhone 13): after two scouts, both lobbies show; clicking "Faker, Caps, Rekkles" re-runs it (`demo/lobby-*.png`).
+
+## Live check (after deploy)
+- **Deployed automatically:** Claude wrote `deploy.request`, `watch-deploy.bat` ran `deploy.bat`, and it finished 13 Nov 2026 19:16 (EXIT CODE 0).
+- Scouted "Annie IRL#Annie, Afroboi#depu" on EUW. Back on `/multisearch`: "Recent lobbies · 2 players · EUW · Annie IRL, Afroboi" (`live/multisearch-recent-lobbies.jpg`). The test lobby was then removed from the browser.
+- Noticed for later: the shared multi-search URL double-encodes spaces (`Annie%2520IRL`). It still works because it's decoded on read, but the link is ugly.
