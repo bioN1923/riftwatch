@@ -114,9 +114,10 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
               </div>
               <dl className="hidden grid-cols-2 gap-x-4 gap-y-0.5 text-xs md:grid">
                 <Stat label={t('match.killShare')} value={pct(p.killParticipation)} />
-                <Stat label={t('match.cs')} value={`${p.cs} · ${(p.cs / minutes).toFixed(1)}/m`} />
+                {/* Modes without minions or wards (Arena, Brawl, Swarm…) would only show zeros here. */}
+                {match.participants.some((x) => x.cs > 0) && <Stat label={t('match.cs')} value={`${p.cs} · ${(p.cs / minutes).toFixed(1)}/m`} />}
                 <Stat label={t('match.damage')} value={compact(p.damage)} />
-                <Stat label={t('match.vision')} value={String(p.visionScore)} />
+                {match.participants.some((x) => x.visionScore > 0) && <Stat label={t('match.vision')} value={String(p.visionScore)} />}
               </dl>
             </div>
 

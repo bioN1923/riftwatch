@@ -10,6 +10,11 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.29',
+    date: '2026-11-13',
+    items: ['Match history: Ultimate Spellbook and Swarm games are named, and modes without minions or wards no longer show CS or vision as zero.'],
+  },
+  {
     version: '3.28',
     date: '2026-11-13',
     items: ['Match details: a link to how your lane matchup usually goes, so you can tell whether it was the matchup or the game.'],

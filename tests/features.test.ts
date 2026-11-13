@@ -485,3 +485,13 @@ describe('try next suggestions', async () => {
     expect(tryNext([], rows, tags)).toEqual([]);
   });
 });
+
+describe('queue names', async () => {
+  const { queueName } = await import('../src/lib/queues');
+  it("names the modes in Riot's queue list and falls back for unknown ones", () => {
+    expect(queueName(1400)).toBe('Ultimate Spellbook');
+    expect(queueName(1830)).toBe('Swarm');
+    expect(queueName(450)).toBe('ARAM');
+    expect(queueName(1740)).toBe(queueName(99999)); // not in Riot's list: the generic "special mode" label
+  });
+});

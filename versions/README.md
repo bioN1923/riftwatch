@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.29](v3.29/CHANGES.md) | 13 Nov 2026 | Match history: Spellbook and Swarm named; no zero CS/vision in modes without minions or wards |
 | [v3.28](v3.28/CHANGES.md) | 13 Nov 2026 | Match details link to the lane matchup page ("was it the matchup or the game?") |
 | [v3.27](v3.27/CHANGES.md) | 13 Nov 2026 | Profiles: "Try next" suggests strong unplayed champions that fit the player's role and style |
 | [v3.26](v3.26/CHANGES.md) | 13 Nov 2026 | Tier list: stars and a "My pool" filter for the champions saved in the draft helper |
