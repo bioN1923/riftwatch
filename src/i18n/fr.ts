@@ -936,5 +936,7 @@ const dict: Record<string, string> = {
   "ms.recentCount_other": "{count} joueurs",
   "cl.unseen": "nouveautés",
   "cl.new": "Nouveau",
+  "cp.didYouMean": "Vouliez-vous dire {name} ?",
+  "mp.didYouMean": "Vouliez-vous dire {a} contre {b} ?",
 };
 export default dict;

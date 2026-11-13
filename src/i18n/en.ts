@@ -936,5 +936,7 @@ const en = {
   "ms.recentCount_other": "{count} players",
   "cl.unseen": "new updates",
   "cl.new": "New",
+  "cp.didYouMean": "Did you mean {name}?",
+  "mp.didYouMean": "Did you mean {a} vs {b}?",
 };
 export default en;

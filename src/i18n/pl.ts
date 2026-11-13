@@ -972,5 +972,7 @@ const dict: Record<string, string> = {
   "ms.recentCount_other": "{count} gracza",
   "cl.unseen": "nowe zmiany",
   "cl.new": "Nowe",
+  "cp.didYouMean": "Czy chodziło o {name}?",
+  "mp.didYouMean": "Czy chodziło o {a} vs {b}?",
 };
 export default dict;

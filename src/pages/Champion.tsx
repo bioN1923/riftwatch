@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router';
+import { Link, Navigate, useLocation, useParams, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import type { ChampionStats, Rated, StatsGroup } from '../../shared/types';
@@ -19,14 +19,19 @@ import { ArenaPanel, ArenaStrip } from '../components/champions/Arena';
 import { SlidingIndicator, useSlideDirection } from '../components/ui/Motion';
 import { t } from '../i18n';
 import { LaneCurve } from '../components/champions/LaneCurve';
+import { guessChampion } from '../lib/champSearch';
 
 export function ChampionPage() {
   const { slug = '' } = useParams();
   const { data: sd, isPending } = useStaticData();
   const champ = championBySlug(sd, slug);
+  const { search } = useLocation();
 
   if (isPending) return <HeroSkeleton />;
   if (!champ) {
+    // "/champions/mf" or "/champions/miss-fortune" just goes there; a typo gets a "Did you mean".
+    const guess = sd ? guessChampion(slug, [...sd.champions.values()]) : null;
+    if (guess?.sure) return <Navigate replace to={`/champions/${champSlug(guess.champ.id)}${search}`} />;
     return (
       <div className="mx-auto max-w-6xl px-4 py-10">
         <ErrorState
@@ -34,9 +39,16 @@ export function ChampionPage() {
           title={t('cp.notFound')}
           error={new ApiClientError(404, 'NOT_FOUND', t('cp.notFoundBody', { slug }))}
           action={
-            <Link to="/champions" className="rounded bg-gold px-4 py-2 font-semibold text-gold-ink">
-              {t('cp.browse')}
-            </Link>
+            <div className="flex flex-wrap justify-center gap-2">
+              {guess && (
+                <Link to={`/champions/${champSlug(guess.champ.id)}${search}`} className="rounded bg-gold px-4 py-2 font-semibold text-gold-ink">
+                  {t('cp.didYouMean', { name: guess.champ.name })}
+                </Link>
+              )}
+              <Link to="/champions" className={guess ? 'rounded border border-line px-4 py-2 font-semibold hover:bg-surface' : 'rounded bg-gold px-4 py-2 font-semibold text-gold-ink'}>
+                {t('cp.browse')}
+              </Link>
+            </div>
           }
         />
       </div>

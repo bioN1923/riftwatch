@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.36',
+    date: '2026-11-13',
+    items: ['Champion addresses forgive typos and nicknames: riftwatch.fly.dev/champions/mf opens Miss Fortune, and a typo like "yasou" asks "Did you mean Yasuo?". Matchup links too.'],
+  },
+  {
     version: '3.35',
     date: '2026-11-13',
     items: ['"What\'s new" gets a gold dot when Riftwatch has changed since you last looked, and the new entries are marked on this page.', 'Every new page now opens at the top (some opened scrolled down to where you clicked). Back still returns you to where you were.'],

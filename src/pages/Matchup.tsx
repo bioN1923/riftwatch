@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router';
+import { Link, Navigate, useLocation, useParams, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { ArrowLeftRight } from 'lucide-react';
@@ -16,15 +16,24 @@ import { SlidingIndicator } from '../components/ui/Motion';
 import { LaneCurve } from '../components/champions/LaneCurve';
 import { ItemsBlock, Lead, LOW_SAMPLE, RunesBlock, SpellsAndStart } from './Champion';
 import { t } from '../i18n';
+import { guessChampion } from '../lib/champSearch';
 
 export function MatchupPage() {
   const { slug = '', opp = '' } = useParams();
   const { data: sd, isPending } = useStaticData();
   const a = championBySlug(sd, slug);
   const b = championBySlug(sd, opp);
+  const { search } = useLocation();
 
   if (isPending) return <Skeleton className="m-4 h-72" />;
   if (!a || !b || a.key === b.key) {
+    // Each side may be a nickname or a typo: go straight there when sure, otherwise suggest.
+    const list = sd ? [...sd.champions.values()] : [];
+    const side = (s: string, found?: { id: string; name: string }) => (found ? { champ: found, sure: true } : guessChampion(s, list));
+    const ga = side(slug, a);
+    const gb = side(opp, b);
+    const fixed = ga && gb && ga.champ.id !== gb.champ.id ? `/champions/${champSlug(ga.champ.id)}/vs/${champSlug(gb.champ.id)}${search}` : null;
+    if (fixed && ga?.sure && gb?.sure) return <Navigate replace to={fixed} />;
     return (
       <div className="mx-auto max-w-6xl px-4 py-10">
         <ErrorState
@@ -32,9 +41,16 @@ export function MatchupPage() {
           title={t('mp.notFound')}
           error={new ApiClientError(404, 'NOT_FOUND', t('mp.notFoundBody'))}
           action={
-            <Link to="/champions" className="rounded bg-gold px-4 py-2 font-semibold text-gold-ink">
-              {t('cp.browse')}
-            </Link>
+            <div className="flex flex-wrap justify-center gap-2">
+              {fixed && ga && gb && (
+                <Link to={fixed} className="rounded bg-gold px-4 py-2 font-semibold text-gold-ink">
+                  {t('mp.didYouMean', { a: ga.champ.name, b: gb.champ.name })}
+                </Link>
+              )}
+              <Link to="/champions" className={fixed ? 'rounded border border-line px-4 py-2 font-semibold hover:bg-surface' : 'rounded bg-gold px-4 py-2 font-semibold text-gold-ink'}>
+                {t('cp.browse')}
+              </Link>
+            </div>
           }
         />
       </div>

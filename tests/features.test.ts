@@ -550,3 +550,35 @@ describe('riot id slugs in links', async () => {
     expect(fromSlug('50%-off-EUW')).toEqual({ gameName: '50%-off', tagLine: 'EUW' });
   });
 });
+
+describe('mistyped champion addresses', async () => {
+  const { guessChampion } = await import('../src/lib/champSearch');
+  const L = [
+    { id: 'Yasuo', name: 'Yasuo' },
+    { id: 'Yone', name: 'Yone' },
+    { id: 'MissFortune', name: 'Miss Fortune' },
+    { id: 'Kaisa', name: "Kai'Sa" },
+    { id: 'Karma', name: 'Karma' },
+    { id: 'Karthus', name: 'Karthus' },
+    { id: 'Ahri', name: 'Ahri' },
+    { id: 'Akali', name: 'Akali' },
+    { id: 'Zac', name: 'Zac' },
+    { id: 'Zed', name: 'Zed' },
+  ];
+  const g = (s: string) => { const r = guessChampion(s, L); return r && `${r.champ.id}:${r.sure}`; };
+  it('goes straight to the champion when there is no doubt', () => {
+    expect(g('mf')).toBe('MissFortune:true');
+    expect(g('miss-fortune')).toBe('MissFortune:true');
+    expect(g("kai'sa")).toBe('Kaisa:true');
+    expect(g('Kai%27Sa')).toBe('Kaisa:true');
+    expect(g('yas')).toBe('Yasuo:true');
+  });
+  it('offers one near-miss, and nothing when it is unclear', () => {
+    expect(g('yasou')).toBe('Yasuo:false');
+    expect(g('karthsu')).toBe('Karthus:false');
+    expect(g('ka')).toBe(null); // two names start with it and it is too short
+    expect(g('xyzzy')).toBe(null);
+    expect(g('ahli')).toBe('Ahri:false');
+    expect(g('zad')).toBe(null); // Zac and Zed are both one letter away
+  });
+});
