@@ -18,3 +18,8 @@
 ## Checks
 - 59 tests pass (new: champion-wide lane curve, game-length verdict thresholds). Typecheck, build and a11y check clean.
 - Demo: `demo/cp-*-lane.png` (dark, light, phone), `demo/cp-dark-len.png`.
+
+## Live check (after deploy)
+- Deployed 13 Nov 2026 10:57 (deploy.log EXIT CODE 0).
+- `/champions/ahri`: "How the lane goes" from 100 games (+168 gold, +3.9 CS at 15) right above "Win rate by game length", whose verdict reads "Win rate holds steady across game lengths." (`live/champion-ahri-lane-and-length.jpg`).
+- `/champions/ahri/vs/syndra`: 9 games now, with the "Still filling in: the numbers above use all 50 games." note (`live/matchup-ahri-vs-syndra-note.jpg`). At 9 games the chart is still noisy (+586 gold at 15 against −122 for all games); the note covers that until more games are backfilled.
