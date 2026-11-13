@@ -678,9 +678,11 @@ export class ChampionStatsStore {
         });
       }
     }
-    // Shrink win rate towards 50% as if every champion had 150 extra games at exactly 50%,
-    // so a small lucky sample can't outrank a large solid one, then reward popularity a little.
-    const score = (r: TierRow) => ((r.winRate * r.games + 0.5 * 150) / (r.games + 150) - 0.5) * 100 + Math.log10(1 + r.pickRate * 100) * 2;
+    // Shrink win rate towards 50% as if every champion had 150 extra games at exactly 50%, then
+    // take off about one standard error (a cautious estimate), so a small lucky sample can't
+    // outrank a large solid one (54 games at 68% used to reach S+). Popularity counts a little.
+    const score = (r: TierRow) =>
+      ((r.winRate * r.games + 0.5 * 150) / (r.games + 150) - 0.5 - 0.5 / Math.sqrt(r.games + 150)) * 100 + Math.log10(1 + r.pickRate * 100) * 2;
     const byRole = new Map<string, TierRow[]>();
     for (const r of rows) byRole.set(r.role, [...(byRole.get(r.role) ?? []), r]);
     for (const list of byRole.values()) {

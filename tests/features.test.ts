@@ -374,3 +374,19 @@ describe('safe blind picks', async () => {
     expect(store.blindPicks('NOPE').picks).toEqual([]);
   });
 });
+
+describe('tier list sample caution', async () => {
+  const { ChampionStatsStore } = await import('../server/champStats');
+  it('a hot small sample does not outrank a big solid one', () => {
+    const store = new ChampionStatsStore(null);
+    const role = (g: number, wr: number) => ({ roles: { JUNGLE: { g, w: Math.round(g * wr), vs: {} } }, bans: 0 });
+    // Live data on 13 Nov: Warwick 54 games at 68.5% was S+ above champions with hundreds of games.
+    const champs: Record<string, any> = { 19: role(54, 0.685), 76: role(266, 0.579), 20: role(293, 0.56) };
+    for (let i = 0; i < 30; i++) champs[1000 + i] = role(150 + i * 10, 0.47 + i * 0.002);
+    const rows = (store as any).rows({ matches: 6700, champs }) as { championId: number; rank: number; tier: string }[];
+    const rank = (id: number) => rows.find((r) => r.championId === id)!.rank;
+    expect(rank(76)).toBeLessThan(rank(19));
+    expect(rank(20)).toBeLessThan(rank(19));
+    expect(rows.find((r) => r.championId === 19)!.tier).not.toBe('S+');
+  });
+});

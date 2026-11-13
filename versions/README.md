@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.19](v3.19/CHANGES.md) | 13 Nov 2026 | Tier list: small hot samples no longer reach S+ (cautious score) |
 | [v3.18](v3.18/CHANGES.md) | 13 Nov 2026 | Draft helper: safe blind picks (champions with the mildest worst matchups) before the enemy is known |
 | [v3.17](v3.17/CHANGES.md) | 13 Nov 2026 | Live game: the player's guessed lane opponent and how that matchup goes in ranked |
 | [v3.16](v3.16/CHANGES.md) | 13 Nov 2026 | Draft helper: "Ban for your pool", the enemy laners your champions do worst against |
