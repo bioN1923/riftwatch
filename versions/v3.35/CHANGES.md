@@ -14,3 +14,8 @@
 ## Checks
 - 77 tests pass, typecheck clean, a11y `{}`.
 - Demo screenshots in `demo/`, including `footer-dot-*` and `changelog-new-*`.
+
+## Live check (19:43)
+- Deployed automatically through `deploy.request` (deploy.log: EXIT CODE 0, 19:42:28).
+- With `rw:seen-version` set to "3.34": the footer dot showed. Clicking it opened `/changelog` at scrollY 0 (it was clicked from the bottom of `/champions`), only v3.35 had a NEW badge, and the seen version became "3.35".
+- The test value was removed from the browser afterwards. Screenshot: `live/changelog-new-badge.jpg`.
