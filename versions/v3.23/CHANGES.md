@@ -14,3 +14,9 @@
   - header search "j4" → Jarvan IV first (`demo/search-j4.png`);
   - tier filter "mf" → Miss Fortune, "kaisa" → Kai'Sa;
   - draft grid "gp" → Gangplank.
+
+## Live check (after deploy)
+- Deployed 13 Nov 2026 14:30 (deploy.log EXIT CODE 0).
+- Header search "tf" → **Twisted Fate** first, then players whose names contain "tf" (`live/search-tf.jpg`).
+- Found: the champion name in that row is cut to "Twist…" because the role tags and "Champion" badge take the room. Fix next iteration.
+- Ranked games on 16.22: 6,825 (6,777 at 12:22 UTC): still coming in fast.
