@@ -20,3 +20,8 @@
 - 94 tests pass, typecheck clean, a11y `{}`.
 - No horizontal overflow on the champion page (iPhone SE and iPhone 13).
 - Before/after screenshots in `demo/`: `before-phone-*` and `phone-*` for iPhone SE and iPhone 13, plus the standard set.
+
+## Live check (00:15)
+- Deployed automatically (EXIT CODE 0, 00:14:23).
+- The new classes are live: the champion stat strip has `grid grid-cols-3 … sm:flex` (renders as flex on desktop, unchanged), and the profile ranks have `grid grid-cols-2 … lg:flex`.
+- **Desktop looks the same as before** (`live/profile-desktop.jpg`). The phone layout was checked in the demo screenshots, because the Chrome window can't be resized to phone width.
