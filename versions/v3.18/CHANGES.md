@@ -23,3 +23,4 @@
 - Deployed 13 Nov 2026 13:06 (deploy.log EXIT CODE 0). All five roles return 8 safe picks.
 - **Flaw found on live data:** with today's small samples, Hwei topped Mid with "worst matchup: Viktor 50% · 10 games". Shrinking toward 50% made thin data look *safe*, which a floor ranking rewards.
 - **v3.18.1:** each matchup now counts as its shrunk win rate **minus about one standard error** (0.5/√(games+25)), a cautious estimate, so a matchup seen 10 times can't look safe just because there's too little data to show it's bad. Tests updated (65 pass).
+- v3.18.1 deployed 13 Nov 2026 13:15 (deploy.log EXIT CODE 0). Live floors are now cautious estimates (0.40–0.43 for Mid). Hwei still leads narrowly (0.429, Orianna 0.411): with only 6 matchups of 8–17 games, none of them losing yet. The list will settle as the collector adds games (`live/draft-safe-blind-mid.jpg`).
