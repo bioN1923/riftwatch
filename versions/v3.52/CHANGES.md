@@ -19,3 +19,7 @@
 - 94 tests pass, typecheck clean, a11y `{}`.
 - Every ladder Tab stop now has a size.
 - Focus ring screenshot: `demo/focus-input.png`. Standard set in `demo/`.
+
+## Live check (00:48)
+- Deployed automatically (EXIT CODE 0, 00:47:14).
+- On `/compare`, focusing the Player 1 field shows the 2-px gold ring; I checked the style on the live page (`live/compare-focus.png`).
