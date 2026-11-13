@@ -12,3 +12,8 @@
 
 ## Checks
 - 67 tests pass (new: movers noise filter). Typecheck, build and a11y check clean. Tools focus checked in Playwright (Enter → "Multi-search" focused; Escape → "Tools" focused, menu closed).
+
+## Live check (after deploy)
+- Deployed 13 Nov 2026 13:40 (deploy.log EXIT CODE 0).
+- Phone (375 px), `/lol/euw1/Kaori-EUW33`: match cards read "Ranked Solo/Duo / 24:55 /" then "5 days ago" whole on the next line. No horizontal scroll (`live/phone-match-cards.jpg`; pictures hadn't painted in the background pane).
+- Patch movers still list 15 up and 15 down after the noise filter.
