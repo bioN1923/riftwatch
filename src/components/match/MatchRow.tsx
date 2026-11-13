@@ -79,12 +79,17 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
 
         <div className="flex min-w-0 flex-1 flex-wrap items-start gap-x-5 gap-y-2.5 p-3 xl:flex-nowrap">
           <div className="min-w-0 flex-1 space-y-2.5">
-            <p className="text-xs text-muted">
-              <span className="font-medium text-text">{queueName(match.queueId)}</span>
-              <span className="mx-1.5 text-faint">/</span>
-              <span className="num">{duration(match.duration)}</span>
-              <span className="mx-1.5 text-faint">/</span>
-              {timeAgo(ended)}
+            {/* Wraps between the pieces, never inside one ("4 days" / "ago" on separate lines on phones). */}
+            <p className="flex flex-wrap items-baseline gap-x-1.5 text-xs text-muted">
+              <span className="whitespace-nowrap font-medium text-text">{queueName(match.queueId)}</span>
+              <span className="text-faint" aria-hidden>
+                /
+              </span>
+              <span className="num whitespace-nowrap">{duration(match.duration)}</span>
+              <span className="text-faint" aria-hidden>
+                /
+              </span>
+              <span className="whitespace-nowrap">{timeAgo(ended)}</span>
             </p>
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">

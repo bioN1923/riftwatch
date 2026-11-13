@@ -316,6 +316,8 @@ export function movers(now: TierRow[], before: TierRow[], against: string, minGa
   for (const r of now) {
     const p = prev.get(`${r.championId}:${r.role}`);
     if (!p || r.games < minGames || p.games < minGames) continue;
+    // A change smaller than one standard error of the difference is mostly sampling noise.
+    if (Math.abs(r.winRate - p.winRate) < Math.sqrt(0.25 / r.games + 0.25 / p.games)) continue;
     list.push({ championId: r.championId, role: r.role, winRate: r.winRate, prevWinRate: p.winRate, delta: r.winRate - p.winRate, games: r.games, prevGames: p.games, pickRate: r.pickRate, prevPickRate: p.pickRate });
   }
   const score = (m: PatchMover) => m.delta * (Math.min(m.games, m.prevGames) / (Math.min(m.games, m.prevGames) + 300));

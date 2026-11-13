@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.20](v3.20/CHANGES.md) | 13 Nov 2026 | Phone match cards wrap cleanly; Tools menu keyboard focus; patch movers skip changes within sampling noise |
 | [v3.19](v3.19/CHANGES.md) | 13 Nov 2026 | Tier list: small hot samples no longer reach S+ (cautious score) |
 | [v3.18](v3.18/CHANGES.md) | 13 Nov 2026 | Draft helper: safe blind picks (champions with the mildest worst matchups) before the enemy is known |
 | [v3.17](v3.17/CHANGES.md) | 13 Nov 2026 | Live game: the player's guessed lane opponent and how that matchup goes in ranked |

@@ -390,3 +390,13 @@ describe('tier list sample caution', async () => {
     expect(rows.find((r) => r.championId === 19)!.tier).not.toBe('S+');
   });
 });
+
+describe('patch movers noise filter', async () => {
+  const { movers } = await import('../server/champStats');
+  const row = (championId: number, winRate: number, games: number) => ({ championId, role: 'MIDDLE', winRate, games, pickRate: 0.05 }) as any;
+  it('drops changes smaller than their sampling noise', () => {
+    // 3 points on 120 games each is well inside one standard error (6.5 points): noise.
+    const m = movers([row(1, 0.53, 120), row(2, 0.6, 120)], [row(1, 0.5, 120), row(2, 0.5, 120)], '16.21');
+    expect(m.up.map((x) => x.championId)).toEqual([2]);
+  });
+});

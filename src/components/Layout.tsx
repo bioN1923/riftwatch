@@ -223,10 +223,17 @@ function MobileNav() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const toolActive = TOOLS.some((x) => pathname.startsWith(x.to));
+  const toggle = useRef<HTMLButtonElement>(null);
   useEffect(() => setOpen(false), [pathname]);
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    // Keyboard and screen-reader users land on the first tool; Escape hands focus back to the button.
+    ref.current?.querySelector<HTMLAnchorElement>('#mobile-tools a')?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      setOpen(false);
+      toggle.current?.focus();
+    };
     const onDown = (e: PointerEvent) => ref.current && !ref.current.contains(e.target as Node) && setOpen(false);
     document.addEventListener('keydown', onKey);
     document.addEventListener('pointerdown', onDown);
@@ -268,7 +275,7 @@ function MobileNav() {
           <Trophy size={20} aria-hidden />
           {t('nav.ladder')}
         </NavLink>
-        <button type="button" className={tab(toolActive || open)} aria-expanded={open} aria-controls="mobile-tools" onClick={() => setOpen((o) => !o)}>
+        <button ref={toggle} type="button" className={tab(toolActive || open)} aria-expanded={open} aria-controls="mobile-tools" onClick={() => setOpen((o) => !o)}>
           <Wrench size={20} aria-hidden />
           {t('home.tools')}
         </button>
