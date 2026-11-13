@@ -17,3 +17,7 @@
 ## Checks
 - 59 tests pass, typecheck, build and a11y check clean; phone menu checked in Playwright (open, Escape, tap through to Draft) in dark and light.
 - Demo: `demo/nav-*.png`.
+
+## Live check (after deploy)
+- Deployed 13 Nov 2026 12:02 (deploy.log EXIT CODE 0). The first copy to the PC failed with HTTP 503 from the file service; it went through on retry.
+- Phone (375×812) on `/lol/euw1/Kaori-EUW33`: the bottom bar shows Players (highlighted), Champions, Ladder, Tools. Tools opens Multi-search, Draft and Compare (`live/phone-profile-tools-menu.jpg`).
