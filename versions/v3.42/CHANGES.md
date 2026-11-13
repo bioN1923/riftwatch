@@ -26,3 +26,13 @@ Borrowed from Porofessor, whose main value is short tags per player in the loadi
 - Typecheck clean, a11y `{}`.
 - Demo live game (Caps-EUW): tags for Champion specialist ×3, New to champion ×2, Hot streak and First time on champion (Caitlyn).
 - Screenshots: `demo/live-tags-desktop.png` and `demo/live-tags-phone.png` (in the full-page shot the phone nav bar overlaps the middle), plus the standard set.
+
+## Live check (23:11)
+- Deployed automatically (EXIT CODE 0, 23:10:12).
+- **Scout API on bioN1923:**
+  - Master Yi → 597k points;
+  - Zeri → 816 points (shown as "New to champion");
+  - six champions never played (Mel, Naafiri, …) → `{level: 0, points: 0}`, so the tag would read "First time on champion".
+- **A real live game:** Annie IRL (EUW Challenger) was in a 16-player game. The tags shown were New to champion ×5 (from 74 to 2.3k points), Hot streak ×2, Veteran ×1 and Champion specialist ×2.
+- Screenshot: `live/live-tags.jpg`.
+- **For later:** in modes with random champions, "New to champion" fires often. It's true there, but less telling than in ranked.
