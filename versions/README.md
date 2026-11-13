@@ -11,5 +11,19 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 | [v3.7](v3.7/CHANGES.md) | 13 Nov 2026 | Visitors' lookups before background work; ladder names in background; tier list, movers and counters need real samples |
 | [v3.6](v3.6/NOTES.md) | 7 Nov 2026 | Baseline: Riot policy review, patch movers (live before the loop started) |
 
+## How each iteration works
+1. Use the live site with real data (desktop app browser) and note what's wrong or missing.
+2. Look at what other stats sites do; add what's missing and ideas none of them have.
+3. Build, test (`npm test`), check pages in demo mode, run `scripts/a11y-check.cjs`.
+4. Take demo screenshots (`scripts/shoot-version.cjs versions/vX/demo`), write `CHANGES.md`.
+5. Commit, deploy (`deploy.bat` → `deploy.log`), check the live site, save `live/` screenshots.
+
 ## Backlog (ideas, roughly by value)
-See the latest version's notes for what's next.
+- **Today / session view** on profiles: games today, W/L, LP gained since the first game
+  (from rank history), best game of the session.
+- **Benchmarks vs high elo**: your CS/min, vision, damage per role next to the Challenger/GM
+  average for that role and champion (we already aggregate those).
+- **Shareable draft and compare images** (link previews for /draft and /compare).
+- **Matchup page: "how the lane goes"** — gold/CS/XP lead curve at 5/10/15 from timelines.
+- **More data** once the production key arrives: lower-elo tier lists (Emerald+, Diamond+).
+- **Installable app (PWA)** — after the production key, as agreed.
