@@ -15,3 +15,7 @@
   - scouting "Hide on bush#KR1, Annie IRL#Annie" → `players=Hide+on+bush-KR1%2CAnnie+IRL-Annie`;
   - the old link `Annie%2520IRL-Annie` still fills "Annie IRL#Annie";
   - Compare title "Annie IRL#Annie vs Hide on bush#KR1".
+
+## Live check (after deploy)
+- Deployed automatically (`deploy.request` → `watch-deploy.bat`): finished 13 Nov 2026 19:22 (EXIT CODE 0).
+- The old link `/compare?a=euw1%2FAnnie%2520IRL-Annie&b=euw1%2FAfroboi-depu` opens correctly. After "Swap", the address bar reads `?a=euw1%2FAfroboi-depu&b=euw1%2FAnnie+IRL-Annie`, encoded once (`live/compare-clean-link.jpg`).
