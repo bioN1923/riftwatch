@@ -15,3 +15,8 @@
 ## Checks
 - 56 tests pass (new "lane curve" test), typecheck and build pass, a11y check clean.
 - Demo screenshots in `demo/` (14–15 show the lane chart in dark and light).
+
+## Live check (after deploy)
+- Deployed 13 Nov 2026 08:48 (deploy.log EXIT CODE 0).
+- `/champions/ahri/vs/syndra`: the role tab row no longer shows a scroll control (`live/matchup-ahri-vs-syndra.jpg`).
+- The lane chart isn't on live matchups yet: it needs 5 games with timelines per matchup, recorded from this deploy on.
