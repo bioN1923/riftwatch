@@ -158,7 +158,7 @@ export function ChampionsPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t('tl.filter')}
-            className="h-9 w-56 rounded border border-line bg-surface pl-8 pr-3 text-sm outline-none placeholder:text-faint focus:border-gold"
+            className="h-9 w-56 rounded border border-line bg-surface pl-8 pr-3 text-sm outline-none placeholder:text-faint focus:border-gold focus:ring-2 focus:ring-gold/50"
           />
         </label>
         </div>

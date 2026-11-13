@@ -112,7 +112,7 @@ function Visibility({ demo }: { demo: boolean }) {
                   spellCheck={false}
                   autoComplete="off"
                   required
-                  className="h-10 w-full rounded border border-line bg-surface px-3 text-sm outline-none placeholder:text-faint focus:border-gold"
+                  className="h-10 w-full rounded border border-line bg-surface px-3 text-sm outline-none placeholder:text-faint focus:border-gold focus:ring-2 focus:ring-gold/50"
                 />
               </label>
               <label className="relative w-24 shrink-0">

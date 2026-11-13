@@ -353,7 +353,7 @@ export function Goals({
                         ),
                       );
                   }}
-                  className="num h-7 w-16 rounded border border-line bg-sunken px-1.5 text-right text-sm outline-none focus:border-gold"
+                  className="num h-7 w-16 rounded border border-line bg-sunken px-1.5 text-right text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/50"
                 />
                 <button
                   onClick={() => setGoals(goals.filter((_, j) => j !== i))}

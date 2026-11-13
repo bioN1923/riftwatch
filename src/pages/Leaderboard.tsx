@@ -97,9 +97,10 @@ export function LeaderboardPage() {
               }}
               placeholder={t('lb.find')}
               aria-describedby={missing ? 'lb-find-miss' : undefined}
-              className="h-9 w-52 rounded border border-line bg-surface pl-8 pr-3 text-sm outline-none placeholder:text-faint focus:border-gold"
+              className="h-9 w-52 rounded border border-line bg-surface pl-8 pr-3 text-sm outline-none placeholder:text-faint focus:border-gold focus:ring-2 focus:ring-gold/50"
             />
-            <button type="submit" disabled={finding} className="sr-only">
+            {/* Enter submits; the button is only for screen readers, so it's not an invisible Tab stop. */}
+            <button type="submit" disabled={finding} tabIndex={-1} className="sr-only">
               {t('lb.find')}
             </button>
           </form>

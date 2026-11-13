@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.52](v3.52/CHANGES.md) | 14 Nov 2026 | Keyboard pass (8 pages): 2px gold focus ring on all text inputs and the header search; ladder hidden submit no longer a Tab stop; Escape verified on menus/suggestions |
 | [v3.51](v3.51/CHANGES.md) | 14 Nov 2026 | Phone sweep (15 pages, iPhone SE): no overflow; tap targets raised to 24 px (WCAG 2.2 2.5.8): sort headers, queue filter, trend chips, draft remove |
 | [v3.50](v3.50/CHANGES.md) | 14 Nov 2026 | Compact phone profile header: 60px icon, buttons in one row (icon-only Copy/Compare), first match ~100px higher on iPhone SE |
 | [v3.49](v3.49/CHANGES.md) | 14 Nov 2026 | Phone polish: profile rank blocks side by side; champion stat strip as a 3-column grid (fixes stray divider on wrap) |

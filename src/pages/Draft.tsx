@@ -141,7 +141,7 @@ function ChampionGrid({ onPick, exclude }: { onPick: (id: number) => void; exclu
             }
           }}
           placeholder={t('draft.search')}
-          className="h-9 w-full rounded border border-line bg-sunken pl-8 pr-3 text-sm outline-none placeholder:text-faint focus:border-gold"
+          className="h-9 w-full rounded border border-line bg-sunken pl-8 pr-3 text-sm outline-none placeholder:text-faint focus:border-gold focus:ring-2 focus:ring-gold/50"
         />
       </label>
       <ul className="mt-3 grid max-h-72 grid-cols-[repeat(auto-fill,minmax(52px,1fr))] gap-2 overflow-y-auto pr-1">
@@ -278,7 +278,7 @@ function ImportPool({ role, onDone }: { role: Role; onDone: (ids: number[]) => v
         onChange={(e) => setText(e.target.value)}
         placeholder={t('cmp.placeholder')}
         aria-label={t('pv.riotId')}
-        className="h-9 min-w-0 flex-1 rounded border border-line bg-sunken px-3 text-sm outline-none placeholder:text-faint focus:border-gold"
+        className="h-9 min-w-0 flex-1 rounded border border-line bg-sunken px-3 text-sm outline-none placeholder:text-faint focus:border-gold focus:ring-2 focus:ring-gold/50"
       />
       <select value={platform} onChange={(e) => setPlatform(e.target.value)} aria-label={t('ms.region')} className="h-9 rounded border border-line bg-sunken px-2 text-sm">
         {PLATFORMS.map((p) => (

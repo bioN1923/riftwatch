@@ -205,7 +205,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
           choose(options[active]);
         }}
         className={clsx(
-          'flex items-stretch overflow-hidden border bg-surface transition-colors focus-within:border-gold',
+          'flex items-stretch overflow-hidden border bg-surface transition-colors focus-within:border-gold focus-within:ring-2 focus-within:ring-gold/50',
           hero ? 'h-14 rounded-md border-line-strong shadow-panel sm:h-16' : 'h-10 rounded border-line',
         )}
       >
