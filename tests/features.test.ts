@@ -227,7 +227,7 @@ describe('lane curve', async () => {
       .find((x) => x.lane);
     expect(found?.lane?.minutes).toEqual([5, 10, 15]);
     expect(found!.lane!.gold).toHaveLength(3);
-    expect(found!.lane!.games).toBeGreaterThanOrEqual(5);
+    expect(found!.lane!.games).toBeGreaterThanOrEqual(10);
     expect(found!.lane!.gold.every(Number.isFinite)).toBe(true);
     expect(found!.lane!.cs.every(Number.isFinite)).toBe(true);
   });

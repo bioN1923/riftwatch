@@ -1,7 +1,7 @@
 import { Link, NavLink, Outlet, useLocation } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
-import { AlertTriangle, Check, Globe, Monitor, Moon, Sun, X } from 'lucide-react';
+import { AlertTriangle, Check, Globe, LayoutGrid, Monitor, Moon, Scale, Sun, Swords, Trophy, User, Users, Wrench, X } from 'lucide-react';
 import clsx from 'clsx';
 import { SearchBox } from './SearchBox';
 import { api } from '../lib/api';
@@ -211,6 +211,72 @@ function MainNav() {
   );
 }
 
+const TOOLS = [
+  { to: '/multisearch', label: () => t('nav.multisearch'), icon: Users },
+  { to: '/draft', label: () => t('nav.draft'), icon: Swords },
+  { to: '/compare', label: () => t('nav.compare'), icon: Scale },
+];
+
+/** Phone navigation: four tabs with icons; "Tools" opens a small menu (multi-search, draft helper, compare). */
+function MobileNav() {
+  const { pathname } = useLocation();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const toolActive = TOOLS.some((x) => pathname.startsWith(x.to));
+  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    const onDown = (e: PointerEvent) => ref.current && !ref.current.contains(e.target as Node) && setOpen(false);
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('pointerdown', onDown);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('pointerdown', onDown);
+    };
+  }, [open]);
+  const tab = (active: boolean) =>
+    clsx('flex flex-col items-center gap-0.5 pb-2 pt-2.5 text-[11px] font-semibold transition-colors', active ? 'text-gold' : 'text-muted hover:text-text');
+  const players = pathname === '/' || pathname.startsWith('/lol/');
+  return (
+    <div ref={ref} className="sticky bottom-0 z-30 lg:hidden">
+      {open && (
+        <ul id="mobile-tools" className="absolute bottom-full right-2 mb-2 w-56 overflow-hidden rounded-lg border border-line bg-surface shadow-xl">
+          {TOOLS.map(({ to, label, icon: Icon }) => (
+            <li key={to}>
+              <NavLink
+                to={to}
+                className={({ isActive }) => clsx('flex items-center gap-3 px-4 py-3 text-sm font-medium', isActive ? 'bg-gold/10 text-gold' : 'hover:bg-line/40')}
+              >
+                <Icon size={18} aria-hidden />
+                {label()}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      )}
+      <nav aria-label={t('layout.mainNav')} className="grid grid-cols-4 border-t border-line bg-bg/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
+        <Link to="/" className={tab(players)} aria-current={players ? 'page' : undefined}>
+          <User size={20} aria-hidden />
+          {t('nav.players')}
+        </Link>
+        <NavLink to="/champions" className={({ isActive }) => tab(isActive)}>
+          <LayoutGrid size={20} aria-hidden />
+          {t('nav.champions')}
+        </NavLink>
+        <NavLink to="/leaderboard" className={({ isActive }) => tab(isActive)}>
+          <Trophy size={20} aria-hidden />
+          {t('nav.ladder')}
+        </NavLink>
+        <button type="button" className={tab(toolActive || open)} aria-expanded={open} aria-controls="mobile-tools" onClick={() => setOpen((o) => !o)}>
+          <Wrench size={20} aria-hidden />
+          {t('home.tools')}
+        </button>
+      </nav>
+    </div>
+  );
+}
+
 export function Layout() {
   const { pathname } = useLocation();
   const home = pathname === '/';
@@ -235,20 +301,7 @@ export function Layout() {
           <Outlet />
         </div>
       </main>
-      <nav aria-label={t('layout.mainNav')} className="sticky bottom-0 z-30 grid grid-cols-4 border-t border-line bg-bg/95 backdrop-blur lg:hidden">
-        <NavLink to="/" end className={({ isActive }) => clsx('py-3 text-center font-display text-lg font-bold', isActive ? 'text-gold' : 'text-muted')}>
-          {t('nav.players')}
-        </NavLink>
-        <NavLink to="/champions" className={({ isActive }) => clsx('py-3 text-center font-display text-lg font-bold', isActive ? 'text-gold' : 'text-muted')}>
-          {t('nav.champions')}
-        </NavLink>
-        <NavLink to="/leaderboard" className={({ isActive }) => clsx('py-3 text-center font-display text-lg font-bold', isActive ? 'text-gold' : 'text-muted')}>
-          {t('nav.ladder')}
-        </NavLink>
-        <NavLink to="/multisearch" className={({ isActive }) => clsx('py-3 text-center font-display text-lg font-bold', isActive ? 'text-gold' : 'text-muted')}>
-          {t('nav.lobby')}
-        </NavLink>
-      </nav>
+      <MobileNav />
       <footer className="border-t border-line px-4 py-6 text-center text-xs text-faint">
         <nav aria-label={t('footer.nav')} className="mb-2 flex justify-center gap-4">
           <Link to="/privacy" className="hover:text-text hover:underline">

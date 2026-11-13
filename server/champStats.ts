@@ -24,6 +24,8 @@ interface Vs extends C {
   ln?: number;
 }
 export const LANE_MINUTES = [5, 10, 15];
+/** Games with 5/10/15 frames a matchup needs before its lane chart shows: one game can swing gold at 15 by thousands. */
+export const MATCHUP_LANE_MIN = 10;
 
 /** Lane leads summed over every opponent; needs a fair sample, since one game can swing gold by thousands. */
 function laneOverall(r: RoleAgg) {
@@ -696,7 +698,7 @@ export class ChampionStatsStore {
       csDiff15: v?.gn && v.cd != null ? v.cd / v.gn : null,
       xpDiff15: v?.gn && v.xd != null ? v.xd / v.gn : null,
       lane:
-        v?.ld && v.ln && v.ln >= 5
+        v?.ld && v.ln && v.ln >= MATCHUP_LANE_MIN
           ? { minutes: LANE_MINUTES, gold: v.ld.slice(0, 3).map((x) => x / v.ln!), cs: v.ld.slice(3).map((x) => x / v.ln!), games: v.ln }
           : null,
       baseline: r?.g ? rated(r) : null,
