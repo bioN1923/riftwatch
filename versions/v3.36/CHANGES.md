@@ -15,3 +15,9 @@
 `mf?role=BOTTOM` → `missfortune?role=BOTTOM` · `miss-fortune` → `missfortune` · `yasou` → "Did you mean Yasuo?" · `xyzzy` → browse only · `ahri/vs/zd` → "Ahri vs Zed?" · `tf/vs/asol` → redirect.
 
 Screenshots: `demo/did-you-mean-phone.png`, `demo/matchup-did-you-mean-phone.png`, plus the standard set.
+
+## Live check (22:12)
+- Deployed automatically through `deploy.request` (EXIT CODE 0, 22:11:19).
+- `/champions/yasou` → "Did you mean Yasuo?" + Browse; `/champions/mf?role=BOTTOM` → `/champions/missfortune?role=BOTTOM` (Miss Fortune); `/champions/tf/vs/asol` → `/champions/twistedfate/vs/aurelionsol`.
+- Found for next time: on an unknown slug, the server-rendered tab title reads "Yasou build, runes and counters". It should say the champion wasn't found.
+- Screenshot: `live/did-you-mean-desktop.jpg`.
