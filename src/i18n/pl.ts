@@ -984,5 +984,6 @@ const dict: Record<string, string> = {
   "live.veteranTip": "100+ gier rankingowych w tej dywizji",
   "live.freshBlood": "Świeżo awansowany",
   "live.freshBloodTip": "Niedawno awansował do tej dywizji",
+  "cmp.rolesDiffer": "{a} gra głównie {ra}, a {b} {rb}. CS, obrażenia, wizja i zabójstwa mocno zależą od roli, więc tutaj zwycięzcę mają tylko współczynnik zwycięstw i KDA.",
 };
 export default dict;

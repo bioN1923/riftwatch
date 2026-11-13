@@ -82,3 +82,23 @@ export function together(a: MatchSummary[], b: MatchSummary[], puuidA: string, p
   }
   return out;
 }
+
+/** The role a player is in for most (60%+) of these games, or null when they're spread out. */
+export function mainRole(s: Pick<PlayerSummary, 'games' | 'ov'>): string | null {
+  if (!s.games) return null;
+  const [role, n] = Object.entries(s.ov.roles).sort((x, y) => y[1] - x[1])[0] ?? [];
+  return role && n / s.games >= 0.6 ? role : null;
+}
+
+/**
+ * Two players who mostly play different roles: per-game numbers like CS, vision, damage or kill
+ * participation say more about the role than the player, so only role-neutral rows are scored.
+ */
+export function differentRoles(a: Pick<PlayerSummary, 'games' | 'ov'>, b: Pick<PlayerSummary, 'games' | 'ov'>): [string, string] | null {
+  const ra = mainRole(a);
+  const rb = mainRole(b);
+  return ra && rb && ra !== rb ? [ra, rb] : null;
+}
+
+/** Rows that compare fairly across roles. */
+export const ROLE_NEUTRAL = new Set(['wr', 'kda']);

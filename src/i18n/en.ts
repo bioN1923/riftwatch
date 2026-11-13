@@ -948,5 +948,6 @@ const en = {
   "live.veteranTip": "100+ ranked games in this division",
   "live.freshBlood": "Just promoted",
   "live.freshBloodTip": "Recently moved up into this division",
+  "cmp.rolesDiffer": "{a} mostly plays {ra} and {b} {rb}. CS, damage, vision and kill numbers depend a lot on role, so only win rate and KDA get a winner here.",
 };
 export default en;

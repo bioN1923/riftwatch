@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.43',
+    date: '2026-11-13',
+    items: [
+      'Compare: when the two players mostly play different roles (say a jungler and a top laner), CS, damage, vision and kill numbers no longer pick a "winner"; only win rate and KDA do, and a note explains why.',
+      'Live game: "New to champion" and "First time on champion" no longer show in ARAM, where champions are random.',
+    ],
+  },
+  {
     version: '3.42',
     date: '2026-11-13',
     items: ['Live game: new player tags. "First time on champion" and "New to champion" (from champion mastery), plus Riot\'s "Veteran" (100+ games in the division) and "Just promoted". Hover a tag for the details.'],

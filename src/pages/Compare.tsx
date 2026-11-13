@@ -11,9 +11,9 @@ import { decimal, formatKda, kdaRatio, kdaTone, pct, regionName, thousands, tier
 import { fromSlug, parseRiotId, profilePath, querySlug, type RiotId } from '../lib/riotId';
 import { useFavorites, useRecent, useRegion, type SavedPlayer } from '../lib/storage';
 import { me, result } from '../lib/stats';
-import { summarize, together, type PlayerSummary } from '../lib/compare';
+import { differentRoles, ROLE_NEUTRAL, summarize, together, type PlayerSummary } from '../lib/compare';
 import { GameImg } from '../components/ui/GameImg';
-import { RoleIcon } from '../components/ui/RoleIcon';
+import { ROLE_LABEL, RoleIcon } from '../components/ui/RoleIcon';
 import { ErrorState, Skeleton } from '../components/ui/States';
 import { fadeIn } from '../lib/motion';
 import { t } from '../i18n';
@@ -401,12 +401,16 @@ function Metrics({ a, b, nameA, nameB }: { a: PlayerSummary; b: PlayerSummary; n
   ];
   let winsA = 0;
   let winsB = 0;
+  // A jungler's CS or a support's damage isn't a fair fight: with different main roles, only
+  // role-neutral rows get a winner.
+  const roles = differentRoles(a, b);
   const lines = rows.map((r) => {
     const va = r.get(a);
     const vb = r.get(b);
     const fa = finite(va);
     const fb = finite(vb);
-    const better = Math.abs(fa - fb) < 1e-9 || r.fmt(va) === r.fmt(vb) ? 0 : (fa > fb) !== !!r.lowerBetter ? -1 : 1;
+    const fair = !roles || ROLE_NEUTRAL.has(r.key);
+    const better = !fair || Math.abs(fa - fb) < 1e-9 || r.fmt(va) === r.fmt(vb) ? 0 : (fa > fb) !== !!r.lowerBetter ? -1 : 1;
     if (better < 0) winsA++;
     if (better > 0) winsB++;
     return { r, va, vb, fa, fb, better };
@@ -428,6 +432,11 @@ function Metrics({ a, b, nameA, nameB }: { a: PlayerSummary; b: PlayerSummary; n
           })}
         </p>
       </div>
+      {roles && (
+        <p className="mt-2 rounded border border-line bg-raised px-3 py-2 text-xs text-muted">
+          {t('cmp.rolesDiffer', { a: nameA, ra: ROLE_LABEL[roles[0]], b: nameB, rb: ROLE_LABEL[roles[1]] })}
+        </p>
+      )}
       <table className="mt-3 w-full text-sm">
         <caption className="sr-only">{t('cmp.perGame')}</caption>
         <thead className="sr-only">

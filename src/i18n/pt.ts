@@ -948,5 +948,6 @@ const dict: Record<string, string> = {
   "live.veteranTip": "100+ partidas ranqueadas nesta divisão",
   "live.freshBlood": "Recém-promovido",
   "live.freshBloodTip": "Subiu recentemente para esta divisão",
+  "cmp.rolesDiffer": "{a} joga principalmente {ra} e {b} {rb}. CS, dano, visão e abates dependem muito da função, então aqui só a taxa de vitória e o KDA têm vencedor.",
 };
 export default dict;

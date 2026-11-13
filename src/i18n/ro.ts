@@ -966,5 +966,6 @@ const dict: Record<string, string> = {
   "live.veteranTip": "100+ meciuri clasate în această diviziune",
   "live.freshBlood": "Proaspăt promovat",
   "live.freshBloodTip": "A urcat recent în această diviziune",
+  "cmp.rolesDiffer": "{a} joacă mai ales {ra}, iar {b} {rb}. CS-ul, daunele, vizibilitatea și kill-urile depind mult de rol, așa că aici doar rata de victorie și KDA-ul au un câștigător.",
 };
 export default dict;

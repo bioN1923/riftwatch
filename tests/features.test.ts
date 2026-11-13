@@ -650,4 +650,27 @@ describe('live game player tags', async () => {
     expect(keys(s({ hidden: true, mastery: { level: 0, points: 0 } }))).toEqual([]);
     expect(keys(undefined)).toEqual([]);
   });
+  it('skips "new to champion" in modes that deal champions at random', () => {
+    const k = (q: number) => liveTags(s({ mastery: { level: 0, points: 0 } }) as any, q).map((t) => t.key);
+    expect(k(450)).toEqual([]); // ARAM
+    expect(k(2400)).toEqual([]); // ARAM Mayhem
+    expect(k(420)).toEqual(['firstTime']); // ranked: picked on purpose
+    expect(k(1700)).toEqual(['firstTime']); // Arena: picked too
+  });
+});
+
+describe('compare: players in different roles', async () => {
+  const { differentRoles, mainRole } = await import('../src/lib/compare');
+  const s = (roles: Record<string, number>) => ({ games: Object.values(roles).reduce((a, b) => a + b, 0), ov: { roles } }) as any;
+  it('finds a main role only when it is most of the games', () => {
+    expect(mainRole(s({ JUNGLE: 20 }))).toBe('JUNGLE');
+    expect(mainRole(s({ JUNGLE: 12, TOP: 8 }))).toBe('JUNGLE');
+    expect(mainRole(s({ JUNGLE: 10, TOP: 10 }))).toBe(null);
+    expect(mainRole(s({}))).toBe(null);
+  });
+  it('flags a jungler against a top laner, not two junglers or a flex player', () => {
+    expect(differentRoles(s({ JUNGLE: 20 }), s({ TOP: 19 }))).toEqual(['JUNGLE', 'TOP']);
+    expect(differentRoles(s({ JUNGLE: 20 }), s({ JUNGLE: 15, TOP: 4 }))).toBe(null);
+    expect(differentRoles(s({ JUNGLE: 20 }), s({ TOP: 10, MIDDLE: 10 }))).toBe(null);
+  });
 });

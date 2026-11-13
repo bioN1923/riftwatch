@@ -948,5 +948,6 @@ const dict: Record<string, string> = {
   "live.veteranTip": "100+ Ranglistenspiele in dieser Division",
   "live.freshBlood": "Frisch aufgestiegen",
   "live.freshBloodTip": "Vor Kurzem in diese Division aufgestiegen",
+  "cmp.rolesDiffer": "{a} spielt meist {ra} und {b} {rb}. CS, Schaden, Sicht und Kills hängen stark von der Rolle ab, daher gibt es hier nur bei Siegrate und KDA einen Gewinner.",
 };
 export default dict;

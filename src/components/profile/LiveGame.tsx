@@ -96,7 +96,7 @@ export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string;
               </div>
               <ul>
                 {team.idx.map((i) => (
-                  <PlayerRow key={players[i].puuid + i} p={players[i]} s={scouts[i]} loading={scoutQs[i].isPending && scoutQs[i].fetchStatus !== 'idle'} self={players[i].puuid === puuid} platform={platform} />
+                  <PlayerRow key={players[i].puuid + i} p={players[i]} s={scouts[i]} queueId={game.queueId} loading={scoutQs[i].isPending && scoutQs[i].fetchStatus !== 'idle'} self={players[i].puuid === puuid} platform={platform} />
                 ))}
               </ul>
             </div>
@@ -190,14 +190,14 @@ function tagText(tag: LiveTag, champion: string): { label: string; title: string
   }
 }
 
-function PlayerRow({ p, s, loading, self, platform }: { p: LiveParticipant; s?: ScoutInfo; loading: boolean; self: boolean; platform: string }) {
+function PlayerRow({ p, s, loading, self, platform, queueId }: { p: LiveParticipant; s?: ScoutInfo; loading: boolean; self: boolean; platform: string; queueId?: number }) {
   const { data } = useStaticData();
   const a = assets(data);
   const c = a.champion(p.championId);
   const solo = s?.solo;
   const games = solo ? solo.wins + solo.losses : 0;
   const wr = games ? solo!.wins / games : 0;
-  const tags = liveTags(s).map((tag) => ({ ...tag, ...tagText(tag, c.name) }));
+  const tags = liveTags(s, queueId).map((tag) => ({ ...tag, ...tagText(tag, c.name) }));
 
   return (
     <li className={clsx('grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-t border-line px-4 py-2.5 sm:grid-cols-[auto_minmax(0,1fr)_170px_100px]', self && 'bg-raised')}>

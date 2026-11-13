@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.43](v3.43/CHANGES.md) | 13 Nov 2026 | Compare: role-aware scoring (different main roles → only win rate/KDA scored, with a note); live familiarity tags off in random-champion modes |
 | [v3.42](v3.42/CHANGES.md) | 13 Nov 2026 | Live game player tags (Porofessor-style): first time / new to champion, Veteran, Just promoted; scout API tells "never played" from "unknown" |
 | [v3.41](v3.41/CHANGES.md) | 13 Nov 2026 | Match rows: "x ago" is a <time> with the exact end day and time on hover |
 | [v3.40](v3.40/CHANGES.md) | 13 Nov 2026 | Search region defaults to the last-viewed player's server until picked; favourites no longer repeated under Recently viewed |
