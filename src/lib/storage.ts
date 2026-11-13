@@ -54,7 +54,8 @@ const samePlayer = (a: SavedPlayer, b: SavedPlayer) =>
 
 const recentStore = createStore<SavedPlayer[]>('rw:recent', []);
 const favoriteStore = createStore<SavedPlayer[]>('rw:favorites', []);
-const regionStore = createStore<string>('rw:region', 'euw1');
+// '' until the visitor picks a region themselves; see pickRegion.
+const regionStore = createStore<string>('rw:region', '');
 
 export const useRecent = () => useStore(recentStore);
 
@@ -76,7 +77,15 @@ export function clearLobbies() {
 }
 export const useFavorites = () => useStore(favoriteStore);
 export const getFavorites = () => favoriteStore.get();
-export const useRegion = () => [useStore(regionStore), regionStore.set] as const;
+/**
+ * The search region: the one the visitor picked, or, until they pick one, the server of the player
+ * they starred or looked at most recently (someone who only ever scouts EUNE players shouldn't have to
+ * switch away from EUW every time), else EUW.
+ */
+export function pickRegion(chosen: string, favorites: SavedPlayer[], recent: SavedPlayer[]) {
+  return chosen || recent[0]?.platform || favorites[0]?.platform || 'euw1';
+}
+export const useRegion = () => [pickRegion(useStore(regionStore), useStore(favoriteStore), useStore(recentStore)), regionStore.set] as const;
 
 export function addRecent(p: SavedPlayer) {
   recentStore.set((list) => [p, ...list.filter((x) => !samePlayer(x, p))].slice(0, 8));

@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.40',
+    date: '2026-11-13',
+    items: [
+      'Search starts on the server of the player you looked at last, until you pick a region yourself (no more switching away from EUW every time if you play on EUNE).',
+      'Home: a starred player is no longer listed twice, under Favorites and Recently viewed.',
+    ],
+  },
+  {
     version: '3.39',
     date: '2026-11-13',
     items: ['Tier list and "Your champions": the win-rate change since last patch is only green or red when it\'s bigger than chance for the number of games. Smaller changes are grey (hover for details).'],

@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.40](v3.40/CHANGES.md) | 13 Nov 2026 | Search region defaults to the last-viewed player's server until picked; favourites no longer repeated under Recently viewed |
 | [v3.39](v3.39/CHANGES.md) | 13 Nov 2026 | Patch deltas on the tier list and Patch watch: green/red only beyond 2 SE, grey (with a tooltip) within normal swing |
 | [v3.38](v3.38/CHANGES.md) | 13 Nov 2026 | Patch movers: 2-SE filter, ranked by the change we can be sure of (Δ − 1 SE), games on both patches shown |
 | [v3.37](v3.37/CHANGES.md) | 13 Nov 2026 | Server side of v3.36: real 404 + "not found" titles for unknown champion/matchup addresses, 302 redirect for nicknames; champSearch moved to shared/ |

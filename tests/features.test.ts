@@ -621,3 +621,14 @@ describe('win-rate change since last patch', async () => {
     expect(realChange(0.6, 0.5)).toBe(true); // no game counts: can't tell, so trust it
   });
 });
+
+describe('default search region', async () => {
+  const { pickRegion } = await import('../src/lib/storage');
+  const p = (platform: string) => ({ platform, gameName: 'x', tagLine: 'y' });
+  it('follows the players you look at until you pick a region', () => {
+    expect(pickRegion('', [], [])).toBe('euw1');
+    expect(pickRegion('', [p('na1')], [])).toBe('na1');
+    expect(pickRegion('', [p('na1')], [p('eun1'), p('kr')])).toBe('eun1');
+    expect(pickRegion('kr', [p('na1')], [p('eun1')])).toBe('kr');
+  });
+});

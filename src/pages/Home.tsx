@@ -10,7 +10,7 @@ import { SearchBox } from '../components/SearchBox';
 import { GameImg } from '../components/ui/GameImg';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
 import { profilePath } from '../lib/riotId';
-import { useFavorites, useRecent, type SavedPlayer } from '../lib/storage';
+import { isFavorite, useFavorites, useRecent, type SavedPlayer } from '../lib/storage';
 import { getPlatform } from '../../shared/regions';
 import { tierName } from '../lib/format';
 import { fadeIn } from '../lib/motion';
@@ -46,7 +46,8 @@ function PlayerChip({ p }: { p: SavedPlayer }) {
 
 export function HomePage() {
   const favorites = useFavorites();
-  const recent = useRecent();
+  // A starred player is already in Favorites; don't list them twice.
+  const recent = useRecent().filter((p) => !isFavorite(favorites, p));
   useEffect(() => {
     document.title = t('home.title');
   }, []);
