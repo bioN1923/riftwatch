@@ -909,5 +909,11 @@ const en = {
   "draft.banHard": "How your champions do against {name}",
   "draft.banAnswers": "See answers to {name}",
   "draft.banNone": "No clear threat to your pool yet: not enough ranked games against it.",
+  "live.laneTitle": "{a} vs {b} in {role}",
+  "live.laneRate_one": "{a} wins {rate} of this matchup in ranked ({count} game)",
+  "live.laneRate_other": "{a} wins {rate} of this matchup in ranked ({count} games)",
+  "live.laneFew": "Not enough ranked games of this matchup yet.",
+  "live.laneGuess": "Lane opponent guessed from the champions' usual roles and Smite: the game doesn't share roles.",
+  "live.laneOpen": "Open matchup",
 };
 export default en;

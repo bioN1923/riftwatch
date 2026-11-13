@@ -925,5 +925,12 @@ const dict: Record<string, string> = {
   "draft.banHard": "Cum se descurcă campionii tăi împotriva lui {name}",
   "draft.banAnswers": "Vezi răspunsurile la {name}",
   "draft.banNone": "Încă nicio amenințare clară pentru pool-ul tău: nu sunt destule meciuri ranked împotriva lui.",
+  "live.laneTitle": "{a} vs {b} pe {role}",
+  "live.laneRate_one": "{a} câștigă {rate} din acest matchup în ranked ({count} meci)",
+  "live.laneRate_few": "{a} câștigă {rate} din acest matchup în ranked ({count} meciuri)",
+  "live.laneRate_other": "{a} câștigă {rate} din acest matchup în ranked ({count} de meciuri)",
+  "live.laneFew": "Încă nu sunt destule meciuri ranked cu acest matchup.",
+  "live.laneGuess": "Adversarul de pe lane e ghicit după rolurile obișnuite ale campionilor și Smite: jocul nu publică rolurile.",
+  "live.laneOpen": "Deschide matchup-ul",
 };
 export default dict;

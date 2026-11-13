@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import { useQueries } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import type { LiveGame as Live, LiveParticipant, ScoutInfo } from '../../../shared/types';
 import { api } from '../../lib/api';
-import { assets, rankEmblem, useStaticData } from '../../lib/ddragon';
+import { assets, matchupPath, rankEmblem, useStaticData } from '../../lib/ddragon';
+import { guessRoles, roleGames, SR_QUEUES } from '../../lib/lanes';
+import { ROLE_LABEL } from '../ui/RoleIcon';
 import { compact, duration, pct, tierName } from '../../lib/format';
 import { queueName } from '../../lib/queues';
 import { profilePath } from '../../lib/riotId';
@@ -69,6 +71,8 @@ export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string;
         <span className="text-xs text-faint md:ml-auto">{t('live.note')}</span>
       </div>
 
+      {SR_QUEUES.has(game.queueId) && <LaneMatchup game={game} puuid={puuid} />}
+
       <div className="grid gap-4">
         {teams.map((team) => {
           const avg = avgRank(team.idx.map((i) => scouts[i]));
@@ -99,6 +103,70 @@ export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string;
         })}
       </div>
     </section>
+  );
+}
+
+/**
+ * The profiled player's lane opponent, guessed (spectator data has no roles), with how that
+ * matchup goes in ranked: the pre-game read a player wants during the loading screen.
+ */
+function LaneMatchup({ game, puuid }: { game: Live; puuid: string }) {
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  const tier = useQuery({ queryKey: ['tierlist', 'ranked', undefined], queryFn: ({ signal }) => api.tierList('ranked', undefined, signal), staleTime: 10 * 60_000 });
+  const self = game.participants.find((p) => p.puuid === puuid);
+  const lane = (() => {
+    if (!self || !tier.data) return null;
+    const games = roleGames(tier.data.rows);
+    const mine = game.participants.filter((p) => p.teamId === self.teamId);
+    const theirs = game.participants.filter((p) => p.teamId !== self.teamId);
+    const rm = guessRoles(mine, games);
+    const rt = guessRoles(theirs, games);
+    if (!rm || !rt) return null;
+    const role = rm[mine.indexOf(self)];
+    const opp = theirs[rt.indexOf(role)];
+    return opp ? { role, opp } : null;
+  })();
+  const mu = useQuery({
+    queryKey: ['matchup', self?.championId, lane?.opp.championId, lane?.role, undefined],
+    queryFn: ({ signal }) => api.matchup(self!.championId, lane!.opp.championId, { role: lane!.role }, signal),
+    enabled: !!lane && !!self,
+    staleTime: 5 * 60_000,
+  });
+  if (!self || !lane) return null;
+  const me = a.champion(self.championId);
+  const them = a.champion(lane.opp.championId);
+  const m = mu.data;
+  const enough = m && m.games >= 10;
+  return (
+    <div className="panel flex flex-wrap items-center gap-x-5 gap-y-3 px-4 py-3" role="group" aria-labelledby="live-lane-h">
+      <div className="flex items-center gap-2">
+        <GameImg src={me.url} alt="" size={40} rounded="md" />
+        <span className="text-xs font-semibold text-faint">VS</span>
+        <GameImg src={them.url} alt="" size={40} rounded="md" />
+      </div>
+      <div className="min-w-[14rem] flex-1">
+        <h3 id="live-lane-h" className="font-display text-lg font-bold leading-tight">
+          {t('live.laneTitle', { a: me.name, b: them.name, role: ROLE_LABEL[lane.role] })}
+        </h3>
+        <p className="text-xs text-muted">
+          {mu.isPending ? (
+            <Skeleton className="mt-1 h-3 w-48" />
+          ) : enough ? (
+            <>
+              {t.rich('live.laneRate', { a: me.name, rate: <b className={m.winRate >= 0.5 ? 'text-win' : 'text-loss'}>{pct(m.winRate, 1)}</b>, count: m.games })}
+              {m.goldDiff15 != null && ` · ${t('draft.gold15', { gold: `${m.goldDiff15 >= 0 ? '+' : '−'}${Math.abs(Math.round(m.goldDiff15))}` })}`}
+            </>
+          ) : (
+            t('live.laneFew')
+          )}
+        </p>
+        <p className="mt-0.5 text-[11px] text-faint">{t('live.laneGuess')}</p>
+      </div>
+      <Link to={matchupPath(sd, self.championId, lane.opp.championId, lane.role)} className="text-sm font-medium text-gold underline underline-offset-2 hover:text-text">
+        {t('live.laneOpen')}
+      </Link>
+    </div>
   );
 }
 

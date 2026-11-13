@@ -909,5 +909,11 @@ const dict: Record<string, string> = {
   "draft.banHard": "Como os teus campeões se saem contra {name}",
   "draft.banAnswers": "Ver respostas a {name}",
   "draft.banNone": "Ainda sem ameaça clara para o teu pool: não há partidas ranqueadas suficientes contra ele.",
+  "live.laneTitle": "{a} vs {b} em {role}",
+  "live.laneRate_one": "{a} vence {rate} deste confronto em ranqueadas ({count} partida)",
+  "live.laneRate_other": "{a} vence {rate} deste confronto em ranqueadas ({count} partidas)",
+  "live.laneFew": "Ainda não há partidas ranqueadas suficientes deste confronto.",
+  "live.laneGuess": "Adversário de rota estimado pelas funções habituais dos campeões e Golpear: o jogo não partilha as funções.",
+  "live.laneOpen": "Abrir confronto",
 };
 export default dict;

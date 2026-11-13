@@ -331,3 +331,27 @@ describe('ban for your pool', async () => {
     expect(banSuggestions([1, 2], s, 'MIDDLE')).toEqual([]);
   });
 });
+
+describe('live game lane guess', async () => {
+  const { guessRoles, roleGames } = await import('../src/lib/lanes');
+  const row = (championId: number, role: string, games: number) => ({ championId, role, games }) as any;
+  const games = roleGames([
+    row(1, 'TOP', 300), row(1, 'MIDDLE', 40),
+    row(2, 'JUNGLE', 500),
+    row(3, 'MIDDLE', 400), row(3, 'TOP', 60),
+    row(4, 'BOTTOM', 600),
+    row(5, 'UTILITY', 450), row(5, 'MIDDLE', 30),
+    row(6, 'TOP', 200), row(6, 'JUNGLE', 150), // a flex pick
+  ]);
+  const team = (ids: number[], smiteAt = -1) => ids.map((championId, i) => ({ championId, spells: i === smiteAt ? [11, 4] : [4, 14] }));
+  it('puts each champion in its usual role', () => {
+    expect(guessRoles(team([3, 4, 1, 5, 2], 4), games)).toEqual(['MIDDLE', 'BOTTOM', 'TOP', 'UTILITY', 'JUNGLE']);
+  });
+  it('lets Smite decide a flex pick', () => {
+    expect(guessRoles(team([6, 3, 4, 5, 1], 0), games)?.[0]).toBe('JUNGLE');
+    expect(guessRoles(team([6, 3, 4, 5, 2], 4), games)?.[0]).toBe('TOP');
+  });
+  it('needs five players', () => {
+    expect(guessRoles(team([1, 2, 3]), games)).toBe(null);
+  });
+});

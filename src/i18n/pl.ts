@@ -941,5 +941,13 @@ const dict: Record<string, string> = {
   "draft.banHard": "Jak twoi bohaterowie radzą sobie z {name}",
   "draft.banAnswers": "Zobacz odpowiedzi na {name}",
   "draft.banNone": "Brak wyraźnego zagrożenia dla twojej puli: za mało gier rankingowych przeciwko niej.",
+  "live.laneTitle": "{a} vs {b} na {role}",
+  "live.laneRate_one": "{a} wygrywa {rate} tego starcia w rankingowych ({count} gra)",
+  "live.laneRate_few": "{a} wygrywa {rate} tego starcia w rankingowych ({count} gry)",
+  "live.laneRate_many": "{a} wygrywa {rate} tego starcia w rankingowych ({count} gier)",
+  "live.laneRate_other": "{a} wygrywa {rate} tego starcia w rankingowych ({count} gry)",
+  "live.laneFew": "Za mało gier rankingowych z tym starciem.",
+  "live.laneGuess": "Przeciwnik z linii odgadnięty na podstawie zwykłych ról bohaterów i Porażenia: gra nie udostępnia ról.",
+  "live.laneOpen": "Otwórz starcie",
 };
 export default dict;

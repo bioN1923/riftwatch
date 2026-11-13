@@ -909,5 +909,11 @@ const dict: Record<string, string> = {
   "draft.banHard": "So schneiden deine Champions gegen {name} ab",
   "draft.banAnswers": "Antworten auf {name} ansehen",
   "draft.banNone": "Noch keine klare Bedrohung für deinen Pool: zu wenige Ranglistenspiele dagegen.",
+  "live.laneTitle": "{a} vs. {b} auf {role}",
+  "live.laneRate_one": "{a} gewinnt {rate} dieses Matchups in Ranglistenspielen ({count} Spiel)",
+  "live.laneRate_other": "{a} gewinnt {rate} dieses Matchups in Ranglistenspielen ({count} Spiele)",
+  "live.laneFew": "Noch nicht genug Ranglistenspiele mit diesem Matchup.",
+  "live.laneGuess": "Lane-Gegner geschätzt aus den üblichen Rollen der Champions und Smite: Das Spiel gibt keine Rollen heraus.",
+  "live.laneOpen": "Matchup öffnen",
 };
 export default dict;
