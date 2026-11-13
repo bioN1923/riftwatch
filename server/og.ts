@@ -202,6 +202,71 @@ ${m.winRate != null && m.games ? `<text x="${W / 2}" y="494" text-anchor="middle
   return render(frame(inner));
 }
 
+export interface DraftCard {
+  enemy: Champ;
+  role: string; // "Mid"
+  answers: { champion: Champ; winRate: number }[];
+}
+
+/** The draft helper's answer to one enemy laner: their splash on the right, the best picks into them on the left. */
+export async function draftCard(d: DraftCard) {
+  const art = await splash(d.enemy);
+  const icons = await Promise.all(d.answers.slice(0, 4).map((x) => champIcon(x.champion)));
+  const head = `Answers to ${d.enemy.name}`;
+  const size = fit(head, 104, 700, 0.47);
+  const picks = d.answers
+    .slice(0, 4)
+    .map((x, k) => {
+      const cx = 64 + k * 168;
+      return `${icons[k] ? roundedImage(icons[k]!, cx, 316, 120, 14, `da${k}`) : `<rect x="${cx}" y="316" width="120" height="120" rx="14" fill="${C.surface}" stroke="${C.line}"/>`}
+<text x="${cx + 60}" y="474" text-anchor="middle" font-family="Instrument Sans" font-weight="600" font-size="24" fill="${C.text}">${esc(x.champion.name.length > 11 ? `${x.champion.name.slice(0, 10)}…` : x.champion.name)}</text>
+<text x="${cx + 60}" y="512" text-anchor="middle" font-family="Big Shoulders Display" font-weight="800" font-size="36" fill="${x.winRate >= 0.5 ? C.win : C.loss}">${pct(x.winRate)}</text>`;
+    })
+    .join('');
+  const inner = `
+${art ? `<image href="${art}" x="420" y="0" width="780" height="${H}" preserveAspectRatio="xMidYMid slice" opacity="0.85"/>` : ''}
+<rect width="${W}" height="${H}" fill="url(#fadeR)"/>
+<rect width="${W}" height="${H}" fill="url(#fadeB)"/>
+<rect x="64" y="64" width="6" height="56" fill="${C.gold}"/>
+<text x="86" y="104" font-family="Instrument Sans" font-weight="600" font-size="28" fill="${C.muted}">Draft helper · ${esc(d.role)} lane</text>
+<text x="60" y="${200 + size * 0.35}" font-family="Big Shoulders Display" font-weight="800" font-size="${size}" fill="${C.text}">${esc(head)}</text>
+${d.answers.length ? picks : `<text x="64" y="400" font-family="Instrument Sans" font-weight="600" font-size="30" fill="${C.muted}">Best picks from real ranked games</text>`}`;
+  return render(frame(inner));
+}
+
+export interface CompareSide {
+  gameName: string;
+  tagLine: string;
+  platform: string;
+  profileIconId?: number;
+  tier?: string;
+  rank?: string;
+  lp?: number;
+}
+
+/** Two players side by side, as shared from the Compare page. */
+export async function compareCard(a: CompareSide, b: CompareSide) {
+  const [ia, ib] = await Promise.all([profileIcon(a.profileIconId), profileIcon(b.profileIconId)]);
+  const side = (p: CompareSide, icon: string | null, cx: number, id: string) => {
+    const apex = p.tier && ['MASTER', 'GRANDMASTER', 'CHALLENGER'].includes(p.tier);
+    const rank = p.tier ? `${p.tier.charAt(0)}${p.tier.slice(1).toLowerCase()}${apex ? '' : ` ${p.rank ?? ''}`}${p.lp != null ? ` · ${p.lp} LP` : ''}` : 'Unranked';
+    const em = emblem(p.tier);
+    const nameSize = fit(p.gameName, 72, 470, 0.5);
+    return `${em ? `<image href="${em}" x="${cx - 190}" y="60" width="380" height="380" opacity="0.08"/>` : ''}
+${icon ? roundedImage(icon, cx - 80, 96, 160, 18, id) : `<rect x="${cx - 80}" y="96" width="160" height="160" rx="18" fill="${C.surface}" stroke="${C.line}"/>`}
+<text x="${cx}" y="${300 + nameSize * 0.7}" text-anchor="middle" font-family="Big Shoulders Display" font-weight="800" font-size="${nameSize}" fill="${C.text}">${esc(p.gameName)}</text>
+<text x="${cx}" y="${300 + nameSize * 0.7 + 44}" text-anchor="middle" font-family="Instrument Sans" font-weight="600" font-size="28" fill="${C.muted}">#${esc(p.tagLine)} · ${esc(p.platform)}</text>
+<text x="${cx}" y="${300 + nameSize * 0.7 + 96}" text-anchor="middle" font-family="Big Shoulders Display" font-weight="700" font-size="40" fill="${p.tier ? C.gold : C.muted}">${esc(rank)}</text>`;
+  };
+  const inner = `
+${side(a, ia, 300, 'ca')}
+${side(b, ib, 900, 'cb')}
+<rect x="${W / 2 - 2}" y="60" width="4" height="120" fill="${C.gold}" opacity="0.7"/>
+<rect x="${W / 2 - 2}" y="300" width="4" height="200" fill="${C.gold}" opacity="0.7"/>
+<text x="${W / 2}" y="258" text-anchor="middle" font-family="Big Shoulders Display" font-weight="800" font-size="64" fill="${C.gold}">VS</text>`;
+  return render(frame(inner));
+}
+
 export function siteCard() {
   const inner = `
 <text x="64" y="250" font-family="Big Shoulders Display" font-weight="800" font-size="120" fill="${C.text}">Scout any summoner.</text>

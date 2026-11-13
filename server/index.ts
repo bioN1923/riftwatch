@@ -10,7 +10,7 @@ import { shapeLeague, shapeLive, shapeMatch, shapeTimeline } from './shape';
 import { DEMO_SEED, mockArenaMatch, mockLadder, mockLive, mockLpHistory, mockMatchById, mockMatches, mockProfile, mockRotation, mockScout, mockTimeline, nameFromDemoPuuid } from './mock';
 import { LpStore } from './lpStore';
 import { PlayerIndex } from './playerIndex';
-import { ChampionStatsStore } from './champStats';
+import { ChampionStatsStore, matchupMin } from './champStats';
 import { loadItemKinds } from './items';
 import { startCrawler } from './crawler';
 import { TtlCache } from './cache';
@@ -20,7 +20,7 @@ import { CHALLENGE_MS, PrivacyStore } from './privacy';
 import { ErrorLog, errorsPage } from './errorLog';
 import { timingSafeEqual } from 'node:crypto';
 import { HTML_LANG, OG_LOCALE, alternateLinks, pickLang, seoText, sitemapXml } from './seo';
-import { allChampions, championByKey, championBySlug, championCard, loadOgData, matchupCard, profileCard, siteCard, type ProfileCard } from './og';
+import { allChampions, championByKey, championBySlug, championCard, compareCard, draftCard, loadOgData, matchupCard, profileCard, siteCard, type CompareSide, type ProfileCard } from './og';
 import type { ApiErrorBody, HealthResponse, PrivacyChallenge, PrivacyResult, Ladder, LadderEntry, LpHistory, MatchPage, MatchSummary, MatchTimeline, PlayerHit, Profile, ScoutInfo, ServerStatus, StatsGroup } from '../shared/types';
 
 const PORT = Number(process.env.PORT ?? 3001);
@@ -704,6 +704,8 @@ app.get(
     if (i <= 0) throw new ApiError(404, 'NOT_FOUND', 'Unknown player.');
     const gameName = slug.slice(0, i);
     const tagLine = slug.slice(i + 1);
+    // A hidden player gets the plain site card: no name, no rank.
+    if (privacy.isHiddenPlayer({ gameName, tagLine })) return sendOg(res, 'site', siteCard);
     let card: ProfileCard = { gameName, tagLine, platform: p.label };
     if (DEMO) {
       const m = mockProfile(p.id, gameName, tagLine);
@@ -741,6 +743,60 @@ app.get(
     const edge = m.adjusted - 0.5;
     const verdict = m.games < 10 ? undefined : edge > 0.02 ? `${a.name} is favoured` : edge < -0.02 ? `${b.name} is favoured` : 'An even matchup';
     await sendOg(res, `v:${a.key}:${b.key}:${m.role}:${m.games}`, () => matchupCard({ a, b, role: OG_ROLES[m.role], winRate: m.games ? m.winRate : undefined, games: m.games, verdict }));
+  }),
+);
+
+app.get(
+  '/og/draft/:role/:enemy.jpg',
+  wrap(async (req, res) => {
+    const role = String(req.params.role).toUpperCase();
+    const enemy = championBySlug(String(req.params.enemy));
+    if (!enemy || !OG_ROLES[role]) throw new ApiError(404, 'NOT_FOUND', 'Unknown draft.');
+    const s = champStats.champion(enemy.key, 'ranked', role);
+    // Same rule as the draft page: the enemy's matchups seen from our side, enough games, and actually favouring us.
+    const min = matchupMin(s.summary?.games ?? 0);
+    const answers = (s.role === role ? s.matchups : [])
+      .filter((m) => m.games >= min && 1 - m.adjusted >= 0.5)
+      .sort((x, y) => x.adjusted - y.adjusted)
+      .slice(0, 4)
+      .flatMap((m) => {
+        const c = championByKey(m.championId);
+        return c ? [{ champion: c, winRate: 1 - m.winRate }] : [];
+      });
+    await sendOg(res, `d:${enemy.key}:${role}:${s.patch}:${s.summary?.games}`, () => draftCard({ enemy, role: OG_ROLES[role], answers }));
+  }),
+);
+
+/** a/b are the Compare page's own parameters: "euw1/Name-TAG". */
+function compareSide(raw: unknown): CompareSide | null {
+  if (typeof raw !== 'string') return null;
+  const i = raw.indexOf('/');
+  const p = i > 0 ? getPlatform(raw.slice(0, i)) : undefined;
+  const slug = raw.slice(i + 1);
+  const j = slug.lastIndexOf('-');
+  if (!p || j <= 0) return null;
+  const gameName = slug.slice(0, j);
+  const tagLine = slug.slice(j + 1);
+  if (privacy.isHiddenPlayer({ gameName, tagLine })) return null;
+  const side: CompareSide = { gameName, tagLine, platform: p.label };
+  if (DEMO) {
+    const m = mockProfile(p.id, gameName, tagLine);
+    const solo = m?.ranked.find((r) => r.queueType === 'RANKED_SOLO_5x5');
+    return m ? { ...side, gameName: m.account.gameName, tagLine: m.account.tagLine, profileIconId: m.summoner.profileIconId, tier: solo?.tier, rank: solo?.rank, lp: solo?.leaguePoints } : side;
+  }
+  const hit = players.search(`${gameName}#${tagLine}`, p.id, 1)[0];
+  return hit && hit.gameName.toLowerCase() === gameName.toLowerCase() && hit.tagLine.toLowerCase() === tagLine.toLowerCase()
+    ? { ...side, gameName: hit.gameName, tagLine: hit.tagLine, profileIconId: hit.profileIconId, tier: hit.tier, rank: hit.rank, lp: hit.lp }
+    : side;
+}
+
+app.get(
+  '/og/compare.jpg',
+  wrap(async (req, res) => {
+    const a = compareSide(req.query.a);
+    const b = compareSide(req.query.b);
+    if (!a || !b) return sendOg(res, 'site', siteCard);
+    await sendOg(res, `cmp:${JSON.stringify([a, b]).toLowerCase()}`, () => compareCard(a, b));
   }),
 );
 
@@ -861,10 +917,24 @@ function withMeta(html: string, req: Request) {
     title = 'Draft helper · Riftwatch';
     desc = 'Pick your role and the enemy laner: the best answers from real matchup data, and the best pick from your own champion pool.';
     if (req.query.pool) indexable = false;
+    const role = typeof req.query.role === 'string' ? req.query.role.toUpperCase() : 'MIDDLE';
+    const enemy = typeof req.query.enemy === 'string' ? championBySlug(req.query.enemy) : undefined;
+    if (enemy && OG_ROLES[role]) {
+      title = `Answers to ${enemy.name} (${OG_ROLES[role]}) · Draft helper · Riftwatch`;
+      desc = `The best picks into ${enemy.name} in ${OG_ROLES[role]} lane, from real ranked games.`;
+      image = `/og/draft/${role.toLowerCase()}/${enemy.id.toLowerCase()}.jpg`;
+      indexable = false;
+    }
   } else if (urlPath.startsWith('/compare')) {
     title = T('cmpTitle');
     desc = T('cmpDesc');
     if (req.query.a || req.query.b) indexable = false;
+    const a = compareSide(req.query.a);
+    const b = compareSide(req.query.b);
+    if (a && b) {
+      title = `${a.gameName}#${a.tagLine} vs ${b.gameName}#${b.tagLine} · ${T('cmpTitle')}`;
+      image = `/og/compare.jpg?a=${encodeURIComponent(String(req.query.a))}&b=${encodeURIComponent(String(req.query.b))}`;
+    }
   } else if (urlPath !== '/') {
     indexable = false; // unknown page: the client shows "not found"
   }

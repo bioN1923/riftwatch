@@ -25,6 +25,17 @@ interface Vs extends C {
 }
 export const LANE_MINUTES = [5, 10, 15];
 
+function addLaneLeads(v: Vs, tl: MatchTimeline, i: number, j: number) {
+  const fs = LANE_MINUTES.map((t) => tl.frames[t]);
+  if (!fs.every(Boolean)) return;
+  const ld = (v.ld ??= [0, 0, 0, 0, 0, 0]);
+  fs.forEach((f, k) => {
+    ld[k] += f.gold[i] - f.gold[j];
+    ld[k + 3] += f.cs[i] - f.cs[j];
+  });
+  v.ln = (v.ln ?? 0) + 1;
+}
+
 /** Win rate pulled towards 50% for small samples, so one lucky game doesn't top a ranking. */
 export const shrunk = (w: number, g: number, k = 10) => (w + 0.5 * k) / (g + k);
 
@@ -121,6 +132,8 @@ interface Store {
   patches: Record<string, Partial<Record<StatsGroup, GroupAgg>>>;
   seen: string[];
   seenTl: string[];
+  /** Matches whose 5/10/15 lane leads are counted (timelines seen before v3.12 lack them until backfilled). */
+  laneDone?: string[];
 }
 
 const LENGTHS = [
@@ -309,6 +322,7 @@ export class ChampionStatsStore {
   private s: Store = { v: 1, patches: {}, seen: [], seenTl: [] };
   private seen = new Set<string>();
   private seenTl = new Set<string>();
+  private laneDone = new Set<string>();
   private dirty = false;
   collecting = false;
 
@@ -318,6 +332,16 @@ export class ChampionStatsStore {
         this.s = JSON.parse(fs.readFileSync(file, 'utf8'));
         this.seen = new Set(this.s.seen);
         this.seenTl = new Set(this.s.seenTl);
+        if (this.s.laneDone) this.laneDone = new Set(this.s.laneDone);
+        else {
+          // First start with lane leads: the newest timelines (since v3.12) already have them. Mark about that many as done,
+          // erring on the side of skipping a few rather than counting any game twice.
+          let n = 0;
+          for (const groups of Object.values(this.s.patches))
+            for (const g of Object.values(groups))
+              for (const c of Object.values(g?.champs ?? {})) for (const r of Object.values(c.roles)) for (const v of Object.values(r.vs ?? {})) n += v.ln ?? 0;
+          this.laneDone = new Set(n ? this.s.seenTl.slice(-Math.ceil(n / 8)) : []);
+        }
       } catch {
         /* first run */
       }
@@ -330,6 +354,33 @@ export class ChampionStatsStore {
   }
   hasTimeline(matchId: string) {
     return this.seenTl.has(matchId);
+  }
+  /** Timelines counted before lane leads existed, newest first: the collector re-reads these slowly to fill the lane curves. */
+  laneBackfill(limit: number) {
+    const out: string[] = [];
+    const all = [...this.seenTl];
+    for (let i = all.length - 1; i >= 0 && out.length < limit; i--) if (!this.laneDone.has(all[i])) out.push(all[i]);
+    return out;
+  }
+  skipLane(matchId: string) {
+    this.laneDone.add(matchId);
+    this.dirty = true;
+  }
+  /** Adds only the 5/10/15 lane leads from a timeline already counted for everything else. */
+  addLane(m: MatchSummary, tl: MatchTimeline) {
+    if (this.laneDone.has(m.id) || !this.seenTl.has(m.id)) return;
+    this.laneDone.add(m.id);
+    this.dirty = true;
+    const g = this.group(m, false);
+    if (!g || m.queueId === 450) return;
+    for (const p of m.participants) {
+      if (!p.position) continue;
+      const i = tl.puuids.indexOf(p.puuid);
+      const opp = m.participants.find((x) => x.teamId !== p.teamId && x.position === p.position);
+      const j = opp ? tl.puuids.indexOf(opp.puuid) : -1;
+      const v = opp && i >= 0 && j >= 0 ? g.champs[p.championId]?.roles[p.position]?.vs?.[opp.championId] : undefined;
+      if (v) addLaneLeads(v, tl, i, j);
+    }
   }
 
   private group(m: MatchSummary, create = true) {
@@ -441,6 +492,7 @@ export class ChampionStatsStore {
     const g = this.group(m, false);
     if (!g) return;
     this.seenTl.add(m.id);
+    this.laneDone.add(m.id);
     this.dirty = true;
     const aram = m.queueId === 450;
     const f15 = tl.frames[15];
@@ -495,15 +547,7 @@ export class ChampionStatsStore {
             v.cd = (v.cd ?? 0) + (f15.cs[i] - f15.cs[j]);
             v.xd = (v.xd ?? 0) + (f15.xp[i] - f15.xp[j]);
             v.gn++;
-            const fs = LANE_MINUTES.map((t) => tl.frames[t]);
-            if (fs.every(Boolean)) {
-              const ld = (v.ld ??= [0, 0, 0, 0, 0, 0]);
-              fs.forEach((f, k) => {
-                ld[k] += f.gold[i] - f.gold[j];
-                ld[k + 3] += f.cs[i] - f.cs[j];
-              });
-              v.ln = (v.ln ?? 0) + 1;
-            }
+            addLaneLeads(v, tl, i, j);
           }
         }
       }
@@ -834,6 +878,7 @@ export class ChampionStatsStore {
     for (const p of Object.keys(this.s.patches)) if (!keep.includes(p)) delete this.s.patches[p];
     this.s.seen = [...this.seen].slice(-150_000);
     this.s.seenTl = [...this.seenTl].slice(-150_000);
+    this.s.laneDone = [...this.laneDone].slice(-150_000);
     try {
       fs.mkdirSync(path.dirname(this.file), { recursive: true });
       fs.writeFileSync(this.file, JSON.stringify(this.s));

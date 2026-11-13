@@ -64,6 +64,17 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
               if ((e as any)?.code === 'KEY_INVALID') throw e;
             }
           }
+          // Then a few older games whose timelines predate the lane curves (newest first), until none are left.
+          for (const id of stats.laneBackfill(4)) {
+            try {
+              const raw = await paced(() => riot.match(platform, id, false));
+              const tl = await paced(() => riot.timeline(platform, id));
+              stats.addLane(shapeMatch(raw), shapeTimeline(tl, raw.info.participants.map((x: any) => x.puuid)));
+            } catch (e) {
+              if ((e as any)?.code === 'KEY_INVALID') throw e;
+              if ((e as any)?.code === 'NOT_FOUND') stats.skipLane(id);
+            }
+          }
         }
       } catch (e) {
         if ((e as any)?.code === 'KEY_INVALID') {

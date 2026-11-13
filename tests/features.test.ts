@@ -232,3 +232,52 @@ describe('lane curve', async () => {
     expect(found!.lane!.cs.every(Number.isFinite)).toBe(true);
   });
 });
+
+describe('lane curve backfill', async () => {
+  const fs = await import('node:fs');
+  const os = await import('node:os');
+  const path = await import('node:path');
+  const { ChampionStatsStore } = await import('../server/champStats');
+  const { mockMatches, mockTimeline } = await import('../server/mock');
+  it('fills lane leads for timelines counted before they existed, once each', () => {
+    const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'rw-')), 'stats.json');
+    const matches = Array.from({ length: 30 }, (_, i) => mockMatches({ gameName: `Back${i}`, tagLine: 'X' }, 0, 20, {}).matches).flat();
+    const fresh = new ChampionStatsStore(file);
+    for (const m of matches) {
+      fresh.addMatch(m);
+      fresh.addTimeline(m, mockTimeline(m));
+    }
+    expect(fresh.laneBackfill(10)).toEqual([]);
+    const lanes = (st: InstanceType<typeof ChampionStatsStore>) =>
+      st
+        .tierList('ranked')
+        .rows.filter((r) => r.role === 'MIDDLE')
+        .flatMap((r) => st.champion(r.championId, 'ranked', 'MIDDLE').matchups.map((mu) => st.matchup(r.championId, mu.championId, 'ranked', 'MIDDLE').lane))
+        .filter(Boolean);
+    const want = lanes(fresh);
+    expect(want.length).toBeGreaterThan(0);
+
+    // Store as it looked before v3.12: no lane sums, no laneDone list.
+    (fresh as any).flush();
+    const saved = JSON.parse(fs.readFileSync(file, 'utf8'));
+    delete saved.laneDone;
+    for (const groups of Object.values<any>(saved.patches))
+      for (const g of Object.values<any>(groups))
+        for (const c of Object.values<any>(g.champs)) for (const r of Object.values<any>(c.roles)) for (const v of Object.values<any>(r.vs ?? {})) delete v.ld, delete v.ln;
+    fs.writeFileSync(file, JSON.stringify(saved));
+
+    const old = new ChampionStatsStore(file);
+    expect(lanes(old)).toEqual([]);
+    const todo = old.laneBackfill(10_000);
+    expect(todo.length).toBe((fresh as any).seenTl.size);
+    const byId = new Map(matches.map((m) => [m.id, m]));
+    for (const id of todo) {
+      const m = byId.get(id)!;
+      old.addLane(m, mockTimeline(m));
+      old.addLane(m, mockTimeline(m)); // a second read must not count twice
+    }
+    expect(old.laneBackfill(10)).toEqual([]);
+    expect(lanes(old)).toEqual(want);
+  });
+});
+
