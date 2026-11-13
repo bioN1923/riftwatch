@@ -14,3 +14,7 @@
 - 61 tests pass (new: ban scoring and thresholds). The first version of the test caught a flaw: with a pool of 2, one awful matchup outranked an enemy that beats both champions. Fixed by requiring at least two pool champions.
 - The a11y check caught the small red percentages on grey chips in light mode (contrast 4.27, needs 4.5); the chips are outlined instead of filled now, and the check is clean.
 - Typecheck and build pass. Demo: `demo/ban-*.png` (dark, light, phone); "See answers to Hwei" opens `/draft?…&enemy=hwei`.
+
+## Live check (after deploy)
+- Deployed 13 Nov 2026 12:28 (deploy.log EXIT CODE 0). The source archive reached the PC; the git-history archive (14 MB) was rejected twice with HTTP 400, so the PC's git copy catches up in a later sync. The deploy only needs the source.
+- `/draft?role=MIDDLE&pool=ahri,syndra,orianna,viktor` (live data): "Ban for your pool" suggests Yone (pool wins 48.5%; 45/45/46/52% per champion) and Akali (49.0%). Only two are shown because live matchup samples are still small (`live/draft-ban-for-pool.jpg`). The Tools tab is highlighted on the draft page.
