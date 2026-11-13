@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.47',
+    date: '2026-11-13',
+    items: ['Faster first visit: game data (champions, items, runes, spells) now comes from Riftwatch in one small, compressed file instead of four large downloads from Riot (about 40% less to download, and much less for your browser to read).'],
+  },
+  {
     version: '3.46',
     date: '2026-11-13',
     items: ['Draft helper: each answer shows the range its real win rate likely falls in (e.g. 50–78% on 40 games), is only green when that whole range beats 50%, and solid results rank above lucky streaks on few games.'],

@@ -717,3 +717,26 @@ describe('draft answers: how sure is a matchup win rate', async () => {
     expect(winRange(0.5, 0)).toEqual([0, 1]);
   });
 });
+
+describe('slim static game data', async () => {
+  const { slimStatic, STATIC_LOCALES } = await import('../shared/staticSlim');
+  it('keeps exactly what the site uses from Data Dragon', () => {
+    const d = slimStatic(
+      '16.22.1',
+      { data: { Ahri: { key: '103', id: 'Ahri', name: 'Ahri', title: 'the Nine-Tailed Fox', tags: ['Mage'], stats: { hp: 590 }, image: {} } } },
+      { data: { SummonerFlash: { key: '4', id: 'SummonerFlash', name: 'Flash', description: 'Teleports', cooldown: [300] } } },
+      { data: { '3003': { name: 'Archangel', description: '<mainText>Mana</mainText>', plaintext: '', gold: { total: 2900, sell: 2030 }, from: ['3070'], maps: { 11: true }, stats: {} } } },
+      [{ id: 8200, name: 'Sorcery', icon: 's.png', slots: [{ runes: [{ id: 8214, name: 'Aery', icon: 'a.png', shortDesc: '<b>Hit</b> them' }] }] }],
+    );
+    expect(d.champions).toEqual([[103, { id: 'Ahri', name: 'Ahri', title: 'the Nine-Tailed Fox', tags: ['Mage'] }]]);
+    expect(d.spells[0]).toEqual([4, { id: 'SummonerFlash', name: 'Flash', description: 'Teleports' }]);
+    expect(d.items[0]).toEqual([3003, { name: 'Archangel', plaintext: 'Mana', gold: 2900, sell: 2030, description: '<mainText>Mana</mainText>', from: [3070], into: [] }]);
+    expect(d.runes).toEqual([
+      [8200, { icon: 's.png', name: 'Sorcery', desc: '' }],
+      [8214, { icon: 'a.png', name: 'Aery', desc: 'Hit them' }],
+    ]);
+    expect(d.trees).toEqual([{ id: 8200, name: 'Sorcery', icon: 's.png', slots: [[8214]] }]);
+    expect(STATIC_LOCALES.has('pt_BR')).toBe(true);
+    expect(STATIC_LOCALES.has('../etc')).toBe(false);
+  });
+});

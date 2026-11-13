@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { langInfo, t } from '../i18n';
+import { slimStatic, type SlimStatic } from '../../shared/staticSlim';
 
 /** Static game data from Riot's Data Dragon CDN, always on the latest patch. */
 const CDN = 'https://ddragon.leagueoflegends.com/cdn';
@@ -31,43 +32,25 @@ export interface ItemData {
 
 const stripTags = (s: string) => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 
+function fromSlim(d: SlimStatic): StaticData {
+  return { version: d.version, champions: new Map(d.champions), spells: new Map(d.spells), items: new Map(d.items), runes: new Map(d.runes), trees: d.trees };
+}
+
+/** The slim copy from our server (one small, cached, compressed file); Data Dragon directly if that fails. */
 async function loadStatic(locale: string): Promise<StaticData> {
-  const [version] = await getJson<string[]>('https://ddragon.leagueoflegends.com/api/versions.json');
-  const base = `${CDN}/${version}/data/${locale}`;
-  const [champ, spell, item, runes] = await Promise.all([
-    getJson<any>(`${base}/champion.json`),
-    getJson<any>(`${base}/summoner.json`),
-    getJson<any>(`${base}/item.json`),
-    getJson<any[]>(`${base}/runesReforged.json`),
-  ]);
-
-  const champions = new Map<number, { id: string; name: string; title: string; tags: string[] }>();
-  for (const c of Object.values<any>(champ.data)) champions.set(Number(c.key), { id: c.id, name: c.name, title: c.title, tags: c.tags ?? [] });
-
-  const spells = new Map<number, { id: string; name: string; description: string }>();
-  for (const s of Object.values<any>(spell.data)) spells.set(Number(s.key), { id: s.id, name: s.name, description: s.description });
-
-  const items = new Map<number, ItemData>();
-  for (const [id, it] of Object.entries<any>(item.data)) {
-    items.set(Number(id), {
-      name: it.name,
-      plaintext: it.plaintext || stripTags(it.description ?? '').slice(0, 140),
-      gold: it.gold?.total ?? 0,
-      sell: it.gold?.sell ?? 0,
-      description: it.description ?? '',
-      from: (it.from ?? []).map(Number),
-      into: (it.into ?? []).map(Number),
-    });
+  try {
+    return fromSlim(await getJson<SlimStatic>(`/api/static/${locale}`));
+  } catch {
+    const [version] = await getJson<string[]>('https://ddragon.leagueoflegends.com/api/versions.json');
+    const base = `${CDN}/${version}/data/${locale}`;
+    const [champ, spell, item, runes] = await Promise.all([
+      getJson<any>(`${base}/champion.json`),
+      getJson<any>(`${base}/summoner.json`),
+      getJson<any>(`${base}/item.json`),
+      getJson<any[]>(`${base}/runesReforged.json`),
+    ]);
+    return fromSlim(slimStatic(version, champ, spell, item, runes));
   }
-
-  const runeMap = new Map<number, { icon: string; name: string; desc: string }>();
-  const trees = runes.map((style) => ({ id: style.id, name: style.name, icon: style.icon, slots: style.slots.map((sl: any) => sl.runes.map((r: any) => r.id)) }));
-  for (const style of runes) {
-    runeMap.set(style.id, { icon: style.icon, name: style.name, desc: '' });
-    for (const slot of style.slots) for (const r of slot.runes) runeMap.set(r.id, { icon: r.icon, name: r.name, desc: stripTags(r.shortDesc ?? '') });
-  }
-
-  return { version, champions, spells, items, runes: runeMap, trees };
 }
 
 export function useStaticData() {

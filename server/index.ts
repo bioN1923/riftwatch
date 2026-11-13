@@ -20,6 +20,7 @@ import { CHALLENGE_MS, PrivacyStore } from './privacy';
 import { ErrorLog, errorsPage } from './errorLog';
 import { timingSafeEqual } from 'node:crypto';
 import { champAddressFix } from '../shared/champSearch';
+import { STATIC_LOCALES, slimStatic } from '../shared/staticSlim';
 import { HTML_LANG, OG_LOCALE, alternateLinks, pickLang, seoText, sitemapXml } from './seo';
 import { allChampions, championByKey, championBySlug, championCard, compareCard, draftCard, loadOgData, matchupCard, profileCard, siteCard, type CompareSide, type ProfileCard } from './og';
 import type { ApiErrorBody, HealthResponse, PrivacyChallenge, PrivacyResult, Ladder, LadderEntry, LpHistory, MatchPage, MatchSummary, MatchTimeline, PlayerHit, Profile, ScoutInfo, ServerStatus, StatsGroup } from '../shared/types';
@@ -589,6 +590,58 @@ app.get(
     const missing = entries.some((e) => !e.gameName && !privacy.isHidden(e.puuid));
     res.setHeader('Cache-Control', missing ? 'no-store' : 'public, max-age=120');
     res.json({ platform: p.id, queue, tier, total: all.length, minLp: all.length ? all[all.length - 1].lp : null, page, pageSize: LADDER_PAGE, entries, namesPending: missing } satisfies Ladder);
+  }),
+);
+
+/**
+ * Data Dragon's static files, slimmed to what the site shows, for the visitor's language. Saves each
+ * new visitor roughly 900 kB of JSON from Riot's CDN; refreshed hourly so a new patch shows up.
+ */
+const staticCache = new Map<string, { at: number; body: string }>();
+const staticPending = new Map<string, Promise<string>>();
+async function slimStaticFor(locale: string): Promise<string> {
+  const hit = staticCache.get(locale);
+  if (hit && Date.now() - hit.at < 60 * 60_000) return hit.body;
+  const running = staticPending.get(locale);
+  if (running) return running;
+  const job = (async () => {
+    const get = async (url: string) => {
+      const r = await fetch(url, { signal: AbortSignal.timeout(10_000) });
+      if (!r.ok) throw new Error(`Data Dragon ${r.status}`);
+      return r.json();
+    };
+    const [version] = (await get('https://ddragon.leagueoflegends.com/api/versions.json')) as string[];
+    const base = `https://ddragon.leagueoflegends.com/cdn/${version}/data/${locale}`;
+    const [champ, spell, item, runes] = await Promise.all([get(`${base}/champion.json`), get(`${base}/summoner.json`), get(`${base}/item.json`), get(`${base}/runesReforged.json`)]);
+    const body = JSON.stringify(slimStatic(version, champ, spell, item, runes as any[]));
+    staticCache.set(locale, { at: Date.now(), body });
+    return body;
+  })();
+  staticPending.set(locale, job);
+  try {
+    return await job;
+  } catch (e) {
+    // Data Dragon hiccup: keep serving the last good copy if there is one.
+    if (hit) return hit.body;
+    throw e;
+  } finally {
+    staticPending.delete(locale);
+  }
+}
+
+app.get(
+  '/api/static/:locale',
+  wrap(async (req, res) => {
+    const locale = String(req.params.locale);
+    if (!STATIC_LOCALES.has(locale)) throw new ApiError(400, 'BAD_REQUEST', 'Unknown language.');
+    let body: string;
+    try {
+      body = await slimStaticFor(locale);
+    } catch {
+      throw new ApiError(503, 'UPSTREAM', 'Game data is unavailable right now.');
+    }
+    res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+    res.type('application/json').send(body);
   }),
 );
 
