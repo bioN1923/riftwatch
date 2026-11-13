@@ -54,7 +54,7 @@ export function ScoutingReport({ ov, matches, puuid, name }: { ov?: Overview; ma
   }
   if (comfort && comfort.games >= 2) {
     lines.push(
-      <>{t.rich('report.comfort', { champion: <b>{comfortName}</b>, count: comfort.games, rate: pct(comfort.wins / comfort.games) })}</>,
+      <>{t.rich('report.mostPlayed', { champion: <b>{comfortName}</b>, count: comfort.games, wins: comfort.wins })}</>,
     );
   }
   lines.push(

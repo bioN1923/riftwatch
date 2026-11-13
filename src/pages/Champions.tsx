@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { PatchMovers } from '../components/champions/PatchMovers';
+import { PatchDelta } from '../components/ui/PatchDelta';
 import { ArrowDown, ArrowUp, Search } from 'lucide-react';
 import type { StatsGroup, TierRow } from '../../shared/types';
 import { api } from '../lib/api';
@@ -209,7 +210,10 @@ export function ChampionsPage() {
                     <td className="px-3 py-2 text-right">
                       <span className="inline-flex items-center gap-2.5">
                         <WinRateBar value={r.winRate} />
-                        <span className={clsx('num w-12 font-semibold', r.winRate >= 0.5 ? 'text-text' : 'text-muted')}>{pct(r.winRate, 1)}</span>
+                        <span className="flex w-12 flex-col items-end leading-tight">
+                          <span className={clsx('num font-semibold', r.winRate >= 0.5 ? 'text-text' : 'text-muted')}>{pct(r.winRate, 1)}</span>
+                          <PatchDelta now={r.winRate} before={r.prevWinRate} />
+                        </span>
                       </span>
                     </td>
                     <td className="num px-3 py-2 text-right text-muted">{pct(r.pickRate, 1)}</td>

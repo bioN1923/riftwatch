@@ -220,6 +220,9 @@ export interface TierRow {
   rank: number; // within role
   lowSample: boolean;
   counters?: number[]; // champion ids this pick struggles against in lane
+  /** Win rate on the previous patch, when both patches have enough games for it to mean something. */
+  prevWinRate?: number;
+  prevGames?: number;
 }
 
 export interface TierList {

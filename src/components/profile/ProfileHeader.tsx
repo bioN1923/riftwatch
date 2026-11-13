@@ -203,7 +203,7 @@ function RankBlock({ label, entry, big }: { label: string; entry?: LeagueEntry; 
         </p>
         <p className={clsx('font-display font-extrabold leading-tight', big ? 'text-3xl' : 'text-2xl')}>
           {tierName(entry.tier)} {APEX.has(entry.tier) ? '' : entry.rank}
-          <span className="num ml-2 text-base font-semibold text-muted">{t('common.lp', { lp: entry.leaguePoints })}</span>
+          <span className="num ml-2 whitespace-nowrap text-base font-semibold text-muted">{t('common.lp', { lp: entry.leaguePoints })}</span>
         </p>
         <p className="num text-xs text-muted">
           {t('common.wins', { count: entry.wins })} {t('common.losses', { count: entry.losses })} · <span className={clsx('font-semibold', wr >= 0.5 ? 'text-win' : 'text-loss')}>{pct(wr)}</span>

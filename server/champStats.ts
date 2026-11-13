@@ -510,7 +510,18 @@ export class ChampionStatsStore {
     const rows = g ? this.rows(g) : [];
     const prevPatch = pt ? patches[patches.indexOf(pt) + 1] : undefined;
     const prev = prevPatch ? this.s.patches[prevPatch][group] : undefined;
-    return { group, patch: pt, patches, matches: g?.matches ?? 0, rows, collecting: this.collecting, movers: g && prev ? movers(rows, this.rows(prev), prevPatch!) : null };
+    const prevRows = prev ? this.rows(prev) : [];
+    // Each row carries last patch's win rate when both samples are big enough to compare.
+    const before = new Map(prevRows.map((r) => [`${r.championId}:${r.role}`, r]));
+    const minCompare = Math.max(50, Math.round((g?.matches ?? 0) * 0.008));
+    for (const r of rows) {
+      const p = before.get(`${r.championId}:${r.role}`);
+      if (p && p.games >= minCompare && r.games >= minCompare) {
+        r.prevWinRate = p.winRate;
+        r.prevGames = p.games;
+      }
+    }
+    return { group, patch: pt, patches, matches: g?.matches ?? 0, rows, collecting: this.collecting, movers: g && prev ? movers(rows, prevRows, prevPatch!) : null };
   }
 
   private rows(g: GroupAgg): TierRow[] {
