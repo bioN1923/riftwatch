@@ -952,5 +952,7 @@ const dict: Record<string, string> = {
   "ms.recentCount_one": "{count} jucător",
   "ms.recentCount_few": "{count} jucători",
   "ms.recentCount_other": "{count} de jucători",
+  "cl.unseen": "actualizări noi",
+  "cl.new": "Nou",
 };
 export default dict;

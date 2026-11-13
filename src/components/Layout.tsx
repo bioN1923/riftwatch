@@ -1,11 +1,12 @@
-import { Link, NavLink, Outlet, useLocation } from 'react-router';
+import { Link, NavLink, Outlet, ScrollRestoration, useLocation } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { AlertTriangle, Check, Globe, LayoutGrid, Monitor, Moon, Scale, Sun, Swords, Trophy, User, Users, Wrench, X } from 'lucide-react';
 import clsx from 'clsx';
 import { SearchBox } from './SearchBox';
 import { api } from '../lib/api';
-import { useRegion, useTheme, type Theme } from '../lib/storage';
+import { setSeenVersion, useRegion, useSeenVersion, useTheme, type Theme } from '../lib/storage';
+import { CHANGELOG, newerThan } from '../data/changelog';
 import { LANGS, setLang, t, useLang, type Lang } from '../i18n';
 
 /** Riot Games' required legal boilerplate (developer.riotgames.com/policies/general). */
@@ -288,6 +289,13 @@ function MobileNav() {
 export function Layout() {
   const { pathname } = useLocation();
   const home = pathname === '/';
+  const seen = useSeenVersion();
+  const latest = CHANGELOG[0].version;
+  // A first visit counts as up to date: the dot is for what changed since you started using Riftwatch.
+  useEffect(() => {
+    if (!seen) setSeenVersion(latest);
+  }, [seen, latest]);
+  const unseen = !!seen && newerThan(latest, seen);
   return (
     <div className="flex min-h-dvh flex-col">
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded focus:bg-gold focus:px-3 focus:py-2 focus:text-gold-ink">
@@ -310,6 +318,9 @@ export function Layout() {
         </div>
       </main>
       <MobileNav />
+      {/* A new page starts at the top (Back returns to where you were). Profile tabs and filter
+          changes keep the same key, so they don't jump. */}
+      <ScrollRestoration getKey={(l) => l.pathname.replace(/\/(live|stats)$/, '')} />
       <footer className="border-t border-line px-4 py-6 text-center text-xs text-faint">
         <nav aria-label={t('footer.nav')} className="mb-2 flex justify-center gap-4">
           <Link to="/privacy" className="hover:text-text hover:underline">
@@ -323,6 +334,12 @@ export function Layout() {
           </Link>
           <Link to="/changelog" className="hover:text-text hover:underline">
             {t('cl.title')}
+            {unseen && (
+              <>
+                <span className="ml-1 inline-block size-1.5 rounded-full bg-gold align-middle" aria-hidden />
+                <span className="sr-only"> ({t('cl.unseen')})</span>
+              </>
+            )}
           </Link>
         </nav>
         {/* Riot's required legal notice, kept in its exact English wording in every language. */}

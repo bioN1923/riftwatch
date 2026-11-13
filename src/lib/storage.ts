@@ -94,6 +94,12 @@ export function toggleFavorite(p: SavedPlayer) {
   favoriteStore.set((list) => (list.some((x) => samePlayer(x, p)) ? list.filter((x) => !samePlayer(x, p)) : [p, ...list].slice(0, 12)));
 }
 
+/** The newest "What's new" version this visitor has seen ("" until their first visit). */
+const seenStore = createStore<string>('rw:seen-version', '');
+export const useSeenVersion = () => useStore(seenStore);
+export const getSeenVersion = () => seenStore.get();
+export const setSeenVersion = (v: string) => seenStore.set(v);
+
 /* Theme: "system" follows the OS; the explicit choices persist. */
 export type Theme = 'system' | 'light' | 'dark';
 const themeStore = createStore<Theme>('rw:theme-choice', 'system');

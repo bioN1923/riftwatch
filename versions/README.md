@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.35](v3.35/CHANGES.md) | 13 Nov 2026 | "What's new" dot + NEW badges since your last visit; pages open at the top (scroll restoration) |
 | [v3.34](v3.34/CHANGES.md) | 13 Nov 2026 | Phone header: wider search box (language button shows just the code; tighter gaps) |
 | [v3.33](v3.33/CHANGES.md) | 13 Nov 2026 | Multi-search and compare links encode Riot IDs once (old double-encoded links still work) |
 | [v3.32](v3.32/CHANGES.md) | 13 Nov 2026 | Multi-search: recent lobbies (last 3, one click to scout again) |

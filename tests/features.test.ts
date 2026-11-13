@@ -466,6 +466,14 @@ describe("what's new page", async () => {
     expect(CHANGELOG[0].version).toBe(pkg.version.split('.').slice(0, 2).join('.'));
     for (const e of CHANGELOG) expect(e.items.length).toBeGreaterThan(0);
   });
+  it('compares versions numerically for the "new since your last visit" marks', async () => {
+    const { newerThan } = await import('../src/data/changelog');
+    expect(newerThan('3.10', '3.9')).toBe(true);
+    expect(newerThan('3.9', '3.10')).toBe(false);
+    expect(newerThan('3.35', '3.35')).toBe(false);
+    expect(newerThan('4.0', '3.99')).toBe(true);
+    expect(newerThan('3.1', '')).toBe(true);
+  });
 });
 
 describe('try next suggestions', async () => {

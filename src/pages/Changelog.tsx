@@ -1,11 +1,15 @@
-import { useEffect } from 'react';
-import { CHANGELOG } from '../data/changelog';
+import { useEffect, useState } from 'react';
+import { CHANGELOG, newerThan } from '../data/changelog';
+import { getSeenVersion, setSeenVersion } from '../lib/storage';
 import { getLang, t } from '../i18n';
 
 /** What changed on Riftwatch, newest first (English, like the API usage page). */
 export function ChangelogPage() {
+  // What was new when the page opened stays marked while you read; leaving counts as seen.
+  const [seen] = useState(getSeenVersion);
   useEffect(() => {
     document.title = `${t('cl.title')} · Riftwatch`;
+    setSeenVersion(CHANGELOG[0].version);
   }, []);
   const day = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString(getLang(), { day: 'numeric', month: 'long', year: 'numeric' });
   return (
@@ -22,6 +26,9 @@ export function ChangelogPage() {
               <time dateTime={e.date} className="text-xs text-muted">
                 {day(e.date)}
               </time>
+              {seen && newerThan(e.version, seen) && (
+                <span className="rounded-full border border-gold px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-gold">{t('cl.new')}</span>
+              )}
             </h2>
             <ul lang="en" className="mt-1.5 list-disc space-y-1 pl-5 leading-relaxed text-muted">
               {e.items.map((x) => (

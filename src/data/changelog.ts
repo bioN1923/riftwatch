@@ -8,7 +8,24 @@ export interface ChangelogEntry {
   items: string[];
 }
 
+/** True when version a ("3.35") is newer than b ("3.9" < "3.10"); everything is newer than "". */
+export function newerThan(a: string, b: string) {
+  if (!b) return true;
+  const x = a.split('.').map(Number);
+  const y = b.split('.').map(Number);
+  for (let i = 0; i < Math.max(x.length, y.length); i++) {
+    const d = (x[i] ?? 0) - (y[i] ?? 0);
+    if (d) return d > 0;
+  }
+  return false;
+}
+
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.35',
+    date: '2026-11-13',
+    items: ['"What\'s new" gets a gold dot when Riftwatch has changed since you last looked, and the new entries are marked on this page.', 'Every new page now opens at the top (some opened scrolled down to where you clicked). Back still returns you to where you were.'],
+  },
   {
     version: '3.34',
     date: '2026-11-13',

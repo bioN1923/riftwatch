@@ -934,5 +934,7 @@ const dict: Record<string, string> = {
   "ms.recentClear": "Leeren",
   "ms.recentCount_one": "{count} Spieler",
   "ms.recentCount_other": "{count} Spieler",
+  "cl.unseen": "neue Updates",
+  "cl.new": "Neu",
 };
 export default dict;

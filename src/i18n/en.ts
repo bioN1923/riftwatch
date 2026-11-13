@@ -934,5 +934,7 @@ const en = {
   "ms.recentClear": "Clear",
   "ms.recentCount_one": "{count} player",
   "ms.recentCount_other": "{count} players",
+  "cl.unseen": "new updates",
+  "cl.new": "New",
 };
 export default en;
