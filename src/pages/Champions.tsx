@@ -16,6 +16,7 @@ import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { GroupToggle, PatchSelect, ROLE_TABS, RoleTab, TierBadge, WinRateBar } from '../components/champions/common';
 import { SlidingIndicator } from '../components/ui/Motion';
 import { t } from '../i18n';
+import { champHit } from '../lib/champSearch';
 
 type SortKey = 'rank' | 'name' | 'tier' | 'winRate' | 'pickRate' | 'banRate' | 'games';
 const TIER_ORDER = { 'S+': 0, S: 1, A: 2, B: 3, C: 4, D: 5, '–': 6 };
@@ -52,10 +53,10 @@ export function ChampionsPage() {
 
   const rows = useMemo(() => {
     const list = (q.data?.rows ?? []).filter((r) => role === 'ALL' || r.role === role);
-    const needle = query.trim().toLowerCase();
+    const needle = query.trim();
     const named = list
       .map((r) => ({ ...r, name: a.champion(r.championId).name }))
-      .filter((r) => !needle || r.name.toLowerCase().includes(needle));
+      .filter((r) => !needle || champHit(needle, { id: sd?.champions.get(r.championId)?.id ?? r.name, name: r.name }) != null);
     const val = (r: TierRow & { name: string }) =>
       sort.key === 'name' ? r.name : sort.key === 'tier' ? TIER_ORDER[r.tier] * 1000 + r.rank : sort.key === 'rank' ? r.rank : (r[sort.key] as number);
     return named.sort((x, y) => {

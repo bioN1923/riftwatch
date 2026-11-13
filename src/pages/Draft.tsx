@@ -9,6 +9,7 @@ import { api } from '../lib/api';
 import { assets, champSlug, useStaticData } from '../lib/ddragon';
 import { pct } from '../lib/format';
 import { banSuggestions } from '../lib/draft';
+import { champHit } from '../lib/champSearch';
 import { parseRiotId } from '../lib/riotId';
 import { me } from '../lib/stats';
 import { useRegion } from '../lib/storage';
@@ -133,10 +134,12 @@ function ChampionGrid({ onPick, exclude }: { onPick: (id: number) => void; exclu
   const a = assets(sd);
   const [q, setQ] = useState('');
   const list = useMemo(() => {
-    const needle = q.trim().toLowerCase().replace(/[^a-z]/g, '');
+    const needle = q.trim();
     return [...(sd?.champions ?? new Map()).entries()]
-      .filter(([id, c]) => !exclude.includes(id) && (!needle || c.name.toLowerCase().replace(/[^a-z]/g, '').includes(needle)))
-      .sort((x, y) => x[1].name.localeCompare(y[1].name));
+      .map(([id, c]) => [id, c, needle ? champHit(needle, c) : 1] as const)
+      .filter(([id, , hit]) => !exclude.includes(id) && hit != null)
+      .sort((x, y) => (x[2] ?? 3) - (y[2] ?? 3) || x[1].name.localeCompare(y[1].name))
+      .map(([id, c]) => [id, c] as const);
   }, [sd, q, exclude]);
   if (!sd) return <Skeleton className="mt-3 h-64" />;
   return (

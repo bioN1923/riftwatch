@@ -13,6 +13,7 @@ import { api } from '../lib/api';
 import { champClass, regionName, tierName } from '../lib/format';
 import { fadeIn } from '../lib/motion';
 import { t } from '../i18n';
+import { champHit } from '../lib/champSearch';
 
 type Option =
   | { kind: 'player'; player: PlayerHit; source: 'favorite' | 'recent' | 'match' }
@@ -119,19 +120,18 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
     recent.filter(savedMatch).forEach((p) => push(toHit(p), 'recent'));
     if (q.length >= 2) (indexQ.data ?? []).forEach((h) => push(h, 'match'));
 
-    // Champions: names that start with the query first ("ka" → Kai'Sa, Karma…), then names containing it.
+    // Champions: nicknames ("mf", "j4"), then names that start with the query ("ka" → Kai'Sa, Karma…), then names containing it.
     const champs: Option[] = [];
     const cq = squash(q);
     if (cq.length >= 2 && !q.includes('#') && sd) {
-      const starts: Option[] = [];
-      const contains: Option[] = [];
+      // Nicknames and exact names first ("tf", "j4"), then names starting with the query, then containing it.
+      const buckets: Option[][] = [[], [], []];
       for (const [id, c] of sd.champions) {
-        const n = squash(c.name);
-        const hit = n.startsWith(cq) || squash(c.id).startsWith(cq) ? starts : n.includes(cq) ? contains : null;
-        hit?.push({ kind: 'champion', championId: id, slug: champSlug(c.id), name: c.name, title: c.title, tags: c.tags });
+        const hit = champHit(q, c);
+        if (hit != null) buckets[hit].push({ kind: 'champion', championId: id, slug: champSlug(c.id), name: c.name, title: c.title, tags: c.tags });
       }
       const byName = (a: Option, b: Option) => (a as { name: string }).name.localeCompare((b as { name: string }).name);
-      champs.push(...starts.sort(byName), ...contains.sort(byName));
+      for (const b of buckets) champs.push(...b.sort(byName));
     }
     const list = [...champs.slice(0, 4), ...out.slice(0, champs.length ? 6 : 8)];
     const id = parseRiotId(q, platform.defaultTag);

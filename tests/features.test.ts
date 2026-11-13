@@ -434,3 +434,21 @@ describe('collector visits only players with new games', async () => {
     }
   });
 });
+
+describe('champion search nicknames', async () => {
+  const { champHit } = await import('../src/lib/champSearch');
+  const C = (id: string, name: string) => ({ id, name });
+  it('finds champions the way players type them', () => {
+    expect(champHit('mf', C('MissFortune', 'Miss Fortune'))).toBe(0);
+    expect(champHit('J4', C('JarvanIV', 'Jarvan IV'))).toBe(0);
+    expect(champHit('asol', C('AurelionSol', 'Aurelion Sol'))).toBe(0);
+    expect(champHit('kaisa', C('Kaisa', "Kai'Sa"))).toBe(0);
+    expect(champHit('cho', C('Chogath', "Cho'Gath"))).toBe(1);
+    expect(champHit('ka', C('Kaisa', "Kai'Sa"))).toBe(1);
+    expect(champHit('fortune', C('MissFortune', 'Miss Fortune'))).toBe(2);
+    expect(champHit('wukong', C('MonkeyKing', 'Wukong'))).toBe(0);
+    expect(champHit('monkey', C('MonkeyKing', 'Wukong'))).toBe(1);
+    expect(champHit('tf', C('Teemo', 'Teemo'))).toBe(null);
+    expect(champHit('  ', C('Teemo', 'Teemo'))).toBe(null);
+  });
+});
