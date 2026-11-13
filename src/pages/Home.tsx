@@ -5,7 +5,7 @@ import { RoleIcon, ROLE_LABEL } from '../components/ui/RoleIcon';
 import { TierBadge } from '../components/champions/common';
 import { pct } from '../lib/format';
 import { Link } from 'react-router';
-import { Star, Clock } from 'lucide-react';
+import { Star, Clock, Swords, Scale, Users, Trophy } from 'lucide-react';
 import { SearchBox } from '../components/SearchBox';
 import { GameImg } from '../components/ui/GameImg';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
@@ -106,7 +106,38 @@ export function HomePage() {
         </div>
       </section>
       <StrongestPicks />
+      <Tools />
     </div>
+  );
+}
+
+/** The site's tools, so they're one tap away on phones too (the bottom bar has room for four). */
+function Tools() {
+  const items = [
+    { to: '/draft', icon: Swords, title: t('nav.draft'), body: t('home.tool.draft') },
+    { to: '/compare', icon: Scale, title: t('nav.compare'), body: t('home.tool.compare') },
+    { to: '/multisearch', icon: Users, title: t('nav.multisearch'), body: t('home.tool.multi') },
+    { to: '/leaderboard', icon: Trophy, title: t('nav.ladder'), body: t('home.tool.ladder') },
+  ];
+  return (
+    <section aria-labelledby="tools-h" className="pb-20">
+      <h2 id="tools-h" className="mb-4 font-display text-2xl font-bold">
+        {t('home.tools')}
+      </h2>
+      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {items.map(({ to, icon: Icon, title, body }) => (
+          <li key={to}>
+            <Link to={to} className="panel group flex h-full gap-3 p-4 transition-colors hover:border-gold/50">
+              <Icon className="mt-0.5 size-5 shrink-0 text-gold transition-transform group-hover:scale-110" aria-hidden />
+              <span>
+                <span className="block font-display text-lg font-bold leading-tight">{title}</span>
+                <span className="mt-1 block text-sm text-muted">{body}</span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

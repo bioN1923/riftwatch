@@ -864,5 +864,11 @@ const dict: Record<string, string> = {
   "draft.gold15": "{gold} de ouro aos 15",
   "mv.all": "Mostrar todos",
   "mv.fewer": "Mostrar menos",
+  "home.tools": "Ferramentas",
+  "home.tool.draft": "Quem escolher contra o adversário de rota, com confrontos reais e o seu próprio pool.",
+  "home.tool.compare": "Dois jogadores lado a lado: elo, fase, estatísticas por partida e campeões.",
+  "home.tool.multi": "Busque de uma vez os Riot IDs de um saguão inteiro.",
+  "home.tool.ladder": "O topo do ranqueado em cada região.",
+  "draft.small": "amostra pequena",
 };
 export default dict;

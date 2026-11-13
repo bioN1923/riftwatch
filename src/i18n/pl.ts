@@ -888,5 +888,11 @@ const dict: Record<string, string> = {
   "draft.gold15": "{gold} złota w 15. min",
   "mv.all": "Pokaż wszystkie",
   "mv.fewer": "Pokaż mniej",
+  "home.tools": "Narzędzia",
+  "home.tool.draft": "Kogo wybrać przeciwko przeciwnikowi z linii, na podstawie prawdziwych matchupów i twojej puli.",
+  "home.tool.compare": "Dwóch graczy obok siebie: ranga, forma, statystyki na mecz i bohaterowie.",
+  "home.tool.multi": "Wyszukaj naraz Riot ID całego lobby.",
+  "home.tool.ladder": "Szczyt rankingu w każdym regionie.",
+  "draft.small": "mała próba",
 };
 export default dict;

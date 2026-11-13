@@ -107,14 +107,14 @@ export function ApiUsagePage() {
       <H id="privacy">Privacy</H>
       <P>
         Only public game data is shown, and players can hide their profile at any time on the{' '}
-        <Link to="/privacy#visibility" className="text-gold hover:underline">
+        <Link to="/privacy#visibility" className="text-gold underline underline-offset-2">
           privacy page
         </Link>
         . They prove the account is theirs by equipping a starter profile icon we name, which we read back from summoner-v4. A hidden profile can’t be
         opened; the player’s name is removed from other people’s games, live games, the ladder and search; and the data we stored about them (rank history,
         search entry, champion-list entries) is deleted. The site has no accounts or logins. If we add any feature that needs a player to sign in, it will
         use Riot Sign-On (RSO). Full details:{' '}
-        <Link to="/privacy" className="text-gold hover:underline">
+        <Link to="/privacy" className="text-gold underline underline-offset-2">
           privacy policy
         </Link>
         .

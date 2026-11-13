@@ -876,5 +876,11 @@ const dict: Record<string, string> = {
   "draft.gold15": "{gold} gold la 15",
   "mv.all": "Arată toate schimbările",
   "mv.fewer": "Arată mai puține",
+  "home.tools": "Unelte",
+  "home.tool.draft": "Pe cine să alegi contra adversarului de pe lane, din matchup-uri reale și din propriul pool.",
+  "home.tool.compare": "Doi jucători față în față: rank, formă, statistici pe meci și campioni.",
+  "home.tool.multi": "Caută deodată Riot ID-urile unui lobby întreg.",
+  "home.tool.ladder": "Vârful clasamentului ranked în fiecare regiune.",
+  "draft.small": "eșantion mic",
 };
 export default dict;

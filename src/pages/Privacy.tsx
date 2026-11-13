@@ -234,7 +234,7 @@ function Policy({ contact }: { contact?: string }) {
         <li>
           <strong>Riot API responses</strong>, cached so we don’t ask Riot again on every page view: account and mastery 30 minutes, rank 2 minutes, profile
           5 minutes, match lists 2 minutes, live games 30 seconds. Finished matches never change, so they are kept on disk (up to 20,000, oldest removed first).
-          See <Link to="/api-usage" className="text-gold hover:underline">how we use the Riot API</Link>.
+          See <Link to="/api-usage" className="text-gold underline underline-offset-2">how we use the Riot API</Link>.
         </li>
         <li>
           <strong>A search index</strong> of players who have appeared on the site (Riot ID, region, profile icon, level and rank), so search can suggest
@@ -276,7 +276,7 @@ function Policy({ contact }: { contact?: string }) {
       <P>
         {contact ? (
           <>
-            For any privacy or data request, email <a href={`mailto:${contact}`} className="text-gold hover:underline">{contact}</a>. We reply within 30 days.
+            For any privacy or data request, email <a href={`mailto:${contact}`} className="text-gold underline underline-offset-2">{contact}</a>. We reply within 30 days.
           </>
         ) : (
           <>For any privacy or data request, use the tool above, or contact the site owner.</>

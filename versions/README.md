@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.10](v3.10/CHANGES.md) | 13 Nov 2026 | Tools row on home; small-sample flags in draft; WCAG check passes with zero issues |
 | [v3.9](v3.9/CHANGES.md) | 13 Nov 2026 | Draft helper: best answers and your own pool vs the enemy laner; compact movers on phones |
 | [v3.8](v3.8/CHANGES.md) | 13 Nov 2026 | Patch watch and Goals on profiles; tier list shows change since last patch; header and wording fixes |
 | [v3.7](v3.7/CHANGES.md) | 13 Nov 2026 | Visitors' lookups before background work; ladder names in background; tier list, movers and counters need real samples |

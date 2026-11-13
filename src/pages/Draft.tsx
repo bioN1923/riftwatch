@@ -398,6 +398,7 @@ function AnswerList({ list, enemy, role, min }: { list: Answer[]; enemy: number;
                 <span className="block truncate text-sm font-medium">{c.name}</span>
                 <span className="num block text-[11px] text-muted">
                   {enough ? t('common.games', { count: x.games }) : t('draft.notEnough', { count: x.games })}
+                  {enough && x.games < 30 && <span className="text-kda-great"> · {t('draft.small')}</span>}
                   {enough && x.goldDiff15 != null && ` · ${t('draft.gold15', { gold: `${x.goldDiff15 >= 0 ? '+' : '−'}${Math.abs(Math.round(x.goldDiff15))}` })}`}
                 </span>
               </span>

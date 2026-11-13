@@ -864,5 +864,11 @@ const en = {
   "draft.gold15": "{gold} gold at 15",
   "mv.all": "Show all movers",
   "mv.fewer": "Show fewer",
+  "home.tools": "Tools",
+  "home.tool.draft": "Who to pick against the enemy laner, from real matchups and your own champion pool.",
+  "home.tool.compare": "Two players side by side: rank, form, per-game stats and champions.",
+  "home.tool.multi": "Look up a whole lobby’s Riot IDs at once.",
+  "home.tool.ladder": "The top of ranked in every region.",
+  "draft.small": "small sample",
 };
 export default en;
