@@ -297,14 +297,16 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
                     <span className="block truncate text-text/90">
                       <Highlight text={o.name} query={q} />
                     </span>
-                    <span className="block truncate text-xs capitalize text-faint">{o.title}</span>
-                  </span>
-                  <span className="flex shrink-0 items-center gap-1.5 text-xs text-muted">
-                    <span className="hidden sm:inline">{o.tags.slice(0, 2).map(champClass).join(' · ')}</span>
-                    <span className="flex items-center gap-1 rounded bg-sunken px-1.5 py-0.5 font-display text-sm font-bold text-gold">
-                      <Swords className="size-3.5" aria-hidden />
-                      {t('search.champion')}
+                    {/* Class under the name, so the name keeps the row's width ("Twisted Fate", not "Twist…"). */}
+                    <span className="block truncate text-xs text-faint">
+                      {o.tags.slice(0, 2).map(champClass).join(' · ')}
+                      <span className="capitalize"> · {o.title}</span>
                     </span>
+                  </span>
+                  <span className="flex shrink-0 items-center gap-1 rounded bg-sunken px-1.5 py-0.5 font-display text-sm font-bold text-gold">
+                    <Swords className="size-3.5" aria-hidden />
+                    {/* Phones: icon only, so the name isn't squeezed; the word stays for screen readers. */}
+                    <span className="sr-only sm:not-sr-only">{t('search.champion')}</span>
                   </span>
                 </li>
               );

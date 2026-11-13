@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.24](v3.24/CHANGES.md) | 13 Nov 2026 | Search dropdown: champion names no longer cut off (class under the name; icon-only badge on phones) |
 | [v3.23](v3.23/CHANGES.md) | 13 Nov 2026 | Champion search understands nicknames (mf, tf, j4, asol, lb, ww…) everywhere |
 | [v3.22](v3.22/CHANGES.md) | 13 Nov 2026 | Collector: only players with new games, Master tier added: more fresh games per API call |
 | [v3.21](v3.21/CHANGES.md) | 13 Nov 2026 | Respects "reduce motion": no animations for visitors who ask their system for less motion |
