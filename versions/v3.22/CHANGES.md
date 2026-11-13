@@ -15,3 +15,8 @@
 ## Checks
 - 68 tests pass. New test with a fake Riot API: the first pass asks for 10 games from each of 3 players; after one player's game count goes up by 3, the next pass asks only that player, for 3 games. Typecheck, build and a11y check clean.
 - To verify in the next iteration: the ranked game count should grow faster than about 17/hour.
+
+## Live check (after deploy)
+- Deployed 13 Nov 2026 14:07 (deploy.log EXIT CODE 0). The site stays responsive with the bigger Master league list: tier list API 0.17 s, a profile 0.24 s.
+- Baseline for measuring the new collection rate: **6,718 ranked games on 16.22 at 12:10 UTC** (6,692 at about 11:30 UTC). The next iteration compares.
+- Nothing visual changed this round, so there are no live screenshots.
