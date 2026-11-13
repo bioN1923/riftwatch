@@ -39,6 +39,10 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 4. Take demo screenshots (`scripts/shoot-version.cjs versions/vX/demo`), write `CHANGES.md`.
 5. Commit, deploy (`deploy.bat` → `deploy.log`), check the live site, save `live/` screenshots.
 
+## Deploying (since v3.31)
+- The user runs `watch-deploy.bat` once (window left open). To deploy, create `deploy.request` in the project folder on the PC (device shell: `echo vX.Y > $HOME/mnt/CascadeProjects/lol-stats-v3/deploy.request`). Within 10 s the helper deletes it and runs `deploy.bat`; wait for a new "Deploy finished … EXIT CODE 0" in `deploy.log`.
+- If `deploy.request` is still there after a minute, the helper isn't running: ask the user to start `watch-deploy.bat`.
+
 ## Every iteration also
 - Add a short, player-facing entry to `src/data/changelog.ts` (a test fails if its newest entry doesn't match `package.json`).
 

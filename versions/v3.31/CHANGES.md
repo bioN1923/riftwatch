@@ -9,3 +9,7 @@
 
 ## Checks
 - 74 tests pass (new: a visit refreshes a favourite, leaves other favourites alone, and doesn't add non-favourites). Typecheck, build and a11y check clean. Demo screenshots in `demo/`.
+
+## Live check (after deploy)
+- **First automatic deploy.** The user started `watch-deploy.bat` once. Claude dropped `deploy.request` into the project folder, the helper ran `deploy.bat`, and it finished 13 Nov 2026 19:06 (EXIT CODE 0). No clicking needed from now on.
+- After opening `bioN1923#EUNE`, both lists say SILVER II: Favorites and Recently viewed agree on the home page (`live/home-fav-matches-recent.jpg`).
