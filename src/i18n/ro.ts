@@ -932,5 +932,10 @@ const dict: Record<string, string> = {
   "live.laneFew": "Încă nu sunt destule meciuri ranked cu acest matchup.",
   "live.laneGuess": "Adversarul de pe lane e ghicit după rolurile obișnuite ale campionilor și Smite: jocul nu publică rolurile.",
   "live.laneOpen": "Deschide matchup-ul",
+  "draft.blindTitle": "Alegeri sigure în blind pentru {role}",
+  "draft.blindLead": "Alegi înainte să vezi adversarul de pe lane? Acești campioni au cele mai blânde matchup-uri proaste din acest patch, deci sunt greu de contrat. Rata de victorie e în dreapta.",
+  "draft.blindWorst": "Cel mai prost matchup: {name} {rate}",
+  "draft.blindNone": "Încă nu sunt destule meciuri ranked pe acest rol.",
+  "draft.inPool": "În pool-ul tău",
 };
 export default dict;

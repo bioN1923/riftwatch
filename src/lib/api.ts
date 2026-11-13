@@ -1,4 +1,4 @@
-import type { ApiErrorBody, Benchmark, PrivacyChallenge, PrivacyResult, ApiErrorCode, ChampionStats,
+import type { ApiErrorBody, Benchmark, BlindPicks, PrivacyChallenge, PrivacyResult, ApiErrorCode, ChampionStats,
   MatchupStats, HealthResponse, Ladder, LiveResponse, LpHistory, ServerStatus, MatchPage, MatchTimeline, PlayerHit, Profile, ScoutInfo, StatsGroup, TierList } from '../../shared/types';
 
 export class ApiClientError extends Error {
@@ -58,6 +58,7 @@ export const api = {
   tierList: (group: StatsGroup, patch?: string, signal?: AbortSignal) => request<TierList>(`/champions?group=${group}${patch ? `&patch=${patch}` : ''}`, signal),
   champion: (id: number, p: { group: StatsGroup; role?: string; patch?: string }, signal?: AbortSignal) =>
     request<ChampionStats>(`/champions/${id}?group=${p.group}${p.role ? `&role=${p.role}` : ''}${p.patch ? `&patch=${p.patch}` : ''}`, signal),
+  blind: (role: string, signal?: AbortSignal) => request<BlindPicks>(`/blind?role=${role}`, signal),
   matchup: (id: number, opp: number, p: { role?: string; patch?: string }, signal?: AbortSignal) =>
     request<MatchupStats>(`/champions/${id}/vs/${opp}?group=ranked${p.role ? `&role=${p.role}` : ''}${p.patch ? `&patch=${p.patch}` : ''}`, signal),
   lp: (platform: string, puuid: string, signal?: AbortSignal) => request<LpHistory>(`/lp/${platform}/${enc(puuid)}`, signal),

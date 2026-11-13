@@ -355,3 +355,22 @@ describe('live game lane guess', async () => {
     expect(guessRoles(team([1, 2, 3]), games)).toBe(null);
   });
 });
+
+describe('safe blind picks', async () => {
+  const { ChampionStatsStore, shrunk, MATCHUP_K } = await import('../server/champStats');
+  const { mockMatches } = await import('../server/mock');
+  it('ranks champions by their worst common matchups', () => {
+    const store = new ChampionStatsStore(null);
+    for (let i = 0; i < 60; i++) for (const m of mockMatches({ gameName: `Blind${i}`, tagLine: 'X' }, 0, 20, {}).matches) store.addMatch(m);
+    const b = store.blindPicks('MIDDLE');
+    expect(b.picks.length).toBeGreaterThan(0);
+    for (let i = 1; i < b.picks.length; i++) expect(b.picks[i - 1].floor).toBeGreaterThanOrEqual(b.picks[i].floor);
+    for (const p of b.picks) {
+      expect(p.matchups).toBeGreaterThanOrEqual(5);
+      // The worst matchup shown is the lowest of the three averaged into the floor.
+      expect(shrunk(p.worst.winRate * p.worst.games, p.worst.games, MATCHUP_K)).toBeLessThanOrEqual(p.floor + 1e-9);
+      expect(p.worst.championId).not.toBe(p.championId);
+    }
+    expect(store.blindPicks('NOPE').picks).toEqual([]);
+  });
+});

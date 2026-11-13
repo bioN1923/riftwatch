@@ -915,5 +915,10 @@ const en = {
   "live.laneFew": "Not enough ranked games of this matchup yet.",
   "live.laneGuess": "Lane opponent guessed from the champions' usual roles and Smite: the game doesn't share roles.",
   "live.laneOpen": "Open matchup",
+  "draft.blindTitle": "Safe blind picks for {role}",
+  "draft.blindLead": "Picking before you see the enemy laner? These champions have the mildest worst matchups this patch, so they're hard to counter-pick. Win rate on the right.",
+  "draft.blindWorst": "Worst matchup: {name} {rate}",
+  "draft.blindNone": "Not enough ranked games in this role yet.",
+  "draft.inPool": "In your pool",
 };
 export default en;

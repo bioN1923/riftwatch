@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { Ban, ChevronDown, Crosshair, Plus, Search, Swords, X } from 'lucide-react';
+import { Ban, ChevronDown, Crosshair, Plus, Search, Shield, Swords, X } from 'lucide-react';
 import type { ChampionStats } from '../../shared/types';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api } from '../lib/api';
@@ -103,7 +103,7 @@ export function DraftPage() {
         </section>
       </div>
 
-      {enemy != null && <Results enemy={enemy} role={role} pool={pool} />}
+      {enemy != null ? <Results enemy={enemy} role={role} pool={pool} /> : <BlindPanel role={role} pool={pool} />}
       {pool.length > 0 && <BanPanel role={role} pool={pool} onPick={(id) => set({ enemy: id })} />}
     </div>
   );
@@ -376,6 +376,53 @@ function Results({ enemy, role, pool }: { enemy: number; role: Role; pool: numbe
         )}
       </section>
     </div>
+  );
+}
+
+/** Before the enemy laner is known (first pick): champions with no hard counters. */
+function BlindPanel({ role, pool }: { role: Role; pool: number[] }) {
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  const q = useQuery({ queryKey: ['blind', role], queryFn: ({ signal }) => api.blind(role, signal), staleTime: 5 * 60_000 });
+  if (q.isPending) return <Skeleton className="mt-6 h-48" />;
+  const picks = q.data?.picks ?? [];
+  const yours = new Set(pool);
+  return (
+    <section className="panel mt-6 p-4" aria-labelledby="blind-h">
+      <h2 id="blind-h" className="panel-title flex items-center gap-1.5">
+        <Shield className="size-4 text-gold" aria-hidden /> {t('draft.blindTitle', { role: ROLE_LABEL[role] })}
+      </h2>
+      <p className="mt-0.5 text-xs text-muted">{t('draft.blindLead')}</p>
+      {picks.length ? (
+        <ol className="mt-3 grid gap-x-6 gap-y-1 sm:grid-cols-2">
+          {picks.map((p) => {
+            const c = a.champion(p.championId);
+            const w = a.champion(p.worst.championId);
+            const slug = sd?.champions.get(p.championId)?.id;
+            return (
+              <li key={p.championId}>
+                <Link
+                  to={slug ? `/champions/${champSlug(slug)}?role=${role}` : '#'}
+                  className="grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-3 rounded px-1 py-1.5 transition-colors hover:bg-raised"
+                >
+                  <GameImg src={c.url} alt="" size={36} rounded="md" />
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-medium">
+                      {c.name}
+                      {yours.has(p.championId) && <span className="ml-1.5 rounded-sm bg-gold/15 px-1 text-[10px] font-semibold text-gold">{t('draft.inPool')}</span>}
+                    </span>
+                    <span className="num block truncate text-[11px] text-muted">{t('draft.blindWorst', { name: w.name, rate: pct(p.worst.winRate) })} · {t('common.games', { count: p.worst.games })}</span>
+                  </span>
+                  <span className={clsx('num text-right text-sm font-bold', p.winRate >= 0.5 ? 'text-win' : 'text-loss')}>{pct(p.winRate, 1)}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+      ) : (
+        <p className="mt-3 text-sm text-faint">{t('draft.blindNone')}</p>
+      )}
+    </section>
   );
 }
 

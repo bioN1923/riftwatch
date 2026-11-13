@@ -915,5 +915,10 @@ const dict: Record<string, string> = {
   "live.laneFew": "Pas encore assez de parties classées sur ce matchup.",
   "live.laneGuess": "Adversaire de lane deviné d'après les rôles habituels des champions et Châtiment : le jeu ne communique pas les rôles.",
   "live.laneOpen": "Ouvrir le matchup",
+  "draft.blindTitle": "Picks à l'aveugle sûrs en {role}",
+  "draft.blindLead": "Tu choisis avant de voir ton adversaire de lane ? Ces champions ont les pires matchups les moins sévères de ce patch : difficiles à contrer. Taux de victoire à droite.",
+  "draft.blindWorst": "Pire matchup : {name} {rate}",
+  "draft.blindNone": "Pas encore assez de parties classées à ce rôle.",
+  "draft.inPool": "Dans ton pool",
 };
 export default dict;

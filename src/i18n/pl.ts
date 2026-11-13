@@ -949,5 +949,10 @@ const dict: Record<string, string> = {
   "live.laneFew": "Za mało gier rankingowych z tym starciem.",
   "live.laneGuess": "Przeciwnik z linii odgadnięty na podstawie zwykłych ról bohaterów i Porażenia: gra nie udostępnia ról.",
   "live.laneOpen": "Otwórz starcie",
+  "draft.blindTitle": "Bezpieczne picki w ciemno na {role}",
+  "draft.blindLead": "Wybierasz, zanim zobaczysz rywala z linii? Ci bohaterowie mają na tym patchu najłagodniejsze najgorsze starcia, więc trudno ich skontrować. Po prawej współczynnik zwycięstw.",
+  "draft.blindWorst": "Najgorsze starcie: {name} {rate}",
+  "draft.blindNone": "Za mało gier rankingowych na tej roli.",
+  "draft.inPool": "W twojej puli",
 };
 export default dict;

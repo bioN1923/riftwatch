@@ -915,5 +915,10 @@ const dict: Record<string, string> = {
   "live.laneFew": "Aún no hay suficientes partidas clasificatorias de este enfrentamiento.",
   "live.laneGuess": "Rival de línea deducido de los roles habituales de los campeones y Castigo: el juego no comparte los roles.",
   "live.laneOpen": "Abrir enfrentamiento",
+  "draft.blindTitle": "Picks seguros a ciegas para {role}",
+  "draft.blindLead": "¿Eliges antes de ver a tu rival de línea? Estos campeones tienen los peores enfrentamientos más suaves de este parche, así que son difíciles de contrarrestar. Porcentaje de victorias a la derecha.",
+  "draft.blindWorst": "Peor enfrentamiento: {name} {rate}",
+  "draft.blindNone": "Aún no hay suficientes partidas clasificatorias en este rol.",
+  "draft.inPool": "En tu pool",
 };
 export default dict;

@@ -265,6 +265,21 @@ export interface LaneCurve {
   games: number;
 }
 
+/** Draft helper, no enemy yet: champions whose worst common lane matchups are least bad. */
+export interface BlindPicks {
+  patch: string | null;
+  role: string;
+  picks: {
+    championId: number;
+    games: number;
+    winRate: number;
+    /** Average shrunk win rate of its three worst lane matchups with enough games. */
+    floor: number;
+    matchups: number;
+    worst: { championId: number; games: number; winRate: number };
+  }[];
+}
+
 export interface ChampionStats {
   championId: number;
   group: StatsGroup;

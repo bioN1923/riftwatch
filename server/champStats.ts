@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type { Benchmark, ChampionStats, MatchSummary, MatchTimeline, MatchupStats, PatchMover, Rated, StatsGroup, TierList, TierRow } from '../shared/types';
+import type { BlindPicks, Benchmark, ChampionStats, MatchSummary, MatchTimeline, MatchupStats, PatchMover, Rated, StatsGroup, TierList, TierRow } from '../shared/types';
 import { itemKind } from './items';
 import { getPlatform } from '../shared/regions';
 
@@ -624,6 +624,34 @@ export class ChampionStatsStore {
       }
     }
     return { group, patch: pt, patches, matches: g?.matches ?? 0, rows, collecting: this.collecting, movers: g && prev ? movers(rows, prevRows, prevPatch!) : null };
+  }
+
+  /**
+   * Safe blind picks for a role: rank champions by their three worst lane matchups (shrunk win
+   * rate, enough games each), so a first pick with no hard counters rises above one that wins a
+   * lot on average but gets crushed by a few champions.
+   */
+  blindPicks(role: string, limit = 8): BlindPicks {
+    const patch = this.patches('ranked')[0] ?? null;
+    const g = patch ? this.s.patches[patch].ranked : undefined;
+    if (!g) return { patch, role, picks: [] };
+    const minGames = Math.max(20, Math.round(g.matches * 0.005));
+    const picks: BlindPicks['picks'] = [];
+    for (const [id, c] of Object.entries(g.champs)) {
+      const r = c.roles[role];
+      // Safe but losing isn't a good first pick: the champion has to hold its own overall too.
+      if (!r || r.g < minGames || shrunk(r.w, r.g, 150) < 0.49) continue;
+      const min = matchupMin(r.g);
+      const mus = Object.entries(r.vs)
+        .filter(([, v]) => v.g >= min)
+        .map(([opp, v]) => ({ championId: Number(opp), games: v.g, winRate: v.w / v.g, adj: shrunk(v.w, v.g, MATCHUP_K) }))
+        .sort((x, y) => x.adj - y.adj);
+      if (mus.length < 5) continue;
+      const floor = (mus[0].adj + mus[1].adj + mus[2].adj) / 3;
+      picks.push({ championId: Number(id), games: r.g, winRate: r.w / r.g, floor, matchups: mus.length, worst: { championId: mus[0].championId, games: mus[0].games, winRate: mus[0].winRate } });
+    }
+    picks.sort((x, y) => y.floor - x.floor);
+    return { patch, role, picks: picks.slice(0, limit) };
   }
 
   private rows(g: GroupAgg): TierRow[] {

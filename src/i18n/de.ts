@@ -915,5 +915,10 @@ const dict: Record<string, string> = {
   "live.laneFew": "Noch nicht genug Ranglistenspiele mit diesem Matchup.",
   "live.laneGuess": "Lane-Gegner geschätzt aus den üblichen Rollen der Champions und Smite: Das Spiel gibt keine Rollen heraus.",
   "live.laneOpen": "Matchup öffnen",
+  "draft.blindTitle": "Sichere Blind-Picks für {role}",
+  "draft.blindLead": "Du pickst, bevor du deinen Lane-Gegner siehst? Diese Champions haben in diesem Patch die mildesten schlechtesten Matchups und sind schwer zu kontern. Rechts die Siegquote.",
+  "draft.blindWorst": "Schlechtestes Matchup: {name} {rate}",
+  "draft.blindNone": "Noch nicht genug Ranglistenspiele auf dieser Rolle.",
+  "draft.inPool": "In deinem Pool",
 };
 export default dict;

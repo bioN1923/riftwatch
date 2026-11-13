@@ -915,5 +915,10 @@ const dict: Record<string, string> = {
   "live.laneFew": "Ainda não há partidas ranqueadas suficientes deste confronto.",
   "live.laneGuess": "Adversário de rota estimado pelas funções habituais dos campeões e Golpear: o jogo não partilha as funções.",
   "live.laneOpen": "Abrir confronto",
+  "draft.blindTitle": "Escolhas seguras às cegas para {role}",
+  "draft.blindLead": "Escolhes antes de ver o adversário de rota? Estes campeões têm os piores confrontos mais suaves deste patch, por isso são difíceis de contrariar. Taxa de vitória à direita.",
+  "draft.blindWorst": "Pior confronto: {name} {rate}",
+  "draft.blindNone": "Ainda não há partidas ranqueadas suficientes nesta função.",
+  "draft.inPool": "No teu pool",
 };
 export default dict;
