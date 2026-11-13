@@ -21,3 +21,11 @@
 - Typecheck clean, a11y `{}`.
 - Demo: Zed 60.0% (45–73%), Ahri 56.9% (44–69%), Hwei 58.1%, Syndra 57.1%. All are neutral, because none of their ranges clear 50% on demo-sized samples.
 - Screenshots: `demo/draft-ranges-desktop.png` and `demo/draft-ranges-phone.png`.
+
+## Live check (23:49)
+- Deployed automatically (EXIT CODE 0, 23:48:02).
+- Mid vs Yasuo:
+  - **Ahri 65.9% (41 games), range 51–78%:** green, just. With one more win in the sample the whole range now clears 50%.
+  - **Yone 60.6% (33 games), range 44–75%:** neutral.
+  - **Locke 55.0% (20 games, small sample), range 34–74%:** neutral.
+- The new intro text shows. Screenshot: `live/draft.jpg`.
