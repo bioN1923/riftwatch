@@ -740,3 +740,15 @@ describe('slim static game data', async () => {
     expect(STATIC_LOCALES.has('../etc')).toBe(false);
   });
 });
+
+describe('which server a page is about', async () => {
+  const { pageRegion } = await import('../src/lib/pageRegion');
+  it('uses the profile or page region before the visitor\'s search region', () => {
+    expect(pageRegion('/lol/eun1/bioN1923-EUNE', '', 'euw1')).toBe('eun1');
+    expect(pageRegion('/lol/kr/Hide%20on%20bush-KR1/live', '', 'euw1')).toBe('kr');
+    expect(pageRegion('/leaderboard', '?region=na1&tier=grandmaster', 'euw1')).toBe('na1');
+    expect(pageRegion('/multisearch', '?region=eun1&players=a-b', 'euw1')).toBe('eun1');
+    expect(pageRegion('/champions', '?region=na1', 'euw1')).toBe('euw1'); // not a region page
+    expect(pageRegion('/lol/nowhere/x-y', '', 'euw1')).toBe('euw1');
+  });
+});

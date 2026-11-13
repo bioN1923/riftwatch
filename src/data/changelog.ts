@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.48',
+    date: '2026-11-13',
+    items: ['Riot server notices (outages, maintenance) now follow the page you\'re on: an EUNE profile shows EUNE notices, not EUW ones, and each notice names its server.'],
+  },
+  {
     version: '3.47',
     date: '2026-11-13',
     items: ['Faster first visit: game data (champions, items, runes, spells) now comes from Riftwatch in one small, compressed file instead of four large downloads from Riot (about 40% less to download, and much less for your browser to read).'],

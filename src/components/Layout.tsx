@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { AlertTriangle, Check, Globe, LayoutGrid, Monitor, Moon, Scale, Sun, Swords, Trophy, User, Users, Wrench, X } from 'lucide-react';
 import clsx from 'clsx';
+import { getPlatform } from '../../shared/regions';
+import { pageRegion } from '../lib/pageRegion';
 import { SearchBox } from './SearchBox';
 import { api } from '../lib/api';
 import { setSeenVersion, useRegion, useSeenVersion, useTheme, type Theme } from '../lib/storage';
@@ -161,9 +163,12 @@ function DemoBanner() {
   );
 }
 
-/** Riot's own incident and maintenance notices for the selected region. */
+/** Riot's own incident and maintenance notices for the server the page is about. */
 function StatusBanner() {
-  const [region] = useRegion();
+  const [stored] = useRegion();
+  const { pathname, search } = useLocation();
+  const region = pageRegion(pathname, search, stored);
+  const label = getPlatform(region)?.label ?? region;
   const [hidden, setHidden] = useState<string[]>([]);
   const { data } = useQuery({ queryKey: ['status', region], queryFn: ({ signal }) => api.status(region, signal), staleTime: 5 * 60_000, refetchInterval: 5 * 60_000, retry: false });
   const notices = (data?.notices ?? []).filter((n) => !hidden.includes(n.id));
@@ -174,7 +179,11 @@ function StatusBanner() {
         <div key={n.id} className="mx-auto flex max-w-6xl items-start gap-3 px-4 py-2 text-sm">
           <AlertTriangle className="mt-0.5 size-4 shrink-0 text-kda-great" aria-hidden />
           <p className="min-w-0 flex-1">
-            <span className="font-semibold">{n.kind === 'maintenance' ? t('status.maintenance') : t('status.incident')}:</span> {n.title}
+            {/* Name the server: an EUW outage shouldn't read as a problem with the EUNE profile on screen. */}
+            <span className="font-semibold">
+              {label} · {n.kind === 'maintenance' ? t('status.maintenance') : t('status.incident')}:
+            </span>{' '}
+            {n.title}
             {n.detail && <span className="text-muted"> — {n.detail.length > 160 ? `${n.detail.slice(0, 157)}…` : n.detail}</span>}
           </p>
           <button onClick={() => setHidden((h) => [...h, n.id])} aria-label={t('status.dismiss')} className="rounded p-0.5 text-muted hover:text-text">

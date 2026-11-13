@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.48](v3.48/CHANGES.md) | 13 Nov 2026 | Status banner follows the page's server (profile path / ladder & multi-search ?region) and names it |
 | [v3.47](v3.47/CHANGES.md) | 13 Nov 2026 | Performance: slim Data Dragon bundle served from /api/static/:locale (889 kB raw / 143 kB gz → 496 kB / 89 kB, 5 requests → 1), with Data Dragon fallback |
 | [v3.46](v3.46/CHANGES.md) | 13 Nov 2026 | Draft answers: 95% likely range under each win rate, green/red only when the range clears 50%, ranked by cautious rate |
 | [v3.45](v3.45/CHANGES.md) | 13 Nov 2026 | Ladder: players in tier + lowest LP right now (Challenger/GM); API-usage page explains premade tags; no premades in live game (policy) |
