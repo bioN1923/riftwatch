@@ -7,7 +7,8 @@ import type { LpPoint, MatchSummary, Participant } from "../../../shared/types";
 import { ladderValue } from "../../lib/ladder";
 import { api } from "../../lib/api";
 import { assets, champSlug, useStaticData } from "../../lib/ddragon";
-import { decimal, pct } from "../../lib/format";
+import { champClass, decimal, pct } from "../../lib/format";
+import { tryNext } from "../../lib/tryNext";
 import { me } from "../../lib/stats";
 import { GameImg } from "../ui/GameImg";
 import { PatchDelta } from "../ui/PatchDelta";
@@ -109,6 +110,69 @@ export function PatchWatch({
                   </span>
                   <PatchDelta now={row!.winRate} before={row!.prevWinRate} />
                 </span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+/* --------------------------------------------------------------- try next */
+
+/** Champions the player hasn't been playing that fit their main role and style, strong this patch. */
+export function TryNext({ matches, puuid }: { matches?: MatchSummary[]; puuid: string }) {
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  const tier = useQuery({
+    queryKey: ["tierlist", "ranked", undefined],
+    queryFn: ({ signal }) => api.tierList("ranked", undefined, signal),
+    staleTime: 5 * 60_000,
+  });
+  const played = useMemo(() => {
+    const byChamp = new Map<number, { games: number; roles: Record<string, number> }>();
+    for (const m of matches ?? []) {
+      if (m.remake || !SR_QUEUES.has(m.queueId)) continue;
+      const p = me(m, puuid);
+      if (!p?.position) continue;
+      const c = byChamp.get(p.championId) ?? { games: 0, roles: {} };
+      c.games++;
+      c.roles[p.position] = (c.roles[p.position] ?? 0) + 1;
+      byChamp.set(p.championId, c);
+    }
+    return [...byChamp.entries()]
+      .map(([championId, c]) => ({ championId, games: c.games, role: Object.entries(c.roles).sort((x, y) => y[1] - x[1])[0][0] }))
+      .sort((x, y) => y.games - x.games);
+  }, [matches, puuid]);
+  const picks = tier.data && sd ? tryNext(played, tier.data.rows, (id) => sd.champions.get(id)?.tags ?? []) : [];
+  if (!tier.data?.patch || picks.length === 0) return null;
+  const role = played[0].role;
+  return (
+    <section className="panel p-4" aria-labelledby="tn-h">
+      <h2 id="tn-h" className="panel-title">
+        {t("tn.title")}
+      </h2>
+      <p className="mt-0.5 text-xs text-muted">{t("tn.sub", { role: ROLE_LABEL[role], patch: tier.data.patch })}</p>
+      <ul className="mt-3 space-y-1">
+        {picks.map(({ championId, row, like, tag }) => {
+          const c = a.champion(championId);
+          const slug = sd?.champions.get(championId)?.id;
+          return (
+            <li key={championId}>
+              <Link
+                to={slug ? `/champions/${champSlug(slug)}?role=${role}` : "#"}
+                className="grid grid-cols-[28px_minmax(0,1fr)_auto_auto] items-center gap-2.5 rounded px-1 py-1 transition-colors hover:bg-raised"
+              >
+                <GameImg src={c.url} alt="" size={28} rounded="sm" />
+                <span className="min-w-0">
+                  <span className="block truncate text-sm">{c.name}</span>
+                  <span className="block truncate text-[11px] text-muted">
+                    {t("tn.like", { name: a.champion(like).name, cls: champClass(tag) })}
+                  </span>
+                </span>
+                <TierBadge tier={row.tier} />
+                <span className="num w-12 text-right text-sm font-semibold">{pct(row.winRate, 1)}</span>
               </Link>
             </li>
           );

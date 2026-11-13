@@ -467,3 +467,21 @@ describe("what's new page", async () => {
     for (const e of CHANGELOG) expect(e.items.length).toBeGreaterThan(0);
   });
 });
+
+describe('try next suggestions', async () => {
+  const { tryNext } = await import('../src/lib/tryNext');
+  const row = (championId: number, role: string, tier: string, rank: number, lowSample = false) => ({ championId, role, tier, rank, lowSample, winRate: 0.53, games: 300 }) as any;
+  const TAGS: Record<number, string[]> = { 1: ['Mage'], 2: ['Mage', 'Support'], 3: ['Assassin'], 4: ['Mage'], 5: ['Mage'], 6: ['Mage'], 7: ['Fighter'] };
+  const tags = (id: number) => TAGS[id] ?? [];
+  const rows = [row(2, 'MIDDLE', 'S', 3), row(3, 'MIDDLE', 'S+', 1), row(4, 'MIDDLE', 'B', 9), row(5, 'MIDDLE', 'A', 6), row(6, 'MIDDLE', 'S+', 2, true), row(7, 'TOP', 'S+', 1), row(1, 'MIDDLE', 'S+', 4)];
+  it('suggests strong unplayed champions of the same role and class', () => {
+    const picks = tryNext([{ championId: 1, games: 8, role: 'MIDDLE' }], rows, tags);
+    // 3 is S+ but an assassin, 6 is too few games, 4 is only B, 7 is another role, 1 is already played.
+    expect(picks.map((p) => p.championId)).toEqual([2, 5]);
+    expect(picks[0]).toMatchObject({ like: 1, tag: 'Mage' });
+  });
+  it('needs a real main first', () => {
+    expect(tryNext([{ championId: 1, games: 2, role: 'MIDDLE' }], rows, tags)).toEqual([]);
+    expect(tryNext([], rows, tags)).toEqual([]);
+  });
+});

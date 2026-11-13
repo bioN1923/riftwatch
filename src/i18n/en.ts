@@ -924,5 +924,8 @@ const en = {
   "cl.lead": "What changed on Riftwatch, newest first.",
   "tl.myPool": "My pool",
   "tl.myPoolHint": "Show only the champions you saved in the draft helper",
+  "tn.title": "Try next",
+  "tn.sub": "Champions you haven't played lately that suit your {role} pool and are strong on patch {patch}.",
+  "tn.like": "Like {name} · {cls}",
 };
 export default en;

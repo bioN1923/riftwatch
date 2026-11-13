@@ -17,7 +17,7 @@ import { LiveGame } from '../components/profile/LiveGame';
 import { StatsTab } from '../components/profile/StatsTab';
 import { AutoLoad } from '../components/ui/AutoLoad';
 import { LpPanel } from '../components/profile/LpPanel';
-import { Goals, PatchWatch, Today } from '../components/profile/Insights';
+import { Goals, PatchWatch, Today, TryNext } from '../components/profile/Insights';
 import { MatchRow } from '../components/match/MatchRow';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { useSlideDirection } from '../components/ui/Motion';
@@ -267,6 +267,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
               <Today matches={matches} puuid={profile.account.puuid} lp={lpQ.data?.points} />
               <LpPanel profile={profile} />
               <PatchWatch matches={matches} puuid={profile.account.puuid} />
+              <TryNext matches={matches} puuid={profile.account.puuid} />
               <Goals matches={matches} puuid={profile.account.puuid} />
               <ChampionPool ov={ov} loading={matchesQ.isPending} onOpen={openChamp} />
               <PlayedWith ov={ov} platform={platform} />

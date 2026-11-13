@@ -924,5 +924,8 @@ const dict: Record<string, string> = {
   "cl.lead": "Lo que ha cambiado en Riftwatch, de lo más reciente a lo más antiguo.",
   "tl.myPool": "Mi pool",
   "tl.myPoolHint": "Mostrar solo los campeones guardados en el asistente de draft",
+  "tn.title": "Para probar",
+  "tn.sub": "Campeones que no has jugado últimamente, que encajan con tu pool de {role} y son fuertes en el parche {patch}.",
+  "tn.like": "Como {name} · {cls}",
 };
 export default dict;

@@ -10,6 +10,11 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.27',
+    date: '2026-11-13',
+    items: ['Profiles: "Try next" suggests up to 3 champions you haven\'t been playing that fit your main role and style and are strong this patch.'],
+  },
+  {
     version: '3.26',
     date: '2026-11-13',
     items: ['Tier list: the champions you saved in the draft helper get a star, and "My pool" shows just them.'],
