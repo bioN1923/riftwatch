@@ -17,3 +17,10 @@ Found in the v3.36 live check: `/champions/yasou` had the tab title "Yasou build
 ## Checks
 - Typecheck clean, a11y `{}`. The client typo flows still work in the demo (same results as v3.36).
 - The sandbox can't reach Data Dragon, so locally the server runs the "list not loaded" fallback: `/champions/ahri` gives 200 with the right title. The redirect and 404 logic is covered by the unit test and checked live.
+
+## Live check (22:26)
+- Deployed automatically (EXIT CODE 0, 22:25:10).
+- `/champions/ahri` → 200 "Ahri build, runes and counters · Riftwatch".
+- `/champions/yasou` → **404** "Champion not found · Riftwatch". `/champions/ahri/vs/yasou` → **404** "Matchup not found · Riftwatch".
+- `/champions/mf` → **302**. `/champions/mf?role=BOTTOM` ends at `/champions/missfortune?role=BOTTOM`; `/champions/tf/vs/asol` ends at `/champions/twistedfate/vs/aurelionsol`.
+- The browser tab on `/champions/yasou` reads "Champion not found · Riftwatch". Screenshot: `live/not-found-title.jpg`.
