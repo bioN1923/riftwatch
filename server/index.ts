@@ -811,7 +811,13 @@ function compareSide(raw: unknown): CompareSide | null {
   if (typeof raw !== 'string') return null;
   const i = raw.indexOf('/');
   const p = i > 0 ? getPlatform(raw.slice(0, i)) : undefined;
-  const slug = raw.slice(i + 1);
+  // Older links encoded the name twice ("Annie%20IRL"); newer ones arrive as plain text.
+  let slug = raw.slice(i + 1);
+  try {
+    slug = decodeURIComponent(slug);
+  } catch {
+    /* plain text */
+  }
   const j = slug.lastIndexOf('-');
   if (!p || j <= 0) return null;
   const gameName = slug.slice(0, j);

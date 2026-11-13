@@ -7,7 +7,7 @@ import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api, ApiClientError } from '../lib/api';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
 import { formatKda, kdaRatio, kdaTone, pct, tierName } from '../lib/format';
-import { fromSlug, profilePath, toSlug, type RiotId } from '../lib/riotId';
+import { fromSlug, profilePath, querySlug, type RiotId } from '../lib/riotId';
 import { parseLobby } from '../lib/lobby';
 import { addLobby, clearLobbies, useLobbies, useRegion } from '../lib/storage';
 import { me, overview, result } from '../lib/stats';
@@ -48,7 +48,7 @@ export function MultiSearchPage() {
     setParams(next);
     addLobby({ region: reg, players: slugs });
   };
-  const run = () => go(region, parsed.map((p) => toSlug(p)));
+  const run = () => go(region, parsed.map((p) => querySlug(p)));
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">

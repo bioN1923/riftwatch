@@ -8,7 +8,7 @@ import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api, ApiClientError } from '../lib/api';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
 import { decimal, formatKda, kdaRatio, kdaTone, pct, regionName, thousands, tierName } from '../lib/format';
-import { fromSlug, parseRiotId, profilePath, toSlug, type RiotId } from '../lib/riotId';
+import { fromSlug, parseRiotId, profilePath, querySlug, type RiotId } from '../lib/riotId';
 import { useFavorites, useRecent, useRegion, type SavedPlayer } from '../lib/storage';
 import { me, result } from '../lib/stats';
 import { summarize, together, type PlayerSummary } from '../lib/compare';
@@ -26,7 +26,7 @@ interface Pick {
 }
 
 /** "euw1/Name-TAG" in the URL, so a comparison link can be shared. */
-const encodePick = (p: Pick) => `${p.platform}/${toSlug(p.id)}`;
+const encodePick = (p: Pick) => `${p.platform}/${querySlug(p.id)}`;
 function decodePick(raw: string | null): Pick | null {
   if (!raw) return null;
   const i = raw.indexOf('/');

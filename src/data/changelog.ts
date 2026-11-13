@@ -10,6 +10,11 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.33',
+    date: '2026-11-13',
+    items: ['Shared multi-search and compare links are cleaner for names with spaces ("Annie+IRL" instead of "Annie%2520IRL"); old links still work.'],
+  },
+  {
     version: '3.32',
     date: '2026-11-13',
     items: ['Multi-search remembers your last 3 lobbies in this browser. Click one to scout the same players again.'],

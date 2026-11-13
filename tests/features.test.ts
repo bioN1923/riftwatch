@@ -528,3 +528,17 @@ describe('recent multi-search lobbies', async () => {
     expect(get()).toHaveLength(3);
   });
 });
+
+describe('riot id slugs in links', async () => {
+  const { querySlug, fromSlug, toSlug } = await import('../src/lib/riotId');
+  it('query links are encoded once, and old double-encoded links still read', () => {
+    const id = { gameName: 'Annie IRL', tagLine: 'Annie' };
+    const qs = new URLSearchParams({ players: querySlug(id) }).toString();
+    expect(qs).toBe('players=Annie+IRL-Annie');
+    expect(fromSlug(new URLSearchParams(qs).get('players')!)).toEqual(id);
+    // A link made before the fix: toSlug inside URLSearchParams.
+    const old = new URLSearchParams({ players: toSlug(id) }).toString();
+    expect(fromSlug(new URLSearchParams(old).get('players')!)).toEqual(id);
+    expect(fromSlug('50%-off-EUW')).toEqual({ gameName: '50%-off', tagLine: 'EUW' });
+  });
+});
