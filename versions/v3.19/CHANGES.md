@@ -13,3 +13,8 @@
 
 ## Checks
 - 66 tests pass. Typecheck, build and a11y check clean. Demo screenshots in `demo/`.
+
+## Live check (after deploy)
+- Deployed 13 Nov 2026 13:28 (deploy.log EXIT CODE 0).
+- Every S+ row now has at least 150 games. Top of the list: Alistar (859 games), Sion (386), Nidalee (266), Ekko (386), Kalista (672), Nunu (293), Janna (557), Draven (374).
+- Warwick fell to A (rank 24); Mordekaiser (99 games, 61.6%) is S, rank 6 in Top (`live/after-tierlist.jpg`).
