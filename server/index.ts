@@ -399,7 +399,8 @@ app.get(
     const [summoner, league, mastery] = await Promise.all([
       riot.summoner(p, puuid).catch(() => null),
       riot.league(p, puuid).catch(() => [] as any[]),
-      championId ? riot.masteryOn(p, puuid, championId).catch(() => null) : Promise.resolve(null),
+      // 'none' = Riot says the player has never played it (404); null = we couldn't find out.
+      championId ? riot.masteryOn(p, puuid, championId).then((m) => m ?? 'none').catch(() => null) : Promise.resolve(null),
     ]);
     const ranked = shapeLeague(league ?? []);
     lp.record(puuid, ranked);
@@ -409,7 +410,7 @@ app.get(
       profileIconId: summoner?.profileIconId ?? null,
       solo: ranked.find((e) => e.queueType === 'RANKED_SOLO_5x5') ?? null,
       flex: ranked.find((e) => e.queueType === 'RANKED_FLEX_SR') ?? null,
-      mastery: mastery ? { level: mastery.championLevel, points: mastery.championPoints } : null,
+      mastery: mastery === 'none' ? { level: 0, points: 0 } : mastery ? { level: mastery.championLevel, points: mastery.championPoints } : null,
     };
     res.json(info);
   }),

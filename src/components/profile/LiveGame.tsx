@@ -16,6 +16,7 @@ import { SpellsRunes } from '../match/Loadout';
 import { ladderValue } from '../../lib/ladder';
 import { fadeIn } from '../../lib/motion';
 import { t } from '../../i18n';
+import { liveTags, type LiveTag } from '../../lib/liveTags';
 
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
 const TIERS = ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'EMERALD', 'DIAMOND'];
@@ -170,6 +171,25 @@ function LaneMatchup({ game, puuid }: { game: Live; puuid: string }) {
   );
 }
 
+function tagText(tag: LiveTag, champion: string): { label: string; title: string } {
+  switch (tag.key) {
+    case 'specialist':
+      return { label: t('live.specialist'), title: t('live.masteryPoints', { points: compact(tag.points!) }) };
+    case 'firstTime':
+      return { label: t('live.firstTime'), title: t('live.firstTimeTip', { champion }) };
+    case 'newToChamp':
+      return { label: t('live.newToChamp'), title: t('live.newToChampTip', { champion, points: compact(tag.points!) }) };
+    case 'hotStreak':
+      return { label: t('live.hotStreak'), title: t('live.hotStreakTip') };
+    case 'highWr':
+      return { label: t('live.highWr'), title: t('live.highWrTip', { rate: pct(tag.rate!), count: tag.games! }) };
+    case 'veteran':
+      return { label: t('live.veteran'), title: t('live.veteranTip') };
+    case 'freshBlood':
+      return { label: t('live.freshBlood'), title: t('live.freshBloodTip') };
+  }
+}
+
 function PlayerRow({ p, s, loading, self, platform }: { p: LiveParticipant; s?: ScoutInfo; loading: boolean; self: boolean; platform: string }) {
   const { data } = useStaticData();
   const a = assets(data);
@@ -177,10 +197,7 @@ function PlayerRow({ p, s, loading, self, platform }: { p: LiveParticipant; s?: 
   const solo = s?.solo;
   const games = solo ? solo.wins + solo.losses : 0;
   const wr = games ? solo!.wins / games : 0;
-  const tags: { label: string; tone: 'good' | 'bad' | 'neutral'; title: string }[] = [];
-  if (s?.mastery && s.mastery.points >= 300_000) tags.push({ label: t('live.specialist'), tone: 'good', title: t('live.masteryPoints', { points: compact(s.mastery.points) }) });
-  if (solo?.hotStreak) tags.push({ label: t('live.hotStreak'), tone: 'good', title: t('live.hotStreakTip') });
-  if (games >= 20 && wr >= 0.62) tags.push({ label: t('live.highWr'), tone: 'good', title: t('live.highWrTip', { rate: pct(wr), count: games }) });
+  const tags = liveTags(s).map((tag) => ({ ...tag, ...tagText(tag, c.name) }));
 
   return (
     <li className={clsx('grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-t border-line px-4 py-2.5 sm:grid-cols-[auto_minmax(0,1fr)_170px_100px]', self && 'bg-raised')}>
@@ -199,7 +216,7 @@ function PlayerRow({ p, s, loading, self, platform }: { p: LiveParticipant; s?: 
         )}
         <p className="truncate text-xs text-muted">
           {c.name}
-          {s?.mastery && <span className="num"> · {t('live.mastery', { points: compact(s.mastery.points) })}</span>}
+          {s?.mastery && s.mastery.points > 0 && <span className="num"> · {t('live.mastery', { points: compact(s.mastery.points) })}</span>}
         </p>
         {tags.length > 0 && (
           <ul className="mt-1 flex flex-wrap gap-1">

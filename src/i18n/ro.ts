@@ -958,5 +958,13 @@ const dict: Record<string, string> = {
   "mp.didYouMean": "Te referi la {a} vs {b}?",
   "mv.gamesTip": "Meciuri patch-ul trecut → patch-ul acesta",
   "mv.noise": "în limitele variației normale pentru atâtea meciuri",
+  "live.firstTime": "Prima dată pe campion",
+  "live.firstTimeTip": "Niciun meci cu {champion} înregistrat pe acest cont",
+  "live.newToChamp": "Nou pe campion",
+  "live.newToChampTip": "Doar {points} puncte de măiestrie pe {champion}: câteva meciuri",
+  "live.veteran": "Veteran",
+  "live.veteranTip": "100+ meciuri clasate în această diviziune",
+  "live.freshBlood": "Proaspăt promovat",
+  "live.freshBloodTip": "A urcat recent în această diviziune",
 };
 export default dict;

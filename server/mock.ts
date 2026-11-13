@@ -496,7 +496,7 @@ export function mockScout(puuid: string, championId: number): ScoutInfo {
     profileIconId: prof?.summoner.profileIconId ?? pick(r, [588, 4568, 5367, 6328, 29]),
     solo,
     flex: prof?.ranked.find((e) => e.queueType === 'RANKED_FLEX_SR') ?? null,
-    mastery: r() < 0.9 ? { level: int(r, 1, 40), points: Math.round(Math.pow(r(), 2) * 900_000) } : null,
+    mastery: r() < 0.9 ? { level: int(r, 1, 40), points: Math.round(Math.pow(r(), 2) * 900_000) } : r() < 0.5 ? { level: 0, points: 0 } : null,
   };
 }
 

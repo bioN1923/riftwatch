@@ -940,5 +940,13 @@ const dict: Record<string, string> = {
   "mp.didYouMean": "Meintest du {a} gegen {b}?",
   "mv.gamesTip": "Spiele letzter Patch → dieser Patch",
   "mv.noise": "im normalen Schwankungsbereich für so viele Spiele",
+  "live.firstTime": "Zum ersten Mal auf dem Champion",
+  "live.firstTimeTip": "Keine {champion}-Spiele für dieses Konto bekannt",
+  "live.newToChamp": "Neu auf dem Champion",
+  "live.newToChampTip": "Nur {points} Meisterschaftspunkte auf {champion}: eine Handvoll Spiele",
+  "live.veteran": "Veteran",
+  "live.veteranTip": "100+ Ranglistenspiele in dieser Division",
+  "live.freshBlood": "Frisch aufgestiegen",
+  "live.freshBloodTip": "Vor Kurzem in diese Division aufgestiegen",
 };
 export default dict;

@@ -940,5 +940,13 @@ const en = {
   "mp.didYouMean": "Did you mean {a} vs {b}?",
   "mv.gamesTip": "Games last patch → this patch",
   "mv.noise": "within normal swing for this many games",
+  "live.firstTime": "First time on champion",
+  "live.firstTimeTip": "No {champion} games on record for this account",
+  "live.newToChamp": "New to champion",
+  "live.newToChampTip": "Only {points} mastery points on {champion}: a handful of games",
+  "live.veteran": "Veteran",
+  "live.veteranTip": "100+ ranked games in this division",
+  "live.freshBlood": "Just promoted",
+  "live.freshBloodTip": "Recently moved up into this division",
 };
 export default en;

@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.42',
+    date: '2026-11-13',
+    items: ['Live game: new player tags. "First time on champion" and "New to champion" (from champion mastery), plus Riot\'s "Veteran" (100+ games in the division) and "Just promoted". Hover a tag for the details.'],
+  },
+  {
     version: '3.41',
     date: '2026-11-13',
     items: ['Match history: hover "6 days ago" to see exactly when the game ended (day and time, in your time zone).'],

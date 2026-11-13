@@ -383,7 +383,7 @@ export interface ScoutInfo {
   profileIconId: number | null;
   solo: LeagueEntry | null;
   flex: LeagueEntry | null;
-  mastery: { level: number; points: number } | null; // on the requested champion
+  mastery: { level: number; points: number } | null; // on the requested champion; points 0 = never played it, null = unknown
   hidden?: boolean;
 }
 

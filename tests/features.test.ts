@@ -632,3 +632,22 @@ describe('default search region', async () => {
     expect(pickRegion('kr', [p('na1')], [p('eun1')])).toBe('kr');
   });
 });
+
+describe('live game player tags', async () => {
+  const { liveTags } = await import('../src/lib/liveTags');
+  const solo = (o: any = {}) => ({ queueType: 'RANKED_SOLO_5x5', tier: 'GOLD', rank: 'II', leaguePoints: 10, wins: 10, losses: 10, hotStreak: false, veteran: false, freshBlood: false, ...o });
+  const s = (o: any = {}) => ({ puuid: 'p', level: 100, profileIconId: 1, solo: solo(), flex: null, mastery: { level: 5, points: 50_000 }, ...o });
+  const keys = (x: any) => liveTags(x).map((t) => t.key);
+  it('tells first-timers from players with a few games and from the unknown', () => {
+    expect(keys(s({ mastery: { level: 0, points: 0 } }))).toEqual(['firstTime']);
+    expect(keys(s({ mastery: { level: 2, points: 4_000 } }))).toEqual(['newToChamp']);
+    expect(keys(s({ mastery: null }))).toEqual([]); // lookup failed: say nothing
+    expect(keys(s({ mastery: { level: 30, points: 450_000 } }))).toEqual(['specialist']);
+  });
+  it('adds Riot\'s division flags and stays quiet for hidden players', () => {
+    expect(keys(s({ solo: solo({ veteran: true, freshBlood: true }) }))).toEqual(['veteran']);
+    expect(keys(s({ solo: solo({ freshBlood: true, hotStreak: true }) }))).toEqual(['hotStreak', 'freshBlood']);
+    expect(keys(s({ hidden: true, mastery: { level: 0, points: 0 } }))).toEqual([]);
+    expect(keys(undefined)).toEqual([]);
+  });
+});
