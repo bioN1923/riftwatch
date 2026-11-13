@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
+import type { Profile, MatchPage } from '../../shared/types';
 import clsx from 'clsx';
 import { ChevronDown, History, Users } from 'lucide-react';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
@@ -11,7 +12,8 @@ import { fromSlug, profilePath, querySlug, type RiotId } from '../lib/riotId';
 import { parseLobby } from '../lib/lobby';
 import { addLobby, clearLobbies, useLobbies, useRegion } from '../lib/storage';
 import { me, overview, result } from '../lib/stats';
-import { playerTags } from '../lib/tags';
+import { playerTags, type PlayerTag } from '../lib/tags';
+import { lobbyDuos } from '../lib/lobbyDuos';
 import { GameImg } from '../components/ui/GameImg';
 import { TagList } from '../components/ui/TagList';
 import { Skeleton } from '../components/ui/States';
@@ -49,6 +51,25 @@ export function MultiSearchPage() {
     addLobby({ region: reg, players: slugs });
   };
   const run = () => go(region, parsed.map((p) => querySlug(p)));
+
+  // The same queries the cards run (shared through the cache), read here to spot premades.
+  const profiles = useQueries({
+    queries: fromUrl.map((id) => ({
+      queryKey: ['profile', region, id.gameName.toLowerCase(), id.tagLine.toLowerCase()],
+      queryFn: ({ signal }: { signal: AbortSignal }) => api.profile(region, id.gameName, id.tagLine, { signal }),
+    })),
+  }) as { data?: Profile }[];
+  const lobbyMatches = useQueries({
+    queries: profiles.map((q) => ({
+      queryKey: ['multi-matches', region, q.data?.account.puuid],
+      enabled: !!q.data,
+      queryFn: ({ signal }: { signal: AbortSignal }) => api.matches(region, q.data!.account.puuid, { start: 0, count: 10, queue: 'solo' }, signal),
+      staleTime: 5 * 60_000,
+    })),
+  }) as { data?: MatchPage }[];
+  const duos = lobbyDuos(
+    profiles.flatMap((q, i) => (q.data ? [{ puuid: q.data.account.puuid, name: q.data.account.gameName, matches: lobbyMatches[i]?.data?.matches }] : [])),
+  );
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -146,7 +167,7 @@ export function MultiSearchPage() {
         <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {fromUrl.map((id, i) => (
             <li key={`${id.gameName}#${id.tagLine}`} className="fade-up" style={{ animationDelay: `${i * 60}ms` }}>
-              <PlayerCard platform={region} id={id} />
+              <PlayerCard platform={region} id={id} duos={duos} />
             </li>
           ))}
         </ul>
@@ -155,7 +176,7 @@ export function MultiSearchPage() {
   );
 }
 
-function PlayerCard({ platform, id }: { platform: string; id: RiotId }) {
+function PlayerCard({ platform, id, duos }: { platform: string; id: RiotId; duos: ReturnType<typeof lobbyDuos> }) {
   const { data: sd } = useStaticData();
   const a = assets(sd);
   const profileQ = useQuery({
@@ -189,7 +210,13 @@ function PlayerCard({ platform, id }: { platform: string; id: RiotId }) {
   const wr = games ? solo!.wins / games : 0;
   const matches = matchesQ.data?.matches;
   const ov = matches ? overview(matches, p.account.puuid) : undefined;
-  const tags = playerTags({ matches, puuid: p.account.puuid, solo, level: p.summoner.summonerLevel, champName: (cid) => a.champion(cid).name });
+  const duoTags: PlayerTag[] = (duos.get(p.account.puuid) ?? []).map((d) => ({
+    id: `duo-${d.puuid}`,
+    label: t('ms.duo', { name: d.name }),
+    tone: 'neutral',
+    detail: t('ms.duoTip', { name: d.name, games: d.games, wins: d.wins }),
+  }));
+  const tags = [...duoTags, ...playerTags({ matches, puuid: p.account.puuid, solo, level: p.summoner.summonerLevel, champName: (cid) => a.champion(cid).name })];
 
   return (
     <article className="panel flex h-full flex-col p-4">

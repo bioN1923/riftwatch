@@ -949,5 +949,7 @@ const dict: Record<string, string> = {
   "live.freshBlood": "Tout juste promu",
   "live.freshBloodTip": "Monté récemment dans cette division",
   "cmp.rolesDiffer": "{a} joue surtout {ra} et {b} {rb}. Les CS, dégâts, vision et kills dépendent beaucoup du rôle : seuls le taux de victoire et le KDA désignent un gagnant ici.",
+  "ms.duo": "Premade avec {name}",
+  "ms.duoTip": "Même équipe dans {games} de leurs parties classées récentes ({wins} gagnées) : probablement en duo",
 };
 export default dict;

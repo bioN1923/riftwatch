@@ -674,3 +674,30 @@ describe('compare: players in different roles', async () => {
     expect(differentRoles(s({ JUNGLE: 20 }), s({ TOP: 10, MIDDLE: 10 }))).toBe(null);
   });
 });
+
+describe('premades in a multi-searched lobby', async () => {
+  const { lobbyDuos } = await import('../src/lib/lobbyDuos');
+  const m = (id: string, teams: Record<string, number>, winTeam = 100, remake = false) =>
+    ({ id, remake, participants: Object.entries(teams).map(([puuid, teamId]) => ({ puuid, teamId, win: teamId === winTeam })) }) as any;
+  it('pairs players who shared a team in 2+ recent games, counting each game once', () => {
+    const g1 = m('g1', { a: 100, b: 100, c: 200 });
+    const g2 = m('g2', { a: 100, b: 100 }, 200);
+    const g3 = m('g3', { a: 100, c: 100 }); // a and c together only once
+    const g4 = m('g4', { b: 100, c: 200 }); // opponents don't count
+    const d = lobbyDuos([
+      { puuid: 'a', name: 'A', matches: [g1, g2, g3] },
+      { puuid: 'b', name: 'B', matches: [g1, g2, g4] }, // g1, g2 appear in both lists
+      { puuid: 'c', name: 'C', matches: [g1, g3, g4] },
+    ]);
+    expect(d.get('a')).toEqual([{ puuid: 'b', name: 'B', games: 2, wins: 1 }]);
+    expect(d.get('b')).toEqual([{ puuid: 'a', name: 'A', games: 2, wins: 1 }]);
+    expect(d.get('c')).toBeUndefined();
+  });
+  it('ignores remakes and players whose games are not loaded yet', () => {
+    const d = lobbyDuos([
+      { puuid: 'a', name: 'A', matches: [m('r1', { a: 100, b: 100 }, 100, true), m('r2', { a: 100, b: 100 }, 100, true)] },
+      { puuid: 'b', name: 'B' },
+    ]);
+    expect(d.size).toBe(0);
+  });
+});

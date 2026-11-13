@@ -949,5 +949,7 @@ const en = {
   "live.freshBlood": "Just promoted",
   "live.freshBloodTip": "Recently moved up into this division",
   "cmp.rolesDiffer": "{a} mostly plays {ra} and {b} {rb}. CS, damage, vision and kill numbers depend a lot on role, so only win rate and KDA get a winner here.",
+  "ms.duo": "Premade with {name}",
+  "ms.duoTip": "Same team in {games} of their recent ranked games ({wins} won): likely queued together",
 };
 export default en;
