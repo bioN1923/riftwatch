@@ -930,5 +930,9 @@ const en = {
   "md.matchup": "{a} vs {b} in {role}: how this matchup usually goes",
   "lb.find": "Find a player (Name#TAG)",
   "lb.notFound": "{name} isn't in this {tier} ladder (or their name isn't known here yet).",
+  "ms.recent": "Recent lobbies",
+  "ms.recentClear": "Clear",
+  "ms.recentCount_one": "{count} player",
+  "ms.recentCount_other": "{count} players",
 };
 export default en;

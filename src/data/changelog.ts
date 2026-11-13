@@ -10,6 +10,11 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.32',
+    date: '2026-11-13',
+    items: ['Multi-search remembers your last 3 lobbies in this browser. Click one to scout the same players again.'],
+  },
+  {
     version: '3.31',
     date: '2026-11-13',
     items: ['Home: your favourites show the same, up-to-date rank as Recently viewed (they used to keep the rank from when you starred them).'],

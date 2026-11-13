@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.32](v3.32/CHANGES.md) | 13 Nov 2026 | Multi-search: recent lobbies (last 3, one click to scout again) |
 | [v3.31](v3.31/CHANGES.md) | 13 Nov 2026 | Home: favourites refresh their rank and icon on every visit (matched Recently viewed) |
 | [v3.30](v3.30/CHANGES.md) | 13 Nov 2026 | Ladder: find a player by Riot ID (jumps to their page and highlights the row) |
 | [v3.29](v3.29/CHANGES.md) | 13 Nov 2026 | Match history: Spellbook and Swarm named; no zero CS/vision in modes without minions or wards |

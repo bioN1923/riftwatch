@@ -2,14 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { ChevronDown, Users } from 'lucide-react';
+import { ChevronDown, History, Users } from 'lucide-react';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api, ApiClientError } from '../lib/api';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
 import { formatKda, kdaRatio, kdaTone, pct, tierName } from '../lib/format';
 import { fromSlug, profilePath, toSlug, type RiotId } from '../lib/riotId';
 import { parseLobby } from '../lib/lobby';
-import { useRegion } from '../lib/storage';
+import { addLobby, clearLobbies, useLobbies, useRegion } from '../lib/storage';
 import { me, overview, result } from '../lib/stats';
 import { playerTags } from '../lib/tags';
 import { GameImg } from '../components/ui/GameImg';
@@ -40,12 +40,15 @@ export function MultiSearchPage() {
     document.title = t('ms.title');
   }, []);
 
-  const run = () => {
+  const lobbies = useLobbies();
+  const go = (reg: string, slugs: string[]) => {
     const next = new URLSearchParams();
-    next.set('region', region);
-    next.set('players', parsed.map((p) => toSlug(p)).join(','));
+    next.set('region', reg);
+    next.set('players', slugs.join(','));
     setParams(next);
+    addLobby({ region: reg, players: slugs });
   };
+  const run = () => go(region, parsed.map((p) => toSlug(p)));
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -101,6 +104,43 @@ export function MultiSearchPage() {
           </p>
         </div>
       </form>
+
+      {fromUrl.length === 0 && lobbies.length > 0 && (
+        <section className="mt-8" aria-labelledby="ms-recent-h">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 id="ms-recent-h" className="panel-title flex items-center gap-1.5">
+              <History className="size-4 text-muted" aria-hidden /> {t('ms.recent')}
+            </h2>
+            <button type="button" onClick={clearLobbies} className="text-xs text-muted underline-offset-2 hover:text-text hover:underline">
+              {t('ms.recentClear')}
+            </button>
+          </div>
+          <ul className="mt-2 grid gap-2 md:grid-cols-3">
+            {lobbies.map((l) => {
+              const ids = l.players.map((s) => fromSlug(s)).filter((x): x is RiotId => !!x);
+              return (
+                <li key={`${l.region}:${l.players.join(',')}`}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setText(ids.map((p) => `${p.gameName}#${p.tagLine}`).join('\n'));
+                      if (l.region !== region) setRegion(l.region);
+                      go(l.region, l.players);
+                    }}
+                    className="panel w-full p-3 text-left transition-colors hover:border-line-strong"
+                  >
+                    <span className="flex items-center justify-between gap-2 text-xs text-muted">
+                      <span>{t('ms.recentCount', { count: ids.length })}</span>
+                      <span className="font-display font-bold">{getPlatform(l.region)?.label ?? l.region}</span>
+                    </span>
+                    <span className="mt-1 line-clamp-2 block text-sm">{ids.map((p) => p.gameName).join(', ')}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       {fromUrl.length > 0 && (
         <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">

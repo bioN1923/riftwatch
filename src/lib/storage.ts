@@ -57,6 +57,23 @@ const favoriteStore = createStore<SavedPlayer[]>('rw:favorites', []);
 const regionStore = createStore<string>('rw:region', 'euw1');
 
 export const useRecent = () => useStore(recentStore);
+
+/** Multi-search lobbies the visitor ran, newest first (player slugs "Name-TAG"), kept in this browser. */
+export interface SavedLobby {
+  region: string;
+  players: string[];
+}
+const lobbyStore = createStore<SavedLobby[]>('rw:lobbies', []);
+export const useLobbies = () => useStore(lobbyStore);
+export const getLobbies = () => lobbyStore.get();
+const lobbyKey = (l: SavedLobby) => `${l.region}:${l.players.map((p) => p.toLowerCase()).sort().join(',')}`;
+export function addLobby(l: SavedLobby) {
+  if (!l.players.length) return;
+  lobbyStore.set((list) => [l, ...list.filter((x) => lobbyKey(x) !== lobbyKey(l))].slice(0, 3));
+}
+export function clearLobbies() {
+  lobbyStore.set([]);
+}
 export const useFavorites = () => useStore(favoriteStore);
 export const getFavorites = () => favoriteStore.get();
 export const useRegion = () => [useStore(regionStore), regionStore.set] as const;

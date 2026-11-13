@@ -510,3 +510,21 @@ describe('saved players stay in sync', async () => {
     expect(getFavorites().some((f) => f.gameName === 'NotFav')).toBe(false);
   });
 });
+
+describe('recent multi-search lobbies', async () => {
+  const { addLobby, clearLobbies } = await import('../src/lib/storage');
+  const store = await import('../src/lib/storage');
+  it('keeps the last 3, newest first, without duplicates in any order', () => {
+    clearLobbies();
+    const get = () => (store as any).getLobbies() as { region: string; players: string[] }[];
+    addLobby({ region: 'euw1', players: ['A-1', 'B-2'] });
+    addLobby({ region: 'euw1', players: ['C-3'] });
+    addLobby({ region: 'euw1', players: ['b-2', 'a-1'] }); // same lobby, other order
+    expect(get().map((l) => l.players.join(','))).toEqual(['b-2,a-1', 'C-3']);
+    addLobby({ region: 'kr', players: ['D-4'] });
+    addLobby({ region: 'na1', players: ['E-5'] });
+    expect(get().map((l) => l.region)).toEqual(['na1', 'kr', 'euw1']);
+    addLobby({ region: 'euw1', players: [] });
+    expect(get()).toHaveLength(3);
+  });
+});

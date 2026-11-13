@@ -930,5 +930,9 @@ const dict: Record<string, string> = {
   "md.matchup": "{a} vs {b} en {role}: cómo suele ir este enfrentamiento",
   "lb.find": "Buscar un jugador (Nombre#TAG)",
   "lb.notFound": "{name} no está en esta clasificación {tier} (o su nombre aún no se conoce aquí).",
+  "ms.recent": "Lobbies recientes",
+  "ms.recentClear": "Borrar",
+  "ms.recentCount_one": "{count} jugador",
+  "ms.recentCount_other": "{count} jugadores",
 };
 export default dict;
