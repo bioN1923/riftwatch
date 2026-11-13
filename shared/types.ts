@@ -257,6 +257,14 @@ export interface PatchMover {
   prevPickRate: number;
 }
 
+/** Average gold and CS lead over the lane opponent at 5, 10 and 15 minutes. */
+export interface LaneCurve {
+  minutes: number[];
+  gold: number[];
+  cs: number[];
+  games: number;
+}
+
 export interface ChampionStats {
   championId: number;
   group: StatsGroup;
@@ -288,6 +296,8 @@ export interface ChampionStats {
   skills: { order: string; path: number[]; maxOrders: (Rated & { order: string })[]; sample: number };
   matchups: (Rated & { championId: number; adjusted: number; goldDiff15: number | null; csDiff15: number | null; xpDiff15: number | null })[];
   byLength: (Rated & { label: string })[];
+  /** Lane leads over every lane opponent combined (ranked, one role). */
+  lane?: LaneCurve | null;
   synergy: { role: string; list: (Rated & { championId: number })[] } | null;
   players: (Rated & { gameName: string; tagLine: string; platform: string; kda: number })[];
   /**
@@ -320,7 +330,7 @@ export interface MatchupStats
   csDiff15: number | null;
   xpDiff15: number | null;
   /** Average gold and CS lead over the lane opponent at 5, 10 and 15 minutes (5+ games with timelines). */
-  lane: { minutes: number[]; gold: number[]; cs: number[]; games: number } | null;
+  lane: LaneCurve | null;
   /** The champion's overall win rate in this role, for comparison. */
   baseline: Rated | null;
   /** Other common lane opponents, for quick switching. */

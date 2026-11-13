@@ -896,5 +896,12 @@ const dict: Record<string, string> = {
   "mp.laneGold": "Gold-Vorsprung",
   "mp.laneCs": "CS-Vorsprung",
   "mp.minute": "{n} Min.",
+  "mp.laneEarly_one": "Wird noch aufgefüllt: Die Werte oben stammen aus allen {count} Spiel.",
+  "mp.laneEarly_other": "Wird noch aufgefüllt: Die Werte oben stammen aus allen {count} Spielen.",
+  "cp.laneSub_one": "Durchschnittlicher Vorsprung von {name} gegen den Lane-Gegner nach 5, 10 und 15 Minuten, aus {count} Spiel mit Zeitleiste.",
+  "cp.laneSub_other": "Durchschnittlicher Vorsprung von {name} gegen den Lane-Gegner nach 5, 10 und 15 Minuten, aus {count} Spielen mit Zeitleiste.",
+  "len.early": "Gewinnt am häufigsten in kurzen Spielen.",
+  "len.late": "Gewinnt häufiger, je länger das Spiel dauert.",
+  "len.even": "Die Siegquote bleibt über alle Spiellängen gleich.",
 };
 export default dict;

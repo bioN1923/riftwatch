@@ -18,6 +18,7 @@ import { fadeIn } from '../lib/motion';
 import { ArenaPanel, ArenaStrip } from '../components/champions/Arena';
 import { SlidingIndicator, useSlideDirection } from '../components/ui/Motion';
 import { t } from '../i18n';
+import { LaneCurve } from '../components/champions/LaneCurve';
 
 export function ChampionPage() {
   const { slug = '' } = useParams();
@@ -157,6 +158,9 @@ function ChampionView({ championId }: { championId: number }) {
               {group === 'arena' ? <ArenaPanel s={s} /> : <BuildPanel s={s} abilityIcons={abilityIcons} />}
               {group === 'ranked' && <Matchups s={s} />}
               {group === 'ranked' && <Synergy s={s} />}
+              {group === 'ranked' && s.lane && (
+                <LaneCurve lane={s.lane} id="cp-lane-h" sub={t('cp.laneSub', { name: info?.name ?? '', count: s.lane.games })} />
+              )}
               <LengthChart rows={s.byLength} />
             </div>
             <aside className="space-y-5 lg:sticky lg:top-[72px] lg:self-start">
@@ -802,12 +806,27 @@ const LEN_LABELS = ['Under 20 min', '20–25 min', '25–30 min', '30–35 min',
 const lenLabel = (label: string) => (LEN_LABELS.includes(label) ? t(`len.${LEN_LABELS.indexOf(label)}` as 'len.0') : label);
 
 /** Win rate by game length: one bar per bucket, around a 50% line. */
+/** Short games (under 25 min) against long ones (30+): only called when both sides have a real sample. */
+export function lengthTrend(rows: (Rated & { label: string })[]): 'len.early' | 'len.late' | 'len.even' | null {
+  const side = (pick: (r: Rated & { label: string }) => boolean) => {
+    const xs = rows.filter(pick);
+    const g = xs.reduce((n, r) => n + r.games, 0);
+    return { g, w: g ? xs.reduce((n, r) => n + r.winRate * r.games, 0) / g : 0 };
+  };
+  const short = side((r) => r.label === 'Under 20 min' || r.label === '20–25 min');
+  const long = side((r) => r.label === '30–35 min' || r.label.startsWith('35') || r.label.startsWith('Over'));
+  if (short.g < 60 || long.g < 60) return null;
+  const d = long.w - short.w;
+  return d >= 0.04 ? 'len.late' : d <= -0.04 ? 'len.early' : 'len.even';
+}
+
 function LengthChart({ rows }: { rows: (Rated & { label: string })[] }) {
   const data = rows.filter((r) => r.games > 0);
   if (data.length < 2) return null;
   const lo = 0.35;
   const hi = 0.65;
   const y = (v: number) => (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo);
+  const trend = lengthTrend(data);
   return (
     <section className="panel p-5" aria-labelledby="len-h">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -816,6 +835,7 @@ function LengthChart({ rows }: { rows: (Rated & { label: string })[] }) {
         </h2>
         <span className="text-xs text-muted">{t('len.sub')}</span>
       </div>
+      {trend && <p className="mt-1 text-sm font-medium">{t(trend)}</p>}
       <div className="relative mt-5 h-44">
         <div className="absolute inset-x-0 border-t border-dashed border-line-strong" style={{ bottom: `${y(0.5) * 100}%` }}>
           <span className="absolute -top-2.5 right-0 bg-surface pl-1 text-[10px] text-faint">50%</span>

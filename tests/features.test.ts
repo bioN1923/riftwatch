@@ -281,3 +281,31 @@ describe('lane curve backfill', async () => {
   });
 });
 
+
+describe('champion lane curve and game-length trend', async () => {
+  const { ChampionStatsStore } = await import('../server/champStats');
+  const { mockMatches, mockTimeline } = await import('../server/mock');
+  const { lengthTrend } = await import('../src/pages/Champion');
+  it('combines every lane opponent into one curve for the champion', () => {
+    const store = new ChampionStatsStore(null);
+    for (let i = 0; i < 40; i++)
+      for (const m of mockMatches({ gameName: `Curve${i}`, tagLine: 'X' }, 0, 20, {}).matches) {
+        store.addMatch(m);
+        store.addTimeline(m, mockTimeline(m));
+      }
+    const row = store.tierList('ranked').rows.find((r) => r.role === 'MIDDLE')!;
+    const s = store.champion(row.championId, 'ranked', 'MIDDLE');
+    const perOpp = s.matchups.map((mu) => store.matchup(row.championId, mu.championId, 'ranked', 'MIDDLE'));
+    expect(s.lane?.minutes).toEqual([5, 10, 15]);
+    expect(s.lane!.games).toBeGreaterThanOrEqual(20);
+    expect(s.lane!.games).toBeGreaterThanOrEqual(perOpp.reduce((n, m) => n + (m.lane?.games ?? 0), 0));
+    expect(s.lane!.gold.every(Number.isFinite)).toBe(true);
+  });
+  it('says whether a champion wins more in short or long games, only with enough games', () => {
+    const rows = (wr: number[], g = 100) => ['Under 20 min', '20–25 min', '25–30 min', '30–35 min', '35+ min'].map((label, i) => ({ label, games: g, wins: Math.round(wr[i] * g), winRate: wr[i] }));
+    expect(lengthTrend(rows([0.56, 0.54, 0.5, 0.47, 0.45]))).toBe('len.early');
+    expect(lengthTrend(rows([0.45, 0.47, 0.5, 0.54, 0.56]))).toBe('len.late');
+    expect(lengthTrend(rows([0.5, 0.51, 0.5, 0.5, 0.49]))).toBe('len.even');
+    expect(lengthTrend(rows([0.6, 0.6, 0.5, 0.4, 0.4], 20))).toBe(null);
+  });
+});

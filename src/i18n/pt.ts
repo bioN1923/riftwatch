@@ -896,5 +896,12 @@ const dict: Record<string, string> = {
   "mp.laneGold": "Vantagem de ouro",
   "mp.laneCs": "Vantagem de CS",
   "mp.minute": "{n} min",
+  "mp.laneEarly_one": "Ainda a completar: os números acima usam {count} partida.",
+  "mp.laneEarly_other": "Ainda a completar: os números acima usam as {count} partidas.",
+  "cp.laneSub_one": "Vantagem média de {name} sobre o adversário de rota aos 5, 10 e 15 minutos, de {count} partida com linha do tempo.",
+  "cp.laneSub_other": "Vantagem média de {name} sobre o adversário de rota aos 5, 10 e 15 minutos, de {count} partidas com linha do tempo.",
+  "len.early": "Vence mais em partidas curtas.",
+  "len.late": "Vence mais quanto mais longa a partida.",
+  "len.even": "A taxa de vitória mantém-se estável em qualquer duração.",
 };
 export default dict;

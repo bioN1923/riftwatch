@@ -924,5 +924,16 @@ const dict: Record<string, string> = {
   "mp.laneGold": "Przewaga złota",
   "mp.laneCs": "Przewaga CS",
   "mp.minute": "{n}. min",
+  "mp.laneEarly_one": "Dane wciąż spływają: liczby powyżej pochodzą z {count} gry.",
+  "mp.laneEarly_few": "Dane wciąż spływają: liczby powyżej pochodzą ze wszystkich {count} gier.",
+  "mp.laneEarly_many": "Dane wciąż spływają: liczby powyżej pochodzą ze wszystkich {count} gier.",
+  "mp.laneEarly_other": "Dane wciąż spływają: liczby powyżej pochodzą ze wszystkich {count} gry.",
+  "cp.laneSub_one": "Średnia przewaga {name} nad rywalem z linii w 5., 10. i 15. minucie, z {count} gry z osią czasu.",
+  "cp.laneSub_few": "Średnia przewaga {name} nad rywalem z linii w 5., 10. i 15. minucie, z {count} gier z osią czasu.",
+  "cp.laneSub_many": "Średnia przewaga {name} nad rywalem z linii w 5., 10. i 15. minucie, z {count} gier z osią czasu.",
+  "cp.laneSub_other": "Średnia przewaga {name} nad rywalem z linii w 5., 10. i 15. minucie, z {count} gry z osią czasu.",
+  "len.early": "Wygrywa najczęściej w krótkich grach.",
+  "len.late": "Wygrywa tym częściej, im dłużej trwa gra.",
+  "len.even": "Współczynnik zwycięstw jest stały niezależnie od długości gry.",
 };
 export default dict;

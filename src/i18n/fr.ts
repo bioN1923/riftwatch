@@ -896,5 +896,12 @@ const dict: Record<string, string> = {
   "mp.laneGold": "Avance en or",
   "mp.laneCs": "Avance en CS",
   "mp.minute": "{n} min",
+  "mp.laneEarly_one": "Encore en cours : les chiffres ci-dessus portent sur {count} partie.",
+  "mp.laneEarly_other": "Encore en cours : les chiffres ci-dessus portent sur les {count} parties.",
+  "cp.laneSub_one": "Avance moyenne de {name} sur l'adversaire de lane à 5, 10 et 15 minutes, sur {count} partie avec chronologie.",
+  "cp.laneSub_other": "Avance moyenne de {name} sur l'adversaire de lane à 5, 10 et 15 minutes, sur {count} parties avec chronologie.",
+  "len.early": "Gagne surtout dans les parties courtes.",
+  "len.late": "Gagne davantage à mesure que la partie s'allonge.",
+  "len.even": "Le taux de victoire reste stable quelle que soit la durée.",
 };
 export default dict;

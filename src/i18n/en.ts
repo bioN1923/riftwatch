@@ -896,5 +896,12 @@ const en = {
   "mp.laneGold": "Gold lead",
   "mp.laneCs": "CS lead",
   "mp.minute": "{n} min",
+  "mp.laneEarly_one": "Still filling in: the numbers above use all {count} game.",
+  "mp.laneEarly_other": "Still filling in: the numbers above use all {count} games.",
+  "cp.laneSub_one": "{name}'s average lead over the lane opponent at 5, 10 and 15 minutes, from {count} game with a timeline.",
+  "cp.laneSub_other": "{name}'s average lead over the lane opponent at 5, 10 and 15 minutes, from {count} games with a timeline.",
+  "len.early": "Wins most in short games.",
+  "len.late": "Wins more the longer the game goes.",
+  "len.even": "Win rate holds steady across game lengths.",
 };
 export default en;

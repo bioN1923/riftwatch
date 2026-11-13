@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.14](v3.14/CHANGES.md) | 13 Nov 2026 | Champion pages: lane curve over all opponents and a short-or-long-games verdict; sample note on matchup lane charts |
 | [v3.13](v3.13/CHANGES.md) | 13 Nov 2026 | Lane curves backfilled from older games; link-preview images for shared drafts and comparisons |
 | [v3.12](v3.12/CHANGES.md) | 13 Nov 2026 | Matchup lane curve (gold and CS lead at 5/10/15); tab rows no longer show a stray scroll control |
 | [v3.11](v3.11/CHANGES.md) | 13 Nov 2026 | Compared with high elo (Stats tab); Today panel on profiles |

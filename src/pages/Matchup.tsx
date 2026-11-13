@@ -13,6 +13,7 @@ import { ROLE_LABEL } from '../components/ui/RoleIcon';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { PatchSelect, RoleTab } from '../components/champions/common';
 import { SlidingIndicator } from '../components/ui/Motion';
+import { LaneCurve } from '../components/champions/LaneCurve';
 import { ItemsBlock, Lead, LOW_SAMPLE, RunesBlock, SpellsAndStart } from './Champion';
 import { t } from '../i18n';
 
@@ -148,7 +149,13 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
           </div>
         ) : (
           <>
-            {m.lane && <LaneCurve lane={m.lane} me={me?.name ?? ''} them={them?.name ?? ''} />}
+            {m.lane && (
+              <LaneCurve
+                lane={m.lane}
+                sub={t('mp.laneSub', { a: me?.name ?? '', b: them?.name ?? '', count: m.lane.games })}
+                note={m.lane.games < m.games ? t('mp.laneEarly', { count: m.games }) : undefined}
+              />
+            )}
             <section className="panel panel-tick p-5" aria-labelledby="mu-build-h">
               <h2 id="mu-build-h" className="panel-title text-2xl">
                 {t('mp.howTo', { a: me?.name ?? '', b: them?.name ?? '' })}
@@ -250,54 +257,3 @@ function Verdict({ m, me, them }: { m: MatchupStats; me: string; them: string })
 }
 
 /** How the lane develops: average gold and CS lead over the opponent at 5, 10 and 15 minutes. */
-function LaneCurve({ lane, me, them }: { lane: NonNullable<MatchupStats['lane']>; me: string; them: string }) {
-  const chart = (label: string, values: number[], unit: string) => {
-    const max = Math.max(1, ...values.map(Math.abs));
-    const W = 400;
-    const H = 120;
-    const x = (i: number) => 32 + (i * (W - 64)) / (values.length - 1);
-    const y = (v: number) => H / 2 - (v / max) * (H / 2 - 24);
-    const path = values.map((v, i) => `${i ? 'L' : 'M'}${x(i)},${y(v)}`).join(' ');
-    const end = values.at(-1) ?? 0;
-    return (
-      <figure className="min-w-0">
-        <figcaption className="flex items-baseline justify-between text-sm">
-          <span className="font-medium">{label}</span>
-          <span className={clsx('num font-semibold', end >= 0 ? 'text-win' : 'text-loss')}>
-            {end >= 0 ? '+' : '−'}
-            {Math.abs(Math.round(end))}
-            {unit} @15
-          </span>
-        </figcaption>
-        <svg viewBox={`0 0 ${W} ${H + 18}`} className="mt-1 w-full" role="img" aria-label={`${label}: ${values.map((v, i) => `${lane.minutes[i]} min ${Math.round(v)}`).join(', ')}`}>
-          <line x1="12" x2={W - 12} y1={H / 2} y2={H / 2} stroke="var(--line-strong)" strokeDasharray="3 3" />
-          <path d={path} fill="none" stroke={end >= 0 ? 'var(--win)' : 'var(--loss)'} strokeWidth="2.5" strokeLinejoin="round" />
-          {values.map((v, i) => (
-            <g key={i}>
-              <circle cx={x(i)} cy={y(v)} r="4" fill={v >= 0 ? 'var(--win)' : 'var(--loss)'} />
-              <text x={x(i)} y={y(v) + (v >= 0 ? -9 : 17)} textAnchor="middle" className="num" fontSize="12" fill="var(--muted)">
-                {v >= 0 ? '+' : '−'}
-                {Math.abs(Math.round(v))}
-              </text>
-              <text x={x(i)} y={H + 14} textAnchor="middle" fontSize="12" fill="var(--faint)">
-                {t('mp.minute', { n: lane.minutes[i] })}
-              </text>
-            </g>
-          ))}
-        </svg>
-      </figure>
-    );
-  };
-  return (
-    <section className="panel p-5" aria-labelledby="mu-lane-h">
-      <h2 id="mu-lane-h" className="panel-title">
-        {t('mp.laneTitle')}
-      </h2>
-      <p className="text-xs text-muted">{t('mp.laneSub', { a: me, b: them, count: lane.games })}</p>
-      <div className="mt-4 grid gap-6 sm:grid-cols-2">
-        {chart(t('mp.laneGold'), lane.gold, '')}
-        {chart(t('mp.laneCs'), lane.cs, '')}
-      </div>
-    </section>
-  );
-}

@@ -25,6 +25,18 @@ interface Vs extends C {
 }
 export const LANE_MINUTES = [5, 10, 15];
 
+/** Lane leads summed over every opponent; needs a fair sample, since one game can swing gold by thousands. */
+function laneOverall(r: RoleAgg) {
+  const ld = [0, 0, 0, 0, 0, 0];
+  let n = 0;
+  for (const v of Object.values(r.vs ?? {})) {
+    if (!v.ld || !v.ln) continue;
+    v.ld.forEach((x, k) => (ld[k] += x));
+    n += v.ln;
+  }
+  return n >= 20 ? { minutes: LANE_MINUTES, gold: ld.slice(0, 3).map((x) => x / n), cs: ld.slice(3).map((x) => x / n), games: n } : null;
+}
+
 function addLaneLeads(v: Vs, tl: MatchTimeline, i: number, j: number) {
   const fs = LANE_MINUTES.map((t) => tl.frames[t]);
   if (!fs.every(Boolean)) return;
@@ -808,6 +820,7 @@ export class ChampionStatsStore {
         }))
         .sort((a, b) => b.games - a.games),
       byLength: r.len.map((x, i) => ({ ...rated(x), label: LENGTHS[i].label })),
+      lane: chosen === 'ALL' ? null : laneOverall(r),
       synergy:
         r.duo && PARTNER[chosen]
           ? {

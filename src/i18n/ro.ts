@@ -910,5 +910,14 @@ const dict: Record<string, string> = {
   "mp.laneGold": "Avantaj de gold",
   "mp.laneCs": "Avantaj de CS",
   "mp.minute": "min. {n}",
+  "mp.laneEarly_one": "Încă se completează: cifrele de mai sus folosesc tot {count} meci.",
+  "mp.laneEarly_few": "Încă se completează: cifrele de mai sus folosesc toate cele {count} meciuri.",
+  "mp.laneEarly_other": "Încă se completează: cifrele de mai sus folosesc toate cele {count} de meciuri.",
+  "cp.laneSub_one": "Avantajul mediu al lui {name} față de adversarul de pe lane la minutele 5, 10 și 15, din {count} meci cu timeline.",
+  "cp.laneSub_few": "Avantajul mediu al lui {name} față de adversarul de pe lane la minutele 5, 10 și 15, din {count} meciuri cu timeline.",
+  "cp.laneSub_other": "Avantajul mediu al lui {name} față de adversarul de pe lane la minutele 5, 10 și 15, din {count} de meciuri cu timeline.",
+  "len.early": "Câștigă cel mai des în meciurile scurte.",
+  "len.late": "Câștigă tot mai des cu cât meciul durează mai mult.",
+  "len.even": "Rata de victorie rămâne constantă indiferent de durata meciului.",
 };
 export default dict;
