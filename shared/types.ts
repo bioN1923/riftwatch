@@ -379,6 +379,8 @@ export interface LadderEntry {
 }
 
 export interface Ladder {
+  /** Some names are still being looked up; ask again in a few seconds. */
+  namesPending?: boolean;
   platform: string;
   queue: 'solo' | 'flex';
   tier: 'challenger' | 'grandmaster' | 'master';

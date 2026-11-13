@@ -823,5 +823,6 @@ const dict: Record<string, string> = {
   "mv.was": "Rată de victorie {from} → {to}",
   "ms.lead": "Caută mai mulți jucători deodată: lipește Riot ID-uri (Nume#TAG), câte unul pe rând sau separate prin virgulă, ori rândurile „a intrat în lobby” dintr-un lobby în care numele sunt vizibile. Champion select-ul ranked ascunde numele, iar Riftwatch nu încearcă niciodată să le dezvăluie.",
   "live.note": "Rankul și maestria pe campion sunt căutate pentru fiecare jucător. Timpul meciului se actualizează în fiecare minut.",
+  "lb.loadingName": "Se caută numele…",
 };
 export default dict;

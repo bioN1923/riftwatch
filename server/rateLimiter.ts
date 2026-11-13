@@ -38,6 +38,16 @@ export class RateLimiter {
     if (until > (this.pausedUntil.get(key) ?? 0)) this.pausedUntil.set(key, until);
   }
 
+  /** Share of the tightest window still free for this key (1 = idle, 0 = full or paused). */
+  headroom(key: string) {
+    if (this.pausedFor(key) > 0) return 0;
+    const windows = this.keyWindows.get(key) ?? this.windows;
+    if (!windows.length) return 1;
+    const now = Date.now();
+    const list = this.hits.get(key) ?? [];
+    return Math.min(...windows.map((w) => Math.max(0, w.limit - list.filter((t) => now - t < w.ms).length) / w.limit));
+  }
+
   pausedFor(key: string) {
     return Math.max(0, (this.pausedUntil.get(key) ?? 0) - Date.now());
   }

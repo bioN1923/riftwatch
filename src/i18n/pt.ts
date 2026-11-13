@@ -814,5 +814,6 @@ const dict: Record<string, string> = {
   "mv.was": "Taxa de vitória {from} → {to}",
   "ms.lead": "Busque vários jogadores de uma vez: cole Riot IDs (Nome#TAG), um por linha ou separados por vírgula, ou as linhas “entrou no saguão” de um saguão onde os nomes aparecem. A seleção de campeões ranqueada esconde os nomes, e o Riftwatch nunca tenta revelá-los.",
   "live.note": "O elo e a maestria de campeão de cada jogador são consultados. O tempo de jogo atualiza a cada minuto.",
+  "lb.loadingName": "Buscando o nome…",
 };
 export default dict;

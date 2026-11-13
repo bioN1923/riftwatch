@@ -10,13 +10,14 @@ import { shapeMatch, shapeTimeline } from './shape';
  * always come first.
  */
 export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats: ChampionStatsStore; lastUserRequest: () => number; paceMs: number; onStop?: (message: string) => void }) {
+  // Never take the last half of the key's budget: visitors' lookups come first.
   const { riot, platform, stats } = opts;
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const seenPlayers = new Set<string>();
   let collected = 0;
 
   async function paced<T>(fn: () => Promise<T>): Promise<T> {
-    while (Date.now() - opts.lastUserRequest() < 8000) await sleep(2000);
+    while (Date.now() - opts.lastUserRequest() < 8000 || riot.headroom(platform.regional) < 0.5 || riot.headroom(platform.id) < 0.5) await sleep(2000);
     await sleep(opts.paceMs);
     return fn();
   }

@@ -38,6 +38,8 @@ export function LeaderboardPage() {
     queryFn: ({ signal }) => api.leaderboard(region, { queue, tier, page }, signal),
     staleTime: 2 * 60_000,
     placeholderData: keepPreviousData,
+    // Names the server is still looking up in the background fill in on their own.
+    refetchInterval: (query) => (query.state.data?.namesPending && query.state.dataUpdateCount < 30 ? 5000 : false),
   });
 
   const set = (patch: Record<string, string | null>) => {
@@ -163,6 +165,8 @@ export function LeaderboardPage() {
                             {e.gameName}
                             <span className="text-faint">#{e.tagLine}</span>
                           </Link>
+                        ) : q.data?.namesPending ? (
+                          <span className="inline-block h-3.5 w-28 animate-pulse rounded-sm bg-raised align-middle" aria-label={t('lb.loadingName')} />
                         ) : (
                           <span className="text-faint">{t('lb.noName')}</span>
                         )}

@@ -14,7 +14,7 @@ import { ChampionStatsStore } from './champStats';
 import { loadItemKinds } from './items';
 import { startCrawler } from './crawler';
 import { TtlCache } from './cache';
-import { getPlatform } from '../shared/regions';
+import { getPlatform, type Platform } from '../shared/regions';
 import { MatchStore } from './matchStore';
 import { CHALLENGE_MS, PrivacyStore } from './privacy';
 import { ErrorLog, errorsPage } from './errorLog';
@@ -483,6 +483,35 @@ if (DEMO) {
 
 const LADDER_PAGE = 50;
 
+/** Looks up ladder players' Riot IDs in the background, one at a time, only while the key has room. */
+const nameFiller = (() => {
+  const pending = new Map<string, Platform>();
+  let running = false;
+  async function run() {
+    running = true;
+    while (pending.size) {
+      const [puuid, p] = pending.entries().next().value as [string, Platform];
+      pending.delete(puuid);
+      if (players.nameOf(puuid)) continue;
+      while (riot.headroom(p.regional) < 0.5) await new Promise((r) => setTimeout(r, 2000));
+      try {
+        const acc = await riot.accountByPuuid(p, puuid);
+        players.add({ platform: p.id, puuid, gameName: acc.gameName, tagLine: acc.tagLine });
+      } catch (e) {
+        if ((e as ApiError)?.code === 'KEY_INVALID') break;
+      }
+      await new Promise((r) => setTimeout(r, 400));
+    }
+    running = false;
+  }
+  return {
+    queue(p: Platform, puuid: string) {
+      if (pending.size < 2000) pending.set(puuid, p);
+      if (!running) void run();
+    },
+  };
+})();
+
 app.get(
   '/api/leaderboard/:platform',
   wrap(async (req, res) => {
@@ -501,12 +530,16 @@ app.get(
         .sort((a: LadderEntry, b: LadderEntry) => b.lp - a.lp);
     }
     const slice = all.slice((page - 1) * LADDER_PAGE, page * LADDER_PAGE);
-    // Names: from the player index when known, otherwise one account lookup each (cached for a day).
+    // Names: from the player index when known. Each request looks up at most a few unknown
+    // names directly; the rest are queued for the background name filler, so one ladder page
+    // never eats the key's budget that other visitors' lookups need.
+    let direct = riot.headroom(p.regional) > 0.3 ? 8 : 0;
     const entries: LadderEntry[] = await Promise.all(
       slice.map(async (e, i) => {
         if (privacy.isHidden(e.puuid)) return { ...e, rank: (page - 1) * LADDER_PAGE + i + 1, gameName: null, tagLine: null };
         let name = e.gameName ? { gameName: e.gameName, tagLine: e.tagLine! } : players.nameOf(e.puuid);
-        if (!name && !DEMO && e.puuid) {
+        if (!name && !DEMO && e.puuid && direct-- <= 0) nameFiller.queue(p, e.puuid);
+        else if (!name && !DEMO && e.puuid) {
           try {
             const acc = await riot.accountByPuuid(p, e.puuid);
             name = { gameName: acc.gameName, tagLine: acc.tagLine };
@@ -519,8 +552,9 @@ app.get(
         return { ...e, rank: (page - 1) * LADDER_PAGE + i + 1, gameName: name?.gameName ?? null, tagLine: name?.tagLine ?? null };
       }),
     );
-    res.setHeader('Cache-Control', 'public, max-age=120');
-    res.json({ platform: p.id, queue, tier, total: all.length, page, pageSize: LADDER_PAGE, entries } satisfies Ladder);
+    const missing = entries.some((e) => !e.gameName && !privacy.isHidden(e.puuid));
+    res.setHeader('Cache-Control', missing ? 'no-store' : 'public, max-age=120');
+    res.json({ platform: p.id, queue, tier, total: all.length, page, pageSize: LADDER_PAGE, entries, namesPending: missing } satisfies Ladder);
   }),
 );
 

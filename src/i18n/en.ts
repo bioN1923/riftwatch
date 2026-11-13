@@ -814,5 +814,6 @@ const en = {
   "mv.down": "Falling",
   "mv.none": "No big changes.",
   "mv.was": "{from} → {to} win rate",
+  "lb.loadingName": "Looking up name…",
 };
 export default en;

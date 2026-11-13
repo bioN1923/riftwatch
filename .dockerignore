@@ -3,3 +3,6 @@ dist
 .env
 .git
 server/data
+versions
+deploy.bat
+deploy.log

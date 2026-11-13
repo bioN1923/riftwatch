@@ -128,6 +128,15 @@ export class RiotClient {
   }
 
   /**
+   * How much of the key's budget is free on a routing host (1 = all of it). Background work
+   * (the stats collector, filling in ladder names) waits for at least half, so visitors'
+   * own lookups always have room.
+   */
+  headroom(host: string) {
+    return this.limiter.headroom(host);
+  }
+
+  /**
    * Riot reports the key's real limits on every response ("20:1,100:120"). Development,
    * personal and production keys differ, so adopt them (at 90%, leaving headroom).
    */

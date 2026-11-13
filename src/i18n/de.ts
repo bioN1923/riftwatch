@@ -814,5 +814,6 @@ const dict: Record<string, string> = {
   "mv.was": "Siegrate {from} → {to}",
   "ms.lead": "Mehrere Spieler auf einmal suchen: Füge Riot-IDs (Name#TAG) ein, eine pro Zeile oder durch Kommas getrennt, oder die „ist der Lobby beigetreten“-Zeilen aus einer Lobby, in der Namen sichtbar sind. Die Ranglisten-Championauswahl verbirgt Namen, und Riftwatch versucht nie, sie aufzudecken.",
   "live.note": "Rang und Champion-Meisterschaft werden für jeden Spieler abgerufen. Die Spielzeit wird jede Minute aktualisiert.",
+  "lb.loadingName": "Name wird gesucht …",
 };
 export default dict;

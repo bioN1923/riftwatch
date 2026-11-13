@@ -25,11 +25,14 @@ interface Vs extends C {
 export const shrunk = (w: number, g: number, k = 10) => (w + 0.5 * k) / (g + k);
 
 /** The opponents this role does worst against in lane (enough games, sorted by adjusted win rate). */
+/** Lane matchups need real samples: 0/7 is bad luck as often as a real counter. */
+export const MATCHUP_K = 25;
+export const matchupMin = (games: number) => Math.max(8, Math.round(games * 0.03));
 function countersOf(r: RoleAgg, n = 3) {
-  const min = Math.max(3, Math.round(r.g * 0.02));
+  const min = matchupMin(r.g);
   return Object.entries(r.vs)
     .filter(([, v]) => v.g >= min)
-    .sort((a, b) => shrunk(a[1].w, a[1].g) - shrunk(b[1].w, b[1].g))
+    .sort((a, b) => shrunk(a[1].w, a[1].g, MATCHUP_K) - shrunk(b[1].w, b[1].g, MATCHUP_K))
     .slice(0, n)
     .filter(([, v]) => v.w / v.g < 0.5)
     .map(([id]) => Number(id));
@@ -276,7 +279,7 @@ function arenaSummary(ar: ArenaAgg, games: number): NonNullable<ChampionStats['a
  * a pair needs a decent number of games on both patches, and the change is shrunk towards zero
  * by sample size before ranking.
  */
-export function movers(now: TierRow[], before: TierRow[], against: string, minGames = 30): NonNullable<TierList['movers']> {
+export function movers(now: TierRow[], before: TierRow[], against: string, minGames = 100): NonNullable<TierList['movers']> {
   const prev = new Map(before.map((r) => [`${r.championId}:${r.role}`, r]));
   const list: PatchMover[] = [];
   for (const r of now) {
@@ -284,7 +287,7 @@ export function movers(now: TierRow[], before: TierRow[], against: string, minGa
     if (!p || r.games < minGames || p.games < minGames) continue;
     list.push({ championId: r.championId, role: r.role, winRate: r.winRate, prevWinRate: p.winRate, delta: r.winRate - p.winRate, games: r.games, prevGames: p.games, pickRate: r.pickRate, prevPickRate: p.pickRate });
   }
-  const score = (m: PatchMover) => m.delta * (Math.min(m.games, m.prevGames) / (Math.min(m.games, m.prevGames) + 100));
+  const score = (m: PatchMover) => m.delta * (Math.min(m.games, m.prevGames) / (Math.min(m.games, m.prevGames) + 300));
   const sorted = [...list].sort((a, b) => score(b) - score(a));
   return {
     against,
@@ -512,7 +515,8 @@ export class ChampionStatsStore {
 
   private rows(g: GroupAgg): TierRow[] {
     const rows: TierRow[] = [];
-    const minGames = Math.max(3, Math.round(g.matches * 0.002));
+    // Below ~0.5% of games a win rate is mostly noise (40 games at 66% is common luck).
+    const minGames = Math.max(20, Math.round(g.matches * 0.005));
     for (const [id, c] of Object.entries(g.champs)) {
       const total = Object.values(c.roles).reduce((s, r) => s + r.g, 0);
       for (const [role, r] of Object.entries(c.roles)) {
@@ -531,8 +535,9 @@ export class ChampionStatsStore {
         });
       }
     }
-    // Shrink win rate towards 50% for small samples, then reward popularity a little.
-    const score = (r: TierRow) => ((r.winRate * r.games + 0.5 * 40) / (r.games + 40) - 0.5) * 100 + Math.log10(1 + r.pickRate * 100) * 2;
+    // Shrink win rate towards 50% as if every champion had 150 extra games at exactly 50%,
+    // so a small lucky sample can't outrank a large solid one, then reward popularity a little.
+    const score = (r: TierRow) => ((r.winRate * r.games + 0.5 * 150) / (r.games + 150) - 0.5) * 100 + Math.log10(1 + r.pickRate * 100) * 2;
     const byRole = new Map<string, TierRow[]>();
     for (const r of rows) byRole.set(r.role, [...(byRole.get(r.role) ?? []), r]);
     for (const list of byRole.values()) {
@@ -541,7 +546,7 @@ export class ChampionStatsStore {
         const q = i / Math.max(1, list.length);
         r.rank = i + 1;
         r.tier = q < 0.06 ? 'S+' : q < 0.18 ? 'S' : q < 0.4 ? 'A' : q < 0.65 ? 'B' : q < 0.85 ? 'C' : 'D';
-        if (r.lowSample && (r.tier === 'S+' || r.tier === 'S')) r.tier = 'A';
+        if (r.lowSample && (r.tier === 'S+' || r.tier === 'S' || r.tier === 'A')) r.tier = 'B';
       });
     }
     return rows;
@@ -693,7 +698,7 @@ export class ChampionStatsStore {
         .map(([id, v]) => ({
           ...rated(v),
           championId: Number(id),
-          adjusted: shrunk(v.w, v.g),
+          adjusted: shrunk(v.w, v.g, MATCHUP_K),
           goldDiff15: v.gn ? v.gd / v.gn : null,
           csDiff15: v.gn && v.cd != null ? v.cd / v.gn : null,
           xpDiff15: v.gn && v.xd != null ? v.xd / v.gn : null,

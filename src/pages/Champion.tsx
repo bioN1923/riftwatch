@@ -604,7 +604,8 @@ type Matchup = ChampionStats['matchups'][number];
 
 /** Matchups with enough games to mean something, best and worst ranked by adjusted win rate. */
 function laneMatchups(s: ChampionStats) {
-  const min = Math.max(2, Math.round((s.summary?.games ?? 0) * 0.01));
+  // Same bar as the server's counters: at least 8 games and 3% of the champion's games.
+  const min = Math.max(8, Math.round((s.summary?.games ?? 0) * 0.03));
   const usable = s.matchups.filter((m) => m.games >= min);
   const easiest = usable.filter((m) => m.adjusted >= 0.5).sort((a, b) => b.adjusted - a.adjusted);
   const hardest = usable.filter((m) => m.adjusted < 0.5).sort((a, b) => a.adjusted - b.adjusted);

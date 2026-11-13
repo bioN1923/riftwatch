@@ -832,5 +832,6 @@ const dict: Record<string, string> = {
   "mv.was": "Współczynnik zwycięstw {from} → {to}",
   "ms.lead": "Wyszukaj kilku graczy naraz: wklej Riot ID (Nazwa#TAG), po jednym w linii lub oddzielone przecinkami, albo linie „dołączył do lobby” z lobby, w którym widać nazwy. Wybór bohaterów w rankingowych ukrywa nazwy, a Riftwatch nigdy nie próbuje ich ujawnić.",
   "live.note": "Ranga i maestria bohatera są sprawdzane dla każdego gracza. Czas gry odświeża się co minutę.",
+  "lb.loadingName": "Szukanie nazwy…",
 };
 export default dict;
