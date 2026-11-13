@@ -10,6 +10,11 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.34',
+    date: '2026-11-13',
+    items: ['Phones: the search box at the top is wider (the language button shows just "EN"), most noticeably on small phones.'],
+  },
+  {
     version: '3.33',
     date: '2026-11-13',
     items: ['Shared multi-search and compare links are cleaner for names with spaces ("Annie+IRL" instead of "Annie%2520IRL"); old links still work.'],

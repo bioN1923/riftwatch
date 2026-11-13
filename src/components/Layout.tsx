@@ -111,11 +111,12 @@ function LanguagePicker() {
         aria-expanded={open}
         aria-label={`${t('lang.label')}: ${LANGS[current]?.name ?? ''}`}
         className={clsx(
-          'flex h-9 items-center gap-1.5 rounded-lg border bg-surface px-2.5 text-sm font-semibold transition-colors hover:text-text',
+          'flex h-9 items-center gap-1.5 rounded-lg border bg-surface px-2 text-sm font-semibold transition-colors hover:text-text sm:px-2.5',
           open ? 'border-gold text-text' : 'border-line text-muted',
         )}
       >
-        <Globe className="size-4" aria-hidden />
+        {/* Phones: just the language code, so the search box gets the room. */}
+        <Globe className="hidden size-4 sm:block" aria-hidden />
         <span aria-hidden>{lang.toUpperCase()}</span>
       </button>
       {open && (
@@ -295,7 +296,7 @@ export function Layout() {
       <DemoBanner />
       <StatusBanner />
       <header className="sticky top-0 z-30 border-b border-line bg-bg/85 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 sm:gap-4">
+        <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:gap-4">
           <Logo />
           <MainNav />
           <div className="flex min-w-0 flex-1 justify-center">{!home && <SearchBox />}</div>
