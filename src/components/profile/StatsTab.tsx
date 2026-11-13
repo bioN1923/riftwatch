@@ -139,7 +139,7 @@ function SortHeader({ k, sort, setSort, children, className }: { k: SortKey; sor
   const active = sort.k === k;
   return (
     <th scope="col" aria-sort={active ? (sort.dir > 0 ? 'ascending' : 'descending') : 'none'} className={clsx('px-2 py-2 text-right font-medium', className)}>
-      <button onClick={() => setSort(active ? { k, dir: -sort.dir } : { k, dir: -1 })} className={clsx('inline-flex items-center gap-1 hover:text-text', active && 'text-text')}>
+      <button onClick={() => setSort(active ? { k, dir: -sort.dir } : { k, dir: -1 })} className={clsx('-my-1 inline-flex min-h-[24px] min-w-[24px] items-center gap-1 py-1 hover:text-text', active && 'text-text')}>
         {children}
         {active && (sort.dir > 0 ? <ArrowUp className="size-3" aria-hidden /> : <ArrowDown className="size-3" aria-hidden />)}
       </button>
@@ -414,7 +414,7 @@ function Trends({ matches, puuid }: { matches: MatchSummary[]; puuid: string }) 
               role="radio"
               aria-checked={metric === m.id}
               onClick={() => setMetric(m.id)}
-              className={clsx('rounded-sm px-2.5 py-1 text-xs font-medium transition-colors', metric === m.id ? 'bg-raised text-text' : 'text-muted hover:text-text')}
+              className={clsx('min-h-[24px] rounded-sm px-2.5 py-1 text-xs font-medium transition-colors', metric === m.id ? 'bg-raised text-text' : 'text-muted hover:text-text')}
             >
               {metricLabel(m.id)}
             </button>

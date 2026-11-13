@@ -156,7 +156,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
               setSearch(next, { replace: true });
             }}
             className={clsx(
-              '-mb-px whitespace-nowrap border-b-2 pb-2 text-sm font-medium transition-colors',
+              '-mb-px min-w-[24px] whitespace-nowrap border-b-2 pb-2 pt-1 text-sm font-medium transition-colors',
               queue === q.id ? 'border-gold text-text' : 'border-transparent text-muted hover:text-text',
             )}
           >

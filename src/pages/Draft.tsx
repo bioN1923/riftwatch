@@ -171,7 +171,7 @@ function Chosen({ id, onClear, tone }: { id: number; onClear: () => void; tone: 
       <GameImg src={c.url} alt="" size={64} rounded="md" className={clsx('ring-2', tone === 'loss' ? 'ring-loss/70' : 'ring-win/70')} />
       <div className="min-w-0 flex-1">
         <p className="font-display text-2xl font-bold">{c.name}</p>
-        <button onClick={onClear} className="text-sm text-muted underline hover:text-text">
+        <button onClick={onClear} className="-my-1 inline-block py-1 text-sm text-muted underline hover:text-text">
           {t('draft.change')}
         </button>
       </div>
@@ -195,9 +195,9 @@ function PoolEditor({ pool, role, onChange }: { pool: number[]; role: Role; onCh
             <button
               onClick={() => onChange(pool.filter((x) => x !== id))}
               aria-label={t('draft.removeFromPool', { champion: a.champion(id).name })}
-              className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full bg-surface text-faint ring-1 ring-line hover:text-text"
+              className="absolute -right-2 -top-2 grid size-[24px] place-items-center rounded-full bg-surface text-faint ring-1 ring-line hover:text-text"
             >
-              <X className="size-3" aria-hidden />
+              <X className="size-3.5" aria-hidden />
             </button>
           </li>
         ))}

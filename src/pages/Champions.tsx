@@ -80,7 +80,7 @@ export function ChampionsPage() {
       <th scope="col" aria-sort={active ? (sort.dir === 1 ? 'ascending' : 'descending') : 'none'} className={clsx('px-3 py-2 font-medium', align === 'right' ? 'text-right' : 'text-left')}>
         <button
           onClick={() => setSort((s) => (s.key === key ? { key, dir: (s.dir * -1) as 1 | -1 } : { key, dir: defaultDir }))}
-          className={clsx('inline-flex items-center gap-1 hover:text-text', active && 'text-text')}
+          className={clsx('-my-1 inline-flex min-h-[24px] min-w-[24px] items-center gap-1 py-1 hover:text-text', active && 'text-text')}
         >
           {label}
           {active && (sort.dir === 1 ? <ArrowUp className="size-3" aria-hidden /> : <ArrowDown className="size-3" aria-hidden />)}
