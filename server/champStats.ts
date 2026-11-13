@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type { ChampionStats, MatchSummary, MatchTimeline, MatchupStats, PatchMover, Rated, StatsGroup, TierList, TierRow } from '../shared/types';
+import type { Benchmark, ChampionStats, MatchSummary, MatchTimeline, MatchupStats, PatchMover, Rated, StatsGroup, TierList, TierRow } from '../shared/types';
 import { itemKind } from './items';
 import { getPlatform } from '../shared/regions';
 
@@ -501,6 +501,37 @@ export class ChampionStatsStore {
     return Object.keys(this.s.patches)
       .filter((p) => this.s.patches[p][group]?.matches)
       .sort(patchCmp);
+  }
+
+  /** High-elo averages for a role (all champions), or one champion in that role, on the latest patch. */
+  benchmarks(role: string, championId?: number): Benchmark {
+    const pt = this.patches('ranked')[0] ?? null;
+    const g = pt ? this.s.patches[pt].ranked : undefined;
+    const t = { g: 0, w: 0, k: 0, d: 0, a: 0, cs: 0, dmg: 0, gold: 0, min: 0 };
+    for (const [id, c] of Object.entries(g?.champs ?? {})) {
+      if (championId && Number(id) !== championId) continue;
+      const r = c.roles[role];
+      if (!r) continue;
+      t.g += r.g;
+      t.w += r.w;
+      t.k += r.k;
+      t.d += r.d;
+      t.a += r.a;
+      t.cs += r.cs;
+      t.dmg += r.dmg;
+      t.gold += r.gold;
+      t.min += r.min;
+    }
+    return {
+      role,
+      championId: championId ?? null,
+      patch: pt,
+      games: t.g,
+      avg:
+        t.g && t.min
+          ? { kills: t.k / t.g, deaths: t.d / t.g, assists: t.a / t.g, csPerMin: t.cs / t.min, damagePerMin: t.dmg / t.min, goldPerMin: t.gold / t.min, winRate: t.w / t.g }
+          : null,
+    };
   }
 
   tierList(group: StatsGroup, patch?: string): TierList {

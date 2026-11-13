@@ -236,6 +236,15 @@ export interface TierList {
   movers: { against: string; up: PatchMover[]; down: PatchMover[] } | null;
 }
 
+/** Average per-game numbers of the collected (high-elo) games, for one role and optionally one champion. */
+export interface Benchmark {
+  role: string;
+  championId: number | null;
+  patch: string | null;
+  games: number;
+  avg: { kills: number; deaths: number; assists: number; csPerMin: number; damagePerMin: number; goldPerMin: number; winRate: number } | null;
+}
+
 export interface PatchMover {
   championId: number;
   role: string;

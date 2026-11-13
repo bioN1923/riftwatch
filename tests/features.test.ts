@@ -193,3 +193,20 @@ describe('patch movers', async () => {
     expect(m.up[0].delta).toBeCloseTo(0.05);
   });
 });
+
+describe('benchmarks', async () => {
+  const { ChampionStatsStore } = await import('../server/champStats');
+  const { mockMatches } = await import('../server/mock');
+  it('averages a role across champions and for one champion', () => {
+    const store = new ChampionStatsStore(null);
+    for (let i = 0; i < 30; i++) for (const m of mockMatches({ gameName: `Bench${i}`, tagLine: 'X' }, 0, 20, {}).matches) store.addMatch(m);
+    const mid = store.benchmarks('MIDDLE');
+    expect(mid.games).toBeGreaterThan(50);
+    expect(mid.avg!.csPerMin).toBeGreaterThan(3);
+    expect(mid.avg!.csPerMin).toBeLessThan(12);
+    const someChamp = Number(Object.keys((store as any).s.patches[mid.patch!].ranked.champs).find((id) => (store as any).s.patches[mid.patch!].ranked.champs[id].roles.MIDDLE));
+    const one = store.benchmarks('MIDDLE', someChamp);
+    expect(one.games).toBeLessThan(mid.games);
+    expect(store.benchmarks('TOP', 999999).avg).toBeNull();
+  });
+});

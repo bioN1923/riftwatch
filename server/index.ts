@@ -591,6 +591,14 @@ app.get('/api/champions', (req, res) => {
   res.json(champStats.tierList(groupParam(req.query.group), req.query.patch ? String(req.query.patch) : undefined));
 });
 
+app.get('/api/benchmarks', (req, res) => {
+  const role = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'].find((r) => r === req.query.role);
+  if (!role) throw new ApiError(400, 'BAD_REQUEST', 'Unknown role.');
+  const champion = Number(req.query.champion) || undefined;
+  res.setHeader('Cache-Control', 'public, max-age=300');
+  res.json(champStats.benchmarks(role, champion));
+});
+
 app.get('/api/champions/:id', (req, res) => {
   res.setHeader('Cache-Control', 'public, max-age=60');
   const id = Number(req.params.id);

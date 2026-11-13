@@ -1,4 +1,4 @@
-import type { ApiErrorBody, PrivacyChallenge, PrivacyResult, ApiErrorCode, ChampionStats,
+import type { ApiErrorBody, Benchmark, PrivacyChallenge, PrivacyResult, ApiErrorCode, ChampionStats,
   MatchupStats, HealthResponse, Ladder, LiveResponse, LpHistory, ServerStatus, MatchPage, MatchTimeline, PlayerHit, Profile, ScoutInfo, StatsGroup, TierList } from '../../shared/types';
 
 export class ApiClientError extends Error {
@@ -54,6 +54,7 @@ export const api = {
   timeline: (platform: string, matchId: string, signal?: AbortSignal) => request<MatchTimeline>(`/timeline/${platform}/${enc(matchId)}`, signal),
   search: (platform: string, q: string, resolve: boolean, signal?: AbortSignal) =>
     request<PlayerHit[]>(`/search?platform=${platform}&q=${enc(q)}${resolve ? '&resolve=1' : ''}`, signal),
+  benchmarks: (role: string, champion?: number, signal?: AbortSignal) => request<Benchmark>(`/benchmarks?role=${role}${champion ? `&champion=${champion}` : ''}`, signal),
   tierList: (group: StatsGroup, patch?: string, signal?: AbortSignal) => request<TierList>(`/champions?group=${group}${patch ? `&patch=${patch}` : ''}`, signal),
   champion: (id: number, p: { group: StatsGroup; role?: string; patch?: string }, signal?: AbortSignal) =>
     request<ChampionStats>(`/champions/${id}?group=${p.group}${p.role ? `&role=${p.role}` : ''}${p.patch ? `&patch=${p.patch}` : ''}`, signal),

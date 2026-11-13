@@ -1,3 +1,4 @@
+import { Benchmarks } from './Insights';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import clsx from 'clsx';
@@ -123,6 +124,7 @@ export function StatsTab({
           </button>
         )}
       </div>
+      <Benchmarks matches={matches} puuid={puuid} />
       <ChampionTable matches={matches} puuid={puuid} onOpen={onOpenChampion} />
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <RoleTable matches={matches} puuid={puuid} />

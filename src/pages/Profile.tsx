@@ -17,7 +17,7 @@ import { LiveGame } from '../components/profile/LiveGame';
 import { StatsTab } from '../components/profile/StatsTab';
 import { AutoLoad } from '../components/ui/AutoLoad';
 import { LpPanel } from '../components/profile/LpPanel';
-import { Goals, PatchWatch } from '../components/profile/Insights';
+import { Goals, PatchWatch, Today } from '../components/profile/Insights';
 import { MatchRow } from '../components/match/MatchRow';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { useSlideDirection } from '../components/ui/Motion';
@@ -75,6 +75,8 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
   const tabDir = useSlideDirection(['overview', 'stats', 'live'].indexOf(tab));
   const puuid = profile?.account.puuid;
 
+  // Same query as the rank-history panel (shared cache), for today's LP change.
+  const lpQ = useQuery({ queryKey: ['lp', puuid], enabled: !!puuid, queryFn: ({ signal }) => api.lp(platform, puuid!, signal), staleTime: 60_000 });
   const matchesQ = useInfiniteQuery({
     queryKey: ['matches', platform, puuid, queue],
     enabled: !!puuid,
@@ -262,6 +264,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
 
             <aside aria-label={t('profile.summary')} className="space-y-4 lg:sticky lg:top-[72px] lg:self-start">
               <ScoutingReport ov={ov} matches={matches} puuid={profile.account.puuid} name={profile.account.gameName} />
+              <Today matches={matches} puuid={profile.account.puuid} lp={lpQ.data?.points} />
               <LpPanel profile={profile} />
               <PatchWatch matches={matches} puuid={profile.account.puuid} />
               <Goals matches={matches} puuid={profile.account.puuid} />
