@@ -512,6 +512,46 @@ const nameFiller = (() => {
   };
 })();
 
+/** One apex ladder, best first (cached by the Riot client for 10 minutes). */
+async function ladderAll(p: Platform, tier: 'challenger' | 'grandmaster' | 'master', queue: 'solo' | 'flex'): Promise<Omit<LadderEntry, 'rank'>[]> {
+  if (DEMO) return mockLadder(tier, queue);
+  const league = await riot.apexLeague(p, tier, queue === 'flex' ? 'RANKED_FLEX_SR' : 'RANKED_SOLO_5x5');
+  return (league?.entries ?? [])
+    .map((e: any) => ({ puuid: e.puuid, gameName: null, tagLine: null, lp: e.leaguePoints, wins: e.wins, losses: e.losses, hotStreak: !!e.hotStreak, veteran: !!e.veteran }))
+    .sort((a: LadderEntry, b: LadderEntry) => b.lp - a.lp);
+}
+
+/**
+ * Find a player on a ladder: "Name#TAG" looks the account up (one cached call) and matches by
+ * PUUID; a bare name matches the names we already know. Hidden players are never found.
+ */
+app.get(
+  '/api/leaderboard/:platform/find',
+  wrap(async (req, res) => {
+    const p = platformOr400(String(req.params.platform));
+    const queue = req.query.queue === 'flex' ? 'flex' : 'solo';
+    const tier = (['challenger', 'grandmaster', 'master'] as const).find((t) => t === req.query.tier) ?? 'challenger';
+    const q = String(req.query.q ?? '').trim().slice(0, 40);
+    if (!q) throw new ApiError(400, 'BAD_REQUEST', 'Type a Riot ID.');
+    const all = await ladderAll(p, tier, queue);
+    const [name, tag] = q.split('#').map((x) => x.trim().toLowerCase());
+    const nameOf = (e: Omit<LadderEntry, 'rank'>) => (e.gameName ? { gameName: e.gameName, tagLine: e.tagLine ?? '' } : players.nameOf(e.puuid));
+    let idx = all.findIndex((e) => {
+      const n = nameOf(e);
+      return !!n && n.gameName.toLowerCase() === name && (!tag || n.tagLine.toLowerCase() === tag);
+    });
+    if (idx < 0 && tag && !DEMO) {
+      const acc = await riot.account(p, name, tag).catch(() => null);
+      if (acc?.puuid) idx = all.findIndex((e) => e.puuid === acc.puuid);
+    }
+    if (idx < 0 && !tag) idx = all.findIndex((e) => !!nameOf(e)?.gameName.toLowerCase().startsWith(name));
+    const e = idx >= 0 ? all[idx] : null;
+    const hidden = e && (privacy.isHidden(e.puuid) || (nameOf(e) && privacy.isHiddenPlayer({ puuid: e.puuid, ...nameOf(e)! })));
+    res.setHeader('Cache-Control', 'no-store');
+    res.json(e && !hidden ? { rank: idx + 1, page: Math.floor(idx / LADDER_PAGE) + 1 } : { rank: null, page: null });
+  }),
+);
+
 app.get(
   '/api/leaderboard/:platform',
   wrap(async (req, res) => {
@@ -520,15 +560,7 @@ app.get(
     const tier = (['challenger', 'grandmaster', 'master'] as const).find((t) => t === req.query.tier) ?? 'challenger';
     const page = Math.max(1, Number(req.query.page ?? 1) || 1);
 
-    let all: Omit<LadderEntry, 'rank'>[];
-    if (DEMO) {
-      all = mockLadder(tier, queue);
-    } else {
-      const league = await riot.apexLeague(p, tier, queue === 'flex' ? 'RANKED_FLEX_SR' : 'RANKED_SOLO_5x5');
-      all = (league?.entries ?? [])
-        .map((e: any) => ({ puuid: e.puuid, gameName: null, tagLine: null, lp: e.leaguePoints, wins: e.wins, losses: e.losses, hotStreak: !!e.hotStreak, veteran: !!e.veteran }))
-        .sort((a: LadderEntry, b: LadderEntry) => b.lp - a.lp);
-    }
+    const all = await ladderAll(p, tier, queue);
     const slice = all.slice((page - 1) * LADDER_PAGE, page * LADDER_PAGE);
     // Names: from the player index when known. Each request looks up at most a few unknown
     // names directly; the rest are queued for the background name filler, so one ladder page

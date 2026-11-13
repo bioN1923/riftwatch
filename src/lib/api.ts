@@ -67,6 +67,8 @@ export const api = {
   untrack: (puuid: string) => request<{ tracked: boolean }>(`/track/${enc(puuid)}`, undefined, { method: 'DELETE' }),
   scout: (platform: string, puuid: string, championId?: number, signal?: AbortSignal) =>
     request<ScoutInfo>(`/scout/${platform}/${enc(puuid)}${championId ? `?champion=${championId}` : ''}`, signal),
+  ladderFind: (platform: string, p: { queue: string; tier: string; q: string }) =>
+    request<{ rank: number | null; page: number | null }>(`/leaderboard/${platform}/find?queue=${p.queue}&tier=${p.tier}&q=${encodeURIComponent(p.q)}`),
   leaderboard: (platform: string, p: { queue: string; tier: string; page: number }, signal?: AbortSignal) =>
     request<Ladder>(`/leaderboard/${platform}?queue=${p.queue}&tier=${p.tier}&page=${p.page}`, signal),
   rotation: (platform: string, signal?: AbortSignal) => request<{ championIds: number[] }>(`/rotation/${platform}`, signal),

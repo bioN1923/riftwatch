@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.30](v3.30/CHANGES.md) | 13 Nov 2026 | Ladder: find a player by Riot ID (jumps to their page and highlights the row) |
 | [v3.29](v3.29/CHANGES.md) | 13 Nov 2026 | Match history: Spellbook and Swarm named; no zero CS/vision in modes without minions or wards |
 | [v3.28](v3.28/CHANGES.md) | 13 Nov 2026 | Match details link to the lane matchup page ("was it the matchup or the game?") |
 | [v3.27](v3.27/CHANGES.md) | 13 Nov 2026 | Profiles: "Try next" suggests strong unplayed champions that fit the player's role and style |

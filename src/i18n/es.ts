@@ -928,5 +928,7 @@ const dict: Record<string, string> = {
   "tn.sub": "Campeones que no has jugado últimamente, que encajan con tu pool de {role} y son fuertes en el parche {patch}.",
   "tn.like": "Como {name} · {cls}",
   "md.matchup": "{a} vs {b} en {role}: cómo suele ir este enfrentamiento",
+  "lb.find": "Buscar un jugador (Nombre#TAG)",
+  "lb.notFound": "{name} no está en esta clasificación {tier} (o su nombre aún no se conoce aquí).",
 };
 export default dict;

@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { ChevronDown, ChevronLeft, ChevronRight, Flame } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Flame, Search } from 'lucide-react';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api } from '../lib/api';
 import { rankEmblem } from '../lib/ddragon';
@@ -49,6 +49,32 @@ export function LeaderboardPage() {
   };
   const pages = q.data ? Math.max(1, Math.ceil(q.data.total / q.data.pageSize)) : 1;
 
+  // Find a player on this ladder: jump to their page and highlight the row.
+  const [find, setFind] = useState('');
+  const [finding, setFinding] = useState(false);
+  const [missing, setMissing] = useState<string | null>(null);
+  const hl = Number(params.get('hl')) || null;
+  const hlRef = useRef<HTMLTableRowElement>(null);
+  useEffect(() => {
+    if (hl && q.data?.entries.some((e) => e.rank === hl)) hlRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, [hl, q.data]);
+  async function onFind(e: React.FormEvent) {
+    e.preventDefault();
+    const v = find.trim();
+    if (!v) return;
+    setFinding(true);
+    setMissing(null);
+    try {
+      const r = await api.ladderFind(region, { queue, tier, q: v });
+      if (r.rank && r.page) set({ page: r.page > 1 ? String(r.page) : null, hl: String(r.rank) });
+      else setMissing(v);
+    } catch {
+      setMissing(v);
+    } finally {
+      setFinding(false);
+    }
+  }
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -57,13 +83,33 @@ export function LeaderboardPage() {
           <p className="mt-2 text-sm text-muted">{t('lb.sub', { region: regionName(region) })}</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
+          <form role="search" onSubmit={onFind} className="relative flex items-center">
+            <label className="sr-only" htmlFor="lb-find">
+              {t('lb.find')}
+            </label>
+            <Search className="pointer-events-none absolute left-2.5 size-4 text-faint" aria-hidden />
+            <input
+              id="lb-find"
+              value={find}
+              onChange={(e) => {
+                setFind(e.target.value);
+                setMissing(null);
+              }}
+              placeholder={t('lb.find')}
+              aria-describedby={missing ? 'lb-find-miss' : undefined}
+              className="h-9 w-52 rounded border border-line bg-surface pl-8 pr-3 text-sm outline-none placeholder:text-faint focus:border-gold"
+            />
+            <button type="submit" disabled={finding} className="sr-only">
+              {t('lb.find')}
+            </button>
+          </form>
           <label className="relative">
             <span className="sr-only">{t('lb.region')}</span>
             <select
               value={region}
               onChange={(e) => {
                 setRegion(e.target.value);
-                set({ region: e.target.value, page: null });
+                set({ region: e.target.value, page: null, hl: null });
               }}
               className="h-9 appearance-none rounded border border-line bg-surface pl-3 pr-8 font-display text-lg font-bold"
             >
@@ -86,7 +132,7 @@ export function LeaderboardPage() {
                 key={id}
                 role="radio"
                 aria-checked={queue === id}
-                onClick={() => set({ queue: id === 'solo' ? null : id, page: null })}
+                onClick={() => set({ queue: id === 'solo' ? null : id, page: null, hl: null })}
                 className={clsx('rounded-sm px-3 py-1 text-sm font-medium transition-colors', queue === id ? 'bg-raised text-text' : 'text-muted hover:text-text')}
               >
                 {label}
@@ -96,14 +142,18 @@ export function LeaderboardPage() {
         </div>
       </div>
 
-      <div role="tablist" aria-label={t('lb.tier')} className="relative mt-6 flex gap-5 border-b border-line">
+      <p id="lb-find-miss" role="status" className="mt-2 min-h-5 text-sm text-muted">
+        {missing && t('lb.notFound', { name: missing, tier: TIERS.find((x) => x.id === tier)?.label() ?? '' })}
+      </p>
+
+      <div role="tablist" aria-label={t('lb.tier')} className="relative mt-3 flex gap-5 border-b border-line">
         <SlidingIndicator />
         {TIERS.map((tr) => (
           <button
             key={tr.id}
             role="tab"
             aria-selected={tier === tr.id}
-            onClick={() => set({ tier: tr.id === 'challenger' ? null : tr.id, page: null })}
+            onClick={() => set({ tier: tr.id === 'challenger' ? null : tr.id, page: null, hl: null })}
             className={clsx('-mb-px flex items-center gap-2 border-b-2 pb-2 text-sm font-medium transition-colors', tier === tr.id ? 'border-transparent text-text' : 'border-transparent text-muted hover:text-text')}
           >
             <img src={rankEmblem(tr.id)} alt="" {...fadeIn()} className="size-6" />
@@ -157,7 +207,13 @@ export function LeaderboardPage() {
                   const games = e.wins + e.losses;
                   const wr = games ? e.wins / games : 0;
                   return (
-                    <tr key={e.puuid || e.rank} className="fade-up border-t border-line hover:bg-raised" style={{ animationDelay: `${Math.min(i, 20) * 10}ms` }}>
+                    <tr
+                      key={e.puuid || e.rank}
+                      ref={e.rank === hl ? hlRef : undefined}
+                      aria-current={e.rank === hl ? 'true' : undefined}
+                      className={clsx('fade-up border-t border-line hover:bg-raised', e.rank === hl && 'bg-gold/10 outline outline-1 -outline-offset-1 outline-gold/60')}
+                      style={{ animationDelay: `${Math.min(i, 20) * 10}ms` }}
+                    >
                       <td className={clsx('num px-3 py-2.5 font-display text-lg font-bold', e.rank <= 3 ? 'text-gold' : 'text-muted')}>{e.rank}</td>
                       <td className="px-3 py-2.5">
                         {e.gameName ? (

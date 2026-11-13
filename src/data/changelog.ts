@@ -10,6 +10,11 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.30',
+    date: '2026-11-13',
+    items: ['Ladder: find a player by Riot ID. It jumps to their page and highlights them.'],
+  },
+  {
     version: '3.29',
     date: '2026-11-13',
     items: ['Match history: Ultimate Spellbook and Swarm games are named, and modes without minions or wards no longer show CS or vision as zero.'],
