@@ -25,3 +25,10 @@
 ## Checks
 - Typecheck clean, a11y `{}`.
 - Locally the sandbox server can't reach Data Dragon, so `/api/static/en_US` gives 503 and an unknown locale gives 400. That exercised the **fallback**: the demo screenshots still show every champion, item and rune (`demo/`).
+
+## Live check (23:57)
+- Deployed automatically (EXIT CODE 0, 23:56:37).
+- **`/champions/ahri` network log:** one request to `/api/static/en_US` (200). No `champion.json`, `item.json`, `summoner.json` or `runesReforged.json` from Riot anymore.
+  - The only Data Dragon data request left is the per-champion `Ahri.json` (abilities and lore) that the champion page needs.
+- **`/api/static/en_US`:** 496 kB JSON (before gzip) with version 16.22.1: 173 champions, 863 items and 67 runes. The page renders normally.
+- Screenshot: `live/champion.jpg`.
