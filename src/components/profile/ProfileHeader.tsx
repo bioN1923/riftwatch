@@ -70,18 +70,24 @@ export function ProfileHeader({
 
       <div className="relative mx-auto max-w-6xl px-4 pt-7">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="flex items-center gap-5">
-            <div className="relative shrink-0">
-              <GameImg src={a.profileIcon(profile.summoner.profileIconId)} alt="Profile icon" size={92} rounded="md" className="ring-1 ring-line-strong" />
-              <span className="num absolute -bottom-2.5 left-1/2 -translate-x-1/2 rounded-sm border border-gold/60 bg-bg px-1.5 font-display text-sm font-bold text-gold">
+          {/* Phones get a compact header (smaller icon, buttons in one row) so the match list starts higher. */}
+          <div className="flex items-start gap-3 sm:items-center sm:gap-5">
+            <div className="relative mt-1 shrink-0 sm:mt-0">
+              <span className="block sm:hidden">
+                <GameImg src={a.profileIcon(profile.summoner.profileIconId)} alt="Profile icon" size={60} rounded="md" className="ring-1 ring-line-strong" />
+              </span>
+              <span className="hidden sm:block">
+                <GameImg src={a.profileIcon(profile.summoner.profileIconId)} alt="" size={92} rounded="md" className="ring-1 ring-line-strong" />
+              </span>
+              <span className="num absolute -bottom-2.5 left-1/2 -translate-x-1/2 rounded-sm border border-gold/60 bg-bg px-1.5 font-display text-xs font-bold text-gold sm:text-sm">
                 {profile.summoner.summonerLevel}
               </span>
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1">
-                <h1 title={`${profile.account.gameName}#${profile.account.tagLine}`} className="truncate font-display text-4xl font-extrabold leading-none tracking-tight sm:text-5xl">
+                <h1 title={`${profile.account.gameName}#${profile.account.tagLine}`} className="truncate font-display text-3xl font-extrabold leading-none tracking-tight sm:text-5xl">
                   {profile.account.gameName}
-                  <span className="ml-2 text-2xl font-semibold text-muted sm:text-3xl">#{profile.account.tagLine}</span>
+                  <span className="ml-2 text-xl font-semibold text-muted sm:text-3xl">#{profile.account.tagLine}</span>
                 </h1>
                 <button
                   onClick={() => toggleFavorite(saved)}
@@ -93,12 +99,12 @@ export function ProfileHeader({
                   <Star className={clsx('size-5', fav && 'fill-gold text-gold')} aria-hidden />
                 </button>
               </div>
-              <p className="mt-1.5 text-sm text-muted">{platform ? regionName(platform.id) : ''}</p>
+              <p className="mt-1 text-sm text-muted sm:mt-1.5">{platform ? regionName(platform.id) : ''}</p>
               <TagList
                 className="mt-2"
                 tags={playerTags({ matches, puuid: profile.account.puuid, solo, level: profile.summoner.summonerLevel, champName: (cid) => a.champion(cid).name })}
               />
-              <div className="mt-3 flex flex-wrap items-center gap-3">
+              <div className="mt-3 flex flex-wrap items-center gap-2 sm:gap-3">
                 <button
                   onClick={onUpdate}
                   disabled={updating || cooling}
@@ -111,12 +117,13 @@ export function ProfileHeader({
                 <CopyLink />
                 <Link
                   to={`/compare?a=${profile.platform}/${toSlug(id)}`}
-                  className="inline-flex h-8 items-center gap-1.5 rounded border border-line-strong px-3 text-sm font-medium text-muted transition-colors hover:border-gold/60 hover:text-text"
+                  title={t('profile.compare')}
+                  className="inline-flex h-8 items-center gap-1.5 rounded border border-line-strong px-2.5 text-sm font-medium text-muted transition-colors hover:border-gold/60 hover:text-text sm:px-3"
                 >
                   <Scale className="size-3.5" aria-hidden />
-                  {t('profile.compare')}
+                  <span className="sr-only sm:not-sr-only">{t('profile.compare')}</span>
                 </Link>
-                <span className="text-xs text-muted" aria-live="polite">
+                <span className="basis-full text-xs text-muted sm:basis-auto" aria-live="polite">
                   {t('profile.updated', { ago: timeAgo(readyAt - (profile.updateIn ?? 0) - (profile.age ?? 0), now) })}
                   {cooling && !updating && <span className="num text-faint"> · {t('profile.nextUpdate', { time: waitLabel })}</span>}
                 </span>
@@ -169,10 +176,14 @@ function CopyLink() {
           /* clipboard blocked */
         }
       }}
-      className="inline-flex h-8 items-center gap-1.5 rounded border border-line-strong px-3 text-sm font-medium text-muted transition-colors hover:border-gold/60 hover:text-text"
+      title={t('profile.copyLink')}
+      className="inline-flex h-8 items-center gap-1.5 rounded border border-line-strong px-2.5 text-sm font-medium text-muted transition-colors hover:border-gold/60 hover:text-text sm:px-3"
     >
       {done ? <Check className="pop-in size-3.5 text-win" aria-hidden /> : <Link2 className="size-3.5" aria-hidden />}
-      <span aria-live="polite">{done ? t('profile.copied') : t('profile.copyLink')}</span>
+      {/* Icon-only on phones, except for the short "Copied" confirmation. */}
+      <span aria-live="polite" className={done ? undefined : 'sr-only sm:not-sr-only'}>
+        {done ? t('profile.copied') : t('profile.copyLink')}
+      </span>
     </button>
   );
 }

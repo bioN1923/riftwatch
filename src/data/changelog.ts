@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.50',
+    date: '2026-11-14',
+    items: ['Phones: a more compact profile header (smaller icon, Update, Copy link and Compare in one row) so your games and tabs start much higher on the screen.'],
+  },
+  {
     version: '3.49',
     date: '2026-11-14',
     items: ['Phones: on profiles, Solo/Duo and Flex ranks sit side by side so your games start higher up, and the champion page numbers (tier, win, pick and ban rate, games) line up in a neat grid.'],
