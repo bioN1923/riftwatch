@@ -17,3 +17,9 @@ Home on the live site:
 ## Checks
 - Typecheck clean, a11y `{}`.
 - Demo (`demo/home-lists-desktop.png`): favourite Faker#KR1 (EUNE) plus recent [Faker, Annie IRL (EUNE), Someone (EUW)]. The region shows **EUNE**, Recently viewed lists Annie IRL and Someone, and Faker appears once. After picking KR and reloading, it stays KR.
+
+## Live check (22:54)
+- Deployed automatically (EXIT CODE 0, 22:53:50).
+- Home: bioN1923#EUNE shows only under Favorites, and Recently viewed now lists five other players.
+- The region stays **EUW** in the owner's browser, because a region was saved there explicitly at some point (`rw:region = "euw1"`). That's the intended behaviour: a picked region always wins. New visitors get the follow-the-player default.
+- Screenshot: `live/home.jpg`.
