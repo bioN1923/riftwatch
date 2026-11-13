@@ -13,3 +13,8 @@ I went through the profile of bioN1923#EUNE: overview, an expanded match (post-g
 - 83 tests pass, typecheck clean, a11y `{}`.
 - Demo, Europe/Bucharest: the "22 minutes ago" row has the title "Friday, November 13 at 10:33 PM" and datetime `2026-11-13T20:33:36Z`.
 - The standard screenshots are in `demo/`. The browser tooltip itself doesn't show up in headless screenshots.
+
+## Live check (23:02)
+- Deployed automatically (EXIT CODE 0, 23:02:06).
+- bioN1923#EUNE: the first rows read "6 days ago" with titles "Saturday, November 7 at 10:00 PM", "…09:29 PM" and "…08:57 PM". These are game end times, Bucharest time.
+- The browser tooltip doesn't show up in screenshots, so the check was done on the page elements. Screenshot: `live/profile.jpg`.
