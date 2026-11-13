@@ -309,3 +309,25 @@ describe('champion lane curve and game-length trend', async () => {
     expect(lengthTrend(rows([0.6, 0.6, 0.5, 0.4, 0.4], 20))).toBe(null);
   });
 });
+
+describe('ban for your pool', async () => {
+  const { banSuggestions } = await import('../src/lib/draft');
+  const mu = (championId: number, games: number, winRate: number) => ({ championId, games, wins: Math.round(games * winRate), winRate, adjusted: (winRate * games + 12.5) / (games + 25), goldDiff15: null, csDiff15: null, xpDiff15: null });
+  const stats = (role: string, games: number, matchups: ReturnType<typeof mu>[]) => ({ role, summary: { games }, matchups }) as any;
+  it('bans the enemy that beats most of the pool, not one bad matchup', () => {
+    const s = new Map([
+      [1, stats('MIDDLE', 400, [mu(10, 60, 0.4), mu(11, 60, 0.3), mu(2, 50, 0.45)])],
+      [2, stats('MIDDLE', 400, [mu(10, 60, 0.42), mu(12, 60, 0.55)])],
+    ]);
+    const bans = banSuggestions([1, 2], s, 'MIDDLE');
+    expect(bans[0].championId).toBe(10); // beats both pool champions
+    expect(bans[0].against.map((x) => x.championId)).toEqual([1, 2]);
+    expect(bans.some((b) => b.championId === 2)).toBe(false); // never ban your own pool
+    expect(bans.some((b) => b.championId === 12)).toBe(false); // the pool beats it
+    expect(bans.every((b) => b.poolRate < 0.5)).toBe(true);
+  });
+  it('ignores matchups with too few games and champions not played in the role', () => {
+    const s = new Map([[1, stats('MIDDLE', 400, [mu(10, 5, 0.1)])], [2, stats('TOP', 400, [mu(11, 80, 0.2)])]]);
+    expect(banSuggestions([1, 2], s, 'MIDDLE')).toEqual([]);
+  });
+});

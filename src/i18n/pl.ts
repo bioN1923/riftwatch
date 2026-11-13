@@ -935,5 +935,11 @@ const dict: Record<string, string> = {
   "len.early": "Wygrywa najczęściej w krótkich grach.",
   "len.late": "Wygrywa tym częściej, im dłużej trwa gra.",
   "len.even": "Współczynnik zwycięstw jest stały niezależnie od długości gry.",
+  "draft.banTitle": "Bany pod twoją pulę",
+  "draft.banLead": "Przeciwnicy na {role}, z którymi twoi bohaterowie radzą sobie najgorzej w grach rankingowych na tym patchu.",
+  "draft.banRate": "Twoja pula wygrywa {rate}",
+  "draft.banHard": "Jak twoi bohaterowie radzą sobie z {name}",
+  "draft.banAnswers": "Zobacz odpowiedzi na {name}",
+  "draft.banNone": "Brak wyraźnego zagrożenia dla twojej puli: za mało gier rankingowych przeciwko niej.",
 };
 export default dict;

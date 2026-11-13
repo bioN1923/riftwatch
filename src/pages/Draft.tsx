@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { ChevronDown, Crosshair, Plus, Search, Swords, X } from 'lucide-react';
+import { Ban, ChevronDown, Crosshair, Plus, Search, Swords, X } from 'lucide-react';
 import type { ChampionStats } from '../../shared/types';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api } from '../lib/api';
 import { assets, champSlug, useStaticData } from '../lib/ddragon';
 import { pct } from '../lib/format';
+import { banSuggestions } from '../lib/draft';
 import { parseRiotId } from '../lib/riotId';
 import { me } from '../lib/stats';
 import { useRegion } from '../lib/storage';
@@ -103,6 +104,7 @@ export function DraftPage() {
       </div>
 
       {enemy != null && <Results enemy={enemy} role={role} pool={pool} />}
+      {pool.length > 0 && <BanPanel role={role} pool={pool} onPick={(id) => set({ enemy: id })} />}
     </div>
   );
 }
@@ -374,6 +376,61 @@ function Results({ enemy, role, pool }: { enemy: number; role: Role; pool: numbe
         )}
       </section>
     </div>
+  );
+}
+
+/** The enemy laners the player's pool does worst against: what to ban in champion select. */
+function BanPanel({ role, pool, onPick }: { role: Role; pool: number[]; onPick: (id: number) => void }) {
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  const qs = useQueries({
+    queries: pool.map((id) => ({
+      queryKey: ['champion', id, 'ranked', role, undefined],
+      queryFn: ({ signal }: { signal: AbortSignal }) => api.champion(id, { group: 'ranked', role }, signal),
+      staleTime: 5 * 60_000,
+    })),
+  });
+  if (qs.some((q) => q.isPending)) return <Skeleton className="mt-6 h-40" />;
+  const stats = new Map(pool.map((id, i) => [id, qs[i].data as ChampionStats | undefined]));
+  const bans = banSuggestions(pool, stats, role);
+  return (
+    <section className="panel mt-6 p-4" aria-labelledby="ban-h">
+      <h2 id="ban-h" className="panel-title flex items-center gap-1.5">
+        <Ban className="size-4 text-loss" aria-hidden /> {t('draft.banTitle')}
+      </h2>
+      <p className="mt-0.5 text-xs text-muted">{t('draft.banLead', { role: ROLE_LABEL[role] })}</p>
+      {bans.length ? (
+        <ol className="mt-3 grid gap-3 sm:grid-cols-3">
+          {bans.map((b) => {
+            const c = a.champion(b.championId);
+            return (
+              <li key={b.championId} className="rounded border border-line p-3">
+                <div className="flex items-center gap-3">
+                  <GameImg src={c.url} alt="" size={44} rounded="md" />
+                  <div className="min-w-0">
+                    <p className="truncate font-medium">{c.name}</p>
+                    <p className="num text-xs text-muted">{t.rich('draft.banRate', { rate: <b className="text-loss">{pct(b.poolRate, 1)}</b> })}</p>
+                  </div>
+                </div>
+                <ul className="mt-2 flex flex-wrap gap-1.5" aria-label={t('draft.banHard', { name: c.name })}>
+                  {b.against.map((x) => (
+                    <li key={x.championId} className="flex items-center gap-1 rounded border border-line px-1.5 py-0.5 text-[11px]" title={a.champion(x.championId).name}>
+                      <GameImg src={a.champion(x.championId).url} alt={a.champion(x.championId).name} size={18} rounded="sm" />
+                      <span className={clsx('num font-semibold', x.winRate >= 0.5 ? 'text-win' : 'text-loss')}>{pct(x.winRate)}</span>
+                    </li>
+                  ))}
+                </ul>
+                <button type="button" onClick={() => onPick(b.championId)} className="mt-2 text-xs text-gold underline underline-offset-2 hover:text-text">
+                  {t('draft.banAnswers', { name: c.name })}
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+      ) : (
+        <p className="mt-3 text-sm text-faint">{t('draft.banNone')}</p>
+      )}
+    </section>
   );
 }
 

@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.16](v3.16/CHANGES.md) | 13 Nov 2026 | Draft helper: "Ban for your pool", the enemy laners your champions do worst against |
 | [v3.15](v3.15/CHANGES.md) | 13 Nov 2026 | Phone navigation with icons and a Tools menu (multi-search, draft, compare); matchup lane charts wait for 10 games |
 | [v3.14](v3.14/CHANGES.md) | 13 Nov 2026 | Champion pages: lane curve over all opponents and a short-or-long-games verdict; sample note on matchup lane charts |
 | [v3.13](v3.13/CHANGES.md) | 13 Nov 2026 | Lane curves backfilled from older games; link-preview images for shared drafts and comparisons |

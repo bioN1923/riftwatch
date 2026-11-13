@@ -903,5 +903,11 @@ const dict: Record<string, string> = {
   "len.early": "Vence mais em partidas curtas.",
   "len.late": "Vence mais quanto mais longa a partida.",
   "len.even": "A taxa de vitória mantém-se estável em qualquer duração.",
+  "draft.banTitle": "Bans para o teu pool",
+  "draft.banLead": "Os adversários de {role} contra quem os teus campeões se saem pior em ranqueadas neste patch.",
+  "draft.banRate": "O teu pool vence {rate}",
+  "draft.banHard": "Como os teus campeões se saem contra {name}",
+  "draft.banAnswers": "Ver respostas a {name}",
+  "draft.banNone": "Ainda sem ameaça clara para o teu pool: não há partidas ranqueadas suficientes contra ele.",
 };
 export default dict;

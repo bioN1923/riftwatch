@@ -903,5 +903,11 @@ const en = {
   "len.early": "Wins most in short games.",
   "len.late": "Wins more the longer the game goes.",
   "len.even": "Win rate holds steady across game lengths.",
+  "draft.banTitle": "Ban for your pool",
+  "draft.banLead": "The {role} laners your champions do worst against in ranked games this patch.",
+  "draft.banRate": "Your pool wins {rate}",
+  "draft.banHard": "How your champions do against {name}",
+  "draft.banAnswers": "See answers to {name}",
+  "draft.banNone": "No clear threat to your pool yet: not enough ranked games against it.",
 };
 export default en;

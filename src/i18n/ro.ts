@@ -919,5 +919,11 @@ const dict: Record<string, string> = {
   "len.early": "Câștigă cel mai des în meciurile scurte.",
   "len.late": "Câștigă tot mai des cu cât meciul durează mai mult.",
   "len.even": "Rata de victorie rămâne constantă indiferent de durata meciului.",
+  "draft.banTitle": "Ce să interzici pentru pool-ul tău",
+  "draft.banLead": "Adversarii de {role} împotriva cărora campionii tăi se descurcă cel mai prost în meciurile ranked din acest patch.",
+  "draft.banRate": "Pool-ul tău câștigă {rate}",
+  "draft.banHard": "Cum se descurcă campionii tăi împotriva lui {name}",
+  "draft.banAnswers": "Vezi răspunsurile la {name}",
+  "draft.banNone": "Încă nicio amenințare clară pentru pool-ul tău: nu sunt destule meciuri ranked împotriva lui.",
 };
 export default dict;

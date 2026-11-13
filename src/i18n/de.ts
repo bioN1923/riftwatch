@@ -903,5 +903,11 @@ const dict: Record<string, string> = {
   "len.early": "Gewinnt am häufigsten in kurzen Spielen.",
   "len.late": "Gewinnt häufiger, je länger das Spiel dauert.",
   "len.even": "Die Siegquote bleibt über alle Spiellängen gleich.",
+  "draft.banTitle": "Bans für deinen Pool",
+  "draft.banLead": "Die {role}-Gegner, gegen die deine Champions in Ranglistenspielen dieses Patches am schlechtesten abschneiden.",
+  "draft.banRate": "Dein Pool gewinnt {rate}",
+  "draft.banHard": "So schneiden deine Champions gegen {name} ab",
+  "draft.banAnswers": "Antworten auf {name} ansehen",
+  "draft.banNone": "Noch keine klare Bedrohung für deinen Pool: zu wenige Ranglistenspiele dagegen.",
 };
 export default dict;
