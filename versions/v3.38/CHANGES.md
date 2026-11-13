@@ -23,3 +23,8 @@ On patch 16.22 (8,943 games), the movers showed Sylas +22.2% on 125 games and Lu
 ## Checks
 - Typecheck clean, a11y `{}`.
 - Demo screenshot `demo/movers-desktop.png` plus the standard set.
+
+## Live check (22:34)
+- Deployed automatically (EXIT CODE 0, 22:33:00).
+- The movers show the new subtitle and "127 → 125 games" on every row.
+- The order follows the sure change: Viego −9.2 on 677→532 games ranks above Aurora −10.8 on 215→221. Screenshot: `live/movers.jpg`.
