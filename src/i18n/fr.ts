@@ -853,7 +853,7 @@ const dict: Record<string, string> = {
   "draft.importing": "Recherche…",
   "draft.importNone": "Aucune partie en {role} dans les 20 dernières de ce joueur.",
   "draft.best": "Meilleures réponses à {enemy}",
-  "draft.bestLead": "Matchups de voie sur le patch {patch}, ajustés selon l’échantillon. Ouvrez-en un pour le matchup complet.",
+  "draft.bestLead": "Matchups de voie sur le patch {patch}. Les résultats solides passent avant les séries chanceuses sur peu de parties, et la petite fourchette sous chaque taux montre où se trouve probablement le vrai taux. Ouvrez-en un pour le matchup complet.",
   "draft.yours": "Dans votre pool",
   "draft.pick": "Votre meilleur choix : {champion}, {rate} contre lui.",
   "draft.emptyPool": "Ajoutez les champions que vous jouez pour voir lequel convient le mieux à cette voie.",
@@ -953,5 +953,6 @@ const dict: Record<string, string> = {
   "ms.duoTip": "Même équipe dans {games} de leurs parties classées récentes ({wins} gagnées) : probablement en duo",
   "lb.cutoff": "Joueurs en {tier} : {players} · le plus bas actuellement : {lp}",
   "lb.cutoffTip": "Le joueur le moins bien classé de ce palier aujourd’hui. Riot recalcule le vrai seuil une fois par jour, il peut donc différer un peu.",
+  "draft.rangeTip": "Sur {count} parties, le vrai taux de victoire est probablement entre {lo} et {hi}",
 };
 export default dict;

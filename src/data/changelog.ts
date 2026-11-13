@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.46',
+    date: '2026-11-13',
+    items: ['Draft helper: each answer shows the range its real win rate likely falls in (e.g. 50–78% on 40 games), is only green when that whole range beats 50%, and solid results rank above lucky streaks on few games.'],
+  },
+  {
     version: '3.45',
     date: '2026-11-13',
     items: ['Ladder: Challenger and Grandmaster show how many players are in the tier and the lowest LP in it right now, roughly what it takes to get in.'],

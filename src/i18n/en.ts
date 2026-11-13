@@ -853,7 +853,7 @@ const en = {
   "draft.importing": "Looking…",
   "draft.importNone": "No {role} games in that player’s last 20.",
   "draft.best": "Best answers to {enemy}",
-  "draft.bestLead": "Lane matchups on patch {patch}, adjusted for sample size. Open one for the full matchup.",
+  "draft.bestLead": "Lane matchups on patch {patch}. Solid results rank above lucky streaks on few games, and the small range under each rate is where the real win rate likely is. Open one for the full matchup.",
   "draft.yours": "From your pool",
   "draft.pick": "Your best pick: {champion}, {rate} against them.",
   "draft.emptyPool": "Add the champions you play to see which one fits this lane best.",
@@ -953,5 +953,6 @@ const en = {
   "ms.duoTip": "Same team in {games} of their recent ranked games ({wins} won): likely queued together",
   "lb.cutoff": "Players in {tier}: {players} · lowest right now: {lp}",
   "lb.cutoffTip": "The lowest-ranked player in this tier today. Riot recalculates the real promotion cutoff once a day, so it can differ a little.",
+  "draft.rangeTip": "Over {count} games the real win rate is likely between {lo} and {hi}",
 };
 export default en;

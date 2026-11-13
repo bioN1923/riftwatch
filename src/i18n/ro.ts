@@ -864,7 +864,7 @@ const dict: Record<string, string> = {
   "draft.importing": "Se caută…",
   "draft.importNone": "Niciun meci {role} în ultimele 20 ale acelui jucător.",
   "draft.best": "Cele mai bune răspunsuri la {enemy}",
-  "draft.bestLead": "Matchup-uri pe lane în patch-ul {patch}, ajustate după numărul de meciuri. Deschide unul pentru matchup-ul complet.",
+  "draft.bestLead": "Matchup-uri pe patch-ul {patch}. Rezultatele solide sunt înaintea seriilor norocoase pe puține meciuri, iar intervalul mic de sub fiecare rată arată unde e probabil rata reală. Deschide unul pentru tot matchup-ul.",
   "draft.yours": "Din pool-ul tău",
   "draft.pick": "Cea mai bună alegere a ta: {champion}, {rate} contra lui.",
   "draft.emptyPool": "Adaugă campionii pe care îi joci ca să vezi care se potrivește cel mai bine pe acest lane.",
@@ -971,5 +971,6 @@ const dict: Record<string, string> = {
   "ms.duoTip": "Aceeași echipă în {games} din meciurile clasate recente ({wins} câștigate): probabil au intrat împreună",
   "lb.cutoff": "Jucători în {tier}: {players} · cel mai jos acum: {lp}",
   "lb.cutoffTip": "Cel mai jos jucător din acest tier azi. Riot recalculează pragul real o dată pe zi, așa că poate diferi puțin.",
+  "draft.rangeTip": "Pe {count} meciuri, rata reală de victorie e probabil între {lo} și {hi}",
 };
 export default dict;

@@ -875,7 +875,7 @@ const dict: Record<string, string> = {
   "draft.importing": "Szukanie…",
   "draft.importNone": "Brak gier na roli {role} w ostatnich 20 tego gracza.",
   "draft.best": "Najlepsze odpowiedzi na {enemy}",
-  "draft.bestLead": "Matchupy na linii w patchu {patch}, skorygowane o liczbę gier. Otwórz jeden, aby zobaczyć cały matchup.",
+  "draft.bestLead": "Matchupy na linii w patchu {patch}. Pewne wyniki są wyżej niż szczęśliwe serie z kilku gier, a mały przedział pod każdym wynikiem pokazuje, gdzie prawdopodobnie jest prawdziwy współczynnik. Otwórz jeden, by zobaczyć cały matchup.",
   "draft.yours": "Z twojej puli",
   "draft.pick": "Twój najlepszy wybór: {champion}, {rate} przeciwko niemu.",
   "draft.emptyPool": "Dodaj bohaterów, których grasz, aby zobaczyć, który najlepiej pasuje na tę linię.",
@@ -989,5 +989,6 @@ const dict: Record<string, string> = {
   "ms.duoTip": "Ta sama drużyna w {games} ostatnich grach rankingowych ({wins} wygranych): pewnie grają razem",
   "lb.cutoff": "Gracze w {tier}: {players} · najniżej teraz: {lp}",
   "lb.cutoffTip": "Najniżej sklasyfikowany gracz w tej randze dziś. Riot przelicza prawdziwy próg raz dziennie, więc może się nieco różnić.",
+  "draft.rangeTip": "Przy {count} grach prawdziwy współczynnik zwycięstw jest prawdopodobnie między {lo} a {hi}",
 };
 export default dict;

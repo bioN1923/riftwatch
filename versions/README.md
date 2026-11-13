@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.46](v3.46/CHANGES.md) | 13 Nov 2026 | Draft answers: 95% likely range under each win rate, green/red only when the range clears 50%, ranked by cautious rate |
 | [v3.45](v3.45/CHANGES.md) | 13 Nov 2026 | Ladder: players in tier + lowest LP right now (Challenger/GM); API-usage page explains premade tags; no premades in live game (policy) |
 | [v3.44](v3.44/CHANGES.md) | 13 Nov 2026 | Multi-search premade detection: "Premade with X" when two lobby players shared a team in 2+ recent ranked games |
 | [v3.43](v3.43/CHANGES.md) | 13 Nov 2026 | Compare: role-aware scoring (different main roles → only win rate/KDA scored, with a note); live familiarity tags off in random-champion modes |

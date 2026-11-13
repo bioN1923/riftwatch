@@ -45,3 +45,22 @@ export function banSuggestions(pool: number[], stats: Map<number, ChampionStats 
     .sort((x, y) => x.poolRate - y.poolRate)
     .slice(0, limit);
 }
+
+/** Same prior the server uses to shrink matchup win rates (MATCHUP_K). */
+const MATCHUP_K = 25;
+
+/**
+ * The win rate a matchup answer can be fairly sure of: the sample-adjusted rate minus about one
+ * standard error, the same rule as safe blind picks. Ranks "65% on 40 games" below "58% on 400".
+ */
+export const cautiousRate = (adjusted: number, games: number) => adjusted - 0.5 / Math.sqrt(games + MATCHUP_K);
+
+/** 95% Wilson interval for a win rate over `games` games: where the true rate likely is. */
+export function winRange(winRate: number, games: number): [number, number] {
+  if (!games) return [0, 1];
+  const z = 1.96;
+  const d = 1 + (z * z) / games;
+  const centre = (winRate + (z * z) / (2 * games)) / d;
+  const half = (z * Math.sqrt((winRate * (1 - winRate)) / games + (z * z) / (4 * games * games))) / d;
+  return [Math.max(0, centre - half), Math.min(1, centre + half)];
+}

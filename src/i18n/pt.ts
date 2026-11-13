@@ -853,7 +853,7 @@ const dict: Record<string, string> = {
   "draft.importing": "Buscando…",
   "draft.importNone": "Nenhuma partida de {role} nas últimas 20 desse jogador.",
   "draft.best": "Melhores respostas a {enemy}",
-  "draft.bestLead": "Confrontos de rota no patch {patch}, ajustados pelo tamanho da amostra. Abra um para ver o confronto completo.",
+  "draft.bestLead": "Confrontos de rota no patch {patch}. Resultados sólidos vêm antes de sequências de sorte com poucas partidas, e o pequeno intervalo sob cada taxa mostra onde a taxa real provavelmente está. Abra um para ver o confronto completo.",
   "draft.yours": "Do seu pool",
   "draft.pick": "Sua melhor escolha: {champion}, {rate} contra ele.",
   "draft.emptyPool": "Adicione os campeões que você joga para ver qual se encaixa melhor nesta rota.",
@@ -953,5 +953,6 @@ const dict: Record<string, string> = {
   "ms.duoTip": "Mesmo time em {games} das partidas ranqueadas recentes ({wins} vencidas): provavelmente na fila juntos",
   "lb.cutoff": "Jogadores em {tier}: {players} · o mais baixo agora: {lp}",
   "lb.cutoffTip": "O jogador mais baixo deste nível hoje. A Riot recalcula o corte real uma vez por dia, então pode variar um pouco.",
+  "draft.rangeTip": "Em {count} partidas, a taxa real de vitória provavelmente está entre {lo} e {hi}",
 };
 export default dict;

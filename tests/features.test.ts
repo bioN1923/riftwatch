@@ -701,3 +701,19 @@ describe('premades in a multi-searched lobby', async () => {
     expect(d.size).toBe(0);
   });
 });
+
+describe('draft answers: how sure is a matchup win rate', async () => {
+  const { cautiousRate, winRange } = await import('../src/lib/draft');
+  it('ranks a solid answer above a lucky small sample', () => {
+    // 65% raw on 40 games (shrunk to ~59%) vs 57% on 400 games (shrunk to ~56.6%).
+    expect(cautiousRate(0.592, 40)).toBeLessThan(cautiousRate(0.566, 400));
+  });
+  it('gives a likely range that narrows with games', () => {
+    const [lo40, hi40] = winRange(0.65, 40);
+    expect(lo40).toBeLessThan(0.5); // 65% on 40 games could still be a coin flip
+    expect(hi40).toBeGreaterThan(0.75);
+    const [lo400] = winRange(0.57, 400);
+    expect(lo400).toBeGreaterThan(0.5); // 57% on 400 games is a real edge
+    expect(winRange(0.5, 0)).toEqual([0, 1]);
+  });
+});

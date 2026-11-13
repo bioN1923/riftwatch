@@ -853,7 +853,7 @@ const dict: Record<string, string> = {
   "draft.importing": "Suche …",
   "draft.importNone": "Keine {role}-Spiele in den letzten 20 dieses Spielers.",
   "draft.best": "Beste Antworten auf {enemy}",
-  "draft.bestLead": "Lane-Matchups auf Patch {patch}, nach Stichprobe gewichtet. Öffne eines für das ganze Matchup.",
+  "draft.bestLead": "Lane-Matchups auf Patch {patch}. Solide Ergebnisse stehen vor Glückssträhnen mit wenigen Spielen, und der kleine Bereich unter jeder Rate zeigt, wo die echte Siegrate wahrscheinlich liegt. Öffne eines für das ganze Matchup.",
   "draft.yours": "Aus deinem Pool",
   "draft.pick": "Dein bester Pick: {champion}, {rate} gegen diesen Gegner.",
   "draft.emptyPool": "Füge deine Champions hinzu, um zu sehen, welcher am besten in diese Lane passt.",
@@ -953,5 +953,6 @@ const dict: Record<string, string> = {
   "ms.duoTip": "Im selben Team in {games} ihrer letzten Ranglistenspiele ({wins} gewonnen): vermutlich zusammen in der Warteschlange",
   "lb.cutoff": "Spieler in {tier}: {players} · niedrigster gerade: {lp}",
   "lb.cutoffTip": "Der am niedrigsten platzierte Spieler dieser Stufe heute. Riot berechnet die echte Grenze einmal täglich neu, sie kann also leicht abweichen.",
+  "draft.rangeTip": "Bei {count} Spielen liegt die echte Siegrate wahrscheinlich zwischen {lo} und {hi}",
 };
 export default dict;

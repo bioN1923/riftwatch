@@ -8,7 +8,7 @@ import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api } from '../lib/api';
 import { assets, champSlug, useStaticData } from '../lib/ddragon';
 import { pct } from '../lib/format';
-import { banSuggestions } from '../lib/draft';
+import { banSuggestions, cautiousRate, winRange } from '../lib/draft';
 import { champHit } from '../lib/champSearch';
 import { readPool, savePool } from '../lib/pool';
 import { parseRiotId } from '../lib/riotId';
@@ -327,10 +327,14 @@ function Results({ enemy, role, pool }: { enemy: number; role: Role; pool: numbe
     goldDiff15: m.goldDiff15 == null ? null : -m.goldDiff15,
   }));
   // Only matchups that actually favour us count as answers.
-  const best = answers.filter((x) => x.games >= min && x.adjusted >= 0.5).sort((x, y) => y.adjusted - x.adjusted).slice(0, 8);
+  // Ranked by what each answer can be fairly sure of, so a lucky 40 games doesn't top 400 solid ones.
+  const best = answers
+    .filter((x) => x.games >= min && x.adjusted >= 0.5)
+    .sort((x, y) => cautiousRate(y.adjusted, y.games) - cautiousRate(x.adjusted, x.games))
+    .slice(0, 8);
   const mine = pool
     .map((id) => answers.find((x) => x.championId === id) ?? { championId: id, games: 0, winRate: 0, adjusted: 0, goldDiff15: null })
-    .sort((x, y) => (y.games >= min ? y.adjusted : -1) - (x.games >= min ? x.adjusted : -1));
+    .sort((x, y) => (y.games >= min ? cautiousRate(y.adjusted, y.games) : -1) - (x.games >= min ? cautiousRate(x.adjusted, x.games) : -1));
   const top = mine.find((x) => x.games >= min);
 
   if (!best.length && !mine.length) {
@@ -468,6 +472,23 @@ function BanPanel({ role, pool, onPick }: { role: Role; pool: number[]; onPick: 
   );
 }
 
+/**
+ * A matchup win rate with its likely range underneath. Green or red only when the whole range is on
+ * one side of 50%; otherwise it could be chance, so it stays neutral.
+ */
+function RateWithRange({ rate, games }: { rate: number; games: number }) {
+  const [lo, hi] = winRange(rate, games);
+  const tone = lo > 0.5 ? 'text-win' : hi < 0.5 ? 'text-loss' : 'text-text';
+  return (
+    <span className="text-right" title={t('draft.rangeTip', { lo: pct(lo), hi: pct(hi), count: games })}>
+      <span className={clsx('num block text-sm font-bold', tone)}>{pct(rate, 1)}</span>
+      <span className="num block text-[10px] text-faint">
+        {Math.round(lo * 100)}–{Math.round(hi * 100)}%
+      </span>
+    </span>
+  );
+}
+
 function AnswerList({ list, enemy, role, min }: { list: Answer[]; enemy: number; role: Role; min: number }) {
   const { data: sd } = useStaticData();
   const a = assets(sd);
@@ -494,7 +515,7 @@ function AnswerList({ list, enemy, role, min }: { list: Answer[]; enemy: number;
                 </span>
               </span>
               {enough ? (
-                <span className={clsx('num text-right text-sm font-bold', x.winRate >= 0.5 ? 'text-win' : 'text-loss')}>{pct(x.winRate, 1)}</span>
+                <RateWithRange rate={x.winRate} games={x.games} />
               ) : (
                 <span className="text-right text-xs text-faint">–</span>
               )}
