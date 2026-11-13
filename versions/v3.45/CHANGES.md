@@ -17,3 +17,8 @@ The loop prompt suggested bringing v3.44's premade detection to the live game. I
 - 90 tests pass, typecheck clean, a11y `{}`.
 - Demo: Challenger "300 · 903 LP", Grandmaster "700 · 451 LP", Master shows no line.
 - Screenshots: `demo/ladder-cutoff-desktop.png` and `demo/ladder-cutoff-phone.png`.
+
+## Live check (23:40)
+- Deployed automatically (EXIT CODE 0, 23:39:17).
+- EUW Solo: "Players in Challenger: **300** · lowest right now: **2,273 LP**" and "Players in Grandmaster: **700** · lowest right now: **1,517 LP**".
+- Screenshot: `live/ladder.jpg`.
