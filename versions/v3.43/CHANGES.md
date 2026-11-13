@@ -16,3 +16,9 @@ On the live site I compared bioN1923 (Jungle in 20 of 20 games) with koga40 (Top
 ## Checks
 - Typecheck clean, a11y `{}`.
 - Demo Caps (Jungle) vs Faker (Support): the note shows, only WR and KDA are highlighted, and the tally reads "Caps better in 0, Faker in 2" (`demo/compare-roles-differ.png`).
+
+## Live check (23:21)
+- Deployed automatically (EXIT CODE 0, 23:20:19).
+- bioN1923 vs koga40: the note "bioN1923 mostly plays Jungle and koga40 Top…" is shown.
+- The tally went from "better in 7 / 5" to **"bioN1923 better in 0, koga40 in 2"**. Only win rate (58%) and KDA (2.27) are highlighted, both for koga40.
+- Screenshot: `live/compare.jpg`.
