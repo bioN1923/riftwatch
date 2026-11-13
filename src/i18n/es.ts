@@ -939,5 +939,6 @@ const dict: Record<string, string> = {
   "cp.didYouMean": "¿Quisiste decir {name}?",
   "mp.didYouMean": "¿Quisiste decir {a} contra {b}?",
   "mv.gamesTip": "Partidas parche anterior → este parche",
+  "mv.noise": "dentro de la variación normal para tantas partidas",
 };
 export default dict;

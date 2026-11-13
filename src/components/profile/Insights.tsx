@@ -108,7 +108,7 @@ export function PatchWatch({
                   <span className="num text-sm font-semibold">
                     {pct(row!.winRate, 1)}
                   </span>
-                  <PatchDelta now={row!.winRate} before={row!.prevWinRate} />
+                  <PatchDelta now={row!.winRate} before={row!.prevWinRate} games={row!.games} prevGames={row!.prevGames} />
                 </span>
               </Link>
             </li>

@@ -939,5 +939,6 @@ const en = {
   "cp.didYouMean": "Did you mean {name}?",
   "mp.didYouMean": "Did you mean {a} vs {b}?",
   "mv.gamesTip": "Games last patch → this patch",
+  "mv.noise": "within normal swing for this many games",
 };
 export default en;

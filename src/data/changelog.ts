@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.39',
+    date: '2026-11-13',
+    items: ['Tier list and "Your champions": the win-rate change since last patch is only green or red when it\'s bigger than chance for the number of games. Smaller changes are grey (hover for details).'],
+  },
+  {
     version: '3.38',
     date: '2026-11-13',
     items: ['Patch movers are stricter: a change has to be too big to be chance (about twice the normal swing for its number of games), solid changes rank above big swings on few games, and each row shows the games on both patches.'],

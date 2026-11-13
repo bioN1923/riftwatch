@@ -612,3 +612,12 @@ describe('server redirects for mistyped champion addresses', async () => {
     expect(champAddressFix('/champions', '', L)).toBe(null);
   });
 });
+
+describe('win-rate change since last patch', async () => {
+  const { realChange } = await import('../src/components/ui/PatchDelta');
+  it('only calls a change real when it is beyond normal swing', () => {
+    expect(realChange(0.575, 0.503, 207, 180)).toBe(false); // +7.2 on ~200 games a side: SE 5.1 points, 1.4 SE
+    expect(realChange(0.575, 0.503, 2000, 1800)).toBe(true); // the same change on 10× the games: 4.4 SE
+    expect(realChange(0.6, 0.5)).toBe(true); // no game counts: can't tell, so trust it
+  });
+});

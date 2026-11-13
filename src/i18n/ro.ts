@@ -957,5 +957,6 @@ const dict: Record<string, string> = {
   "cp.didYouMean": "Te referi la {name}?",
   "mp.didYouMean": "Te referi la {a} vs {b}?",
   "mv.gamesTip": "Meciuri patch-ul trecut → patch-ul acesta",
+  "mv.noise": "în limitele variației normale pentru atâtea meciuri",
 };
 export default dict;

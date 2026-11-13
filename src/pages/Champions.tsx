@@ -243,7 +243,7 @@ export function ChampionsPage() {
                         <WinRateBar value={r.winRate} />
                         <span className="flex w-12 flex-col items-end leading-tight">
                           <span className={clsx('num font-semibold', r.winRate >= 0.5 ? 'text-text' : 'text-muted')}>{pct(r.winRate, 1)}</span>
-                          <PatchDelta now={r.winRate} before={r.prevWinRate} />
+                          <PatchDelta now={r.winRate} before={r.prevWinRate} games={r.games} prevGames={r.prevGames} />
                         </span>
                       </span>
                     </td>
