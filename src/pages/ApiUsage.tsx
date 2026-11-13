@@ -131,6 +131,10 @@ export function ApiUsagePage() {
         <li>Custom games (queue 0) are never shown in public match history.</li>
         <li>Players are shown by their current Riot ID only; an old Riot ID is dropped from search as soon as we see the new one.</li>
         <li>Multi-search only looks up Riot IDs the visitor types or pastes. It never reveals the names ranked champion select hides.</li>
+        <li>
+          Multi-search&rsquo;s &ldquo;Premade with&rdquo; tags come only from public match history (the same recent games anyone can open on those players&rsquo;
+          profiles), never from the lobby or a live game. The live game view doesn&rsquo;t mark premades.
+        </li>
         <li>Deletion requests that Riot forwards are handled by deleting the player’s stored data (search entry, rank history, champion lists).</li>
         <li>The site is free. If ads are added, they will follow Riot’s monetisation rules and ask visitors for consent first.</li>
       </L>

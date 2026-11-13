@@ -987,5 +987,7 @@ const dict: Record<string, string> = {
   "cmp.rolesDiffer": "{a} gra głównie {ra}, a {b} {rb}. CS, obrażenia, wizja i zabójstwa mocno zależą od roli, więc tutaj zwycięzcę mają tylko współczynnik zwycięstw i KDA.",
   "ms.duo": "Premade z {name}",
   "ms.duoTip": "Ta sama drużyna w {games} ostatnich grach rankingowych ({wins} wygranych): pewnie grają razem",
+  "lb.cutoff": "Gracze w {tier}: {players} · najniżej teraz: {lp}",
+  "lb.cutoffTip": "Najniżej sklasyfikowany gracz w tej randze dziś. Riot przelicza prawdziwy próg raz dziennie, więc może się nieco różnić.",
 };
 export default dict;

@@ -424,6 +424,8 @@ export interface Ladder {
   queue: 'solo' | 'flex';
   tier: 'challenger' | 'grandmaster' | 'master';
   total: number;
+  /** LP of the lowest player in this tier right now: roughly what it takes to stay in it. */
+  minLp: number | null;
   page: number;
   pageSize: number;
   entries: LadderEntry[];

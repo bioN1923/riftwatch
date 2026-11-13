@@ -178,6 +178,16 @@ export function LeaderboardPage() {
         </div>
       ) : (
         <>
+          {/* Like the "LP cutoffs" on other ladders, but only what we can see: today's lowest LP in the tier. */}
+          {q.data.minLp != null && tier !== 'master' && (
+            <p className="mt-3 text-xs text-muted" title={t('lb.cutoffTip')}>
+              {t.rich('lb.cutoff', {
+                players: <span className="num font-semibold text-text">{thousands(q.data.total)}</span>,
+                tier: TIERS.find((x) => x.id === tier)?.label() ?? '',
+                lp: <span className="num font-semibold text-text">{t('common.lp', { lp: thousands(q.data.minLp) })}</span>,
+              })}
+            </p>
+          )}
           <div className={clsx('mt-2 overflow-x-auto transition-opacity', q.isPlaceholderData && 'opacity-60')}>
             <table className="w-full min-w-[640px] text-sm">
               <caption className="sr-only">

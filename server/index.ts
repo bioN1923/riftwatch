@@ -588,7 +588,7 @@ app.get(
     );
     const missing = entries.some((e) => !e.gameName && !privacy.isHidden(e.puuid));
     res.setHeader('Cache-Control', missing ? 'no-store' : 'public, max-age=120');
-    res.json({ platform: p.id, queue, tier, total: all.length, page, pageSize: LADDER_PAGE, entries, namesPending: missing } satisfies Ladder);
+    res.json({ platform: p.id, queue, tier, total: all.length, minLp: all.length ? all[all.length - 1].lp : null, page, pageSize: LADDER_PAGE, entries, namesPending: missing } satisfies Ladder);
   }),
 );
 

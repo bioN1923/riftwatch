@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.45',
+    date: '2026-11-13',
+    items: ['Ladder: Challenger and Grandmaster show how many players are in the tier and the lowest LP in it right now, roughly what it takes to get in.'],
+  },
+  {
     version: '3.44',
     date: '2026-11-13',
     items: ['Multi-search spots premades: players in the lobby who were on the same team in 2+ of their recent ranked games get a "Premade with …" tag (hover for the record).'],

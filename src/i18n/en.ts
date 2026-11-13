@@ -951,5 +951,7 @@ const en = {
   "cmp.rolesDiffer": "{a} mostly plays {ra} and {b} {rb}. CS, damage, vision and kill numbers depend a lot on role, so only win rate and KDA get a winner here.",
   "ms.duo": "Premade with {name}",
   "ms.duoTip": "Same team in {games} of their recent ranked games ({wins} won): likely queued together",
+  "lb.cutoff": "Players in {tier}: {players} · lowest right now: {lp}",
+  "lb.cutoffTip": "The lowest-ranked player in this tier today. Riot recalculates the real promotion cutoff once a day, so it can differ a little.",
 };
 export default en;
