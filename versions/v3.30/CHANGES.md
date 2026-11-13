@@ -20,3 +20,8 @@
 ## Checks
 - 73 tests pass; typecheck, build and a11y check clean.
 - Playwright (desktop and iPhone 13), demo Master ladder: "FrostSpark65#EUW" → `?tier=master&page=3&hl=107`, row 107 highlighted; "nobody#X" → the not-found message (`demo/find-*.png`).
+
+## Live check (after deploy)
+- The user ran `deploy.bat`: finished 13 Nov 2026 18:58 (EXIT CODE 0).
+- EUW Challenger: typing "Afroboi#depu" and pressing Enter → `?page=2&hl=51`, row 51 highlighted (`live/ladder-find.jpg`).
+- A made-up Riot ID → `{ rank: null }`, so the page shows the not-found message.
