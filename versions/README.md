@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.22](v3.22/CHANGES.md) | 13 Nov 2026 | Collector: only players with new games, Master tier added: more fresh games per API call |
 | [v3.21](v3.21/CHANGES.md) | 13 Nov 2026 | Respects "reduce motion": no animations for visitors who ask their system for less motion |
 | [v3.20](v3.20/CHANGES.md) | 13 Nov 2026 | Phone match cards wrap cleanly; Tools menu keyboard focus; patch movers skip changes within sampling noise |
 | [v3.19](v3.19/CHANGES.md) | 13 Nov 2026 | Tier list: small hot samples no longer reach S+ (cautious score) |

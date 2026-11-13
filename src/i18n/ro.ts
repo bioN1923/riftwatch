@@ -883,7 +883,7 @@ const dict: Record<string, string> = {
   "home.tool.ladder": "Vârful clasamentului ranked în fiecare regiune.",
   "draft.small": "eșantion mic",
   "bench.title": "Comparat cu elo-ul înalt",
-  "bench.sub": "Ultimele tale {games} meciuri {role} pe Summoner’s Rift, lângă media jucătorilor {role} din meciurile Challenger și Grandmaster pe patch-ul {patch}.",
+  "bench.sub": "Ultimele tale {games} meciuri {role} pe Summoner’s Rift, lângă media jucătorilor {role} din meciurile Master, Grandmaster și Challenger pe patch-ul {patch}.",
   "bench.role": "Rolul comparat",
   "bench.cs": "CS pe minut",
   "bench.gold": "Gold pe minut",

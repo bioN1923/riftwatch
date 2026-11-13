@@ -871,7 +871,7 @@ const dict: Record<string, string> = {
   "home.tool.ladder": "O topo do ranqueado em cada região.",
   "draft.small": "amostra pequena",
   "bench.title": "Comparado com elo alto",
-  "bench.sub": "Suas últimas {games} partidas de {role} no Summoner’s Rift, ao lado da média de {role} em partidas Challenger e Grão-Mestre no patch {patch}.",
+  "bench.sub": "Suas últimas {games} partidas de {role} no Summoner’s Rift, ao lado da média de {role} em partidas Mestre, Grão-Mestre e Challenger no patch {patch}.",
   "bench.role": "Rota para comparar",
   "bench.cs": "CS por minuto",
   "bench.gold": "Ouro por minuto",

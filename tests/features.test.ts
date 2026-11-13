@@ -400,3 +400,37 @@ describe('patch movers noise filter', async () => {
     expect(m.up.map((x) => x.championId)).toEqual([2]);
   });
 });
+
+describe('collector visits only players with new games', async () => {
+  const { vi } = await import('vitest');
+  const { startCrawler } = await import('../server/crawler');
+  const { ChampionStatsStore } = await import('../server/champStats');
+  it('skips unchanged ladder players and asks for just the new games', async () => {
+    vi.useFakeTimers();
+    try {
+      const games: Record<string, number> = { a: 100, b: 50, c: 70 };
+      const calls: { puuid: string; count: number }[] = [];
+      const riot = {
+        headroom: () => 1,
+        apexLeague: async (_p: unknown, tier: string) => (tier === 'master' ? { entries: Object.entries(games).map(([puuid, n]) => ({ puuid, wins: n, losses: 0 })) } : { entries: [] }),
+        matchIds: async (_p: unknown, puuid: string, _s: number, count: number, o: { queue: number }) => {
+          if (o.queue === 420) calls.push({ puuid, count });
+          return [];
+        },
+        match: async () => ({}),
+        timeline: async () => ({}),
+      } as any;
+      const stats = new ChampionStatsStore(null);
+      startCrawler({ riot, platform: { id: 'euw1', regional: 'europe', label: 'EUW' } as any, stats, lastUserRequest: () => 0, paceMs: 0 });
+      await vi.advanceTimersByTimeAsync(100);
+      // First pass: everyone, last 10 games each.
+      expect(calls.filter((c) => c.count === 10).map((c) => c.puuid).sort()).toEqual(['a', 'b', 'c']);
+      calls.length = 0;
+      games.b = 53; // b played 3 games since
+      await vi.advanceTimersByTimeAsync(3 * 60_000);
+      expect(calls).toEqual([{ puuid: 'b', count: 3 }]);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});

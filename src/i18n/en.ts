@@ -871,7 +871,7 @@ const en = {
   "home.tool.ladder": "The top of ranked in every region.",
   "draft.small": "small sample",
   "bench.title": "Compared with high elo",
-  "bench.sub": "Your last {games} {role} games on Summoner’s Rift, next to the average {role} in Challenger and Grandmaster games on patch {patch}.",
+  "bench.sub": "Your last {games} {role} games on Summoner’s Rift, next to the average {role} in Master, Grandmaster and Challenger games on patch {patch}.",
   "bench.role": "Role to compare",
   "bench.cs": "CS per minute",
   "bench.gold": "Gold per minute",
