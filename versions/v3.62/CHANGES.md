@@ -13,3 +13,6 @@ User feedback: "It should be a popup on dot containing events. In the list is ha
 
 ## Checks
 tsc clean · 105 tests pass · a11y `{}` · demo: `popup-desktop-*`, `popup-phone-*` (corner kill, Baron diamond, mid-map kill; Esc closes each).
+
+## Live check (2026-11-14 08:11)
+- Deploy finished cleanly. On bioN1923's third match, clicking a mid-map dot opened the popup on the dot: "Around 28:17 · Shyvana killed Lillia · Nasus killed Shyvana · with Lillia". Screenshot: `live/map-popup.jpg`.
