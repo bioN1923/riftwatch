@@ -1099,5 +1099,6 @@ const dict: Record<string, string> = {
   "cmp.clearNote_few": "Złoto oznacza wyraźną przewagę, większą niż zwykłe wahania między grami. {count} inne wiersze się różnią, ale przy tak małej liczbie gier to za mało, by rozstrzygnąć.",
   "cmp.clearNote_many": "Złoto oznacza wyraźną przewagę, większą niż zwykłe wahania między grami. {count} innych wierszy się różni, ale przy tak małej liczbie gier to za mało, by rozstrzygnąć.",
   "cmp.clearNote_other": "Złoto oznacza wyraźną przewagę, większą niż zwykłe wahania między grami. {count} innego wiersza się różni, ale przy tak małej liczbie gier to za mało, by rozstrzygnąć.",
+  "cmp.rolesFlex": "{name} gra na kilku rolach (najczęściej {role}, {share} gier). CS, obrażenia, wizja i zabójstwa mocno zależą od roli, więc zwycięzcę wyłaniają tu tylko współczynnik wygranych i KDA.",
 };
 export default dict;

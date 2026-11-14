@@ -1074,5 +1074,6 @@ const dict: Record<string, string> = {
   "cmp.clearNote_one": "Auriul marchează un avantaj clar, mai mare decât variațiile obișnuite de la meci la meci. Încă {count} rând diferă, dar e prea strâns pentru atât de puține meciuri.",
   "cmp.clearNote_few": "Auriul marchează un avantaj clar, mai mare decât variațiile obișnuite de la meci la meci. Încă {count} rânduri diferă, dar sunt prea strânse pentru atât de puține meciuri.",
   "cmp.clearNote_other": "Auriul marchează un avantaj clar, mai mare decât variațiile obișnuite de la meci la meci. Încă {count} de rânduri diferă, dar sunt prea strânse pentru atât de puține meciuri.",
+  "cmp.rolesFlex": "{name} joacă mai multe roluri (cel mai des {role}, {share} din meciuri). CS-ul, damage-ul, viziunea și kill-urile depind mult de rol, așa că aici doar rata de victorii și KDA-ul au un câștigător.",
 };
 export default dict;

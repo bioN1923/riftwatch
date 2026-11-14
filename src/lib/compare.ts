@@ -138,5 +138,32 @@ export function differentRoles(a: Pick<PlayerSummary, 'games' | 'ov'>, b: Pick<P
   return ra && rb && ra !== rb ? [ra, rb] : null;
 }
 
+/** The role a player plays most, with its share of their games (null with no games). */
+export function topRole(s: Pick<PlayerSummary, 'games' | 'ov'>): { role: string; share: number } | null {
+  if (!s.games) return null;
+  const [role, n] = Object.entries(s.ov.roles).sort((x, y) => y[1] - x[1])[0] ?? [];
+  return role ? { role, share: n / s.games } : null;
+}
+
+export type RoleGap =
+  | { kind: 'different'; ra: string; rb: string }
+  /** `who` has no clear main role (under 60% in one role); `role`/`share` is their most played. */
+  | { kind: 'flex'; who: 'a' | 'b'; role: string; share: number };
+
+/**
+ * Why role-dependent rows can't be scored fairly, if they can't: the two mostly play different
+ * roles, or one of them spreads their games over several roles and their most played role isn't
+ * the other's. Two players whose most played role is the same compare fairly.
+ */
+export function roleGap(a: Pick<PlayerSummary, 'games' | 'ov'>, b: Pick<PlayerSummary, 'games' | 'ov'>): RoleGap | null {
+  const ta = topRole(a);
+  const tb = topRole(b);
+  if (!ta || !tb || ta.role === tb.role) return null;
+  if (ta.share >= 0.6 && tb.share >= 0.6) return { kind: 'different', ra: ta.role, rb: tb.role };
+  const who = ta.share < tb.share ? 'a' : 'b';
+  const t = who === 'a' ? ta : tb;
+  return { kind: 'flex', who, role: t.role, share: t.share };
+}
+
 /** Rows that compare fairly across roles. */
 export const ROLE_NEUTRAL = new Set(['wr', 'kda']);

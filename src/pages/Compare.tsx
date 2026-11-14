@@ -11,7 +11,7 @@ import { decimal, formatKda, kdaRatio, kdaTone, pct, regionName, thousands, tier
 import { fromSlug, parseRiotId, profilePath, querySlug, type RiotId } from '../lib/riotId';
 import { useFavorites, useRecent, useRegion, type SavedPlayer } from '../lib/storage';
 import { me, result } from '../lib/stats';
-import { clearEdge, differentRoles, ROLE_NEUTRAL, summarize, together, type PlayerSummary } from '../lib/compare';
+import { clearEdge, ROLE_NEUTRAL, roleGap, summarize, together, type PlayerSummary } from '../lib/compare';
 import { GameImg } from '../components/ui/GameImg';
 import { ROLE_LABEL, RoleIcon } from '../components/ui/RoleIcon';
 import { ErrorState, Skeleton } from '../components/ui/States';
@@ -402,9 +402,9 @@ function Metrics({ a, b, nameA, nameB }: { a: PlayerSummary; b: PlayerSummary; n
   let winsA = 0;
   let winsB = 0;
   let close = 0;
-  // A jungler's CS or a support's damage isn't a fair fight: with different main roles, only
-  // role-neutral rows get a winner.
-  const roles = differentRoles(a, b);
+  // A jungler's CS or a support's damage isn't a fair fight: with different main roles, or when one
+  // player is spread over several roles, only role-neutral rows get a winner.
+  const roles = roleGap(a, b);
   const lines = rows.map((r) => {
     const va = r.get(a);
     const vb = r.get(b);
@@ -438,7 +438,9 @@ function Metrics({ a, b, nameA, nameB }: { a: PlayerSummary; b: PlayerSummary; n
       {close > 0 && <p className="mt-1 text-xs text-faint">{t('cmp.clearNote', { count: close })}</p>}
       {roles && (
         <p className="mt-2 rounded border border-line bg-raised px-3 py-2 text-xs text-muted">
-          {t('cmp.rolesDiffer', { a: nameA, ra: ROLE_LABEL[roles[0]], b: nameB, rb: ROLE_LABEL[roles[1]] })}
+          {roles.kind === 'different'
+            ? t('cmp.rolesDiffer', { a: nameA, ra: ROLE_LABEL[roles.ra], b: nameB, rb: ROLE_LABEL[roles.rb] })
+            : t('cmp.rolesFlex', { name: roles.who === 'a' ? nameA : nameB, role: ROLE_LABEL[roles.role], share: pct(roles.share) })}
         </p>
       )}
       <table className="mt-3 w-full text-sm">

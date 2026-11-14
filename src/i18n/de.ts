@@ -1049,5 +1049,6 @@ const dict: Record<string, string> = {
   "wc.goalOverview": "Übersicht",
   "cmp.clearNote_one": "Gold markiert einen klaren Vorsprung, größer als die üblichen Schwankungen von Spiel zu Spiel. {count} weitere Zeile weicht ab, ist bei so wenigen Spielen aber zu knapp.",
   "cmp.clearNote_other": "Gold markiert einen klaren Vorsprung, größer als die üblichen Schwankungen von Spiel zu Spiel. {count} weitere Zeilen weichen ab, sind bei so wenigen Spielen aber zu knapp.",
+  "cmp.rolesFlex": "{name} spielt mehrere Rollen (am häufigsten {role}, {share} der Spiele). CS, Schaden, Sicht und Kills hängen stark von der Rolle ab, daher gibt es hier nur bei Siegquote und KDA einen Gewinner.",
 };
 export default dict;

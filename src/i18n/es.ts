@@ -1049,5 +1049,6 @@ const dict: Record<string, string> = {
   "wc.goalOverview": "Resumen",
   "cmp.clearNote_one": "El dorado marca una ventaja clara, mayor que las variaciones normales entre partidas. {count} fila más es distinta pero está demasiado igualada con tan pocas partidas.",
   "cmp.clearNote_other": "El dorado marca una ventaja clara, mayor que las variaciones normales entre partidas. {count} filas más son distintas pero están demasiado igualadas con tan pocas partidas.",
+  "cmp.rolesFlex": "{name} juega varios roles (sobre todo {role}, {share} de las partidas). CS, daño, visión y asesinatos dependen mucho del rol, así que aquí solo la tasa de victorias y el KDA tienen ganador.",
 };
 export default dict;

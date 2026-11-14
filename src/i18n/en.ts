@@ -1049,5 +1049,6 @@ const en = {
   "wc.goalOverview": "Overview",
   "cmp.clearNote_one": "Gold marks a clear edge, bigger than normal game-to-game swings. {count} other row differs but is too close to call with this many games.",
   "cmp.clearNote_other": "Gold marks a clear edge, bigger than normal game-to-game swings. {count} other rows differ but are too close to call with this many games.",
+  "cmp.rolesFlex": "{name} plays several roles (most often {role}, {share} of games). CS, damage, vision and kill numbers depend a lot on role, so only win rate and KDA get a winner here.",
 };
 export default en;

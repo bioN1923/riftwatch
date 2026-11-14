@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.69',
+    date: '2026-11-14',
+    items: ['Compare players: when one player is spread over several roles and their most played role differs from the other player\'s, role-dependent stats (CS, damage, vision, kills) no longer get a winner, and a note says why.'],
+  },
+  {
     version: '3.68',
     date: '2026-11-14',
     items: ['Compare players: a stat only gets the gold "better" mark when the gap is bigger than normal game-to-game swings. Differences that could be luck (like 50% vs 58% win rate over 18 games) are listed as too close to call.'],

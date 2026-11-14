@@ -854,3 +854,16 @@ describe('clearEdge (compare page)', async () => {
     expect(seOf([2, 4, 6, 8])).toBeCloseTo(Math.sqrt((20 / 3) / 4));
   });
 });
+
+describe('roleGap (compare page)', async () => {
+  const { roleGap } = await import('../src/lib/compare');
+  const s = (roles: Record<string, number>) => ({ games: Object.values(roles).reduce((x, y) => x + y, 0), ov: { roles } }) as never;
+  it('flags different mains and players spread over several roles', () => {
+    expect(roleGap(s({ JUNGLE: 20 }), s({ TOP: 19 }))).toEqual({ kind: 'different', ra: 'JUNGLE', rb: 'TOP' });
+    expect(roleGap(s({ JUNGLE: 20 }), s({ TOP: 10, MIDDLE: 6, BOTTOM: 4 }))).toEqual({ kind: 'flex', who: 'b', role: 'TOP', share: 0.5 });
+  });
+  it('lets players with the same most played role compare', () => {
+    expect(roleGap(s({ JUNGLE: 20 }), s({ JUNGLE: 9, TOP: 6, MIDDLE: 5 }))).toBeNull();
+    expect(roleGap(s({}), s({ TOP: 3 }))).toBeNull();
+  });
+});
