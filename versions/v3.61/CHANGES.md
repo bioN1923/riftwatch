@@ -11,3 +11,12 @@ Pure logic in `src/lib/turningPoints.ts` (`fights`, `turningPoints`) with 4 test
 
 ## Checks
 tsc clean · 105 tests pass · a11y `{}` · demo `turning-points.png`.
+
+## Live check (2026-11-14 08:01)
+- Deploy finished cleanly. On bioN1923's third match (a loss on red side):
+  - 2:34 First blood: LeBlanc killed Akali
+  - 7 min Blue side led from here to the end
+  - 24–27 min Blue side gained 5.7k gold in 3 minutes
+  - 25:39 Blue side won a 3-for-0 fight and took Baron, 1 tower
+
+  The deciding fight lands inside the biggest swing, as it should. Screenshot: `live/turning-points.jpg`.
