@@ -14,3 +14,8 @@ An idea from Porofessor-style live tools: knowing whether the enemy team is most
 tsc clean · a11y `{}` · demo `live-damage-mix.png` (Blue: 2 AD · 1 AP · 2 mixed; Red: 2 AD · 3 AP).
 
 Known limits: the ratings are rough. Ezreal counts as mixed, and AP builds of AD champions aren't seen.
+
+## Live check (2026-11-14 14:58)
+- Deploy finished cleanly at 14:56. The server's `/api/static/en_US` now carries ratings for all 173 champions (Jinx `dmg: [9, 4]` → AD).
+- None of the players at hand was in a game, so the live-game line itself was checked on the demo server only.
+- Found: a browser that loaded static data before the deploy keeps its HTTP-cached copy (1 h) without `dmg`, so the line stays hidden there until the cache expires. Follow-up: add a version to the static URL so each deploy fetches fresh data.
