@@ -19,3 +19,11 @@ tsc clean · a11y `{}` · demo:
 - Caps vs Perkz: 1 clear edge, 10 too close.
 
 Screenshot: `compare-clear-edges.png`.
+
+## Live check (2026-11-14 14:35)
+- v3.68 deployed cleanly at 09:02.
+- bioN1923 vs lickit#28cm (20 games each): "bioN1923 better in 0, lickit in 3".
+  - The gold marks are on damage/min (787 vs 1,017), vision/min (0.70 vs 1.22) and performance score (4.6 vs 6.0).
+  - 9 rows are too close to call, including win rate (40% vs 50%) and KDA (1.77 vs 2.65), which v3.67 would have marked.
+  - Screenshot: `live/compare-clear-edges.jpg`.
+- Follow-up: lickit plays several roles with no clear main, so the different-roles note didn't trigger. Damage and vision are still compared against a jungler. Worth softening when either player has no main role.
