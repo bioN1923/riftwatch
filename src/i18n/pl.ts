@@ -1095,5 +1095,9 @@ const dict: Record<string, string> = {
   "wc.goalFull": "Masz już {n} cele; najpierw usuń jeden",
   "wc.goalAdded": "Dodano do celów, śledzonych gra po grze w zakładce {link}.",
   "wc.goalOverview": "Przegląd",
+  "cmp.clearNote_one": "Złoto oznacza wyraźną przewagę, większą niż zwykłe wahania między grami. {count} inny wiersz się różni, ale przy tak małej liczbie gier to za mało, by rozstrzygnąć.",
+  "cmp.clearNote_few": "Złoto oznacza wyraźną przewagę, większą niż zwykłe wahania między grami. {count} inne wiersze się różnią, ale przy tak małej liczbie gier to za mało, by rozstrzygnąć.",
+  "cmp.clearNote_many": "Złoto oznacza wyraźną przewagę, większą niż zwykłe wahania między grami. {count} innych wierszy się różni, ale przy tak małej liczbie gier to za mało, by rozstrzygnąć.",
+  "cmp.clearNote_other": "Złoto oznacza wyraźną przewagę, większą niż zwykłe wahania między grami. {count} innego wiersza się różni, ale przy tak małej liczbie gier to za mało, by rozstrzygnąć.",
 };
 export default dict;

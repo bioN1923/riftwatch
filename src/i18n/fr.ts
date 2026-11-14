@@ -1047,5 +1047,7 @@ const dict: Record<string, string> = {
   "wc.goalFull": "Vous avez déjà {n} objectifs ; retirez-en un d’abord",
   "wc.goalAdded": "Ajouté à vos objectifs, suivi partie par partie dans l’{link}.",
   "wc.goalOverview": "Aperçu",
+  "cmp.clearNote_one": "L’or marque un net avantage, plus grand que les écarts habituels d’une partie à l’autre. {count} autre ligne diffère mais reste trop serrée avec si peu de parties.",
+  "cmp.clearNote_other": "L’or marque un net avantage, plus grand que les écarts habituels d’une partie à l’autre. {count} autres lignes diffèrent mais restent trop serrées avec si peu de parties.",
 };
 export default dict;

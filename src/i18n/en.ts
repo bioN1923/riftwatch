@@ -1047,5 +1047,7 @@ const en = {
   "wc.goalFull": "You already have {n} goals; remove one first",
   "wc.goalAdded": "Added to your goals, tracked game by game on the {link}.",
   "wc.goalOverview": "Overview",
+  "cmp.clearNote_one": "Gold marks a clear edge, bigger than normal game-to-game swings. {count} other row differs but is too close to call with this many games.",
+  "cmp.clearNote_other": "Gold marks a clear edge, bigger than normal game-to-game swings. {count} other rows differ but are too close to call with this many games.",
 };
 export default en;

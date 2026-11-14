@@ -1047,5 +1047,7 @@ const dict: Record<string, string> = {
   "wc.goalFull": "Du hast schon {n} Ziele; entferne zuerst eins",
   "wc.goalAdded": "Zu deinen Zielen hinzugefügt, Spiel für Spiel verfolgt in der {link}.",
   "wc.goalOverview": "Übersicht",
+  "cmp.clearNote_one": "Gold markiert einen klaren Vorsprung, größer als die üblichen Schwankungen von Spiel zu Spiel. {count} weitere Zeile weicht ab, ist bei so wenigen Spielen aber zu knapp.",
+  "cmp.clearNote_other": "Gold markiert einen klaren Vorsprung, größer als die üblichen Schwankungen von Spiel zu Spiel. {count} weitere Zeilen weichen ab, sind bei so wenigen Spielen aber zu knapp.",
 };
 export default dict;

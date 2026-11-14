@@ -18,11 +18,32 @@ export interface PlayerSummary {
   visionMin: number;
   score: number;
   soloKills: number;
+  /** Standard error of each per-game row (same keys as the comparison table), from game-to-game spread. */
+  se: Record<string, number>;
   ov: Overview;
+}
+
+/** Standard error of a mean, from the per-game values. */
+export function seOf(xs: number[]) {
+  if (xs.length < 2) return Infinity;
+  const mean = xs.reduce((s, x) => s + x, 0) / xs.length;
+  const v = xs.reduce((s, x) => s + (x - mean) ** 2, 0) / (xs.length - 1);
+  return Math.sqrt(v / xs.length);
+}
+
+/**
+ * Whether two players' values differ by more than chance would explain: the gap is over twice the
+ * standard error of the difference. Returns -1 (A ahead), 1 (B ahead) or 0 (too close to call).
+ */
+export function clearEdge(va: number, vb: number, seA: number, seB: number, lowerBetter = false): -1 | 0 | 1 {
+  const se = Math.sqrt(seA ** 2 + seB ** 2);
+  if (!Number.isFinite(se) || Math.abs(va - vb) <= 2 * se) return 0;
+  return (va > vb) !== lowerBetter ? -1 : 1;
 }
 
 export function summarize(matches: MatchSummary[], puuid: string): PlayerSummary {
   let n = 0, wins = 0, k = 0, d = 0, a = 0, kp = 0, cs = 0, dmg = 0, gold = 0, vision = 0, score = 0, solo = 0, minutes = 0;
+  const vals: Record<string, number[]> = { wr: [], kda: [], k: [], d: [], a: [], kp: [], cs: [], dmg: [], gold: [], vision: [], solo: [], score: [] };
   for (const m of matches) {
     if (m.remake) continue;
     const p = me(m, puuid);
@@ -40,6 +61,22 @@ export function summarize(matches: MatchSummary[], puuid: string): PlayerSummary
     score += p.score;
     solo += p.extra?.soloKills ?? 0;
     minutes += m.duration / 60;
+    const min = m.duration / 60 || 1;
+    const add: Record<string, number> = {
+      wr: p.win ? 1 : 0,
+      kda: Math.min(20, kdaRatio(p.kills, p.deaths, p.assists)),
+      k: p.kills,
+      d: p.deaths,
+      a: p.assists,
+      kp: p.killParticipation,
+      cs: p.cs / min,
+      dmg: p.damage / min,
+      gold: p.gold / min,
+      vision: p.visionScore / min,
+      solo: p.extra?.soloKills ?? 0,
+      score: p.score,
+    };
+    for (const key in add) vals[key].push(add[key]);
   }
   const per = (x: number) => (n ? x / n : 0);
   const perMin = (x: number) => (minutes ? x / minutes : 0);
@@ -58,6 +95,7 @@ export function summarize(matches: MatchSummary[], puuid: string): PlayerSummary
     visionMin: perMin(vision),
     score: per(score),
     soloKills: per(solo),
+    se: Object.fromEntries(Object.entries(vals).map(([key, xs]) => [key, seOf(xs)])),
     ov: overview(matches, puuid),
   };
 }

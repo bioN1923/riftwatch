@@ -11,7 +11,7 @@ import { decimal, formatKda, kdaRatio, kdaTone, pct, regionName, thousands, tier
 import { fromSlug, parseRiotId, profilePath, querySlug, type RiotId } from '../lib/riotId';
 import { useFavorites, useRecent, useRegion, type SavedPlayer } from '../lib/storage';
 import { me, result } from '../lib/stats';
-import { differentRoles, ROLE_NEUTRAL, summarize, together, type PlayerSummary } from '../lib/compare';
+import { clearEdge, differentRoles, ROLE_NEUTRAL, summarize, together, type PlayerSummary } from '../lib/compare';
 import { GameImg } from '../components/ui/GameImg';
 import { ROLE_LABEL, RoleIcon } from '../components/ui/RoleIcon';
 import { ErrorState, Skeleton } from '../components/ui/States';
@@ -401,6 +401,7 @@ function Metrics({ a, b, nameA, nameB }: { a: PlayerSummary; b: PlayerSummary; n
   ];
   let winsA = 0;
   let winsB = 0;
+  let close = 0;
   // A jungler's CS or a support's damage isn't a fair fight: with different main roles, only
   // role-neutral rows get a winner.
   const roles = differentRoles(a, b);
@@ -410,7 +411,9 @@ function Metrics({ a, b, nameA, nameB }: { a: PlayerSummary; b: PlayerSummary; n
     const fa = finite(va);
     const fb = finite(vb);
     const fair = !roles || ROLE_NEUTRAL.has(r.key);
-    const better = !fair || Math.abs(fa - fb) < 1e-9 || r.fmt(va) === r.fmt(vb) ? 0 : (fa > fb) !== !!r.lowerBetter ? -1 : 1;
+    // Gold only for a gap bigger than game-to-game noise: 50% vs 58% over 18 games is no edge.
+    const better = !fair || r.fmt(va) === r.fmt(vb) ? 0 : clearEdge(fa, fb, a.se[r.key] ?? Infinity, b.se[r.key] ?? Infinity, r.lowerBetter);
+    if (fair && better === 0 && r.fmt(va) !== r.fmt(vb)) close++;
     if (better < 0) winsA++;
     if (better > 0) winsB++;
     return { r, va, vb, fa, fb, better };
@@ -432,6 +435,7 @@ function Metrics({ a, b, nameA, nameB }: { a: PlayerSummary; b: PlayerSummary; n
           })}
         </p>
       </div>
+      {close > 0 && <p className="mt-1 text-xs text-faint">{t('cmp.clearNote', { count: close })}</p>}
       {roles && (
         <p className="mt-2 rounded border border-line bg-raised px-3 py-2 text-xs text-muted">
           {t('cmp.rolesDiffer', { a: nameA, ra: ROLE_LABEL[roles[0]], b: nameB, rb: ROLE_LABEL[roles[1]] })}

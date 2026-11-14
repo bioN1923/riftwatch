@@ -1047,5 +1047,7 @@ const dict: Record<string, string> = {
   "wc.goalFull": "Ya tienes {n} objetivos; quita uno primero",
   "wc.goalAdded": "Añadido a tus objetivos, seguido partida a partida en el {link}.",
   "wc.goalOverview": "Resumen",
+  "cmp.clearNote_one": "El dorado marca una ventaja clara, mayor que las variaciones normales entre partidas. {count} fila más es distinta pero está demasiado igualada con tan pocas partidas.",
+  "cmp.clearNote_other": "El dorado marca una ventaja clara, mayor que las variaciones normales entre partidas. {count} filas más son distintas pero están demasiado igualadas con tan pocas partidas.",
 };
 export default dict;

@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.68',
+    date: '2026-11-14',
+    items: ['Compare players: a stat only gets the gold "better" mark when the gap is bigger than normal game-to-game swings. Differences that could be luck (like 50% vs 58% win rate over 18 games) are listed as too close to call.'],
+  },
+  {
     version: '3.67',
     date: '2026-11-14',
     items: ['"What your wins have in common": a "Make it a goal" button turns a condition (deaths, CS, kill participation or vision) into a goal on the Overview, with that value as the target.'],

@@ -839,3 +839,18 @@ describe('duo finder fit', async () => {
     expect(rankSteps('CHALLENGER')).toBe(28);
   });
 });
+
+describe('clearEdge (compare page)', async () => {
+  const { clearEdge, seOf } = await import('../src/lib/compare');
+  it('calls a winner only beyond twice the standard error of the gap', () => {
+    // 50% vs 58% over ~18 games: SE of each ≈ 0.12, so no edge.
+    expect(clearEdge(0.5, 0.58, 0.12, 0.115)).toBe(0);
+    expect(clearEdge(7.0, 3.0, 0.4, 0.3)).toBe(-1);
+    expect(clearEdge(3, 6, 0.4, 0.5, true)).toBe(-1); // fewer deaths is better
+    expect(clearEdge(1, 2, Infinity, 0.1)).toBe(0);
+  });
+  it('measures the standard error of a mean', () => {
+    expect(seOf([1])).toBe(Infinity);
+    expect(seOf([2, 4, 6, 8])).toBeCloseTo(Math.sqrt((20 / 3) / 4));
+  });
+});

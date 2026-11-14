@@ -1071,5 +1071,8 @@ const dict: Record<string, string> = {
   "wc.goalFull": "Ai deja {n} obiective; șterge unul mai întâi",
   "wc.goalAdded": "Adăugat la obiectivele tale, urmărite meci cu meci în {link}.",
   "wc.goalOverview": "Prezentare generală",
+  "cmp.clearNote_one": "Auriul marchează un avantaj clar, mai mare decât variațiile obișnuite de la meci la meci. Încă {count} rând diferă, dar e prea strâns pentru atât de puține meciuri.",
+  "cmp.clearNote_few": "Auriul marchează un avantaj clar, mai mare decât variațiile obișnuite de la meci la meci. Încă {count} rânduri diferă, dar sunt prea strânse pentru atât de puține meciuri.",
+  "cmp.clearNote_other": "Auriul marchează un avantaj clar, mai mare decât variațiile obișnuite de la meci la meci. Încă {count} de rânduri diferă, dar sunt prea strânse pentru atât de puține meciuri.",
 };
 export default dict;
