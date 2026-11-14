@@ -28,3 +28,9 @@ Rather than hide the rest, which would leave most champions empty this early in 
   - Ahri Mid: Mel 34% (clear, red) first; Syndra, Hwei and Viktor leaning (dashed). Strong against: all leaning.
   - Tier list Mid, first 8 rows: "Cll", "lll", "lll", "CC", "Cll"… (C = clear, l = leaning).
 - Screenshots: `demo/counters-strip.png` plus the standard set.
+
+## Live check (06:45)
+- Deployed automatically (EXIT CODE 0, 06:44:25).
+- **Tier list, Mid (70 rows):** 25 "Weak against" icons are clear (red ring) and 94 are leaning (faded, neutral ring). Before, all 119 were red.
+- Screenshot: `live/tier-mid.jpg`.
+- I didn't open champion pages in the owner's browser, so nothing was added to Recently viewed. The champion page strip is checked in the demo.
