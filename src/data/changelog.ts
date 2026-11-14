@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.65',
+    date: '2026-11-14',
+    items: ['Profile match list: each day now says how long you played, and flags it when the day\'s last 3 or more games were all wins or all losses.'],
+  },
+  {
     version: '3.64',
     date: '2026-11-14',
     items: ['Turning points: opening the deciding fight on the map now lists all of its kills and what was taken after, and outlines all their dots, even when the fight spread across the map.'],

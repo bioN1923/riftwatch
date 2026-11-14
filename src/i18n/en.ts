@@ -1014,5 +1014,13 @@ const en = {
   "tp.comeback": "{team} came back from {gold} gold behind",
   "tp.led": "{team} led from here to the end",
   "tl.fightAt": "Fight at {time} and what followed",
+  "profile.dayPlayed": "{time} played",
+  "profile.hm": "{h} h {m} min",
+  "profile.m": "{m} min",
+  "profile.h": "{h} h",
+  "profile.dayEndWins_one": "won the last {count}",
+  "profile.dayEndWins_other": "won the last {count}",
+  "profile.dayEndLosses_one": "lost the last {count}",
+  "profile.dayEndLosses_other": "lost the last {count}",
 };
 export default en;

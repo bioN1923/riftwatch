@@ -235,8 +235,16 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
                         const rec = dayRecord(g.matches, profile.account.puuid);
                         return (
                           <section key={g.key} aria-label={g.label} className="space-y-2">
-                            <h2 className="flex items-baseline justify-between">
-                              <span className="font-display text-lg font-bold">{g.label}</span>
+                            <h2 className="flex flex-wrap items-baseline justify-between gap-x-3">
+                              <span className="flex flex-wrap items-baseline gap-x-2">
+                                <span className="font-display text-lg font-bold">{g.label}</span>
+                                <span className="text-xs font-normal text-faint">{t('profile.dayPlayed', { time: hoursMinutes(rec.played) })}</span>
+                                {rec.end && rec.end.n >= 3 && (
+                                  <span className={clsx('rounded px-1.5 py-0.5 text-[11px] font-medium', rec.end.r === 'win' ? 'bg-win-tint text-win' : 'bg-loss-tint text-loss')}>
+                                    {t(rec.end.r === 'win' ? 'profile.dayEndWins' : 'profile.dayEndLosses', { count: rec.end.n })}
+                                  </span>
+                                )}
+                              </span>
                               <span className="num text-xs text-muted">
                                 <span className="text-win">{t('common.wins', { count: rec.w })}</span> <span className="text-loss">{t('common.losses', { count: rec.l })}</span>
                               </span>
@@ -328,4 +336,11 @@ function groupByDay(matches: MatchSummary[]) {
     g.matches.push(m);
   }
   return groups;
+}
+
+/** "2 h 15 min", "45 min": time spent in games that day. */
+function hoursMinutes(seconds: number) {
+  const m = Math.round(seconds / 60);
+  if (m < 60) return t('profile.m', { m });
+  return m % 60 ? t('profile.hm', { h: Math.floor(m / 60), m: m % 60 }) : t('profile.h', { h: m / 60 });
 }

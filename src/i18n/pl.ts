@@ -1056,5 +1056,17 @@ const dict: Record<string, string> = {
   "tp.comeback": "{team} odrobiła {gold} złota straty",
   "tp.led": "{team} prowadziła od tego momentu do końca",
   "tl.fightAt": "Walka od {time} i to, co zdobyto potem",
+  "profile.dayPlayed": "{time} gry",
+  "profile.hm": "{h} godz. {m} min",
+  "profile.m": "{m} min",
+  "profile.h": "{h} godz.",
+  "profile.dayEndWins_one": "wygrana ostatnia gra",
+  "profile.dayEndLosses_one": "przegrana ostatnia gra",
+  "profile.dayEndWins_few": "wygrane ostatnie {count}",
+  "profile.dayEndLosses_few": "przegrane ostatnie {count}",
+  "profile.dayEndWins_many": "wygranych ostatnich {count}",
+  "profile.dayEndLosses_many": "przegranych ostatnich {count}",
+  "profile.dayEndWins_other": "wygranych ostatnich {count}",
+  "profile.dayEndLosses_other": "przegranych ostatnich {count}",
 };
 export default dict;

@@ -245,12 +245,20 @@ export function MasteryList({ mastery }: { mastery: Mastery[] }) {
 export function dayRecord(matches: MatchSummary[], puuid: string) {
   let w = 0;
   let l = 0;
+  let played = 0;
+  // How the day ended: the run of same results at its latest games (matches come newest first; remakes skipped).
+  let end = null as { r: 'win' | 'loss'; n: number } | null;
+  let open = true;
   for (const m of matches) {
     const p = me(m, puuid);
     if (!p) continue;
     const r = result(m, p);
+    played += m.duration;
     if (r === 'win') w++;
     else if (r === 'loss') l++;
+    if (r !== 'win' && r !== 'loss') continue;
+    if (open && (!end || end.r === r)) end = { r, n: (end?.n ?? 0) + 1 };
+    else open = false;
   }
-  return { w, l };
+  return { w, l, played, end };
 }
