@@ -867,3 +867,20 @@ describe('roleGap (compare page)', async () => {
     expect(roleGap(s({}), s({ TOP: 3 }))).toBeNull();
   });
 });
+
+describe('banSuggestions certainty', async () => {
+  const { banSuggestions } = await import('../src/lib/draft');
+  const mu = (championId: number, games: number, winRate: number) => ({ championId, games, wins: Math.round(games * winRate), winRate, adjusted: (winRate * games + 12.5) / (games + 25), goldDiff15: null, csDiff15: null, xpDiff15: null });
+  const stats = (matchups: ReturnType<typeof mu>[]) => ({ role: 'MIDDLE', summary: { games: 400 }, matchups }) as any;
+  it('marks a ban sure only when the pool clearly loses, and lists sure ones first', () => {
+    const s = new Map([
+      [1, stats([mu(10, 200, 0.4), mu(11, 20, 0.35)])],
+      [2, stats([mu(10, 180, 0.42), mu(11, 15, 0.4)])],
+    ]);
+    const bans = banSuggestions([1, 2], s, 'MIDDLE');
+    expect(bans.map((b) => [b.championId, b.sure, b.games])).toEqual([
+      [10, true, 380],
+      [11, false, 35],
+    ]);
+  });
+});

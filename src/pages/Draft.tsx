@@ -442,12 +442,15 @@ function BanPanel({ role, pool, onPick }: { role: Role; pool: number[]; onPick: 
           {bans.map((b) => {
             const c = a.champion(b.championId);
             return (
-              <li key={b.championId} className="rounded border border-line p-3">
+              <li key={b.championId} className={clsx('rounded border p-3', b.sure ? 'border-line' : 'border-dashed border-line')}>
                 <div className="flex items-center gap-3">
                   <GameImg src={c.url} alt="" size={44} rounded="md" />
                   <div className="min-w-0">
                     <p className="truncate font-medium">{c.name}</p>
-                    <p className="num text-xs text-muted">{t.rich('draft.banRate', { rate: <b className="text-loss">{pct(b.poolRate, 1)}</b> })}</p>
+                    <p className="num text-xs text-muted">
+                      {t.rich('draft.banRate', { rate: <b className={b.sure ? 'text-loss' : 'text-muted'}>{pct(b.poolRate, 1)}</b> })} · {t('common.games', { count: b.games })}
+                    </p>
+                    {!b.sure && <p className="text-[11px] text-faint">{t('tl.leaning')}</p>}
                   </div>
                 </div>
                 <ul className="mt-2 flex flex-wrap gap-1.5" aria-label={t('draft.banHard', { name: c.name })}>

@@ -9,6 +9,13 @@ export interface BanPick {
   poolRate: number;
   /** Pool champions with enough games against it, worst first. */
   against: { championId: number; winRate: number; games: number }[];
+  /** All those games together. */
+  games: number;
+  /**
+   * The pool's combined win rate against it is clearly under 50%: the top of its 95% range is below
+   * even. Otherwise it's only leaning, and could still be chance.
+   */
+  sure: boolean;
 }
 
 /**
@@ -36,13 +43,20 @@ export function banSuggestions(pool: number[], stats: Map<number, ChampionStats 
   }
   return [...enemies.entries()]
     .filter(([, e]) => e.against.length >= need)
-    .map(([championId, e]) => ({
-      championId,
-      poolRate: (e.sum + 0.5 * (known.length - e.against.length)) / known.length,
-      against: e.against.sort((x, y) => x.winRate - y.winRate),
-    }))
+    .map(([championId, e]) => {
+      const games = e.against.reduce((n, x) => n + x.games, 0);
+      const wins = e.against.reduce((n, x) => n + x.winRate * x.games, 0);
+      return {
+        championId,
+        poolRate: (e.sum + 0.5 * (known.length - e.against.length)) / known.length,
+        against: e.against.sort((x, y) => x.winRate - y.winRate),
+        games,
+        sure: games > 0 && winRange(wins / games, games)[1] < 0.5,
+      };
+    })
     .filter((b) => b.poolRate < 0.5)
-    .sort((x, y) => x.poolRate - y.poolRate)
+    // Clear problems first, then the rest by how badly the pool does.
+    .sort((x, y) => Number(y.sure) - Number(x.sure) || x.poolRate - y.poolRate)
     .slice(0, limit);
 }
 
