@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.57',
+    date: '2026-11-14',
+    items: ['New: Duo finder (in the menu, and "Find a duo" on every profile). It looks at the players from your recent ranked games who play other roles and are around your rank, and scores how well each would fit next to you: rank, role pairing, the hours you both play, champion styles, fights, vision and objectives, with every part shown.'],
+  },
+  {
     version: '3.56',
     date: '2026-11-14',
     items: [

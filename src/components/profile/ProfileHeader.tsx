@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import clsx from 'clsx';
-import { RefreshCw, Star, Flame, Link2, Check, Scale } from 'lucide-react';
+import { RefreshCw, Star, Flame, Link2, Check, Scale, HeartHandshake } from 'lucide-react';
 import type { LeagueEntry, MatchSummary, Profile } from '../../../shared/types';
 import { getPlatform } from '../../../shared/regions';
 import { GameImg, Tooltip } from '../ui/GameImg';
@@ -122,6 +122,14 @@ export function ProfileHeader({
                 >
                   <Scale className="size-3.5" aria-hidden />
                   <span className="sr-only sm:not-sr-only">{t('profile.compare')}</span>
+                </Link>
+                <Link
+                  to={`/duo?region=${profile.platform}&player=${toSlug(id)}`}
+                  title={t('duo.pageTitle')}
+                  className="inline-flex h-8 items-center gap-1.5 rounded border border-line-strong px-2.5 text-sm font-medium text-muted transition-colors hover:border-gold/60 hover:text-text sm:px-3"
+                >
+                  <HeartHandshake className="size-3.5" aria-hidden />
+                  <span className="sr-only sm:not-sr-only">{t('duo.find')}</span>
                 </Link>
                 <span className="basis-full text-xs text-muted sm:basis-auto" aria-live="polite">
                   {t('profile.updated', { ago: timeAgo(readyAt - (profile.updateIn ?? 0) - (profile.age ?? 0), now) })}

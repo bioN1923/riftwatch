@@ -49,6 +49,7 @@ const router = createBrowserRouter([
           { path: '/changelog', lazy: async () => ({ Component: (await import('./pages/Changelog')).ChangelogPage }) },
           { path: '/draft', lazy: async () => ({ Component: (await import('./pages/Draft')).DraftPage }) },
           { path: '/compare', lazy: async () => ({ Component: (await import('./pages/Compare')).ComparePage }) },
+          { path: '/duo', lazy: async () => ({ Component: (await import('./pages/Duo')).DuoPage }) },
           { path: '/multisearch', lazy: async () => ({ Component: (await import('./pages/MultiSearch')).MultiSearchPage }) },
           { path: '*', element: <NotFoundPage /> },
         ],

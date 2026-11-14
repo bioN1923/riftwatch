@@ -135,6 +135,10 @@ export function ApiUsagePage() {
           Multi-search&rsquo;s &ldquo;Premade with&rdquo; tags come only from public match history (the same recent games anyone can open on those players&rsquo;
           profiles), never from the lobby or a live game. The live game view doesn&rsquo;t mark premades.
         </li>
+        <li>
+          The duo finder only looks at players who were in the visitor&rsquo;s own recent ranked games, and only shows those around the same rank. It
+          never searches or ranks the wider player base, and hidden profiles are left out.
+        </li>
         <li>Deletion requests that Riot forwards are handled by deleting the player’s stored data (search entry, rank history, champion lists).</li>
         <li>The site is free. If ads are added, they will follow Riot’s monetisation rules and ask visitors for consent first.</li>
       </L>

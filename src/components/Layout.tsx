@@ -1,7 +1,7 @@
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
-import { AlertTriangle, Check, Globe, LayoutGrid, Monitor, Moon, Scale, Sun, Swords, Trophy, User, Users, Wrench, X } from 'lucide-react';
+import { AlertTriangle, Check, Globe, LayoutGrid, Monitor, Moon, Scale, Sun, Swords, Trophy, User, Users, Wrench, X, HeartHandshake } from 'lucide-react';
 import clsx from 'clsx';
 import { getPlatform } from '../../shared/regions';
 import { pageRegion } from '../lib/pageRegion';
@@ -218,6 +218,9 @@ function MainNav() {
       <NavLink to="/draft" className={link}>
         {t('nav.draft')}
       </NavLink>
+      <NavLink to="/duo" className={link}>
+        {t('nav.duo')}
+      </NavLink>
     </nav>
   );
 }
@@ -226,6 +229,7 @@ const TOOLS = [
   { to: '/multisearch', label: () => t('nav.multisearch'), icon: Users },
   { to: '/draft', label: () => t('nav.draft'), icon: Swords },
   { to: '/compare', label: () => t('nav.compare'), icon: Scale },
+  { to: '/duo', label: () => t('nav.duo'), icon: HeartHandshake },
 ];
 
 /** Phone navigation: four tabs with icons; "Tools" opens a small menu (multi-search, draft helper, compare). */

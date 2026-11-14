@@ -811,3 +811,31 @@ describe('timeline map: what happened here', async () => {
     expect(objectivePos({ ...drake, x: 9000, y: 4000 })).toEqual([9000, 4000]);
   });
 });
+
+describe('duo finder fit', async () => {
+  const { playStyle, duoFit, rankSteps } = await import('../src/lib/duoFit');
+  const game = (id: string, startedAt: number, me: any, them: any) =>
+    ({ id, queueId: 420, gameMode: 'CLASSIC', startedAt, duration: 1800, version: '16.22', remake: false, teams: [], participants: [me, them] }) as any;
+  const p = (puuid: string, position: string, championId: number, o: any = {}) => ({ puuid, teamId: 100, win: true, championId, position, kills: 5, deaths: 5, assists: 5, visionScore: 30, killParticipation: 0.5, extra: { objectiveDamage: 9000 }, ...o });
+  const tags = (id: number) => (id === 1 ? ['Assassin'] : id === 2 ? ['Tank'] : ['Mage']);
+  const at20 = (d: number) => Date.UTC(2026, 10, d, 20);
+  const games = [1, 2, 3, 4].map((d) => game(`g${d}`, at20(d), p('me', 'JUNGLE', 1), p('sup', 'UTILITY', 2, { visionScore: 75 })));
+  const hourOf = (ms: number) => new Date(ms).getUTCHours();
+  const me = playStyle(games, 'me', tags, hourOf);
+  const sup = playStyle(games, 'sup', tags, hourOf);
+  it('reads role, timing and style from recent games', () => {
+    expect(me.mainRole).toBe('JUNGLE');
+    expect(sup.mainRole).toBe('UTILITY');
+    expect(me.hours[20]).toBe(1);
+    expect(sup.visionPerMin).toBeCloseTo(2.5);
+  });
+  it('scores a complementary duo around the same rank, and refuses the rest', () => {
+    const f = duoFit(me, rankSteps('SILVER', 'II'), sup, rankSteps('SILVER', 'I'))!;
+    expect(f.score).toBeGreaterThan(80); // same hours, other class, more vision, close rank
+    expect(f.parts.find((x) => x.key === 'time')!.score).toBe(1);
+    expect(duoFit(me, rankSteps('SILVER', 'II'), sup, rankSteps('DIAMOND', 'I'))).toBeNull(); // too far apart
+    expect(duoFit(me, rankSteps('SILVER', 'II'), me, rankSteps('SILVER', 'II'))).toBeNull(); // same role
+    expect(rankSteps('SILVER', 'II')).toBe(10); // Iron 0-3, Bronze 4-7, Silver IV = 8
+    expect(rankSteps('CHALLENGER')).toBe(28);
+  });
+});
