@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.80](v3.80/CHANGES.md) | 2026-11-14 | Tier list: small samples after the rest when sorting by a rate |
 | [v3.79](v3.79/CHANGES.md) | 2026-11-14 | Phones: Champions played table fits |
 | [v3.78](v3.78/CHANGES.md) | 2026-11-14 | Phones: tier list and ladder tables fit the screen |
 | [v3.77](v3.77/CHANGES.md) | 2026-11-14 | Phones: scoreboard items and CS under each player |

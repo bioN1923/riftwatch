@@ -66,7 +66,10 @@ export function ChampionsPage() {
       .filter((r) => !(showPool && onlyPool) || inPool(r));
     const val = (r: TierRow & { name: string }) =>
       sort.key === 'name' ? r.name : sort.key === 'tier' ? TIER_ORDER[r.tier] * 1000 + r.rank : sort.key === 'rank' ? r.rank : (r[sort.key] as number);
+    // Sorting by a rate puts small samples after the rest: 66.7% over 36 games shouldn't top the list.
+    const rated = sort.key === 'winRate' || sort.key === 'pickRate' || sort.key === 'banRate';
     return named.sort((x, y) => {
+      if (rated && !!x.lowSample !== !!y.lowSample) return x.lowSample ? 1 : -1;
       const vx = val(x);
       const vy = val(y);
       const c = typeof vx === 'string' ? vx.localeCompare(vy as string) : (vx as number) - (vy as number);
@@ -183,6 +186,9 @@ export function ChampionsPage() {
         </div>
       ) : (
         <div className="mt-2 overflow-x-auto">
+          {(sort.key === 'winRate' || sort.key === 'pickRate' || sort.key === 'banRate') && rows.some((x) => x.lowSample) && (
+            <p className="px-3 pb-1 text-xs text-faint">{t('tl.smallLast')}</p>
+          )}
           {/* Phones: champion, tier and win rate only (role shows as an icon by the name); the rest from sm up. */}
           <table className="w-full text-sm sm:min-w-[720px]">
             <caption className="sr-only">{t('tl.caption')}</caption>
@@ -254,7 +260,10 @@ export function ChampionsPage() {
                           <WinRateBar value={r.winRate} />
                         </span>
                         <span className="flex w-12 flex-col items-end leading-tight">
-                          <span className={clsx('num font-semibold', r.winRate >= 0.5 ? 'text-text' : 'text-muted')}>{pct(r.winRate, 1)}</span>
+                          <span className={clsx('num font-semibold', r.lowSample ? 'text-faint' : r.winRate >= 0.5 ? 'text-text' : 'text-muted')} title={r.lowSample ? t('tl.smallSample') : undefined}>
+                            {pct(r.winRate, 1)}
+                            {r.lowSample && <span className="sm:hidden">*</span>}
+                          </span>
                           <PatchDelta now={r.winRate} before={r.prevWinRate} games={r.games} prevGames={r.prevGames} />
                         </span>
                       </span>

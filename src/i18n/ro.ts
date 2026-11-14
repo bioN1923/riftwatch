@@ -1092,5 +1092,6 @@ const dict: Record<string, string> = {
   "ms.lobbyClash": "Mai mulți main pe {roles}, deci cineva va juca alt rol.",
   "ms.lobbyOpen": "Nimeni nu e main pe {roles}.",
   "home.tool.duo": "Jucători din meciurile tale recente care s-ar potrivi cu tine, apropiați de rangul tău.",
+  "tl.smallLast": "Campionii cu puține meciuri pe un rol (marcați cu *) apar după ceilalți, ca o serie norocoasă să nu ajungă în fruntea listei.",
 };
 export default dict;

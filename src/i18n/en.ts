@@ -1067,5 +1067,6 @@ const en = {
   "ms.lobbyClash": "More than one main for {roles}, so someone will be off-role.",
   "ms.lobbyOpen": "Nobody mains {roles}.",
   "home.tool.duo": "Players from your recent games who would fit next to you, around your rank.",
+  "tl.smallLast": "Champions with few games in a role (marked *) are listed after the rest, so a lucky streak doesn't top the list.",
 };
 export default en;

@@ -1067,5 +1067,6 @@ const dict: Record<string, string> = {
   "ms.lobbyClash": "Mais de um main de {roles}, então alguém vai jogar fora da função.",
   "ms.lobbyOpen": "Ninguém é main {roles}.",
   "home.tool.duo": "Jogadores das suas partidas recentes que combinariam com você, perto do seu elo.",
+  "tl.smallLast": "Campeões com poucas partidas numa função (marcados com *) aparecem depois dos outros, para que uma sequência de sorte não lidere a lista.",
 };
 export default dict;

@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.80',
+    date: '2026-11-14',
+    items: ['Tier list: sorting by win, pick or ban rate lists champions with few games in a role (marked *) after the rest, and their win rate is greyed out, so 66.7% over 36 off-role games no longer tops the list.'],
+  },
+  {
     version: '3.79',
     date: '2026-11-14',
     items: ['Profile Stats on phones: "Champions played" fits the screen, showing champion, games, win rate and KDA. The per-minute columns appear on wider screens.'],

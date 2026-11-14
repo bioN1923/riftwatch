@@ -1067,5 +1067,6 @@ const dict: Record<string, string> = {
   "ms.lobbyClash": "Plus d’un main {roles} : quelqu’un jouera hors de son rôle.",
   "ms.lobbyOpen": "Personne ne joue principalement {roles}.",
   "home.tool.duo": "Les joueurs de vos parties récentes qui iraient bien avec vous, autour de votre rang.",
+  "tl.smallLast": "Les champions avec peu de parties dans un rôle (marqués *) passent après les autres, pour qu’une série chanceuse ne prenne pas la tête.",
 };
 export default dict;
