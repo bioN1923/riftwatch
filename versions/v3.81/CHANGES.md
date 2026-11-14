@@ -17,3 +17,7 @@ The Arena tier list fills as the collector reads new games: about every third la
 
 ## Checks
 tsc clean · a11y `{}` · demo shots.
+
+## Live check (2026-11-14 16:38)
+- Deploy finished cleanly at 16:36. The server is healthy and the collector is running (`collecting: true`).
+- Two minutes after the deploy, Arena still has 0 matches. The collector is paced and checks Arena for only about a third of the ladder players it visits, so games arrive gradually. To re-check at the next version: `/api/champions?group=arena` `matches` should be above 0.
