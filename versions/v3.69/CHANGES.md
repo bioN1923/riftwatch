@@ -15,3 +15,9 @@ Follow-up from the v3.68 live check. lickit#28cm spreads games over several role
 
 ## Checks
 tsc clean · a11y `{}`. Every demo player has a clear main, so the flex case is covered by the unit tests and the live check.
+
+## Live check (2026-11-14 14:46)
+- Deploy finished cleanly at 14:45. bioN1923 vs lickit#28cm now reads "lickit plays several roles (most often Bot, 40% of games)…".
+  - No role-dependent winners: damage, vision and score lost their gold marks.
+  - Win rate and KDA are both too close to call, so it's 0–0.
+  - Screenshot: `live/compare-flex-role.jpg`.
