@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.67',
+    date: '2026-11-14',
+    items: ['"What your wins have in common": a "Make it a goal" button turns a condition (deaths, CS, kill participation or vision) into a goal on the Overview, with that value as the target.'],
+  },
+  {
     version: '3.66',
     date: '2026-11-14',
     items: ['Profile stats: "What your wins have in common" splits your recent games at your usual deaths, CS, kill participation, vision, damage share, game length and first blood, and shows where your win rate changes most. Small gaps are marked "could still be chance".'],

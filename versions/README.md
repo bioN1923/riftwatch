@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.67](v3.67/CHANGES.md) | 2026-11-14 | Win conditions: make it a goal |
 | [v3.66](v3.66/CHANGES.md) | 2026-11-14 | Stats tab: what your wins have in common |
 | [v3.65](v3.65/CHANGES.md) | 2026-11-14 | Profile day headers: time played and end-of-day streak |
 | [v3.64](v3.64/CHANGES.md) | 2026-11-14 | Deciding fight on the map: all its kills and follow-up objectives |

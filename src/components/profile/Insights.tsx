@@ -184,7 +184,7 @@ export function TryNext({ matches, puuid }: { matches?: MatchSummary[]; puuid: s
 
 /* ------------------------------------------------------------------ goals */
 
-type MetricId = "cs" | "deaths" | "vision" | "kp" | "dmg" | "wards";
+export type MetricId = "cs" | "deaths" | "vision" | "kp" | "dmg" | "wards";
 interface Metric {
   id: MetricId;
   label: () => string;
@@ -249,13 +249,13 @@ const METRICS: Metric[] = [
 ];
 const metric = (id: MetricId) => METRICS.find((x) => x.id === id)!;
 
-interface Goal {
+export interface Goal {
   metric: MetricId;
   target: number;
 }
 
 /** Goals are personal and saved only in this browser, one list per player. */
-function useGoals(puuid: string) {
+export function useGoals(puuid: string) {
   const key = `rw:goals:${puuid}`;
   const read = (): Goal[] => {
     try {
@@ -282,6 +282,9 @@ function useGoals(puuid: string) {
   };
   return [goals, save] as const;
 }
+
+/** At most this many goals at once. */
+export const MAX_GOALS = 3;
 
 export function Goals({
   matches,
@@ -404,7 +407,7 @@ export function Goals({
         })}
       </ul>
 
-      {goals.length < 3 &&
+      {goals.length < MAX_GOALS &&
         (adding ? (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {unused.map((m) => (

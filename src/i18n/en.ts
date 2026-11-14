@@ -1042,5 +1042,10 @@ const en = {
   "wc.shareFlip": "Under {n} of your team's damage",
   "wc.lengthFlip": "Games over {n} minutes",
   "wc.firstBloodFlip": "You weren't in on first blood",
+  "wc.goalMake": "Make it a goal",
+  "wc.goalHas": "Already a goal",
+  "wc.goalFull": "You already have {n} goals; remove one first",
+  "wc.goalAdded": "Added to your goals, tracked game by game on the {link}.",
+  "wc.goalOverview": "Overview",
 };
 export default en;

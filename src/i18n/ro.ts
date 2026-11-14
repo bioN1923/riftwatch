@@ -1066,5 +1066,10 @@ const dict: Record<string, string> = {
   "wc.shareFlip": "Sub {n} din damage-ul echipei",
   "wc.lengthFlip": "Meciuri de peste {n} minute",
   "wc.firstBloodFlip": "Nu ai participat la first blood",
+  "wc.goalMake": "Fă-l obiectiv",
+  "wc.goalHas": "Deja e obiectiv",
+  "wc.goalFull": "Ai deja {n} obiective; șterge unul mai întâi",
+  "wc.goalAdded": "Adăugat la obiectivele tale, urmărite meci cu meci în {link}.",
+  "wc.goalOverview": "Prezentare generală",
 };
 export default dict;

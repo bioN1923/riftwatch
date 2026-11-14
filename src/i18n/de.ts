@@ -1042,5 +1042,10 @@ const dict: Record<string, string> = {
   "wc.shareFlip": "Unter {n} des Teamschadens",
   "wc.lengthFlip": "Spiele über {n} Minuten",
   "wc.firstBloodFlip": "Du warst nicht am First Blood beteiligt",
+  "wc.goalMake": "Als Ziel setzen",
+  "wc.goalHas": "Schon ein Ziel",
+  "wc.goalFull": "Du hast schon {n} Ziele; entferne zuerst eins",
+  "wc.goalAdded": "Zu deinen Zielen hinzugefügt, Spiel für Spiel verfolgt in der {link}.",
+  "wc.goalOverview": "Übersicht",
 };
 export default dict;

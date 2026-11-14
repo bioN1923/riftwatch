@@ -1,8 +1,8 @@
-import { Benchmarks } from './Insights';
+import { Benchmarks, MAX_GOALS, useGoals, type MetricId } from './Insights';
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import clsx from 'clsx';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Target } from 'lucide-react';
 import type { MatchSummary } from '../../../shared/types';
 import { assets, champSlug, useStaticData } from '../../lib/ddragon';
 import { decimal, formatKda, kdaRatio, kdaTone, pct, winRateTone } from '../../lib/format';
@@ -446,6 +446,9 @@ function WinConditions({ matches, puuid }: { matches: MatchSummary[]; puuid: str
   const games = matches.filter((m) => !m.remake && me(m, puuid)).length;
   if (games < 10) return null;
   const list = winConditions(matches, puuid).slice(0, 3);
+  const [goals, setGoals] = useGoals(puuid);
+  const [added, setAdded] = useState<string | null>(null);
+  const overview = useLocation().pathname.replace(/\/stats$/, '');
   // Phrased for the side the wins are on: "5 deaths or fewer", or "under 1.3 vision score a minute".
   const cond = (c: WinCondition) => {
     const n = c.metric === 'cs' || c.metric === 'vision' ? decimal(c.at, 1) : c.metric === 'kp' || c.metric === 'share' ? pct(c.at) : c.at;
@@ -468,7 +471,8 @@ function WinConditions({ matches, puuid }: { matches: MatchSummary[]; puuid: str
                 {cond(c)}
                 {!c.sure && <span className="ml-2 text-[11px] font-normal text-faint">{t('wc.leaning')}</span>}
               </span>
-              <span className="num text-xs text-muted">
+              <span className="num flex flex-wrap items-center gap-x-1 text-xs text-muted sm:justify-end">
+                <GoalButton c={c} goals={goals} onAdd={(g) => (setGoals([...goals, g]), setAdded(c.metric))} />
                 <span className="text-win">{rec(c.when)}</span>
                 <span className="text-faint"> · {t('wc.otherwise')} </span>
                 <span className="text-loss">{rec(c.otherwise)}</span>
@@ -477,6 +481,34 @@ function WinConditions({ matches, puuid }: { matches: MatchSummary[]; puuid: str
           ))}
         </ul>
       )}
+      {added && (
+        <p className="mt-3 text-xs text-muted" role="status">
+          {t.rich('wc.goalAdded', { link: <Link to={overview} className="text-gold hover:underline">{t('wc.goalOverview')}</Link> })}
+        </p>
+      )}
     </section>
+  );
+}
+
+/** Which conditions map onto a goal metric: same stat, the "wins" side is the goal side. */
+const GOAL_OF: Partial<Record<string, MetricId>> = { cs: 'cs', deaths: 'deaths', vision: 'vision', kp: 'kp' };
+
+/** "Make it a goal": the condition's cut-off becomes the target (at most, for deaths). */
+function GoalButton({ c, goals, onAdd }: { c: WinCondition; goals: { metric: MetricId; target: number }[]; onAdd: (g: { metric: MetricId; target: number }) => void }) {
+  const id = GOAL_OF[c.metric];
+  if (!id || c.flip) return null;
+  const has = goals.some((g) => g.metric === id);
+  const full = goals.length >= MAX_GOALS;
+  return (
+    <button
+      type="button"
+      disabled={has || full}
+      onClick={() => onAdd({ metric: id, target: c.at })}
+      title={has ? t('wc.goalHas') : full ? t('wc.goalFull', { n: MAX_GOALS }) : undefined}
+      className="mr-2 inline-flex min-h-[24px] items-center gap-1 rounded border border-line px-2 text-[11px] font-medium text-muted hover:border-gold/60 hover:text-text disabled:cursor-default disabled:opacity-60 disabled:hover:border-line disabled:hover:text-muted"
+    >
+      <Target className="size-3" aria-hidden />
+      {has ? t('wc.goalHas') : t('wc.goalMake')}
+    </button>
   );
 }
