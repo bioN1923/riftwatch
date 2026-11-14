@@ -10,3 +10,7 @@ Phone check of the match detail tabs: "Post game" was the only one with content 
 
 ## Checks
 tsc clean · 119 tests pass · a11y `{}` · demo `phone-scoreboard.png` (iPhone 13: no element past the edge; every player shows items and CS). The other four tabs were already within the screen.
+
+## Live check (2026-11-14 15:59)
+- Deploy finished cleanly at 15:58. On desktop, bioN1923's latest match shows the scoreboard columns KDA, Damage, Gold, CS and Items as before, and the phone-only items line is hidden, so desktop is unchanged.
+- The phone layout was checked on the demo server, without resizing the user's browser.
