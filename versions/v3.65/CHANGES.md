@@ -15,3 +15,12 @@ Moving off the timeline to the profile match list, which is grouped by day ("Sat
 
 ## Checks
 tsc clean · 108 tests pass · a11y `{}` · demo `day-header-desktop.png`, `day-header-phone.png`, `day-header-streak-top.png` (Perkz: "lost the last 3").
+
+## Live check (2026-11-14 08:37)
+- Deploy finished cleanly. bioN1923's day headers now read:
+  - "Saturday 7 Nov · 2 h 52 min played · lost the last 4 · 1W 5L"
+  - "Wednesday 4 Nov · 33 min played · 1W 0L"
+  - "Monday 2 Nov · 2 h 39 min played · 2W 2L"
+  - …
+
+  Screenshot: `live/day-headers.jpg`.
