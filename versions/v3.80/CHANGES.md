@@ -12,3 +12,7 @@ Live check of the tier list sorted by win rate. The top was Annie Support 66.7% 
 
 ## Checks
 tsc clean · 119 tests pass · a11y `{}`. The demo has no small-sample rows, so the order is checked in the live check.
+
+## Live check (2026-11-14 16:28)
+- Deploy finished cleanly at 16:27. Sorted by win rate, the live tier list now starts with Pantheon Mid 61.2% (85 games), Riven Mid 60.1% (173), Zilean Top 59.6% (114) and Lux Bot 58.8% (182).
+- All 42 small-sample rows come after the other 266, and the note shows above the table. Screenshot: `live/tier-sort-wr.jpg`. Sort state isn't saved anywhere.
