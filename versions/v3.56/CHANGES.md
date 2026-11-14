@@ -23,3 +23,10 @@
   - Clicking a dragon diamond showed "Vi took Chemtech Drake".
   - Enter on a focused dot opens the panel.
 - Screenshots: `demo/timeline-map-click.png`, `demo/timeline-map-objective.png`, plus the standard set.
+
+## Live check (07:05)
+- Deployed automatically (EXIT CODE 0, 07:03:59).
+- **bioN1923#EUNE, latest game (Shyvana), Timeline tab → Everyone:** 44 kill dots and 9 epic-monster diamonds.
+  - **First diamond (real Riot data):** "Around 6:44, near here: 6:39 Shyvana killed Shaco · with Kalista, Taric · 6:44 **Shyvana took Hextech Drake** · 6:53 Mel killed Taric · 6:58 Mel killed Shyvana · with Lillia · 6:58 **Mel: Double kill**".
+  - **A mid-map dot:** "13:45 Gnar killed Nasus".
+- Screenshot: `live/timeline-map.jpg`.
