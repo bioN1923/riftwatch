@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.73](v3.73/CHANGES.md) | 2026-11-14 | Multi-search: lobby summary (average rank, mains, role clashes) |
 | [v3.72](v3.72/CHANGES.md) | 2026-11-14 | Ladder: LP of the tier above and who has it; damage mix polish |
 | [v3.71](v3.71/CHANGES.md) | 2026-11-14 | Static game data URL carries the release, so deploys skip stale browser caches |
 | [v3.70](v3.70/CHANGES.md) | 2026-11-14 | Live game: team damage mix (AD/AP) |

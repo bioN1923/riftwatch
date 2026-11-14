@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.73',
+    date: '2026-11-14',
+    items: ['Multi-search: a lobby summary above the cards shows the average rank, who mains which role, and flags roles two people main or nobody plays, so role calls are quicker.'],
+  },
+  {
     version: '3.72',
     date: '2026-11-14',
     items: [

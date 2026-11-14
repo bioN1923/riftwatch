@@ -1060,5 +1060,11 @@ const en = {
   "lb.upperCut": "Lowest {tier} right now: {lp}",
   "lb.upperChip": "{tier} LP",
   "lb.upperTip": "Has at least the LP of the lowest {tier} player right now, so likely to move up at Riot's next daily update.",
+  "ms.lobbyAria": "This lobby at a glance",
+  "ms.lobbyAvg": "Average rank",
+  "ms.lobbyRanked": "{n} of {total} ranked",
+  "ms.lobbyFlex": "no clear main: {names}",
+  "ms.lobbyClash": "More than one main for {roles}, so someone will be off-role.",
+  "ms.lobbyOpen": "Nobody mains {roles}.",
 };
 export default en;

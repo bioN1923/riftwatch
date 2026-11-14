@@ -23,3 +23,11 @@ export const ladderFull = (v: number) => {
   const di = Math.floor((v % 400) / 100);
   return `${tierName(TIERS[ti])} ${DIV[di]} · ${Math.round(v % 100)} LP`;
 };
+
+/** The average of several ranks as a division ("Gold II"), or "Master+" at the apex. Null for none. */
+export function averageRank(ranks: Pick<LpPoint, 'tier' | 'rank' | 'lp'>[]) {
+  if (!ranks.length) return null;
+  const v = ranks.reduce((n, r) => n + ladderValue(r), 0) / ranks.length;
+  if (v >= 2800) return t('live.masterPlus');
+  return `${tierName(TIERS[Math.floor(v / 400)] ?? 'IRON')} ${DIV[Math.floor((v % 400) / 100)]}`;
+}

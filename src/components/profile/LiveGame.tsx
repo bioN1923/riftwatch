@@ -13,22 +13,15 @@ import { profilePath } from '../../lib/riotId';
 import { GameImg } from '../ui/GameImg';
 import { Skeleton } from '../ui/States';
 import { SpellsRunes } from '../match/Loadout';
-import { ladderValue } from '../../lib/ladder';
+import { averageRank } from '../../lib/ladder';
 import { fadeIn } from '../../lib/motion';
 import { t } from '../../i18n';
 import { liveTags, type LiveTag } from '../../lib/liveTags';
 import { damageMix } from '../../lib/damageMix';
 
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
-const TIERS = ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'EMERALD', 'DIAMOND'];
-const DIV = ['IV', 'III', 'II', 'I'];
 function avgRank(scouts: (ScoutInfo | undefined)[]) {
-  const vals = scouts.flatMap((s) => (s?.solo ? [ladderValue({ tier: s.solo.tier, rank: s.solo.rank, lp: s.solo.leaguePoints })] : []));
-  if (!vals.length) return null;
-  const v = vals.reduce((x, y) => x + y, 0) / vals.length;
-  if (v >= 2800) return t('live.masterPlus');
-  const tier = TIERS[Math.floor(v / 400)] ?? 'IRON';
-  return `${tierName(tier)} ${DIV[Math.floor((v % 400) / 100)]}`;
+  return averageRank(scouts.flatMap((s) => (s?.solo ? [{ tier: s.solo.tier, rank: s.solo.rank, lp: s.solo.leaguePoints }] : [])));
 }
 
 export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string; platform: string }) {

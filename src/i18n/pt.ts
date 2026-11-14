@@ -1060,5 +1060,11 @@ const dict: Record<string, string> = {
   "lb.upperCut": "{tier} mais baixo agora: {lp}",
   "lb.upperChip": "PdL de {tier}",
   "lb.upperTip": "Tem pelo menos os PdL do {tier} mais baixo agora, então deve subir na próxima atualização diária da Riot.",
+  "ms.lobbyAria": "Este lobby num relance",
+  "ms.lobbyAvg": "Elo médio",
+  "ms.lobbyRanked": "{n} de {total} ranqueados",
+  "ms.lobbyFlex": "sem função principal clara: {names}",
+  "ms.lobbyClash": "Mais de um main de {roles}, então alguém vai jogar fora da função.",
+  "ms.lobbyOpen": "Ninguém é main {roles}.",
 };
 export default dict;

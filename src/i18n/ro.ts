@@ -1085,5 +1085,11 @@ const dict: Record<string, string> = {
   "lb.upperCut": "Cel mai jos {tier} acum: {lp}",
   "lb.upperChip": "LP de {tier}",
   "lb.upperTip": "Are cel puțin LP-ul celui mai jos jucător {tier} acum, deci probabil urcă la următoarea actualizare zilnică a Riot.",
+  "ms.lobbyAria": "Lobby-ul pe scurt",
+  "ms.lobbyAvg": "Rang mediu",
+  "ms.lobbyRanked": "{n} din {total} cu rang",
+  "ms.lobbyFlex": "fără rol principal clar: {names}",
+  "ms.lobbyClash": "Mai mulți main pe {roles}, deci cineva va juca alt rol.",
+  "ms.lobbyOpen": "Nimeni nu e main pe {roles}.",
 };
 export default dict;

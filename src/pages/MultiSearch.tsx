@@ -14,6 +14,10 @@ import { addLobby, clearLobbies, useLobbies, useRegion } from '../lib/storage';
 import { me, overview, result } from '../lib/stats';
 import { playerTags, type PlayerTag } from '../lib/tags';
 import { lobbyDuos } from '../lib/lobbyDuos';
+import { lobbyRoles } from '../lib/lobbyRoles';
+import { averageRank } from '../lib/ladder';
+import { LANE_ROLES } from '../lib/lanes';
+import { ROLE_LABEL } from '../components/ui/RoleIcon';
 import { GameImg } from '../components/ui/GameImg';
 import { TagList } from '../components/ui/TagList';
 import { Skeleton } from '../components/ui/States';
@@ -163,8 +167,9 @@ export function MultiSearchPage() {
         </section>
       )}
 
+      {fromUrl.length > 1 && <LobbySummary profiles={profiles} matches={lobbyMatches} />}
       {fromUrl.length > 0 && (
-        <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {fromUrl.map((id, i) => (
             <li key={`${id.gameName}#${id.tagLine}`} className="fade-up" style={{ animationDelay: `${i * 60}ms` }}>
               <PlayerCard platform={region} id={id} duos={duos} />
@@ -288,5 +293,48 @@ function PlayerCard({ platform, id, duos }: { platform: string; id: RiotId; duos
 
       <TagList tags={tags} className="mt-auto pt-3" />
     </article>
+  );
+}
+
+/**
+ * One line over the cards: the lobby's average solo rank, who mains which role (from their last
+ * 10 ranked games), and the roles two people want or nobody plays. Uses the cards' own data.
+ */
+function LobbySummary({ profiles, matches }: { profiles: { data?: Profile }[]; matches: { data?: MatchPage }[] }) {
+  const loaded = profiles.flatMap((q, i) => (q.data && matches[i]?.data ? [{ p: q.data, ms: matches[i].data!.matches }] : []));
+  if (loaded.length < 2 || loaded.length < profiles.length) return null; // wait for everyone, so the line doesn't jump
+  const ranks = loaded.flatMap(({ p }) => {
+    const s = p.ranked.find((x) => x.queueType === 'RANKED_SOLO_5x5');
+    return s ? [{ tier: s.tier, rank: s.rank, lp: s.leaguePoints }] : [];
+  });
+  const avg = averageRank(ranks);
+  const roles = lobbyRoles(loaded.map(({ p, ms }) => ({ name: p.account.gameName, roles: overview(ms, p.account.puuid).roles })));
+  return (
+    <section className="panel mt-8 px-4 py-3 text-sm" aria-label={t('ms.lobbyAria')}>
+      <p className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        {avg && (
+          <span>
+            <span className="text-muted">{t('ms.lobbyAvg')}</span> <span className="font-semibold">{avg}</span>
+            {ranks.length < loaded.length && <span className="text-xs text-faint"> ({t('ms.lobbyRanked', { n: ranks.length, total: loaded.length })})</span>}
+          </span>
+        )}
+        <span className="text-muted">
+          {LANE_ROLES.filter((r) => roles.mains[r]).map((r, i) => (
+            <span key={r}>
+              {i > 0 && ' · '}
+              <span className={clsx(roles.clash.includes(r) ? 'font-semibold text-gold' : 'text-text')}>{ROLE_LABEL[r]}</span> {roles.mains[r]!.join(', ')}
+            </span>
+          ))}
+          {roles.flex.length > 0 && <> · {t('ms.lobbyFlex', { names: roles.flex.join(', ') })}</>}
+        </span>
+      </p>
+      {(roles.clash.length > 0 || (roles.open.length > 0 && roles.open.length < 5)) && (
+        <p className="mt-1 text-xs text-muted">
+          {roles.clash.length > 0 && t('ms.lobbyClash', { roles: roles.clash.map((r) => ROLE_LABEL[r]).join(', ') })}
+          {roles.clash.length > 0 && roles.open.length > 0 && ' '}
+          {roles.open.length > 0 && roles.open.length < 5 && t('ms.lobbyOpen', { roles: roles.open.map((r) => ROLE_LABEL[r]).join(', ') })}
+        </p>
+      )}
+    </section>
   );
 }
