@@ -18,3 +18,7 @@ Follow-up from v3.82. The collector only visits Challenger/Grandmaster/Master pl
 
 ## Checks
 tsc clean · a11y `{}` · demo shots (the collector doesn't run in demo mode).
+
+## Live check (2026-11-14 16:55)
+- Deploy finished cleanly at 16:54. Health is 200, the collector is running, and ranked is at 14,245 matches and still growing.
+- Arena is still at 0, as expected until the first visitor profile with a recent EUW Arena game seeds the queue. I didn't seed it artificially (no test lookups in the user's browser). To re-check in a later version: `/api/champions?group=arena` `matches`.
