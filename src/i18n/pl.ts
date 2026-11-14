@@ -1116,5 +1116,6 @@ const dict: Record<string, string> = {
   "ms.lobbyFlex": "bez wyraźnej głównej roli: {names}",
   "ms.lobbyClash": "Więcej niż jeden main na {roles}, więc ktoś zagra poza swoją rolą.",
   "ms.lobbyOpen": "Nikt nie gra głównie na {roles}.",
+  "home.tool.duo": "Gracze z twoich ostatnich gier, którzy pasowaliby do ciebie, blisko twojej rangi.",
 };
 export default dict;

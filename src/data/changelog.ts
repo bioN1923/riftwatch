@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.74',
+    date: '2026-11-14',
+    items: [
+      'Multi-search lobby summary: "Nobody mains …" only shows once 4 or more players are loaded, where it means something.',
+      'Home: the Duo finder joins the Tools section.',
+    ],
+  },
+  {
     version: '3.73',
     date: '2026-11-14',
     items: ['Multi-search: a lobby summary above the cards shows the average rank, who mains which role, and flags roles two people main or nobody plays, so role calls are quicker.'],

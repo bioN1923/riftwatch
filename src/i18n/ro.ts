@@ -1091,5 +1091,6 @@ const dict: Record<string, string> = {
   "ms.lobbyFlex": "fără rol principal clar: {names}",
   "ms.lobbyClash": "Mai mulți main pe {roles}, deci cineva va juca alt rol.",
   "ms.lobbyOpen": "Nimeni nu e main pe {roles}.",
+  "home.tool.duo": "Jucători din meciurile tale recente care s-ar potrivi cu tine, apropiați de rangul tău.",
 };
 export default dict;

@@ -311,6 +311,8 @@ function LobbySummary({ profiles, matches }: { profiles: { data?: Profile; isPen
   });
   const avg = averageRank(ranks);
   const roles = lobbyRoles(loaded.map(({ p, ms }) => ({ name: p.account.gameName, roles: overview(ms, p.account.puuid).roles })));
+  // "Nobody mains Mid" only means something once the lobby is nearly full.
+  const open = loaded.length >= 4 ? roles.open : [];
   return (
     <section className="panel mt-8 px-4 py-3 text-sm" aria-label={t('ms.lobbyAria')}>
       <p className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
@@ -330,11 +332,11 @@ function LobbySummary({ profiles, matches }: { profiles: { data?: Profile; isPen
           {roles.flex.length > 0 && <> · {t('ms.lobbyFlex', { names: roles.flex.join(', ') })}</>}
         </span>
       </p>
-      {(roles.clash.length > 0 || (roles.open.length > 0 && roles.open.length < 5)) && (
+      {(roles.clash.length > 0 || open.length > 0) && (
         <p className="mt-1 text-xs text-muted">
           {roles.clash.length > 0 && t('ms.lobbyClash', { roles: roles.clash.map((r) => ROLE_LABEL[r]).join(', ') })}
-          {roles.clash.length > 0 && roles.open.length > 0 && ' '}
-          {roles.open.length > 0 && roles.open.length < 5 && t('ms.lobbyOpen', { roles: roles.open.map((r) => ROLE_LABEL[r]).join(', ') })}
+          {roles.clash.length > 0 && open.length > 0 && ' '}
+          {open.length > 0 && t('ms.lobbyOpen', { roles: open.map((r) => ROLE_LABEL[r]).join(', ') })}
         </p>
       )}
     </section>

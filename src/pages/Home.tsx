@@ -5,7 +5,7 @@ import { RoleIcon, ROLE_LABEL } from '../components/ui/RoleIcon';
 import { TierBadge } from '../components/champions/common';
 import { pct } from '../lib/format';
 import { Link } from 'react-router';
-import { Star, Clock, Swords, Scale, Users, Trophy } from 'lucide-react';
+import { Star, Clock, Swords, Scale, Users, Trophy, HeartHandshake } from 'lucide-react';
 import { SearchBox } from '../components/SearchBox';
 import { GameImg } from '../components/ui/GameImg';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
@@ -118,6 +118,7 @@ function Tools() {
     { to: '/draft', icon: Swords, title: t('nav.draft'), body: t('home.tool.draft') },
     { to: '/compare', icon: Scale, title: t('nav.compare'), body: t('home.tool.compare') },
     { to: '/multisearch', icon: Users, title: t('nav.multisearch'), body: t('home.tool.multi') },
+    { to: '/duo', icon: HeartHandshake, title: t('nav.duo'), body: t('home.tool.duo') },
     { to: '/leaderboard', icon: Trophy, title: t('nav.ladder'), body: t('home.tool.ladder') },
   ];
   return (
@@ -125,7 +126,7 @@ function Tools() {
       <h2 id="tools-h" className="mb-4 font-display text-2xl font-bold">
         {t('home.tools')}
       </h2>
-      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {items.map(({ to, icon: Icon, title, body }) => (
           <li key={to}>
             <Link to={to} className="panel group flex h-full gap-3 p-4 transition-colors hover:border-gold/50">

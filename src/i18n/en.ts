@@ -1066,5 +1066,6 @@ const en = {
   "ms.lobbyFlex": "no clear main: {names}",
   "ms.lobbyClash": "More than one main for {roles}, so someone will be off-role.",
   "ms.lobbyOpen": "Nobody mains {roles}.",
+  "home.tool.duo": "Players from your recent games who would fit next to you, around your rank.",
 };
 export default en;
