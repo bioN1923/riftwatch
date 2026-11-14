@@ -12,3 +12,8 @@ tsc clean · 118 tests pass · a11y `{}` · demo:
 - `lobby-2.png`: "Top Hans · Jungle Caps", no open-roles line.
 - `lobby-4.png`: "… Nobody mains Mid."
 - `01-home.jpg`: 5 tool cards.
+
+## Live check (2026-11-14 15:35)
+- Deploy finished cleanly at 15:34.
+- Multi-search (bioN1923 + lickit#28cm, loaded by URL): "Average rank Silver II · Jungle bioN1923 · no clear main: lickit", with no open-roles line.
+- Home Tools: Draft, Compare, Multi-search, Duo, Ladder. Screenshot: `live/home-tools.jpg`.
