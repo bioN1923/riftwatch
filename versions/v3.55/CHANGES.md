@@ -19,3 +19,8 @@ The profile and champion sidebars were `sticky` at `top: 72px`. When a sidebar i
   - champion: sidebar 990 px, top −206 px; its bottom is in view mid-page too.
   - Screenshot: `demo/sidebar-*-mid-scroll.png`.
 - Tests: 97 pass (new: `stickyTop`). Typecheck clean, a11y `{}`.
+
+## Live check (06:54)
+- Deployed automatically (EXIT CODE 0, 06:53:55).
+- **bioN1923#EUNE:** the sidebar is 1946 px in a 917 px window and gets `top: -1045px`.
+- Scrolled to 1800 of 4295 px, the sidebar's bottom ("Often queues with", "All-time mastery") is already in view (`live/profile-mid-scroll.jpg`).
