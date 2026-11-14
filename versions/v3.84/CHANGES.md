@@ -9,3 +9,6 @@ Meanwhile the empty Arena tier list said "The server is reading high-elo ranked 
 
 ## Checks
 tsc clean · 122 tests pass · a11y `{}` · demo shots (the demo has Arena data, so the empty state is checked live).
+
+## Live check (2026-11-14 17:03)
+- Deploy finished cleanly at 17:02. `/champions?queue=arena` now reads "No games collected yet / Arena games come from players looked up on Riftwatch: …".
