@@ -13,6 +13,7 @@ import { PlayerIndex } from './playerIndex';
 import { ChampionStatsStore, matchupMin } from './champStats';
 import { loadItemKinds } from './items';
 import { startCrawler } from './crawler';
+import { ArenaSeeds } from './arenaSeeds';
 import { TtlCache } from './cache';
 import { getPlatform, type Platform } from '../shared/regions';
 import { MatchStore } from './matchStore';
@@ -43,6 +44,8 @@ const players = new PlayerIndex(path.resolve(here, 'data', DEMO ? 'players.demo.
 if (DEMO) DEMO_SEED.forEach((p) => players.add(p));
 
 const champStats = new ChampionStatsStore(DEMO ? null : path.resolve(here, 'data', 'champions.json'));
+// Players from Arena games already read, for the collector to look up next (see arenaSeeds.ts).
+const arenaSeeds = new ArenaSeeds((getPlatform(process.env.CRAWL_REGION ?? 'euw1') ?? getPlatform('euw1')!).id);
 const timelines = new TtlCache<MatchTimeline>(300);
 const privacy = new PrivacyStore(DEMO ? null : path.resolve(here, 'data', 'privacy.json'));
 players.isBlocked = (puuid) => privacy.isHidden(puuid);
@@ -334,7 +337,10 @@ app.get(
     const matches = settled.flatMap((s) => (s.status === 'fulfilled' && s.value && s.value.info?.queueId !== 0 ? [shapeMatch(s.value)] : []));
     const page: MatchPage = { matches, nextStart: ids.length === count ? start + count : null };
     indexMatches(p.id, matches);
-    matches.forEach((m) => champStats.addMatch(m));
+    matches.forEach((m) => {
+      champStats.addMatch(m);
+      arenaSeeds.note(m);
+    });
     res.json({ ...page, matches: matches.map(scrubMatch) });
   }),
 );
@@ -1125,6 +1131,7 @@ if (!DEMO && process.env.CRAWLER !== 'false') {
     lastUserRequest: () => lastUserRequest,
     paceMs: Number(process.env.CRAWL_PACE_MS ?? 2500),
     onStop: (message) => errorLog.record({ source: 'riot', kind: 'KEY_INVALID', message, where: 'champion stats collector', urgent: true }),
+    arenaSeeds,
   });
 }
 

@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.83',
+    date: '2026-11-14',
+    items: ['Arena stats: the collector now finds Arena games through Arena players. Each Arena game Riftwatch reads lines up its other players, whose recent Arena games are read next. It no longer asks top ranked players, who hardly play Arena.'],
+  },
+  {
     version: '3.82',
     date: '2026-11-14',
     items: ['Profiles: win rates over fewer than 5 games (champion pool, champions played, roles, "often queues with", a champion\'s details) are no longer coloured green or grey. 3 of 4 is a coin flip, not a strength.'],

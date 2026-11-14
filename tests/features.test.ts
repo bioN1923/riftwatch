@@ -905,3 +905,19 @@ describe('winRateTone', async () => {
     expect(winRateTone(0.55)).toBe('text-win');
   });
 });
+
+describe('ArenaSeeds', async () => {
+  const { ArenaSeeds } = await import('../server/arenaSeeds');
+  const game = (id: string, queueId: number, puuids: string[]) => ({ id, queueId, participants: puuids.map((puuid) => ({ puuid })) }) as never;
+  it('lines up players from Arena games on its platform, each once, within a cap', () => {
+    const s = new ArenaSeeds('euw1', 3);
+    s.note(game('EUW1_1', 1710, ['a', 'b']));
+    s.note(game('EUW1_2', 1700, ['b', 'c', 'd']));
+    s.note(game('EUW1_3', 420, ['x'])); // not Arena
+    s.note(game('NA1_4', 1710, ['y'])); // other platform
+    expect(s.size).toBe(3);
+    expect([s.take(), s.take(), s.take(), s.take()]).toEqual(['a', 'b', 'c', undefined]);
+    s.note(game('EUW1_5', 1710, ['a', 'e']));
+    expect(s.take()).toBe('e'); // 'a' was already seen
+  });
+});

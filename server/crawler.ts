@@ -3,6 +3,7 @@ import type { RiotClient } from './riot';
 import type { ChampionStatsStore } from './champStats';
 import { shapeMatch, shapeTimeline } from './shape';
 import { ARENA_QUEUE } from '../shared/queues';
+import type { ArenaSeeds } from './arenaSeeds';
 
 /**
  * Background match collector for champion stats. It walks the Challenger, Grandmaster and
@@ -11,7 +12,7 @@ import { ARENA_QUEUE } from '../shared/queues';
  * under the key's limit and pauses whenever someone is using the site, so page loads
  * always come first.
  */
-export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats: ChampionStatsStore; lastUserRequest: () => number; paceMs: number; onStop?: (message: string) => void }) {
+export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats: ChampionStatsStore; lastUserRequest: () => number; paceMs: number; onStop?: (message: string) => void; arenaSeeds?: ArenaSeeds }) {
   // Never take the last half of the key's budget: visitors' lookups come first.
   const { riot, platform, stats } = opts;
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -41,6 +42,21 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
     return ids.length;
   }
 
+  /** A player's last few games in one queue, without timelines; Arena games line up their players. */
+  async function readQueue(puuid: string, queue: number) {
+    const ids = await paced(() => riot.matchIds(platform, puuid, 0, 5, { queue })).catch(() => [] as string[]);
+    for (const id of ids) {
+      if (stats.has(id)) continue;
+      try {
+        const m = shapeMatch(await paced(() => riot.match(platform, id, false)));
+        stats.addMatch(m);
+        opts.arenaSeeds?.note(m);
+      } catch (e) {
+        if ((e as any)?.code === 'KEY_INVALID') throw e;
+      }
+    }
+  }
+
   async function loop() {
     stats.collecting = true;
     console.log(`Collecting ranked matches from ${platform.label} for champion stats (one request every ${opts.paceMs / 1000}s).`);
@@ -65,20 +81,11 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
           active++;
           const count = before == null ? 10 : Math.min(10, now - before);
           const ids = await paced(() => riot.matchIds(platform, puuid, 0, count, { queue: 420 })).catch(() => [] as string[]);
-          // Every third player or so, also take their recent ARAM and Arena games (no timelines needed).
-          if (Math.random() < 0.35) {
-            for (const queue of [450, ARENA_QUEUE]) {
-              const extra = await paced(() => riot.matchIds(platform, puuid, 0, 5, { queue })).catch(() => [] as string[]);
-              for (const id of extra) {
-                if (stats.has(id)) continue;
-                try {
-                  stats.addMatch(shapeMatch(await paced(() => riot.match(platform, id, false))));
-                } catch (e) {
-                  if ((e as any)?.code === 'KEY_INVALID') throw e;
-                }
-              }
-            }
-          }
+          // Every third player or so, also take their recent ARAM games (no timelines needed).
+          if (Math.random() < 0.35) await readQueue(puuid, 450);
+          // Arena comes from Arena players instead: the next one lined up from an Arena game already read.
+          const seed = opts.arenaSeeds?.take();
+          if (seed) await readQueue(seed, ARENA_QUEUE);
           for (const id of ids) {
             if (stats.has(id) && stats.hasTimeline(id)) continue;
             try {
