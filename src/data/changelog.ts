@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.72',
+    date: '2026-11-14',
+    items: [
+      'Ladder: the Grandmaster and Master pages show the lowest LP in the tier above right now, and mark players who already have that much, so they are likely to move up at Riot\'s next daily update.',
+      'Live game: the damage mix leaves out zero counts ("2 AD · 3 AP", not "… · 0 mixed").',
+    ],
+  },
+  {
     version: '3.71',
     date: '2026-11-14',
     items: ['After an update, champion, item and rune data loads fresh at once, rather than up to an hour later from your browser\'s cache.'],

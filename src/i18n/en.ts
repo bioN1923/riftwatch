@@ -1051,9 +1051,14 @@ const en = {
   "cmp.clearNote_other": "Gold marks a clear edge, bigger than normal game-to-game swings. {count} other rows differ but are too close to call with this many games.",
   "cmp.rolesFlex": "{name} plays several roles (most often {role}, {share} of games). CS, damage, vision and kill numbers depend a lot on role, so only win rate and KDA get a winner here.",
   "live.dmgLabel": "Damage mix",
-  "live.dmgMix": "{ad} AD · {ap} AP · {mixed} mixed",
   "live.dmgLeanAd": "Mostly physical damage: armor pays off",
   "live.dmgLeanAp": "Mostly magic damage: magic resist pays off",
   "live.dmgNote": "From Riot's attack and magic ratings for each champion. Builds can change it (an AP Kai'Sa, say).",
+  "live.dmgAd": "{n} AD",
+  "live.dmgAp": "{n} AP",
+  "live.dmgMixed": "{n} mixed",
+  "lb.upperCut": "Lowest {tier} right now: {lp}",
+  "lb.upperChip": "{tier} LP",
+  "lb.upperTip": "Has at least the LP of the lowest {tier} player right now, so likely to move up at Riot's next daily update.",
 };
 export default en;

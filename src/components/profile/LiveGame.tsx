@@ -89,7 +89,9 @@ export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string;
                 {mix && (
                   <p className="flex items-center gap-2 text-xs text-muted md:mr-auto" title={t('live.dmgNote')}>
                     <span className="text-faint">{t('live.dmgLabel')}:</span>
-                    <span>{t('live.dmgMix', { ad: mix.ad, ap: mix.ap, mixed: mix.mixed })}</span>
+                    <span>
+                      {[mix.ad && t('live.dmgAd', { n: mix.ad }), mix.ap && t('live.dmgAp', { n: mix.ap }), mix.mixed && t('live.dmgMixed', { n: mix.mixed })].filter(Boolean).join(' · ')}
+                    </span>
                     {mix.lean && (
                       <span className="rounded border border-line-strong px-1.5 py-0.5 text-[11px] font-medium text-text">
                         {t(mix.lean === 'ad' ? 'live.dmgLeanAd' : 'live.dmgLeanAp')}

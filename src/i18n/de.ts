@@ -1051,9 +1051,14 @@ const dict: Record<string, string> = {
   "cmp.clearNote_other": "Gold markiert einen klaren Vorsprung, größer als die üblichen Schwankungen von Spiel zu Spiel. {count} weitere Zeilen weichen ab, sind bei so wenigen Spielen aber zu knapp.",
   "cmp.rolesFlex": "{name} spielt mehrere Rollen (am häufigsten {role}, {share} der Spiele). CS, Schaden, Sicht und Kills hängen stark von der Rolle ab, daher gibt es hier nur bei Siegquote und KDA einen Gewinner.",
   "live.dmgLabel": "Schadensmix",
-  "live.dmgMix": "{ad} AD · {ap} AP · {mixed} gemischt",
   "live.dmgLeanAd": "Vor allem physischer Schaden: Rüstung lohnt sich",
   "live.dmgLeanAp": "Vor allem magischer Schaden: Magieresistenz lohnt sich",
   "live.dmgNote": "Aus Riots Angriffs- und Magiewerten je Champion. Builds können das ändern (z. B. AP-Kai’Sa).",
+  "live.dmgAd": "{n} AD",
+  "live.dmgAp": "{n} AP",
+  "live.dmgMixed": "{n} gemischt",
+  "lb.upperCut": "Niedrigste/r {tier} gerade: {lp}",
+  "lb.upperChip": "{tier}-LP",
+  "lb.upperTip": "Hat mindestens die LP des niedrigsten {tier}-Spielers gerade, steigt also wahrscheinlich beim nächsten täglichen Update von Riot auf.",
 };
 export default dict;

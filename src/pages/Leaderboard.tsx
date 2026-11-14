@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { ChevronDown, ChevronLeft, ChevronRight, Flame, Search } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronsUp, Flame, Search } from 'lucide-react';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api } from '../lib/api';
 import { rankEmblem } from '../lib/ddragon';
@@ -41,6 +41,18 @@ export function LeaderboardPage() {
     // Names the server is still looking up in the background fill in on their own.
     refetchInterval: (query) => (query.state.data?.namesPending && query.state.dataUpdateCount < 30 ? 5000 : false),
   });
+
+  // The tier above (Grandmaster for Master, Challenger for Grandmaster): its lowest LP right now
+  // marks who in this tier already has the LP to move up at Riot's next daily update.
+  const upper = tier === 'master' ? 'grandmaster' : tier === 'grandmaster' ? 'challenger' : null;
+  const upQ = useQuery({
+    queryKey: ['ladder', region, queue, upper, 1],
+    queryFn: ({ signal }) => api.leaderboard(region, { queue, tier: upper!, page: 1 }, signal),
+    enabled: !!upper,
+    staleTime: 2 * 60_000,
+  });
+  const upperMin = upper ? upQ.data?.minLp ?? null : null;
+  const upperLabel = TIERS.find((x) => x.id === upper)?.label() ?? '';
 
   const set = (patch: Record<string, string | null>) => {
     const next = new URLSearchParams(params);
@@ -189,6 +201,14 @@ export function LeaderboardPage() {
               })}
             </p>
           )}
+          {upperMin != null && (
+            <p className="mt-1 text-xs text-muted" title={t('lb.cutoffTip')}>
+              {t.rich('lb.upperCut', {
+                tier: upperLabel,
+                lp: <span className="num font-semibold text-text">{t('common.lp', { lp: thousands(upperMin) })}</span>,
+              })}
+            </p>
+          )}
           <div className={clsx('mt-2 overflow-x-auto transition-opacity', q.isPlaceholderData && 'opacity-60')}>
             <table className="w-full min-w-[640px] text-sm">
               <caption className="sr-only">
@@ -238,6 +258,12 @@ export function LeaderboardPage() {
                           <span className="text-faint">{t('lb.noName')}</span>
                         )}
                         {e.hotStreak && <Flame className="ml-1.5 inline size-3.5 text-kda-great" aria-label={t('lb.hot')} />}
+                        {upperMin != null && e.lp >= upperMin && (
+                          <span className="ml-2 inline-flex items-center gap-0.5 rounded border border-gold/40 px-1.5 py-0.5 align-middle text-[11px] font-medium text-gold" title={t('lb.upperTip', { tier: upperLabel })}>
+                            <ChevronsUp className="size-3" aria-hidden />
+                            {t('lb.upperChip', { tier: upperLabel })}
+                          </span>
+                        )}
                       </td>
                       <td className="num px-3 py-2.5 text-right font-semibold">{thousands(e.lp)}</td>
                       <td className="px-3 py-2.5 text-right">

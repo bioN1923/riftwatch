@@ -1051,9 +1051,14 @@ const dict: Record<string, string> = {
   "cmp.clearNote_other": "El dorado marca una ventaja clara, mayor que las variaciones normales entre partidas. {count} filas más son distintas pero están demasiado igualadas con tan pocas partidas.",
   "cmp.rolesFlex": "{name} juega varios roles (sobre todo {role}, {share} de las partidas). CS, daño, visión y asesinatos dependen mucho del rol, así que aquí solo la tasa de victorias y el KDA tienen ganador.",
   "live.dmgLabel": "Tipo de daño",
-  "live.dmgMix": "{ad} AD · {ap} AP · {mixed} mixtos",
   "live.dmgLeanAd": "Sobre todo daño físico: la armadura compensa",
   "live.dmgLeanAp": "Sobre todo daño mágico: la resistencia mágica compensa",
   "live.dmgNote": "Según las valoraciones de ataque y magia de Riot para cada campeón. Las builds pueden cambiarlo (una Kai’Sa AP, por ejemplo).",
+  "live.dmgAd": "{n} AD",
+  "live.dmgAp": "{n} AP",
+  "live.dmgMixed": "{n} mixtos",
+  "lb.upperCut": "{tier} más bajo ahora mismo: {lp}",
+  "lb.upperChip": "LP de {tier}",
+  "lb.upperTip": "Tiene al menos los LP del {tier} más bajo ahora mismo, así que probablemente suba en la próxima actualización diaria de Riot.",
 };
 export default dict;
