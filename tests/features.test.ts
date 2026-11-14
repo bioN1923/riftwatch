@@ -894,3 +894,14 @@ describe('Arena queue ids', async () => {
     expect(ARENA_QUEUE).toBe(1710);
   });
 });
+
+describe('winRateTone', async () => {
+  const { winRateTone } = await import('../src/lib/format');
+  it('keeps small samples neutral', () => {
+    expect(winRateTone(1, 3)).toBe('text-text');
+    expect(winRateTone(0, 4)).toBe('text-text');
+    expect(winRateTone(0.75, 8)).toBe('text-kda-great');
+    expect(winRateTone(0.4, 20)).toBe('text-muted');
+    expect(winRateTone(0.55)).toBe('text-win');
+  });
+});

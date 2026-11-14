@@ -42,7 +42,12 @@ export function kdaTone(ratio: number) {
   return 'text-muted';
 }
 
-export function winRateTone(wr: number) {
+/** Fewer games than this and a win rate isn't coloured: 3/4 is a coin flip, not a strength. */
+export const TONE_MIN_GAMES = 5;
+
+/** Colour for a win rate; pass the game count so small samples stay neutral. */
+export function winRateTone(wr: number, games?: number) {
+  if (games != null && games < TONE_MIN_GAMES) return 'text-text';
   if (wr >= 0.6) return 'text-kda-great';
   if (wr >= 0.5) return 'text-win';
   return 'text-muted';

@@ -98,7 +98,7 @@ export function PlayerChampionDialog({
           ) : (
             <div className="space-y-6">
               <div className="grid grid-cols-3 gap-3">
-                <Big label={t('pc.winRate')} value={<span className={winRateTone(wr)}>{pct(wr)}</span>} note={`${t('common.wins', { count: pc.wins })} ${t('common.losses', { count: pc.games - pc.wins })}`} />
+                <Big label={t('pc.winRate')} value={<span className={winRateTone(wr, pc.games)}>{pct(wr)}</span>} note={`${t('common.wins', { count: pc.wins })} ${t('common.losses', { count: pc.games - pc.wins })}`} />
                 <Big
                   label={t('pc.kda')}
                   value={<span className={kdaTone(ratio)}>{formatKda(ratio)}</span>}
@@ -155,7 +155,7 @@ export function PlayerChampionDialog({
                         <li key={it.id} className="flex flex-col items-center gap-1 text-center">
                           <GameImg src={a.item(it.id).url} alt={a.item(it.id).name} size={36} rounded="sm" tip={<ItemTip id={it.id} />} />
                           <span className="num text-[11px] text-muted">
-                            {it.games}× · <span className={winRateTone(it.wins / it.games)}>{pct(it.wins / it.games)}</span>
+                            {it.games}× · <span className={winRateTone(it.wins / it.games, it.games)}>{pct(it.wins / it.games)}</span>
                           </span>
                         </li>
                       ))}
@@ -288,7 +288,7 @@ function Big({ label, value, note }: { label: string; value: React.ReactNode; no
 function Record({ games, wins }: { games: number; wins: number }) {
   return (
     <span className="num shrink-0 text-xs text-muted">
-      {games}× · <span className={winRateTone(wins / games)}>{pct(wins / games)}</span>
+      {games}× · <span className={winRateTone(wins / games, games)}>{pct(wins / games)}</span>
     </span>
   );
 }

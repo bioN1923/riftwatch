@@ -171,7 +171,7 @@ export function ChampionPool({ ov, loading, onOpen }: { ov?: Overview; loading: 
                 </div>
               </div>
               <div className="text-right">
-                <p className={clsx('num text-sm font-semibold', winRateTone(wr))}>
+                <p className={clsx('num text-sm font-semibold', winRateTone(wr, c.games))}>
                   {pct(wr)} <span className="font-normal text-muted">({c.games})</span>
                 </p>
                 <p className={clsx('num text-xs', kdaTone(ratio))}>{t('common.kdaValue', { value: formatKda(ratio) })}</p>
@@ -204,7 +204,7 @@ export function PlayedWith({ ov, platform }: { ov?: Overview; platform: string }
                   <span className="text-faint">#{d.tagLine}</span>
                 </span>
                 <span className="num text-xs text-muted">{t('common.games', { count: d.games })}</span>
-                <span className={clsx('num w-10 text-right font-semibold', winRateTone(wr))}>{pct(wr)}</span>
+                <span className={clsx('num w-10 text-right font-semibold', winRateTone(wr, d.games))}>{pct(wr)}</span>
               </Link>
             </li>
           );

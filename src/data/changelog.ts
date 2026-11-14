@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.82',
+    date: '2026-11-14',
+    items: ['Profiles: win rates over fewer than 5 games (champion pool, champions played, roles, "often queues with", a champion\'s details) are no longer coloured green or grey. 3 of 4 is a coin flip, not a strength.'],
+  },
+  {
     version: '3.81',
     date: '2026-11-14',
     items: ['Arena stats work again. Riot moved Arena to a new queue (1710), so Riftwatch collected no new Arena games and the Arena tier list was empty. Old and new Arena games are now both recognised, and the profile\'s Arena filter asks for the current queue.'],

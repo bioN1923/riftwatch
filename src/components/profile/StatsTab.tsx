@@ -214,7 +214,7 @@ function ChampionTable({ matches, puuid, onOpen }: { matches: MatchSummary[]; pu
                       {t('common.wins', { count: r.wins })} {t('common.losses', { count: r.games - r.wins })}
                     </span>
                   </td>
-                  <td className={clsx('num px-2 text-right font-semibold', winRateTone(wr))}>{pct(wr)}</td>
+                  <td className={clsx('num px-2 text-right font-semibold', winRateTone(wr, r.games))}>{pct(wr)}</td>
                   <td className="num px-2 text-right">
                     <span className={clsx('font-semibold', kdaTone(ratio))}>{formatKda(ratio)}</span>
                     <span className="block text-xs text-muted">
@@ -262,7 +262,7 @@ function RoleTable({ matches, puuid }: { matches: MatchSummary[]; puuid: string 
               <span className="num w-44 text-right text-xs text-muted">
                 {t.rich('stats.roleLine', {
                   games: t('common.games', { count: r.games }),
-                  rate: <span className={clsx('font-semibold', winRateTone(wr))}>{pct(wr)}</span>,
+                  rate: <span className={clsx('font-semibold', winRateTone(wr, r.games))}>{pct(wr)}</span>,
                   kda: <span className={kdaTone(ratio)}>{formatKda(ratio)}</span>,
                 })}
               </span>

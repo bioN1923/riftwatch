@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.82](v3.82/CHANGES.md) | 2026-11-14 | Profiles: no win-rate colour under 5 games |
 | [v3.81](v3.81/CHANGES.md) | 2026-11-14 | Arena: follow Riot's new queue id 1710 (Arena stats were empty) |
 | [v3.80](v3.80/CHANGES.md) | 2026-11-14 | Tier list: small samples after the rest when sorting by a rate |
 | [v3.79](v3.79/CHANGES.md) | 2026-11-14 | Phones: Champions played table fits |
