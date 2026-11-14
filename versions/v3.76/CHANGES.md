@@ -7,3 +7,7 @@ Phone check of the profile header: the 20 recent-game icons ran past the right e
 
 ## Checks
 tsc clean · 119 tests pass · a11y `{}` · demo `phone-form-strip.png` (iPhone 13: two full rows above "9–9 in the last 20").
+
+## Live check (2026-11-14 15:51)
+- Deploy finished cleanly at 15:50. On desktop (1920 px), bioN1923's strip is still a single flex row of 20, so desktop is unchanged.
+- The phone layout was checked on the demo server, without resizing the user's browser.
