@@ -15,3 +15,11 @@ New panel on the profile Stats tab, under "Compared with high elo".
 
 ## Checks
 tsc clean · 110 tests pass · a11y `{}` · demo `win-conditions.png` (Caps: 5 deaths or fewer 7–4 vs 2–5 …).
+
+## Live check (2026-11-14 08:48)
+- Deploy finished cleanly. bioN1923, last 20 games:
+  - 8 deaths or fewer: 8–3 (73%), otherwise 0–9 (0%)
+  - 6.7+ CS a minute: 7–2 (78%), otherwise 1–10 (9%)
+  - 40%+ kill participation: 5–5 vs 3–7, marked "could still be chance"
+
+  Screenshot: `live/win-conditions.jpg`.
