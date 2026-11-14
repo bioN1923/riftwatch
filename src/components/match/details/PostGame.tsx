@@ -50,7 +50,7 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
       {blue && red && !match.participants.some((p) => p.subteam) && <TeamCompare blue={blue} red={red} />}
       <div className="@container overflow-x-auto overflow-y-hidden">
         {gs.map((g) => (
-          <table key={g.key} className="w-full min-w-[580px] table-fixed border-collapse text-xs">
+          <table key={g.key} className="w-full table-fixed border-collapse text-xs">
             <caption className="sr-only">{g.title}</caption>
             <thead>
               <tr className={clsx('text-left text-muted', g.win ? 'bg-win-tint' : 'bg-loss-tint')}>
@@ -69,13 +69,13 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
                 <th scope="col" className="hidden w-[52px] px-2 text-right font-medium @[680px]:table-cell">
                   {t('pg.gold')}
                 </th>
-                <th scope="col" className="w-[60px] px-2 text-right font-medium">
+                <th scope="col" className="hidden w-[60px] px-2 text-right font-medium @[580px]:table-cell">
                   {t('pg.cs')}
                 </th>
                 <th scope="col" className="hidden w-[56px] px-2 text-right font-medium @[740px]:table-cell">
                   {t('pg.wards')}
                 </th>
-                <th scope="col" className="w-[170px] px-2 pr-3 font-medium">
+                <th scope="col" className="hidden w-[170px] px-2 pr-3 font-medium @[580px]:table-cell">
                   {t('pg.items')}
                 </th>
               </tr>
@@ -113,6 +113,13 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
                           {!p.hidden && <span className="block truncate text-faint">#{p.tagLine}</span>}
                         </div>
                       </div>
+                      {/* Narrow screens: items and CS under the player instead of in columns off the edge. */}
+                      <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 @[580px]:hidden">
+                        <Items items={p.items} size={16} />
+                        <span className="num text-muted">
+                          {p.cs} {t('pg.cs')} · {t('pg.perMin', { value: (p.cs / minutes).toFixed(1) })}
+                        </span>
+                      </div>
                     </td>
                     <td className="num px-2">
                       <span className="block whitespace-nowrap">
@@ -143,7 +150,7 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
                       </div>
                     </td>
                     <td className="num hidden px-2 text-right @[680px]:table-cell">{compact(p.gold)}</td>
-                    <td className="num px-2 text-right">
+                    <td className="num hidden px-2 text-right @[580px]:table-cell">
                       {p.cs}
                       <span className="block text-muted">{t('pg.perMin', { value: (p.cs / minutes).toFixed(1) })}</span>
                     </td>
@@ -153,7 +160,7 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
                         {p.wardsPlaced} · {p.controlWards}
                       </span>
                     </td>
-                    <td className="px-2 pr-3">
+                    <td className="hidden px-2 pr-3 @[580px]:table-cell">
                       <Items items={p.items} size={19} />
                     </td>
                   </tr>
