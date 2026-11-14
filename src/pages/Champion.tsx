@@ -18,6 +18,7 @@ import { fadeIn } from '../lib/motion';
 import { ArenaPanel, ArenaStrip } from '../components/champions/Arena';
 import { SlidingIndicator, useSlideDirection } from '../components/ui/Motion';
 import { t } from '../i18n';
+import { useStickyTop } from '../lib/useStickyTop';
 import { LaneCurve } from '../components/champions/LaneCurve';
 import { guessChampion } from '../lib/champSearch';
 import { addRecentChamp } from '../lib/storage';
@@ -60,6 +61,7 @@ export function ChampionPage() {
 }
 
 function ChampionView({ championId }: { championId: number }) {
+  const side = useStickyTop<HTMLElement>();
   const [params, setParams] = useSearchParams();
   const queue = params.get('queue');
   const group: StatsGroup = queue === 'aram' || queue === 'arena' ? queue : 'ranked';
@@ -179,7 +181,7 @@ function ChampionView({ championId }: { championId: number }) {
               )}
               <LengthChart rows={s.byLength} />
             </div>
-            <aside className="space-y-5 lg:sticky lg:top-[72px] lg:self-start">
+            <aside ref={side.ref} style={side.style} className="space-y-5 lg:sticky lg:self-start">
               <Averages s={s} />
               <TopPlayers s={s} />
               {detail && <BaseStats d={detail} />}

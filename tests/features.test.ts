@@ -783,3 +783,12 @@ describe('counters: clear ones first, the rest only leaning', async () => {
     expect(r.ids.length).toBeLessThanOrEqual(3);
   });
 });
+
+describe('sticky sidebars that are taller than the window', async () => {
+  const { stickyTop } = await import('../src/lib/useStickyTop');
+  it('pins short sidebars under the header and tall ones by their bottom', () => {
+    expect(stickyTop(500, 900)).toBe(72);
+    expect(stickyTop(1500, 900)).toBe(900 - 1500 - 16); // negative: its last card stays in view
+    expect(stickyTop(812, 900)).toBe(72); // exactly fits
+  });
+});

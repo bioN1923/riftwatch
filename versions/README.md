@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.55](v3.55/CHANGES.md) | 14 Nov 2026 | Tall sticky sidebars stick by their bottom (useStickyTop): bottom reachable mid-page (user request) |
 | [v3.54](v3.54/CHANGES.md) | 14 Nov 2026 | Counters split into clear (beyond ~1 SE) vs leaning: champion strip dashed/faint for leaning, tier list "Weak against" red ring only for clear ones |
 | [v3.53](v3.53/CHANGES.md) | 14 Nov 2026 | Tier list "Recently viewed" champions row (last 8, with role, browser-only, Clear) |
 | [v3.52](v3.52/CHANGES.md) | 14 Nov 2026 | Keyboard pass (8 pages): 2px gold focus ring on all text inputs and the header search; ladder hidden submit no longer a Tab stop; Escape verified on menus/suggestions |

@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.55',
+    date: '2026-11-14',
+    items: ['Desktop: the sidebar on profiles and champion pages now scrolls along with the page until its last card is in view, instead of hiding its bottom until you reach the very end.'],
+  },
+  {
     version: '3.54',
     date: '2026-11-14',
     items: ['Counters are clearer about how sure they are: on champion pages and the tier list, matchups that are beyond chance come first in red or green, and ones that only lean that way are shown dashed or faded (hover to see why).'],

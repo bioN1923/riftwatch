@@ -22,6 +22,7 @@ import { MatchRow } from '../components/match/MatchRow';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { useSlideDirection } from '../components/ui/Motion';
 import { langInfo, t } from '../i18n';
+import { useStickyTop } from '../lib/useStickyTop';
 
 const FIRST_PAGE = 20;
 const NEXT_PAGE = 10;
@@ -51,6 +52,7 @@ export function ProfilePage({ tab }: { tab: 'overview' | 'stats' | 'live' }) {
 }
 
 function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; gameName: string; tagLine: string; tab: 'overview' | 'stats' | 'live' }) {
+  const side = useStickyTop<HTMLElement>();
   const qc = useQueryClient();
   const [search, setSearch] = useSearchParams();
   const queue = (QUEUE_FILTERS.some((q) => q.id === search.get('queue')) ? search.get('queue') : 'all') as QueueFilter;
@@ -262,7 +264,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
               )}
             </section>
 
-            <aside aria-label={t('profile.summary')} className="space-y-4 lg:sticky lg:top-[72px] lg:self-start">
+            <aside ref={side.ref} style={side.style} aria-label={t('profile.summary')} className="space-y-4 lg:sticky lg:self-start">
               <ScoutingReport ov={ov} matches={matches} puuid={profile.account.puuid} name={profile.account.gameName} />
               <Today matches={matches} puuid={profile.account.puuid} lp={lpQ.data?.points} />
               <LpPanel profile={profile} />
