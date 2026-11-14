@@ -17,6 +17,7 @@ import { ladderValue } from '../../lib/ladder';
 import { fadeIn } from '../../lib/motion';
 import { t } from '../../i18n';
 import { liveTags, type LiveTag } from '../../lib/liveTags';
+import { damageMix } from '../../lib/damageMix';
 
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
 const TIERS = ['IRON', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'EMERALD', 'DIAMOND'];
@@ -77,6 +78,7 @@ export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string;
       <div className="grid gap-4">
         {teams.map((team) => {
           const avg = avgRank(team.idx.map((i) => scouts[i]));
+          const mix = damageMix(team.idx.map((i) => data?.champions.get(players[i].championId)?.dmg));
           return (
             <div key={team.teamId} className="panel overflow-hidden">
               <div className={clsx('flex flex-wrap items-center justify-between gap-2 px-4 py-2', team.teamId === 100 ? 'bg-side-blue/10' : 'bg-side-red/10')}>
@@ -84,6 +86,17 @@ export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string;
                   {team.teamId === 100 ? t('live.blue') : t('live.red')}
                   {avg && <span className="ml-2 font-sans text-xs font-normal text-muted">{t('live.average', { rank: avg })}</span>}
                 </h3>
+                {mix && (
+                  <p className="flex items-center gap-2 text-xs text-muted md:mr-auto" title={t('live.dmgNote')}>
+                    <span className="text-faint">{t('live.dmgLabel')}:</span>
+                    <span>{t('live.dmgMix', { ad: mix.ad, ap: mix.ap, mixed: mix.mixed })}</span>
+                    {mix.lean && (
+                      <span className="rounded border border-line-strong px-1.5 py-0.5 text-[11px] font-medium text-text">
+                        {t(mix.lean === 'ad' ? 'live.dmgLeanAd' : 'live.dmgLeanAp')}
+                      </span>
+                    )}
+                  </p>
+                )}
                 {team.bans.length > 0 && (
                   <div className="flex items-center gap-1" role="group" aria-label={t('live.bans')}>
                     <span className="mr-1 text-xs text-muted">{t('live.bans')}</span>

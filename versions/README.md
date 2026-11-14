@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.70](v3.70/CHANGES.md) | 2026-11-14 | Live game: team damage mix (AD/AP) |
 | [v3.69](v3.69/CHANGES.md) | 2026-11-14 | Compare: no role-dependent winners against multi-role players |
 | [v3.68](v3.68/CHANGES.md) | 2026-11-14 | Compare: gold only for edges beyond game-to-game noise |
 | [v3.67](v3.67/CHANGES.md) | 2026-11-14 | Win conditions: make it a goal |

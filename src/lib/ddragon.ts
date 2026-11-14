@@ -7,7 +7,7 @@ const CDN = 'https://ddragon.leagueoflegends.com/cdn';
 
 export interface StaticData {
   version: string;
-  champions: Map<number, { id: string; name: string; title: string; tags: string[] }>;
+  champions: Map<number, { id: string; name: string; title: string; tags: string[]; dmg?: [number, number] }>;
   spells: Map<number, { id: string; name: string; description: string }>;
   items: Map<number, ItemData>;
   runes: Map<number, { icon: string; name: string; desc: string }>;

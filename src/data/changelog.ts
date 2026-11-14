@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.70',
+    date: '2026-11-14',
+    items: ['Live game: each team shows its damage mix (AD, AP and mixed champions), and flags a team that leans on one type, so you know whether armor or magic resist pays off.'],
+  },
+  {
     version: '3.69',
     date: '2026-11-14',
     items: ['Compare players: when one player is spread over several roles and their most played role differs from the other player\'s, role-dependent stats (CS, damage, vision, kills) no longer get a winner, and a note says why.'],

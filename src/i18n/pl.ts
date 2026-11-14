@@ -1100,5 +1100,10 @@ const dict: Record<string, string> = {
   "cmp.clearNote_many": "Złoto oznacza wyraźną przewagę, większą niż zwykłe wahania między grami. {count} innych wierszy się różni, ale przy tak małej liczbie gier to za mało, by rozstrzygnąć.",
   "cmp.clearNote_other": "Złoto oznacza wyraźną przewagę, większą niż zwykłe wahania między grami. {count} innego wiersza się różni, ale przy tak małej liczbie gier to za mało, by rozstrzygnąć.",
   "cmp.rolesFlex": "{name} gra na kilku rolach (najczęściej {role}, {share} gier). CS, obrażenia, wizja i zabójstwa mocno zależą od roli, więc zwycięzcę wyłaniają tu tylko współczynnik wygranych i KDA.",
+  "live.dmgLabel": "Rodzaj obrażeń",
+  "live.dmgMix": "{ad} AD · {ap} AP · {mixed} mieszane",
+  "live.dmgLeanAd": "Głównie obrażenia fizyczne: pancerz się opłaci",
+  "live.dmgLeanAp": "Głównie obrażenia magiczne: odporność na magię się opłaci",
+  "live.dmgNote": "Według ocen ataku i magii od Riot dla każdego bohatera. Buildy mogą to zmienić (np. Kai’Sa AP).",
 };
 export default dict;

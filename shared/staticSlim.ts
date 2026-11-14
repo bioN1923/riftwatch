@@ -6,7 +6,8 @@
  */
 export interface SlimStatic {
   version: string;
-  champions: [number, { id: string; name: string; title: string; tags: string[] }][];
+  /** `dmg`: Riot's 0–10 attack and magic ratings, a rough guide to a champion's damage type. */
+  champions: [number, { id: string; name: string; title: string; tags: string[]; dmg?: [number, number] }][];
   spells: [number, { id: string; name: string; description: string }][];
   items: [number, { name: string; plaintext: string; gold: number; sell: number; description: string; from: number[]; into: number[] }][];
   runes: [number, { icon: string; name: string; desc: string }][];
@@ -20,7 +21,7 @@ const stripTags = (s: string) => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ')
 export function slimStatic(version: string, champ: any, spell: any, item: any, runes: any[]): SlimStatic {
   return {
     version,
-    champions: Object.values<any>(champ.data).map((c) => [Number(c.key), { id: c.id, name: c.name, title: c.title, tags: c.tags ?? [] }]),
+    champions: Object.values<any>(champ.data).map((c) => [Number(c.key), { id: c.id, name: c.name, title: c.title, tags: c.tags ?? [], dmg: c.info ? [c.info.attack ?? 0, c.info.magic ?? 0] : undefined }]),
     spells: Object.values<any>(spell.data).map((s) => [Number(s.key), { id: s.id, name: s.name, description: s.description }]),
     items: Object.entries<any>(item.data).map(([id, it]) => [
       Number(id),

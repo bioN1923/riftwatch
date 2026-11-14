@@ -1050,5 +1050,10 @@ const dict: Record<string, string> = {
   "cmp.clearNote_one": "O dourado marca uma vantagem clara, maior que a variação normal entre partidas. {count} outra linha difere, mas está próxima demais para decidir com tão poucas partidas.",
   "cmp.clearNote_other": "O dourado marca uma vantagem clara, maior que a variação normal entre partidas. {count} outras linhas diferem, mas estão próximas demais para decidir com tão poucas partidas.",
   "cmp.rolesFlex": "{name} joga em várias funções (mais em {role}, {share} das partidas). CS, dano, visão e abates dependem muito da função, então só a taxa de vitória e o KDA têm vencedor aqui.",
+  "live.dmgLabel": "Tipo de dano",
+  "live.dmgMix": "{ad} AD · {ap} AP · {mixed} mistos",
+  "live.dmgLeanAd": "Principalmente dano físico: armadura compensa",
+  "live.dmgLeanAp": "Principalmente dano mágico: resistência mágica compensa",
+  "live.dmgNote": "Pelas notas de ataque e magia da Riot para cada campeão. Builds podem mudar isso (uma Kai’Sa AP, por exemplo).",
 };
 export default dict;

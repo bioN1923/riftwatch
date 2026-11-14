@@ -1075,5 +1075,10 @@ const dict: Record<string, string> = {
   "cmp.clearNote_few": "Auriul marchează un avantaj clar, mai mare decât variațiile obișnuite de la meci la meci. Încă {count} rânduri diferă, dar sunt prea strânse pentru atât de puține meciuri.",
   "cmp.clearNote_other": "Auriul marchează un avantaj clar, mai mare decât variațiile obișnuite de la meci la meci. Încă {count} de rânduri diferă, dar sunt prea strânse pentru atât de puține meciuri.",
   "cmp.rolesFlex": "{name} joacă mai multe roluri (cel mai des {role}, {share} din meciuri). CS-ul, damage-ul, viziunea și kill-urile depind mult de rol, așa că aici doar rata de victorii și KDA-ul au un câștigător.",
+  "live.dmgLabel": "Tip de damage",
+  "live.dmgMix": "{ad} AD · {ap} AP · {mixed} mixte",
+  "live.dmgLeanAd": "Mai ales damage fizic: armura merită",
+  "live.dmgLeanAp": "Mai ales damage magic: rezistența magică merită",
+  "live.dmgNote": "După notele de atac și magie date de Riot fiecărui campion. Build-urile pot schimba asta (o Kai’Sa AP, de exemplu).",
 };
 export default dict;

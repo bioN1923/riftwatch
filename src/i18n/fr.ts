@@ -1050,5 +1050,10 @@ const dict: Record<string, string> = {
   "cmp.clearNote_one": "L’or marque un net avantage, plus grand que les écarts habituels d’une partie à l’autre. {count} autre ligne diffère mais reste trop serrée avec si peu de parties.",
   "cmp.clearNote_other": "L’or marque un net avantage, plus grand que les écarts habituels d’une partie à l’autre. {count} autres lignes diffèrent mais restent trop serrées avec si peu de parties.",
   "cmp.rolesFlex": "{name} joue plusieurs rôles (surtout {role}, {share} des parties). Les CS, dégâts, vision et kills dépendent beaucoup du rôle : seuls le taux de victoire et le KDA désignent un gagnant ici.",
+  "live.dmgLabel": "Types de dégâts",
+  "live.dmgMix": "{ad} AD · {ap} AP · {mixed} mixtes",
+  "live.dmgLeanAd": "Surtout des dégâts physiques : l’armure est rentable",
+  "live.dmgLeanAp": "Surtout des dégâts magiques : la résistance magique est rentable",
+  "live.dmgNote": "D’après les notes d’attaque et de magie de Riot pour chaque champion. Les builds peuvent changer ça (une Kai’Sa AP, par exemple).",
 };
 export default dict;
