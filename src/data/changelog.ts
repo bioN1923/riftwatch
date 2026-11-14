@@ -22,6 +22,15 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.58',
+    date: '2026-11-14',
+    items: [
+      'Duo finder: "Check a player" scores someone you already have in mind by Riot ID, or says plainly why they don\'t qualify (same role, rank too far apart, no recent ranked games).',
+      'Duo finder: a "Check more players" button looks at the next 12 people from your recent games, only when you ask.',
+      'Master, Grandmaster and Challenger ranks show without a division.',
+    ],
+  },
+  {
     version: '3.57',
     date: '2026-11-14',
     items: ['New: Duo finder (in the menu, and "Find a duo" on every profile). It looks at the players from your recent ranked games who play other roles and are around your rank, and scores how well each would fit next to you: rank, role pairing, the hours you both play, champion styles, fights, vision and objectives, with every part shown.'],

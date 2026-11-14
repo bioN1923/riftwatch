@@ -990,5 +990,16 @@ const en = {
   "duo.why.fights": "Fights per minute {them} (you {you})",
   "duo.why.vision": "Vision {them}/min (you {you})",
   "duo.why.objectives": "Objective damage {them}/min (you {you})",
+  "duo.more_one": "Check {count} more player",
+  "duo.more_other": "Check {count} more players",
+  "duo.check": "Check a player",
+  "duo.checkLead": "Type the Riot ID of someone you have in mind to see how well you would fit.",
+  "duo.checkBtn": "Check",
+  "duo.checkNotFound": "Couldn't find {name} on this server.",
+  "duo.checkSelf": "That's you.",
+  "duo.whyNot.games": "No recent ranked solo games to compare.",
+  "duo.whyNot.unranked": "Not ranked in solo queue this season.",
+  "duo.whyNot.role": "Also plays {role} most, the same role as you.",
+  "duo.whyNot.rank": "{rank} is too far from your {you} to queue together well.",
 };
 export default en;

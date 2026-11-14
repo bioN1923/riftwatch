@@ -990,5 +990,16 @@ const dict: Record<string, string> = {
   "duo.why.fights": "Kämpfe pro Minute {them} (du {you})",
   "duo.why.vision": "Sicht {them}/Min (du {you})",
   "duo.why.objectives": "Objective-Schaden {them}/Min (du {you})",
+  "duo.more_one": "{count} weiteren Spieler prüfen",
+  "duo.more_other": "{count} weitere Spieler prüfen",
+  "duo.check": "Spieler prüfen",
+  "duo.checkLead": "Gib die Riot-ID von jemandem ein, an den du denkst, um zu sehen, wie gut ihr zusammenpasst.",
+  "duo.checkBtn": "Prüfen",
+  "duo.checkNotFound": "{name} wurde auf diesem Server nicht gefunden.",
+  "duo.checkSelf": "Das bist du.",
+  "duo.whyNot.games": "Keine aktuellen Ranked-Solo-Spiele zum Vergleichen.",
+  "duo.whyNot.unranked": "Diese Saison nicht in der Solo-Queue gerankt.",
+  "duo.whyNot.role": "Spielt auch meistens {role}, dieselbe Rolle wie du.",
+  "duo.whyNot.rank": "{rank} ist zu weit von deinem {you} entfernt, um gut zusammen zu spielen.",
 };
 export default dict;

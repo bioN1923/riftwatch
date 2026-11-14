@@ -1009,5 +1009,17 @@ const dict: Record<string, string> = {
   "duo.why.fights": "Lupte pe minut {them} (tu {you})",
   "duo.why.vision": "Vizibilitate {them}/min (tu {you})",
   "duo.why.objectives": "Daune la obiective {them}/min (tu {you})",
+  "duo.more_one": "Verifică încă {count} jucător",
+  "duo.more_few": "Verifică încă {count} jucători",
+  "duo.more_other": "Verifică încă {count} de jucători",
+  "duo.check": "Verifică un jucător",
+  "duo.checkLead": "Scrie Riot ID-ul cuiva la care te gândești ca să vezi cât de bine v-ați potrivi.",
+  "duo.checkBtn": "Verifică",
+  "duo.checkNotFound": "{name} nu a fost găsit pe acest server.",
+  "duo.checkSelf": "Ăsta ești tu.",
+  "duo.whyNot.games": "Niciun meci ranked solo recent de comparat.",
+  "duo.whyNot.unranked": "Fără rang în solo în acest sezon.",
+  "duo.whyNot.role": "Joacă tot mai ales {role}, același rol ca tine.",
+  "duo.whyNot.rank": "{rank} e prea departe de {you} al tău ca să jucați bine împreună.",
 };
 export default dict;

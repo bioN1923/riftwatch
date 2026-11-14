@@ -160,17 +160,20 @@ function Results({ platform, id }: { platform: string; id: RiotId }) {
   const solo = profileQ.data?.ranked.find((r) => r.queueType === 'RANKED_SOLO_5x5');
   const myRank = rankSteps(solo?.tier, solo?.rank);
   const me = useMemo(() => (mineQ.data && puuid && sd ? playStyle(mineQ.data.matches, puuid, tagsOf) : null), [mineQ.data, puuid, sd]); // eslint-disable-line react-hooks/exhaustive-deps
+  // "Check more players" widens the search a page at a time, so the API is only used when asked.
+  const [pages, setPages] = useState(1);
 
   // Stage 1: everyone from your recent games who doesn't play your role there.
-  const pool = useMemo(() => {
+  const all = useMemo(() => {
     if (!mineQ.data || !puuid || !me?.mainRole) return [];
     const roleIn = (c: Candidate) => {
       const counts: Record<string, number> = {};
       for (const m of mineQ.data!.matches) for (const p of m.participants) if (p.puuid === c.puuid && p.position) counts[p.position] = (counts[p.position] ?? 0) + 1;
       return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
     };
-    return candidatesFrom(mineQ.data.matches, puuid).filter((c) => roleIn(c) !== me.mainRole).slice(0, CHECK);
+    return candidatesFrom(mineQ.data.matches, puuid).filter((c) => roleIn(c) !== me.mainRole);
   }, [mineQ.data, puuid, me]);
+  const pool = all.slice(0, CHECK * pages);
 
   // Stage 2: their rank (one small lookup each), kept only around yours.
   const scouts = useQueries({
@@ -183,7 +186,7 @@ function Results({ platform, id }: { platform: string; id: RiotId }) {
   const close = pool
     .map((c, i) => ({ c, s: scouts[i]?.data }))
     .filter(({ s }) => s && !s.hidden && myRank != null && (() => { const r = rankSteps(s.solo?.tier, s.solo?.rank); return r != null && Math.abs(r - myRank) <= MAX_RANK_GAP; })())
-    .slice(0, SCORE);
+    .slice(0, SCORE * pages);
 
   // Stage 3: their own recent ranked games, for playstyle and timing.
   const theirGames = useQueries({
@@ -218,11 +221,11 @@ function Results({ platform, id }: { platform: string; id: RiotId }) {
         {t('duo.results', { name: profileQ.data!.account.gameName })}
       </h2>
       <p className="mt-1 text-sm text-muted">
-        {t('duo.basis', { games: me.games, role: ROLE_LABEL[me.mainRole], rank: `${tierName(solo.tier)} ${solo.rank}`, checked: pool.length })}
+        {t('duo.basis', { games: me.games, role: ROLE_LABEL[me.mainRole], rank: rankLabel(solo), checked: pool.length })}
       </p>
       <ul className="mt-4 grid gap-3 md:grid-cols-2">
         {scored.map((x) => (
-          <DuoCard key={x.c.puuid} platform={platform} c={x.c} s={x.s} them={x.them} me={me} fit={x.fit} myRankLabel={`${tierName(solo.tier)} ${solo.rank}`} />
+          <DuoCard key={x.c.puuid} platform={platform} c={x.c} s={x.s} them={x.them} me={me} fit={x.fit} myRankLabel={rankLabel(solo)} />
         ))}
         {checking &&
           Array.from({ length: Math.max(1, Math.min(2, SCORE - scored.length)) }, (_, i) => (
@@ -232,9 +235,20 @@ function Results({ platform, id }: { platform: string; id: RiotId }) {
           ))}
       </ul>
       {!checking && scored.length === 0 && <p className="mt-4 text-sm text-muted">{t('duo.none')}</p>}
+      {!checking && all.length > pool.length && (
+        <button onClick={() => setPages((n) => n + 1)} className="mt-4 inline-flex h-9 items-center rounded border border-line-strong px-4 text-sm font-medium text-muted hover:border-gold/60 hover:text-text">
+          {t('duo.more', { count: Math.min(CHECK, all.length - pool.length) })}
+        </button>
+      )}
+      <CheckPlayer platform={platform} me={me} myRank={myRank} myRankLabel={rankLabel(solo)} tagsOf={tagsOf} skip={puuid!} />
       <p className="mt-6 max-w-3xl text-xs text-faint">{t('duo.note')}</p>
     </section>
   );
+}
+
+/** "Gold II", but just "Master" for the apex tiers, which have no divisions. */
+function rankLabel(r: { tier: string; rank: string }) {
+  return ['MASTER', 'GRANDMASTER', 'CHALLENGER'].includes(r.tier) ? tierName(r.tier) : `${tierName(r.tier)} ${r.rank}`;
 }
 
 function DuoCard({ platform, c, s, them, me, fit, myRankLabel }: { platform: string; c: Candidate; s: ScoutInfo; them: PlayStyle; me: PlayStyle; fit: Fit; myRankLabel: string }) {
@@ -243,7 +257,7 @@ function DuoCard({ platform, c, s, them, me, fit, myRankLabel }: { platform: str
   const line = (p: FitPart) => {
     switch (p.key) {
       case 'rank':
-        return t('duo.why.rank', { rank: `${tierName(s.solo!.tier)} ${s.solo!.rank}`, you: myRankLabel });
+        return t('duo.why.rank', { rank: rankLabel(s.solo!), you: myRankLabel });
       case 'role':
         return t('duo.why.role', { them: ROLE_LABEL[them.mainRole!], you: ROLE_LABEL[me.mainRole!] });
       case 'time':
@@ -268,7 +282,7 @@ function DuoCard({ platform, c, s, them, me, fit, myRankLabel }: { platform: str
             <span className="text-faint">#{c.tagLine}</span>
           </Link>
           <p className="flex items-center gap-1.5 text-xs text-muted">
-            <RoleIcon role={them.mainRole!} size={12} /> {ROLE_LABEL[them.mainRole!]} · {tierName(s.solo?.tier)} {s.solo?.rank}
+            <RoleIcon role={them.mainRole!} size={12} /> {ROLE_LABEL[them.mainRole!]} · {s.solo ? rankLabel(s.solo) : ''}
             {c.together > 0 && <> · {t('duo.together', { count: c.together, wins: c.togetherWins })}</>}
           </p>
         </div>
@@ -293,3 +307,89 @@ function DuoCard({ platform, c, s, them, me, fit, myRankLabel }: { platform: str
 }
 
 const classLabel = (c?: string) => (c ? t(`class.${c}` as 'class.Mage') : '–');
+
+/**
+ * Score one specific player against you, typed in by Riot ID: the same fit, or the plain reason they
+ * don't qualify (same role, too far in rank, no ranked games). Nothing is searched beyond that player.
+ */
+function CheckPlayer({ platform, me, myRank, myRankLabel, tagsOf, skip }: { platform: string; me: PlayStyle; myRank: number; myRankLabel: string; tagsOf: (id: number) => string[]; skip: string }) {
+  const [text, setText] = useState('');
+  const [ids, setIds] = useState<RiotId[]>([]);
+  const parsed = parseRiotId(text, getPlatform(platform)?.defaultTag ?? 'EUW');
+  return (
+    <section className="mt-8 border-t border-line pt-6" aria-labelledby="duo-check-h">
+      <h3 id="duo-check-h" className="font-display text-lg font-bold">
+        {t('duo.check')}
+      </h3>
+      <p className="mt-1 text-sm text-muted">{t('duo.checkLead')}</p>
+      <form
+        className="mt-3 flex max-w-md gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (parsed && !ids.some((x) => querySlug(x).toLowerCase() === querySlug(parsed).toLowerCase())) setIds((l) => [parsed, ...l].slice(0, 4));
+          setText('');
+        }}
+      >
+        <label className="min-w-0 flex-1">
+          <span className="sr-only">{t('duo.check')}</span>
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder={t('cmp.placeholder')}
+            spellCheck={false}
+            autoComplete="off"
+            className="h-10 w-full rounded border border-line bg-surface px-3 text-sm outline-none placeholder:text-faint focus:border-gold focus:ring-2 focus:ring-gold/50"
+          />
+        </label>
+        <button type="submit" disabled={!parsed} className="h-10 rounded border border-line-strong px-4 text-sm font-semibold hover:border-gold/60 disabled:opacity-50">
+          {t('duo.checkBtn')}
+        </button>
+      </form>
+      {ids.length > 0 && (
+        <ul className="mt-4 grid items-start gap-3 md:grid-cols-2">
+          {ids.map((id) => (
+            <CheckedPlayer key={querySlug(id)} platform={platform} id={id} me={me} myRank={myRank} myRankLabel={myRankLabel} tagsOf={tagsOf} skip={skip} />
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+function CheckedPlayer({ platform, id, me, myRank, myRankLabel, tagsOf, skip }: { platform: string; id: RiotId; me: PlayStyle; myRank: number; myRankLabel: string; tagsOf: (id: number) => string[]; skip: string }) {
+  const pq = useQuery({
+    queryKey: ['profile', platform, id.gameName.toLowerCase(), id.tagLine.toLowerCase()],
+    queryFn: ({ signal }) => api.profile(platform, id.gameName, id.tagLine, { signal }),
+    retry: false,
+  });
+  const puuid = pq.data?.account.puuid;
+  const gq = useQuery({
+    queryKey: ['duo-them', platform, puuid],
+    enabled: !!puuid && puuid !== skip,
+    queryFn: ({ signal }) => api.matches(platform, puuid!, { start: 0, count: 10, queue: 'solo' }, signal),
+    staleTime: 10 * 60_000,
+  });
+  const box = (body: React.ReactNode) => <li className="panel p-4 text-sm">{body}</li>;
+  if (pq.isError) return box(<p className="text-muted">{t('duo.checkNotFound', { name: `${id.gameName}#${id.tagLine}` })}</p>);
+  if (pq.isPending || (puuid !== skip && gq.isPending)) return <li><Skeleton className="h-40" /></li>;
+  const p = pq.data!;
+  const name = `${p.account.gameName}#${p.account.tagLine}`;
+  if (p.account.puuid === skip) return box(<p className="text-muted">{t('duo.checkSelf')}</p>);
+  const solo = p.ranked.find((r) => r.queueType === 'RANKED_SOLO_5x5');
+  const rank = rankSteps(solo?.tier, solo?.rank);
+  const them = playStyle(gq.data?.matches ?? [], p.account.puuid, tagsOf);
+  const fit = duoFit(me, myRank, them, rank);
+  if (!fit) {
+    const why =
+      !them.games ? t('duo.whyNot.games') : rank == null ? t('duo.whyNot.unranked') : them.mainRole === me.mainRole ? t('duo.whyNot.role', { role: ROLE_LABEL[me.mainRole!] }) : t('duo.whyNot.rank', { rank: rankLabel(solo!), you: myRankLabel });
+    return box(
+      <>
+        <p className="font-semibold">{name}</p>
+        <p className="mt-1 text-muted">{why}</p>
+      </>,
+    );
+  }
+  const c: Candidate = { puuid: p.account.puuid, gameName: p.account.gameName, tagLine: p.account.tagLine, seen: 0, together: 0, togetherWins: 0 };
+  const s: ScoutInfo = { puuid: c.puuid, level: p.summoner.summonerLevel, profileIconId: p.summoner.profileIconId, solo: solo ?? null, flex: null, mastery: null };
+  return <DuoCard platform={platform} c={c} s={s} them={them} me={me} fit={fit} myRankLabel={myRankLabel} />;
+}
