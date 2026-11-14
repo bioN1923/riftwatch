@@ -14,3 +14,6 @@ Typing a name without a tag offers champions and "Look up name#TAG" on the selec
 
 ## Checks
 tsc clean · 123 tests pass · a11y `{}` · demo `lane-opponents.png` (Caps: 16 games; Vi 1–2, Nidalee 1–2, Kha'Zix 2–1 …).
+
+## Live check (2026-11-14 17:13)
+- Deploy finished cleanly at 17:12. bioN1923's Stats tab now shows "Lane opponents" from 20 games: Lillia 1–2, Shyvana 0–2, Jarvan IV 0–2, Rammus 0–2, Briar 1–1, Volibear, Warwick, Master Yi. All are neutral, as small samples. Screenshot: `live/lane-opponents.jpg`.
