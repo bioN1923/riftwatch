@@ -1124,5 +1124,7 @@ const dict: Record<string, string> = {
   "stats.oppLead_few": "Bohaterowie, których najczęściej spotykasz na swojej linii, z {count} gier z przeciwnikiem na linii, i twój bilans z każdym.",
   "stats.oppLead_many": "Bohaterowie, których najczęściej spotykasz na swojej linii, z {count} gier z przeciwnikiem na linii, i twój bilans z każdym.",
   "stats.oppLead_other": "Bohaterowie, których najczęściej spotykasz na swojej linii, z {count} gry z przeciwnikiem na linii, i twój bilans z każdym.",
+  "lb.notFoundAny": "{name} nie ma tu w Challengerze, Grandmasterze ani Masterze (albo jego nazwa nie jest tu jeszcze znana).",
+  "lb.foundIn": "{name} jest w {tier}: pokazujemy ten ranking.",
 };
 export default dict;

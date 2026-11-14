@@ -65,6 +65,8 @@ export function LeaderboardPage() {
   const [find, setFind] = useState('');
   const [finding, setFinding] = useState(false);
   const [missing, setMissing] = useState<string | null>(null);
+  // Set when the player turned up in another apex tier than the one on screen.
+  const [movedTo, setMovedTo] = useState<string | null>(null);
   const hl = Number(params.get('hl')) || null;
   const hlRef = useRef<HTMLTableRowElement>(null);
   useEffect(() => {
@@ -76,10 +78,18 @@ export function LeaderboardPage() {
     if (!v) return;
     setFinding(true);
     setMissing(null);
+    setMovedTo(null);
     try {
-      const r = await api.ladderFind(region, { queue, tier, q: v });
-      if (r.rank && r.page) set({ page: r.page > 1 ? String(r.page) : null, hl: String(r.rank) });
-      else setMissing(v);
+      // This tier first, then the other apex tiers: people look up a friend without knowing where they are.
+      for (const tr of [tier, ...TIERS.map((x) => x.id).filter((x) => x !== tier)]) {
+        const r = await api.ladderFind(region, { queue, tier: tr, q: v });
+        if (r.rank && r.page) {
+          set({ tier: tr === 'challenger' ? null : tr, page: r.page > 1 ? String(r.page) : null, hl: String(r.rank) });
+          if (tr !== tier) setMovedTo(TIERS.find((x) => x.id === tr)?.label() ?? tr);
+          return;
+        }
+      }
+      setMissing(v);
     } catch {
       setMissing(v);
     } finally {
@@ -156,7 +166,8 @@ export function LeaderboardPage() {
       </div>
 
       <p id="lb-find-miss" role="status" className="mt-2 min-h-5 text-sm text-muted">
-        {missing && t('lb.notFound', { name: missing, tier: TIERS.find((x) => x.id === tier)?.label() ?? '' })}
+        {missing && t('lb.notFoundAny', { name: missing })}
+        {movedTo && t('lb.foundIn', { name: find.trim(), tier: movedTo })}
       </p>
 
       <div role="tablist" aria-label={t('lb.tier')} className="relative mt-3 flex gap-5 border-b border-line">
@@ -166,7 +177,7 @@ export function LeaderboardPage() {
             key={tr.id}
             role="tab"
             aria-selected={tier === tr.id}
-            onClick={() => set({ tier: tr.id === 'challenger' ? null : tr.id, page: null, hl: null })}
+            onClick={() => (setMovedTo(null), setMissing(null), set({ tier: tr.id === 'challenger' ? null : tr.id, page: null, hl: null }))}
             className={clsx('-mb-px flex items-center gap-2 border-b-2 pb-2 text-sm font-medium transition-colors', tier === tr.id ? 'border-transparent text-text' : 'border-transparent text-muted hover:text-text')}
           >
             <img src={rankEmblem(tr.id)} alt="" {...fadeIn()} className="size-6" />

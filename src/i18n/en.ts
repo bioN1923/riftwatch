@@ -1072,5 +1072,7 @@ const en = {
   "stats.oppTitle": "Lane opponents",
   "stats.oppLead_one": "The champions you meet in your own lane most often, from {count} game with a lane opponent, and your record against each.",
   "stats.oppLead_other": "The champions you meet in your own lane most often, from {count} games with a lane opponent, and your record against each.",
+  "lb.notFoundAny": "{name} isn't in Challenger, Grandmaster or Master here (or their name isn't known here yet).",
+  "lb.foundIn": "{name} is in {tier}: showing that ladder.",
 };
 export default en;

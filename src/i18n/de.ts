@@ -1072,5 +1072,7 @@ const dict: Record<string, string> = {
   "stats.oppTitle": "Lane-Gegner",
   "stats.oppLead_one": "Die Champions, die dir auf deiner Lane am häufigsten begegnen, aus {count} Spiel mit Lane-Gegner, und deine Bilanz gegen jeden.",
   "stats.oppLead_other": "Die Champions, die dir auf deiner Lane am häufigsten begegnen, aus {count} Spielen mit Lane-Gegner, und deine Bilanz gegen jeden.",
+  "lb.notFoundAny": "{name} ist hier nicht in Challenger, Grandmaster oder Master (oder der Name ist hier noch nicht bekannt).",
+  "lb.foundIn": "{name} ist in {tier}: diese Rangliste wird angezeigt.",
 };
 export default dict;

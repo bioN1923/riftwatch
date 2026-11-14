@@ -1098,5 +1098,7 @@ const dict: Record<string, string> = {
   "stats.oppLead_one": "Campionii pe care îi întâlnești cel mai des pe lane-ul tău, din {count} meci cu adversar de lane, și bilanțul tău contra fiecăruia.",
   "stats.oppLead_few": "Campionii pe care îi întâlnești cel mai des pe lane-ul tău, din {count} meciuri cu adversar de lane, și bilanțul tău contra fiecăruia.",
   "stats.oppLead_other": "Campionii pe care îi întâlnești cel mai des pe lane-ul tău, din {count} de meciuri cu adversar de lane, și bilanțul tău contra fiecăruia.",
+  "lb.notFoundAny": "{name} nu e în Challenger, Grandmaster sau Master aici (sau numele nu e încă cunoscut).",
+  "lb.foundIn": "{name} e în {tier}: afișăm acel clasament.",
 };
 export default dict;

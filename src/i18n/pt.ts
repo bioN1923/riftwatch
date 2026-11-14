@@ -1072,5 +1072,7 @@ const dict: Record<string, string> = {
   "stats.oppTitle": "Oponentes de rota",
   "stats.oppLead_one": "Os campeões que você mais enfrenta na sua rota, de {count} partida com oponente de rota, e seu histórico contra cada um.",
   "stats.oppLead_other": "Os campeões que você mais enfrenta na sua rota, de {count} partidas com oponente de rota, e seu histórico contra cada um.",
+  "lb.notFoundAny": "{name} não está em Desafiante, Grão-Mestre ou Mestre aqui (ou o nome ainda não é conhecido).",
+  "lb.foundIn": "{name} está em {tier}: mostrando esse ranking.",
 };
 export default dict;

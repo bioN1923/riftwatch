@@ -1072,5 +1072,7 @@ const dict: Record<string, string> = {
   "stats.oppTitle": "Rivales de línea",
   "stats.oppLead_one": "Los campeones que más te encuentras en tu línea, de {count} partida con rival de línea, y tu balance contra cada uno.",
   "stats.oppLead_other": "Los campeones que más te encuentras en tu línea, de {count} partidas con rival de línea, y tu balance contra cada uno.",
+  "lb.notFoundAny": "{name} no está en Challenger, Grandmaster ni Master aquí (o aún no conocemos su nombre).",
+  "lb.foundIn": "{name} está en {tier}: mostrando esa clasificación.",
 };
 export default dict;
