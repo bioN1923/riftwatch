@@ -62,7 +62,7 @@ export function MultiSearchPage() {
       queryKey: ['profile', region, id.gameName.toLowerCase(), id.tagLine.toLowerCase()],
       queryFn: ({ signal }: { signal: AbortSignal }) => api.profile(region, id.gameName, id.tagLine, { signal }),
     })),
-  }) as { data?: Profile }[];
+  }) as { data?: Profile; isPending: boolean }[];
   const lobbyMatches = useQueries({
     queries: profiles.map((q) => ({
       queryKey: ['multi-matches', region, q.data?.account.puuid],
@@ -70,7 +70,7 @@ export function MultiSearchPage() {
       queryFn: ({ signal }: { signal: AbortSignal }) => api.matches(region, q.data!.account.puuid, { start: 0, count: 10, queue: 'solo' }, signal),
       staleTime: 5 * 60_000,
     })),
-  }) as { data?: MatchPage }[];
+  }) as { data?: MatchPage; isError: boolean }[];
   const duos = lobbyDuos(
     profiles.flatMap((q, i) => (q.data ? [{ puuid: q.data.account.puuid, name: q.data.account.gameName, matches: lobbyMatches[i]?.data?.matches }] : [])),
   );
@@ -300,9 +300,11 @@ function PlayerCard({ platform, id, duos }: { platform: string; id: RiotId; duos
  * One line over the cards: the lobby's average solo rank, who mains which role (from their last
  * 10 ranked games), and the roles two people want or nobody plays. Uses the cards' own data.
  */
-function LobbySummary({ profiles, matches }: { profiles: { data?: Profile }[]; matches: { data?: MatchPage }[] }) {
+function LobbySummary({ profiles, matches }: { profiles: { data?: Profile; isPending: boolean }[]; matches: { data?: MatchPage; isError: boolean }[] }) {
+  // Wait for everyone still loading, so the line doesn't jump; players not found are simply left out.
+  const waiting = profiles.some((q, i) => q.isPending || (q.data && !matches[i]?.data && !matches[i]?.isError));
   const loaded = profiles.flatMap((q, i) => (q.data && matches[i]?.data ? [{ p: q.data, ms: matches[i].data!.matches }] : []));
-  if (loaded.length < 2 || loaded.length < profiles.length) return null; // wait for everyone, so the line doesn't jump
+  if (waiting || loaded.length < 2) return null;
   const ranks = loaded.flatMap(({ p }) => {
     const s = p.ranked.find((x) => x.queueType === 'RANKED_SOLO_5x5');
     return s ? [{ tier: s.tier, rank: s.rank, lp: s.leaguePoints }] : [];
