@@ -5,8 +5,9 @@ import clsx from 'clsx';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import type { MatchSummary } from '../../../shared/types';
 import { assets, champSlug, useStaticData } from '../../lib/ddragon';
-import { formatKda, kdaRatio, kdaTone, pct, winRateTone } from '../../lib/format';
+import { decimal, formatKda, kdaRatio, kdaTone, pct, winRateTone } from '../../lib/format';
 import { me } from '../../lib/stats';
+import { winConditions, type WinCondition } from '../../lib/winConditions';
 import { GameImg, Tooltip } from '../ui/GameImg';
 import { RoleIcon, ROLE_LABEL } from '../ui/RoleIcon';
 import { EmptyState, Skeleton } from '../ui/States';
@@ -125,6 +126,7 @@ export function StatsTab({
         )}
       </div>
       <Benchmarks matches={matches} puuid={puuid} />
+      <WinConditions matches={matches} puuid={puuid} />
       <ChampionTable matches={matches} puuid={puuid} onOpen={onOpenChampion} />
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <RoleTable matches={matches} puuid={puuid} />
@@ -435,6 +437,46 @@ function Trends({ matches, puuid }: { matches: MatchSummary[]; puuid: string }) 
           ]}
         />
       </div>
+    </section>
+  );
+}
+
+/** "What your wins have in common": the stats whose usual value splits wins from losses best. */
+function WinConditions({ matches, puuid }: { matches: MatchSummary[]; puuid: string }) {
+  const games = matches.filter((m) => !m.remake && me(m, puuid)).length;
+  if (games < 10) return null;
+  const list = winConditions(matches, puuid).slice(0, 3);
+  // Phrased for the side the wins are on: "5 deaths or fewer", or "under 1.3 vision score a minute".
+  const cond = (c: WinCondition) => {
+    const n = c.metric === 'cs' || c.metric === 'vision' ? decimal(c.at, 1) : c.metric === 'kp' || c.metric === 'share' ? pct(c.at) : c.at;
+    return t(`wc.${c.metric}${c.flip ? 'Flip' : ''}` as 'wc.deaths', { n });
+  };
+  const rec = (x: { w: number; l: number }) => `${x.w}–${x.l} · ${pct(x.w / Math.max(1, x.w + x.l))}`;
+  return (
+    <section className="panel p-4" aria-labelledby="wc-h">
+      <h2 id="wc-h" className="panel-title">
+        {t('wc.title')}
+      </h2>
+      <p className="mt-0.5 text-xs text-muted">{t('wc.lead', { count: games })}</p>
+      {list.length === 0 ? (
+        <p className="mt-3 text-sm text-muted">{t('wc.none')}</p>
+      ) : (
+        <ul className="mt-3 space-y-2.5">
+          {list.map((c) => (
+            <li key={c.metric} className="grid gap-x-4 gap-y-0.5 sm:grid-cols-[minmax(0,1fr)_auto]">
+              <span className={clsx('text-sm font-medium', !c.sure && 'text-muted')}>
+                {cond(c)}
+                {!c.sure && <span className="ml-2 text-[11px] font-normal text-faint">{t('wc.leaning')}</span>}
+              </span>
+              <span className="num text-xs text-muted">
+                <span className="text-win">{rec(c.when)}</span>
+                <span className="text-faint"> · {t('wc.otherwise')} </span>
+                <span className="text-loss">{rec(c.otherwise)}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

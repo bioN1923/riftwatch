@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.66',
+    date: '2026-11-14',
+    items: ['Profile stats: "What your wins have in common" splits your recent games at your usual deaths, CS, kill participation, vision, damage share, game length and first blood, and shows where your win rate changes most. Small gaps are marked "could still be chance".'],
+  },
+  {
     version: '3.65',
     date: '2026-11-14',
     items: ['Profile match list: each day now says how long you played, and flags it when the day\'s last 3 or more games were all wins or all losses.'],
