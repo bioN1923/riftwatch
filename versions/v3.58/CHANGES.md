@@ -10,3 +10,8 @@ Follows up the v3.57 duo finder.
 
 ## Checks
 tsc clean · 101 tests pass · a11y `{}` · demo shots in `demo/` (`duo-more.png`, `duo-check.png`).
+
+## Live check (2026-11-14 07:30)
+- Deploy finished cleanly. `/duo` for bioN1923 (Jungle, Silver II) shows the same fits as v3.57 plus "Check 12 more players" and the Check a player section.
+- Checking `lickit#28cm` by Riot ID gives 85, the same score as in the list, so both paths agree. Not clicked "Check more" live, to spare the shared rate limit. Screenshot: `live/duo-check.jpg`.
+- Also restored `versions/v3.55/live/` on the PC copy, which an earlier sync had missed.
