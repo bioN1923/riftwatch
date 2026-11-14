@@ -167,7 +167,8 @@ function ChampionTable({ matches, puuid, onOpen }: { matches: MatchSummary[]; pu
         {t('stats.champions')}
       </h2>
       <div className="mt-2 overflow-x-auto">
-        <table className="w-full min-w-[760px] text-sm">
+        {/* Phones: champion, games, win rate and KDA; the per-minute columns from sm up. */}
+        <table className="w-full text-sm sm:min-w-[760px]">
           <caption className="sr-only">{t('stats.championsCaption')}</caption>
           <thead className="text-xs text-muted">
             <tr className="border-b border-line">
@@ -177,12 +178,12 @@ function ChampionTable({ matches, puuid, onOpen }: { matches: MatchSummary[]; pu
               {h('games', t('stats.col.games'))}
               {h('wr', t('stats.col.wr'))}
               {h('kda', t('stats.col.kda'))}
-              {h('cs', t('stats.col.cs'))}
-              {h('dmg', t('stats.col.dmg'))}
-              {h('gold', t('stats.col.gold'))}
-              {h('kp', t('stats.col.kp'))}
-              {h('share', t('stats.col.share'))}
-              {h('vision', t('stats.col.vision'), 'pr-4')}
+              {h('cs', t('stats.col.cs'), 'hidden sm:table-cell')}
+              {h('dmg', t('stats.col.dmg'), 'hidden sm:table-cell')}
+              {h('gold', t('stats.col.gold'), 'hidden sm:table-cell')}
+              {h('kp', t('stats.col.kp'), 'hidden sm:table-cell')}
+              {h('share', t('stats.col.share'), 'hidden sm:table-cell')}
+              {h('vision', t('stats.col.vision'), 'hidden pr-4 sm:table-cell')}
             </tr>
           </thead>
           <tbody>
@@ -220,12 +221,12 @@ function ChampionTable({ matches, puuid, onOpen }: { matches: MatchSummary[]; pu
                       {(r.k / r.games).toFixed(1)}/{(r.d / r.games).toFixed(1)}/{(r.a / r.games).toFixed(1)}
                     </span>
                   </td>
-                  <td className="num px-2 text-right">{(r.cs / r.minutes).toFixed(1)}</td>
-                  <td className="num px-2 text-right">{(r.dmg / r.minutes).toFixed(0)}</td>
-                  <td className="num px-2 text-right">{(r.gold / r.minutes).toFixed(0)}</td>
-                  <td className="num px-2 text-right">{pct(r.kp / r.games)}</td>
-                  <td className="num px-2 text-right">{pct(r.share / r.games)}</td>
-                  <td className="num px-2 pr-4 text-right">{(r.vision / r.minutes).toFixed(2)}</td>
+                  <td className="num hidden px-2 text-right sm:table-cell">{(r.cs / r.minutes).toFixed(1)}</td>
+                  <td className="num hidden px-2 text-right sm:table-cell">{(r.dmg / r.minutes).toFixed(0)}</td>
+                  <td className="num hidden px-2 text-right sm:table-cell">{(r.gold / r.minutes).toFixed(0)}</td>
+                  <td className="num hidden px-2 text-right sm:table-cell">{pct(r.kp / r.games)}</td>
+                  <td className="num hidden px-2 text-right sm:table-cell">{pct(r.share / r.games)}</td>
+                  <td className="num hidden px-2 pr-4 text-right sm:table-cell">{(r.vision / r.minutes).toFixed(2)}</td>
                 </tr>
               );
             })}

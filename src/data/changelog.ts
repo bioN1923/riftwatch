@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.79',
+    date: '2026-11-14',
+    items: ['Profile Stats on phones: "Champions played" fits the screen, showing champion, games, win rate and KDA. The per-minute columns appear on wider screens.'],
+  },
+  {
     version: '3.78',
     date: '2026-11-14',
     items: ['Tier list and ladder on phones: the tables fit the screen. The tier list shows champion (with role), tier and win rate; the ladder shows games under the win rate. Nothing hides past the right edge anymore.'],
