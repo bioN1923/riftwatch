@@ -10,3 +10,7 @@
 
 ## Checks
 tsc clean · a11y `{}` · demo `tp-click-{desktop,phone}-{0,1}.png`: both rows open the popup on desktop and phone, and the phone scrolls the map to the top of the screen (map y = 125).
+
+## Live check (2026-11-14 08:19)
+- Deploy finished cleanly. On bioN1923's third match, clicking "Blue side won a 3-for-0 fight and took Baron, 1 tower" switched the map to Everyone and opened the popup at 25:39 ("Veigar killed Nasus · with Tristana"). Screenshot: `live/tp-to-map.jpg`.
+- Follow-up: the popup lists only what happened near the clicked spot (±20 s, a short walk), so a fight spread across the map shows just its first kill. Next step: show all of a fight's kills when it's opened from Turning points.
