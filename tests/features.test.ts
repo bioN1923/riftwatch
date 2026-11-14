@@ -921,3 +921,23 @@ describe('ArenaSeeds', async () => {
     expect(s.take()).toBe('e'); // 'a' was already seen
   });
 });
+
+describe('laneOpponents', async () => {
+  const { laneOpponents } = await import('../src/lib/laneOpponents');
+  const game = (win: boolean, myPos: string, oppChamp: number, extra: Partial<{ remake: boolean }> = {}) =>
+    ({
+      remake: !!extra.remake,
+      participants: [
+        { puuid: 'me', teamId: 100, win, position: myPos, championId: 1 },
+        { puuid: 'o', teamId: 200, win: !win, position: myPos || 'X', championId: oppChamp },
+      ],
+    }) as never;
+  it('tallies the enemy in the same position, most met first', () => {
+    const r = laneOpponents([game(true, 'JUNGLE', 7), game(false, 'JUNGLE', 7), game(false, 'JUNGLE', 9), game(true, '', 9), game(true, 'JUNGLE', 9, { remake: true })], 'me');
+    expect(r.games).toBe(3);
+    expect(r.list).toEqual([
+      { championId: 7, games: 2, wins: 1 },
+      { championId: 9, games: 1, wins: 0 },
+    ]);
+  });
+});

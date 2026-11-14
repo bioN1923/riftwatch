@@ -1069,5 +1069,8 @@ const dict: Record<string, string> = {
   "home.tool.duo": "Spieler aus deinen letzten Spielen, die neben dir passen würden, in deiner Rangnähe.",
   "tl.smallLast": "Champions mit wenigen Spielen in einer Rolle (mit * markiert) stehen hinter den anderen, damit eine Glückssträhne nicht ganz oben landet.",
   "tl.collectingArena": "Arena-Spiele stammen von Spielern, die auf Riftwatch nachgeschlagen werden: Öffne das Profil von jemandem, der Arena spielt, und seine Spiele und danach die seiner Gegner füllen diese Liste.",
+  "stats.oppTitle": "Lane-Gegner",
+  "stats.oppLead_one": "Die Champions, die dir auf deiner Lane am häufigsten begegnen, aus {count} Spiel mit Lane-Gegner, und deine Bilanz gegen jeden.",
+  "stats.oppLead_other": "Die Champions, die dir auf deiner Lane am häufigsten begegnen, aus {count} Spielen mit Lane-Gegner, und deine Bilanz gegen jeden.",
 };
 export default dict;

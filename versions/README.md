@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.85](v3.85/CHANGES.md) | 2026-11-14 | Stats tab: lane opponents across all champions |
 | [v3.84](v3.84/CHANGES.md) | 2026-11-14 | Arena tier list empty state explains its source |
 | [v3.83](v3.83/CHANGES.md) | 2026-11-14 | Arena games sourced from Arena players instead of apex ranked players |
 | [v3.82](v3.82/CHANGES.md) | 2026-11-14 | Profiles: no win-rate colour under 5 games |

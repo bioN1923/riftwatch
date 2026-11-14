@@ -1069,5 +1069,8 @@ const en = {
   "home.tool.duo": "Players from your recent games who would fit next to you, around your rank.",
   "tl.smallLast": "Champions with few games in a role (marked *) are listed after the rest, so a lucky streak doesn't top the list.",
   "tl.collectingArena": "Arena games come from players looked up on Riftwatch: open the profile of someone who plays Arena, and their games, then their opponents' games, start filling this list.",
+  "stats.oppTitle": "Lane opponents",
+  "stats.oppLead_one": "The champions you meet in your own lane most often, from {count} game with a lane opponent, and your record against each.",
+  "stats.oppLead_other": "The champions you meet in your own lane most often, from {count} games with a lane opponent, and your record against each.",
 };
 export default en;

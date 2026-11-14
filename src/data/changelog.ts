@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.85',
+    date: '2026-11-14',
+    items: ['Profile Stats: a "Lane opponents" panel shows the champions you meet in your own lane most often, whatever you played, with your record against each. Small samples stay uncoloured.'],
+  },
+  {
     version: '3.84',
     date: '2026-11-14',
     items: ['Arena tier list: while it is empty, it explains where Arena games come from (players looked up on Riftwatch) instead of saying it reads high-elo ranked games.'],

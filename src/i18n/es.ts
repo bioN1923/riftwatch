@@ -1069,5 +1069,8 @@ const dict: Record<string, string> = {
   "home.tool.duo": "Jugadores de tus partidas recientes que encajarían contigo, cerca de tu rango.",
   "tl.smallLast": "Los campeones con pocas partidas en un rol (marcados con *) van después del resto, para que una racha de suerte no encabece la lista.",
   "tl.collectingArena": "Las partidas de Arena vienen de jugadores buscados en Riftwatch: abre el perfil de alguien que juegue Arena y sus partidas, y luego las de sus rivales, empezarán a llenar esta lista.",
+  "stats.oppTitle": "Rivales de línea",
+  "stats.oppLead_one": "Los campeones que más te encuentras en tu línea, de {count} partida con rival de línea, y tu balance contra cada uno.",
+  "stats.oppLead_other": "Los campeones que más te encuentras en tu línea, de {count} partidas con rival de línea, y tu balance contra cada uno.",
 };
 export default dict;

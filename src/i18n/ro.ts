@@ -1094,5 +1094,9 @@ const dict: Record<string, string> = {
   "home.tool.duo": "Jucători din meciurile tale recente care s-ar potrivi cu tine, apropiați de rangul tău.",
   "tl.smallLast": "Campionii cu puține meciuri pe un rol (marcați cu *) apar după ceilalți, ca o serie norocoasă să nu ajungă în fruntea listei.",
   "tl.collectingArena": "Meciurile de Arena vin de la jucătorii căutați pe Riftwatch: deschide profilul cuiva care joacă Arena, iar meciurile lui, apoi ale adversarilor, vor începe să umple lista.",
+  "stats.oppTitle": "Adversari de lane",
+  "stats.oppLead_one": "Campionii pe care îi întâlnești cel mai des pe lane-ul tău, din {count} meci cu adversar de lane, și bilanțul tău contra fiecăruia.",
+  "stats.oppLead_few": "Campionii pe care îi întâlnești cel mai des pe lane-ul tău, din {count} meciuri cu adversar de lane, și bilanțul tău contra fiecăruia.",
+  "stats.oppLead_other": "Campionii pe care îi întâlnești cel mai des pe lane-ul tău, din {count} de meciuri cu adversar de lane, și bilanțul tău contra fiecăruia.",
 };
 export default dict;

@@ -1069,5 +1069,8 @@ const dict: Record<string, string> = {
   "home.tool.duo": "Jogadores das suas partidas recentes que combinariam com você, perto do seu elo.",
   "tl.smallLast": "Campeões com poucas partidas numa função (marcados com *) aparecem depois dos outros, para que uma sequência de sorte não lidere a lista.",
   "tl.collectingArena": "As partidas de Arena vêm de jogadores pesquisados no Riftwatch: abra o perfil de alguém que joga Arena, e as partidas dele, e depois as dos adversários, começarão a preencher esta lista.",
+  "stats.oppTitle": "Oponentes de rota",
+  "stats.oppLead_one": "Os campeões que você mais enfrenta na sua rota, de {count} partida com oponente de rota, e seu histórico contra cada um.",
+  "stats.oppLead_other": "Os campeões que você mais enfrenta na sua rota, de {count} partidas com oponente de rota, e seu histórico contra cada um.",
 };
 export default dict;

@@ -8,6 +8,7 @@ import { assets, champSlug, useStaticData } from '../../lib/ddragon';
 import { decimal, formatKda, kdaRatio, kdaTone, pct, winRateTone } from '../../lib/format';
 import { me } from '../../lib/stats';
 import { winConditions, type WinCondition } from '../../lib/winConditions';
+import { laneOpponents } from '../../lib/laneOpponents';
 import { GameImg, Tooltip } from '../ui/GameImg';
 import { RoleIcon, ROLE_LABEL } from '../ui/RoleIcon';
 import { EmptyState, Skeleton } from '../ui/States';
@@ -128,6 +129,7 @@ export function StatsTab({
       <Benchmarks matches={matches} puuid={puuid} />
       <WinConditions matches={matches} puuid={puuid} />
       <ChampionTable matches={matches} puuid={puuid} onOpen={onOpenChampion} />
+      <LaneOpponents matches={matches} puuid={puuid} />
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <RoleTable matches={matches} puuid={puuid} />
         <ActivityCalendar matches={matches} puuid={puuid} />
@@ -511,5 +513,38 @@ function GoalButton({ c, goals, onAdd }: { c: WinCondition; goals: { metric: Met
       <Target className="size-3" aria-hidden />
       {has ? t('wc.goalHas') : t('wc.goalMake')}
     </button>
+  );
+}
+
+/** Who they meet in lane most often, with their record against each (any champion they played). */
+function LaneOpponents({ matches, puuid }: { matches: MatchSummary[]; puuid: string }) {
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  const { list, games } = laneOpponents(matches, puuid);
+  if (games < 5 || !list.length) return null;
+  return (
+    <section className="panel p-4" aria-labelledby="opp-h">
+      <h2 id="opp-h" className="panel-title">
+        {t('stats.oppTitle')}
+      </h2>
+      <p className="mt-0.5 text-xs text-muted">{t('stats.oppLead', { count: games })}</p>
+      <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {list.slice(0, 8).map((o) => {
+          const c = a.champion(o.championId);
+          const wr = o.wins / o.games;
+          return (
+            <li key={o.championId} className="flex items-center gap-2.5 rounded border border-line px-2.5 py-2">
+              <GameImg src={c.url} alt="" size={30} rounded="md" />
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-medium">{c.name}</span>
+                <span className="num block text-xs text-muted">
+                  {o.wins}–{o.games - o.wins} · <span className={clsx('font-semibold', winRateTone(wr, o.games))}>{pct(wr)}</span>
+                </span>
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }
