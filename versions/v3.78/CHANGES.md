@@ -14,3 +14,7 @@ A phone sweep (iPhone 13, demo) over compare, duo, tier list, Arena, ladder, mul
 
 ## Checks
 tsc clean · 119 tests pass · a11y `{}` · sweep: tier list, Arena and ladder now have no table past the edge (only the role tabs, which scroll on purpose) · demo `phone-tierlist-table.png`, `phone-ladder-table.png`.
+
+## Live check (2026-11-14 16:10)
+- Deploy finished cleanly at 16:09. On desktop the live tier list still shows every column (#, Champion, Role, Tier, Win rate, Pick rate, Ban rate, Games, Weak against) over 308 rows, so desktop is unchanged.
+- The phone layouts were checked on the demo server, without resizing the user's browser.
