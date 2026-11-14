@@ -954,5 +954,7 @@ const dict: Record<string, string> = {
   "lb.cutoff": "Jogadores em {tier}: {players} · o mais baixo agora: {lp}",
   "lb.cutoffTip": "O jogador mais baixo deste nível hoje. A Riot recalcula o corte real uma vez por dia, então pode variar um pouco.",
   "draft.rangeTip": "Em {count} partidas, a taxa real de vitória provavelmente está entre {lo} e {hi}",
+  "tl.recent": "Vistos recentemente",
+  "tl.recentClear": "Limpar",
 };
 export default dict;

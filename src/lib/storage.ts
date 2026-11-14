@@ -103,6 +103,20 @@ export function toggleFavorite(p: SavedPlayer) {
   favoriteStore.set((list) => (list.some((x) => samePlayer(x, p)) ? list.filter((x) => !samePlayer(x, p)) : [p, ...list].slice(0, 12)));
 }
 
+/** Champion pages the visitor opened, newest first ({championId, role?}), kept in this browser. */
+export interface RecentChamp {
+  id: number;
+  role?: string;
+}
+/** Put a champion first, without duplicates (the same champion in another role replaces it). */
+export function pushRecentChamp(list: RecentChamp[], c: RecentChamp, max = 8): RecentChamp[] {
+  return [c, ...list.filter((x) => x.id !== c.id)].slice(0, max);
+}
+const recentChampStore = createStore<RecentChamp[]>('rw:recent-champs', []);
+export const useRecentChamps = () => useStore(recentChampStore);
+export const addRecentChamp = (c: RecentChamp) => recentChampStore.set((list) => pushRecentChamp(list, c));
+export const clearRecentChamps = () => recentChampStore.set([]);
+
 /** The newest "What's new" version this visitor has seen ("" until their first visit). */
 const seenStore = createStore<string>('rw:seen-version', '');
 export const useSeenVersion = () => useStore(seenStore);

@@ -954,5 +954,7 @@ const dict: Record<string, string> = {
   "lb.cutoff": "Spieler in {tier}: {players} · niedrigster gerade: {lp}",
   "lb.cutoffTip": "Der am niedrigsten platzierte Spieler dieser Stufe heute. Riot berechnet die echte Grenze einmal täglich neu, sie kann also leicht abweichen.",
   "draft.rangeTip": "Bei {count} Spielen liegt die echte Siegrate wahrscheinlich zwischen {lo} und {hi}",
+  "tl.recent": "Zuletzt angesehen",
+  "tl.recentClear": "Leeren",
 };
 export default dict;

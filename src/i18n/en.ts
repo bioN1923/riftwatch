@@ -954,5 +954,7 @@ const en = {
   "lb.cutoff": "Players in {tier}: {players} · lowest right now: {lp}",
   "lb.cutoffTip": "The lowest-ranked player in this tier today. Riot recalculates the real promotion cutoff once a day, so it can differ a little.",
   "draft.rangeTip": "Over {count} games the real win rate is likely between {lo} and {hi}",
+  "tl.recent": "Recently viewed",
+  "tl.recentClear": "Clear",
 };
 export default en;

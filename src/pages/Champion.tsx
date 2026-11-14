@@ -20,6 +20,7 @@ import { SlidingIndicator, useSlideDirection } from '../components/ui/Motion';
 import { t } from '../i18n';
 import { LaneCurve } from '../components/champions/LaneCurve';
 import { guessChampion } from '../lib/champSearch';
+import { addRecentChamp } from '../lib/storage';
 
 export function ChampionPage() {
   const { slug = '' } = useParams();
@@ -68,6 +69,8 @@ function ChampionView({ championId }: { championId: number }) {
   const a = assets(sd);
   const info = sd?.champions.get(championId);
   const detail = useChampionDetail(sd, championId).data;
+  // Remembered for the tier list's "Recently viewed" row (this browser only).
+  useEffect(() => addRecentChamp({ id: championId, role }), [championId, role]);
 
   const q = useQuery({
     queryKey: ['champion', championId, group, role, patch],

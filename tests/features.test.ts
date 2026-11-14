@@ -752,3 +752,17 @@ describe('which server a page is about', async () => {
     expect(pageRegion('/lol/nowhere/x-y', '', 'euw1')).toBe('euw1');
   });
 });
+
+describe('recently viewed champions', async () => {
+  const { pushRecentChamp } = await import('../src/lib/storage');
+  it('keeps the newest first, one entry per champion, at most 8', () => {
+    let l = [] as { id: number; role?: string }[];
+    for (const id of [1, 2, 3]) l = pushRecentChamp(l, { id, role: 'MIDDLE' });
+    expect(l.map((x) => x.id)).toEqual([3, 2, 1]);
+    l = pushRecentChamp(l, { id: 1, role: 'TOP' });
+    expect(l).toEqual([{ id: 1, role: 'TOP' }, { id: 3, role: 'MIDDLE' }, { id: 2, role: 'MIDDLE' }]);
+    for (let id = 10; id < 20; id++) l = pushRecentChamp(l, { id });
+    expect(l).toHaveLength(8);
+    expect(l[0].id).toBe(19);
+  });
+});

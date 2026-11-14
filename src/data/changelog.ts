@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.53',
+    date: '2026-11-14',
+    items: ['Tier list: a "Recently viewed" row with the champion pages you opened lately (in the role you looked at), one click away. Kept only in your browser, with a Clear button.'],
+  },
+  {
     version: '3.52',
     date: '2026-11-14',
     items: ['Keyboard users: text boxes (search, compare, multi-search, ladder, goals) show a clear gold focus ring, and the ladder no longer has an invisible stop when you Tab through it.'],
