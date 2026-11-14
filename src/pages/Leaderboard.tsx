@@ -210,7 +210,8 @@ export function LeaderboardPage() {
             </p>
           )}
           <div className={clsx('mt-2 overflow-x-auto transition-opacity', q.isPlaceholderData && 'opacity-60')}>
-            <table className="w-full min-w-[640px] text-sm">
+            {/* Phones: games go under the win rate and the bar is left out, so nothing runs off the edge. */}
+            <table className="w-full text-sm sm:min-w-[640px]">
               <caption className="sr-only">
                 {t('lb.caption', { tier: TIERS.find((x) => x.id === tier)?.label() ?? '', page: String(page), pages: String(pages) })}
               </caption>
@@ -228,7 +229,7 @@ export function LeaderboardPage() {
                   <th scope="col" className="px-3 py-2 text-right font-medium">
                     {t('lb.wr')}
                   </th>
-                  <th scope="col" className="px-3 py-2 text-right font-medium">
+                  <th scope="col" className="hidden px-3 py-2 text-right font-medium sm:table-cell">
                     {t('lb.games')}
                   </th>
                 </tr>
@@ -268,11 +269,14 @@ export function LeaderboardPage() {
                       <td className="num px-3 py-2.5 text-right font-semibold">{thousands(e.lp)}</td>
                       <td className="px-3 py-2.5 text-right">
                         <span className="inline-flex items-center gap-2.5">
-                          <WinRateBar value={wr} />
+                          <span className="hidden sm:inline">
+                            <WinRateBar value={wr} />
+                          </span>
                           <span className={clsx('num w-11', wr >= 0.5 ? 'text-text' : 'text-muted')}>{pct(wr, 1)}</span>
                         </span>
+                        <span className="num block text-xs text-faint sm:hidden">{t('common.games', { count: games })}</span>
                       </td>
-                      <td className="num px-3 py-2.5 text-right text-muted">
+                      <td className="num hidden px-3 py-2.5 text-right text-muted sm:table-cell">
                         {thousands(games)}
                         <span className="ml-1 text-xs text-faint">
                           ({t('common.wins', { count: e.wins })} {t('common.losses', { count: e.losses })})

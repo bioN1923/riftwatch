@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.78](v3.78/CHANGES.md) | 2026-11-14 | Phones: tier list and ladder tables fit the screen |
 | [v3.77](v3.77/CHANGES.md) | 2026-11-14 | Phones: scoreboard items and CS under each player |
 | [v3.76](v3.76/CHANGES.md) | 2026-11-14 | Phones: recent games strip as two rows of ten |
 | [v3.75](v3.75/CHANGES.md) | 2026-11-14 | Draft: ban suggestions show games and clear vs leaning |

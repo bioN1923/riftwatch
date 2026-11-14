@@ -74,10 +74,10 @@ export function ChampionsPage() {
     });
   }, [q.data, role, query, sort, a, onlyPool, showPool, sd]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const header = (key: SortKey, label: string, align: 'left' | 'right' = 'right', defaultDir: 1 | -1 = -1) => {
+  const header = (key: SortKey, label: string, align: 'left' | 'right' = 'right', defaultDir: 1 | -1 = -1, extra?: string) => {
     const active = sort.key === key;
     return (
-      <th scope="col" aria-sort={active ? (sort.dir === 1 ? 'ascending' : 'descending') : 'none'} className={clsx('px-3 py-2 font-medium', align === 'right' ? 'text-right' : 'text-left')}>
+      <th scope="col" aria-sort={active ? (sort.dir === 1 ? 'ascending' : 'descending') : 'none'} className={clsx('px-3 py-2 font-medium', align === 'right' ? 'text-right' : 'text-left', extra)}>
         <button
           onClick={() => setSort((s) => (s.key === key ? { key, dir: (s.dir * -1) as 1 | -1 } : { key, dir: defaultDir }))}
           className={clsx('-my-1 inline-flex min-h-[24px] min-w-[24px] items-center gap-1 py-1 hover:text-text', active && 'text-text')}
@@ -183,22 +183,23 @@ export function ChampionsPage() {
         </div>
       ) : (
         <div className="mt-2 overflow-x-auto">
-          <table className="w-full min-w-[720px] text-sm">
+          {/* Phones: champion, tier and win rate only (role shows as an icon by the name); the rest from sm up. */}
+          <table className="w-full text-sm sm:min-w-[720px]">
             <caption className="sr-only">{t('tl.caption')}</caption>
             <thead className="text-xs text-muted">
               <tr>
                 {header('rank', '#', 'left', 1)}
                 {header('name', t('tl.col.champion'), 'left', 1)}
                 {role === 'ALL' && group === 'ranked' && (
-                  <th scope="col" className="px-3 py-2 text-left font-medium">
+                  <th scope="col" className="hidden px-3 py-2 text-left font-medium sm:table-cell">
                     {t('tl.col.role')}
                   </th>
                 )}
                 {header('tier', t('tl.col.tier'), 'left', 1)}
                 {header('winRate', t('tl.col.wr'))}
-                {header('pickRate', t('tl.col.pick'))}
-                {header('banRate', t('tl.col.ban'))}
-                {header('games', t('tl.col.games'))}
+                {header('pickRate', t('tl.col.pick'), 'right', -1, 'hidden sm:table-cell')}
+                {header('banRate', t('tl.col.ban'), 'right', -1, 'hidden sm:table-cell')}
+                {header('games', t('tl.col.games'), 'right', -1, 'hidden sm:table-cell')}
                 {group === 'ranked' && (
                   <th scope="col" className="hidden px-3 py-2 text-left font-medium xl:table-cell">
                     {t('tl.col.weak')}
@@ -218,18 +219,26 @@ export function ChampionsPage() {
                     className="fade-up group cursor-pointer border-t border-line transition-colors hover:bg-raised"
                     style={{ animationDelay: `${Math.min(i, 16) * 22}ms` }}
                   >
-                    <td className="num w-10 px-3 py-2 text-muted">{role === 'ALL' && sort.key === 'tier' ? i + 1 : r.rank}</td>
+                    <td className="num w-10 px-2 py-2 text-muted sm:px-3">{role === 'ALL' && sort.key === 'tier' ? i + 1 : r.rank}</td>
                     <td className="px-3 py-2">
                       <Link to={href} onClick={(e) => e.stopPropagation()} className="flex items-center gap-3 font-medium">
                         <GameImg src={c.url} alt="" size={34} rounded="md" />
-                        <span className="group-hover:text-gold">{c.name}</span>
+                        <span className="min-w-0 group-hover:text-gold">
+                          {c.name}
+                          {role === 'ALL' && group === 'ranked' && (
+                            <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-muted sm:hidden">
+                              <RoleIcon role={r.role} size={12} />
+                              {ROLE_LABEL[r.role]}
+                            </span>
+                          )}
+                        </span>
                         {showPool && inPool(r) && (
                           <Star className="size-3.5 shrink-0 fill-gold text-gold" aria-label={t('draft.inPool')} role="img" />
                         )}
                       </Link>
                     </td>
                     {role === 'ALL' && group === 'ranked' && (
-                      <td className="px-3 py-2 text-muted">
+                      <td className="hidden px-3 py-2 text-muted sm:table-cell">
                         <span className="inline-flex items-center gap-1.5">
                           <RoleIcon role={r.role} size={15} />
                           {ROLE_LABEL[r.role]}
@@ -241,16 +250,18 @@ export function ChampionsPage() {
                     </td>
                     <td className="px-3 py-2 text-right">
                       <span className="inline-flex items-center gap-2.5">
-                        <WinRateBar value={r.winRate} />
+                        <span className="hidden sm:inline">
+                          <WinRateBar value={r.winRate} />
+                        </span>
                         <span className="flex w-12 flex-col items-end leading-tight">
                           <span className={clsx('num font-semibold', r.winRate >= 0.5 ? 'text-text' : 'text-muted')}>{pct(r.winRate, 1)}</span>
                           <PatchDelta now={r.winRate} before={r.prevWinRate} games={r.games} prevGames={r.prevGames} />
                         </span>
                       </span>
                     </td>
-                    <td className="num px-3 py-2 text-right text-muted">{pct(r.pickRate, 1)}</td>
-                    <td className="num px-3 py-2 text-right text-muted">{pct(r.banRate, 1)}</td>
-                    <td className="num px-3 py-2 text-right text-muted">
+                    <td className="num hidden px-3 py-2 text-right text-muted sm:table-cell">{pct(r.pickRate, 1)}</td>
+                    <td className="num hidden px-3 py-2 text-right text-muted sm:table-cell">{pct(r.banRate, 1)}</td>
+                    <td className="num hidden px-3 py-2 text-right text-muted sm:table-cell">
                       {thousands(r.games)}
                       {r.lowSample && (
                         <span className="ml-1 text-faint" title={t('tl.smallSample')}>
