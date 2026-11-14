@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.71',
+    date: '2026-11-14',
+    items: ['After an update, champion, item and rune data loads fresh at once, rather than up to an hour later from your browser\'s cache.'],
+  },
+  {
     version: '3.70',
     date: '2026-11-14',
     items: ['Live game: each team shows its damage mix (AD, AP and mixed champions), and flags a team that leans on one type, so you know whether armor or magic resist pays off.'],

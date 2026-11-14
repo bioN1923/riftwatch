@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { langInfo, t } from '../i18n';
 import { slimStatic, type SlimStatic } from '../../shared/staticSlim';
+import { CHANGELOG } from '../data/changelog';
 
 /** Static game data from Riot's Data Dragon CDN, always on the latest patch. */
 const CDN = 'https://ddragon.leagueoflegends.com/cdn';
@@ -39,7 +40,9 @@ function fromSlim(d: SlimStatic): StaticData {
 /** The slim copy from our server (one small, cached, compressed file); Data Dragon directly if that fails. */
 async function loadStatic(locale: string): Promise<StaticData> {
   try {
-    return fromSlim(await getJson<SlimStatic>(`/api/static/${locale}`));
+    // The release in the address, so a new deploy (which may add fields) isn't hidden behind the
+    // browser's cached copy from the last one. The server ignores it.
+    return fromSlim(await getJson<SlimStatic>(`/api/static/${locale}?v=${CHANGELOG[0].version}`));
   } catch {
     const [version] = await getJson<string[]>('https://ddragon.leagueoflegends.com/api/versions.json');
     const base = `${CDN}/${version}/data/${locale}`;
