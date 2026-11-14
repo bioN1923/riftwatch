@@ -7,3 +7,6 @@ Follow-up from the v3.70 live check. `/api/static/:locale` is sent with `max-age
 
 ## Checks
 tsc clean · 116 tests pass · a11y `{}` · demo: the browser requests `/api/static/en_US?v=3.71`, and the tier list still shows all 188 images.
+
+## Live check (2026-11-14 15:05)
+- Deploy finished cleanly at 15:04. Reloading a profile in the user's Chrome requested the static data with `v=3.71` over the network instead of reusing the cached v3.70 copy, so the champion damage ratings now reach browsers straight away. There was nothing visual to screenshot.
