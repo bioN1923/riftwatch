@@ -70,6 +70,17 @@ function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTime
   // Rows of the event list that the selected map spot covers, so map and list point at the same moment.
   const hit = new Set<TimelineEvent>(happenings.filter((h) => h.kind !== 'multi').map((h) => h.e as TimelineEvent));
   const listRef = useRef<HTMLOListElement>(null);
+  const mapRef = useRef<HTMLElement>(null);
+  // From the list: on phones the map sits above the list, so bring it back into view to show the answer.
+  const pickFromList = (t0: number, x: number, y: number) => {
+    pick(t0, x, y);
+    // Only when the map square isn't fully on screen (64 px: the sticky header).
+    const sq = mapRef.current?.querySelector('svg')?.getBoundingClientRect();
+    if (sq && (sq.top < 64 || sq.bottom > window.innerHeight)) {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      mapRef.current!.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    }
+  };
   useEffect(() => {
     // Scroll only the list (not the page) so the first matching row is in view.
     const list = listRef.current;
@@ -93,7 +104,7 @@ function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTime
 
   return (
     <div className="grid gap-6 md:grid-cols-[minmax(0,300px)_1fr]">
-      <figure>
+      <figure ref={mapRef} className="scroll-mt-[88px]">
         <div role="radiogroup" aria-label={t('tl.mapScope')} className="mb-2 inline-flex rounded border border-line p-0.5 text-xs">
           {(['player', 'all'] as const).map((k) => (
             <button
@@ -224,7 +235,7 @@ function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTime
             const p = objectivePos(e);
             return (
               <li key={i} data-hit={hit.has(e) || undefined}>
-                <Row on={hit.has(e)} pick={p ? () => pick(e.t, p[0], p[1]) : undefined} className="text-muted">
+                <Row on={hit.has(e)} pick={p ? () => pickFromList(e.t, p[0], p[1]) : undefined} className="text-muted">
                   {time}
                   <Icon className={clsx('size-4', e.teamId === 100 ? 'text-side-blue' : 'text-side-red')} aria-hidden />
                   <span>
@@ -239,7 +250,7 @@ function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTime
           const Icon = f.kind === 'kill' ? Swords : f.kind === 'death' ? Skull : Handshake;
           return (
             <li key={i} data-hit={hit.has(e) || undefined}>
-              <Row on={hit.has(e)} pick={() => pick(e.t, e.x, e.y)} className={f.kind === 'death' ? 'bg-loss-tint' : f.kind === 'kill' ? 'bg-win-tint' : ''}>
+              <Row on={hit.has(e)} pick={() => pickFromList(e.t, e.x, e.y)} className={f.kind === 'death' ? 'bg-loss-tint' : f.kind === 'kill' ? 'bg-win-tint' : ''}>
                 {time}
                 <Icon className={clsx('size-4', f.kind === 'death' ? 'text-loss' : 'text-win')} aria-hidden />
                 <GameImg src={other.url} alt="" size={20} rounded="sm" />

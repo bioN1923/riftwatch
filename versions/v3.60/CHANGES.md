@@ -1,0 +1,11 @@
+# v3.60 — Timeline list → map on phones
+
+## Live-style check (demo, iPhone 13)
+- Duo finder on a phone: no horizontal overflow, cards and the Check a player form fit (`demo/phone-duo.png`). Nothing to change.
+- Timeline on a phone: map and list are stacked, so tapping a list row (new in v3.59) changed the map out of sight, above the list. The tap seemed to do nothing.
+
+## Change
+- `TimelineTab.tsx` `pickFromList`: after a row selects its spot, if the map square isn't fully on screen (top under the 64 px sticky header, or bottom below the viewport), the page scrolls the map into view (`scroll-mt-[88px]`; instant when the user prefers reduced motion). On desktop, where the map sits beside the list, the page doesn't move.
+
+## Checks
+tsc clean · 101 tests pass · a11y `{}` · phone: scrollY 1912 → 1526, map 125–455 of 664 px (`demo/phone-row-to-map.png`); desktop: scrollY unchanged.
