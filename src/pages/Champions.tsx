@@ -181,7 +181,7 @@ export function ChampionsPage() {
       ) : rows.length === 0 ? (
         <div className="panel mt-6">
           <EmptyState title={q.data.matches ? t('tl.noMatch') : t('tl.noGames')}>
-            {q.data.matches ? t('tl.noMatchBody') : q.data.collecting ? t('tl.collectingBody') : t('tl.noGamesBody')}
+            {q.data.matches ? t('tl.noMatchBody') : group === 'arena' ? t('tl.collectingArena') : q.data.collecting ? t('tl.collectingBody') : t('tl.noGamesBody')}
           </EmptyState>
         </div>
       ) : (

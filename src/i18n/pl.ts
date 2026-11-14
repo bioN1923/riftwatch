@@ -1118,5 +1118,6 @@ const dict: Record<string, string> = {
   "ms.lobbyOpen": "Nikt nie gra głównie na {roles}.",
   "home.tool.duo": "Gracze z twoich ostatnich gier, którzy pasowaliby do ciebie, blisko twojej rangi.",
   "tl.smallLast": "Bohaterowie z małą liczbą gier na danej roli (oznaczeni *) są na końcu, żeby szczęśliwa passa nie trafiła na szczyt listy.",
+  "tl.collectingArena": "Gry na Arenie pochodzą od graczy wyszukiwanych w Riftwatch: otwórz profil kogoś, kto gra na Arenie, a jego gry, a potem gry jego przeciwników, zaczną wypełniać tę listę.",
 };
 export default dict;

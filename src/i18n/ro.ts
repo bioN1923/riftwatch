@@ -1093,5 +1093,6 @@ const dict: Record<string, string> = {
   "ms.lobbyOpen": "Nimeni nu e main pe {roles}.",
   "home.tool.duo": "Jucători din meciurile tale recente care s-ar potrivi cu tine, apropiați de rangul tău.",
   "tl.smallLast": "Campionii cu puține meciuri pe un rol (marcați cu *) apar după ceilalți, ca o serie norocoasă să nu ajungă în fruntea listei.",
+  "tl.collectingArena": "Meciurile de Arena vin de la jucătorii căutați pe Riftwatch: deschide profilul cuiva care joacă Arena, iar meciurile lui, apoi ale adversarilor, vor începe să umple lista.",
 };
 export default dict;

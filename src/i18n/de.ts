@@ -1068,5 +1068,6 @@ const dict: Record<string, string> = {
   "ms.lobbyOpen": "Niemand hat {roles} als Hauptrolle.",
   "home.tool.duo": "Spieler aus deinen letzten Spielen, die neben dir passen würden, in deiner Rangnähe.",
   "tl.smallLast": "Champions mit wenigen Spielen in einer Rolle (mit * markiert) stehen hinter den anderen, damit eine Glückssträhne nicht ganz oben landet.",
+  "tl.collectingArena": "Arena-Spiele stammen von Spielern, die auf Riftwatch nachgeschlagen werden: Öffne das Profil von jemandem, der Arena spielt, und seine Spiele und danach die seiner Gegner füllen diese Liste.",
 };
 export default dict;

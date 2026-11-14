@@ -1068,5 +1068,6 @@ const en = {
   "ms.lobbyOpen": "Nobody mains {roles}.",
   "home.tool.duo": "Players from your recent games who would fit next to you, around your rank.",
   "tl.smallLast": "Champions with few games in a role (marked *) are listed after the rest, so a lucky streak doesn't top the list.",
+  "tl.collectingArena": "Arena games come from players looked up on Riftwatch: open the profile of someone who plays Arena, and their games, then their opponents' games, start filling this list.",
 };
 export default en;

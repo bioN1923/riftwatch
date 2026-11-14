@@ -1068,5 +1068,6 @@ const dict: Record<string, string> = {
   "ms.lobbyOpen": "Ninguém é main {roles}.",
   "home.tool.duo": "Jogadores das suas partidas recentes que combinariam com você, perto do seu elo.",
   "tl.smallLast": "Campeões com poucas partidas numa função (marcados com *) aparecem depois dos outros, para que uma sequência de sorte não lidere a lista.",
+  "tl.collectingArena": "As partidas de Arena vêm de jogadores pesquisados no Riftwatch: abra o perfil de alguém que joga Arena, e as partidas dele, e depois as dos adversários, começarão a preencher esta lista.",
 };
 export default dict;

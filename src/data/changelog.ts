@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.84',
+    date: '2026-11-14',
+    items: ['Arena tier list: while it is empty, it explains where Arena games come from (players looked up on Riftwatch) instead of saying it reads high-elo ranked games.'],
+  },
+  {
     version: '3.83',
     date: '2026-11-14',
     items: ['Arena stats: the collector now finds Arena games through Arena players. Each Arena game Riftwatch reads lines up its other players, whose recent Arena games are read next. It no longer asks top ranked players, who hardly play Arena.'],
