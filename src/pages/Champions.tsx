@@ -262,11 +262,19 @@ export function ChampionsPage() {
                       <td className="hidden px-3 py-2 xl:table-cell">
                         {r.counters?.length ? (
                           <span className="flex gap-1">
-                            {r.counters.map((cid) => {
+                            {r.counters.map((cid, i) => {
                               const cc = a.champion(cid);
+                              // Clear counters get the red ring; ones that only lean that way stay neutral and say so.
+                              const sure = i < (r.countersSure ?? r.counters!.length);
+                              const vs = t('tl.vs', { a: a.champion(r.championId).name, b: cc.name });
                               return (
-                                <Link key={cid} to={matchupPath(sd, r.championId, cid, r.role)} onClick={(e) => e.stopPropagation()} className="rounded-[5px] ring-1 ring-loss/40 transition hover:ring-loss">
-                                  <GameImg src={cc.url} alt={t('tl.weakAgainst', { champion: cc.name })} size={26} rounded="md" tip={t('tl.vs', { a: a.champion(r.championId).name, b: cc.name })} />
+                                <Link
+                                  key={cid}
+                                  to={matchupPath(sd, r.championId, cid, r.role)}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className={clsx('rounded-[5px] ring-1 transition', sure ? 'ring-loss/40 hover:ring-loss' : 'opacity-70 ring-line hover:opacity-100 hover:ring-line-strong')}
+                                >
+                                  <GameImg src={cc.url} alt={t('tl.weakAgainst', { champion: cc.name })} size={26} rounded="md" tip={sure ? vs : `${vs} · ${t('tl.leaning')}`} />
                                 </Link>
                               );
                             })}

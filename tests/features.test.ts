@@ -766,3 +766,20 @@ describe('recently viewed champions', async () => {
     expect(l[0].id).toBe(19);
   });
 });
+
+describe('counters: clear ones first, the rest only leaning', async () => {
+  const { countersOf } = await import('../server/champStats');
+  it('puts beyond-chance counters first and counts them', () => {
+    const vs = {
+      '1': { g: 300, w: 120 }, // 40% on 300 games: clear
+      '2': { g: 10, w: 3 }, // 30% on 10 games: only leaning
+      '3': { g: 40, w: 18 }, // 45% on 40 games: leaning
+      '4': { g: 200, w: 110 }, // winning matchup: never a counter
+    } as any;
+    const r = countersOf({ g: 1000, vs });
+    expect(r.ids[0]).toBe(1);
+    expect(r.sure).toBe(1);
+    expect(r.ids).not.toContain(4);
+    expect(r.ids.length).toBeLessThanOrEqual(3);
+  });
+});

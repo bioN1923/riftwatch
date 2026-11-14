@@ -219,7 +219,8 @@ export interface TierRow {
   tier: 'S+' | 'S' | 'A' | 'B' | 'C' | 'D' | '–'; // '–' = too rare in this role to rank
   rank: number; // within role
   lowSample: boolean;
-  counters?: number[]; // champion ids this pick struggles against in lane
+  counters?: number[]; // champion ids this pick struggles against in lane, clear ones first
+  countersSure?: number; // how many of `counters` are clear (beyond chance); the rest only lean that way
   /** Win rate on the previous patch, when both patches have enough games for it to mean something. */
   prevWinRate?: number;
   prevGames?: number;

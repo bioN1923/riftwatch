@@ -628,8 +628,16 @@ function laneMatchups(s: ChampionStats) {
   // Same bar as the server's counters: at least 8 games and 3% of the champion's games.
   const min = Math.max(8, Math.round((s.summary?.games ?? 0) * 0.03));
   const usable = s.matchups.filter((m) => m.games >= min);
-  const easiest = usable.filter((m) => m.adjusted >= 0.5).sort((a, b) => b.adjusted - a.adjusted);
-  const hardest = usable.filter((m) => m.adjusted < 0.5).sort((a, b) => a.adjusted - b.adjusted);
+  // Clear ones (beyond about one standard error from 50%) first, then the ones that only lean that way.
+  const se = (m: Matchup) => 0.5 / Math.sqrt(m.games + 25);
+  const easiest = usable
+    .filter((m) => m.adjusted >= 0.5)
+    .map((m) => ({ ...m, sure: m.adjusted - se(m) > 0.5 }))
+    .sort((a, b) => Number(b.sure) - Number(a.sure) || b.adjusted - a.adjusted);
+  const hardest = usable
+    .filter((m) => m.adjusted < 0.5)
+    .map((m) => ({ ...m, sure: m.adjusted + se(m) < 0.5 }))
+    .sort((a, b) => Number(b.sure) - Number(a.sure) || a.adjusted - b.adjusted);
   return { usable, easiest, hardest };
 }
 
@@ -640,7 +648,7 @@ function CountersStrip({ s }: { s?: ChampionStats }) {
   if (!s || s.group !== 'ranked' || !s.summary) return null;
   const { hardest, easiest } = laneMatchups(s);
   if (!hardest.length && !easiest.length) return null;
-  const group = (label: string, list: Matchup[], tone: 'win' | 'loss') => (
+  const group = (label: string, list: (Matchup & { sure: boolean })[], tone: 'win' | 'loss') => (
     <div className="min-w-0">
       <p className={clsx('mb-1.5 text-xs font-medium', tone === 'loss' ? 'text-loss' : 'text-win')}>{label}</p>
       {list.length ? (
@@ -651,12 +659,15 @@ function CountersStrip({ s }: { s?: ChampionStats }) {
               <li key={m.championId}>
                 <Link
                   to={matchupPath(sd, s.championId, m.championId, s.role)}
-                  className={clsx('group flex items-center gap-2 rounded border bg-surface/70 py-1 pl-1 pr-2.5 backdrop-blur transition-colors hover:bg-raised', tone === 'loss' ? 'border-loss/40' : 'border-win/40')}
-                  title={t('cp.counterTip', { rate: pct(m.winRate, 1), champion: c.name, games: t('common.games', { count: m.games }) })}
+                  className={clsx(
+                    'group flex items-center gap-2 rounded border bg-surface/70 py-1 pl-1 pr-2.5 backdrop-blur transition-colors hover:bg-raised',
+                    !m.sure ? 'border-line border-dashed' : tone === 'loss' ? 'border-loss/40' : 'border-win/40',
+                  )}
+                  title={`${t('cp.counterTip', { rate: pct(m.winRate, 1), champion: c.name, games: t('common.games', { count: m.games }) })}${m.sure ? '' : ` · ${t('tl.leaning')}`}`}
                 >
                   <GameImg src={c.url} alt="" size={28} rounded="sm" />
                   <span className="text-sm font-medium group-hover:text-gold">{c.name}</span>
-                  <span className={clsx('num text-xs font-semibold', m.games < LOW_SAMPLE ? 'text-faint' : tone === 'loss' ? 'text-loss' : 'text-win')}>{pct(m.winRate)}</span>
+                  <span className={clsx('num text-xs font-semibold', !m.sure || m.games < LOW_SAMPLE ? 'text-faint' : tone === 'loss' ? 'text-loss' : 'text-win')}>{pct(m.winRate)}</span>
                 </Link>
               </li>
             );
@@ -671,6 +682,9 @@ function CountersStrip({ s }: { s?: ChampionStats }) {
     <div className="mt-6 grid gap-4 sm:grid-cols-2">
       {group(t('cp.counteredBy'), hardest, 'loss')}
       {group(t('cp.strongAgainst'), easiest, 'win')}
+      {[...hardest.slice(0, 5), ...easiest.slice(0, 5)].some((m) => !m.sure) && (
+        <p className="text-xs text-faint sm:col-span-2">{t('cp.leaningNote')}</p>
+      )}
     </div>
   );
 }

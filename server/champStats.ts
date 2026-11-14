@@ -57,14 +57,23 @@ export const shrunk = (w: number, g: number, k = 10) => (w + 0.5 * k) / (g + k);
 /** Lane matchups need real samples: 0/7 is bad luck as often as a real counter. */
 export const MATCHUP_K = 25;
 export const matchupMin = (games: number) => Math.max(8, Math.round(games * 0.03));
-function countersOf(r: RoleAgg, n = 3) {
+/**
+ * Up to n opponents this role does worst against, the clear ones first. A matchup is a *clear*
+ * counter when even an optimistic read (adjusted rate plus one standard error) stays under 50%;
+ * the rest only lean that way and could still be chance. Returns the ids and how many are clear.
+ */
+export function countersOf(r: Pick<RoleAgg, 'g' | 'vs'>, n = 3): { ids: number[]; sure: number } {
   const min = matchupMin(r.g);
-  return Object.entries(r.vs)
-    .filter(([, v]) => v.g >= min)
-    .sort((a, b) => shrunk(a[1].w, a[1].g, MATCHUP_K) - shrunk(b[1].w, b[1].g, MATCHUP_K))
-    .slice(0, n)
-    .filter(([, v]) => v.w / v.g < 0.5)
-    .map(([id]) => Number(id));
+  const rows = Object.entries(r.vs)
+    .filter(([, v]) => v.g >= min && v.w / v.g < 0.5)
+    .map(([id, v]) => {
+      const adj = shrunk(v.w, v.g, MATCHUP_K);
+      return { id: Number(id), adj, sure: adj + 0.5 / Math.sqrt(v.g + MATCHUP_K) < 0.5 };
+    })
+    .filter((x) => x.adj < 0.5)
+    .sort((a, b) => Number(b.sure) - Number(a.sure) || a.adj - b.adj)
+    .slice(0, n);
+  return { ids: rows.map((x) => x.id), sure: rows.filter((x) => x.sure).length };
 }
 interface RoleAgg {
   g: number;
@@ -680,7 +689,7 @@ export class ChampionStatsStore {
           tier: 'C',
           rank: 0,
           lowSample: r.g < minGames,
-          counters: role === 'ALL' ? [] : countersOf(r),
+          ...(role === 'ALL' ? { counters: [], countersSure: 0 } : (({ ids, sure }) => ({ counters: ids, countersSure: sure }))(countersOf(r))),
         });
       }
     }

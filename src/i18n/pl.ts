@@ -992,5 +992,7 @@ const dict: Record<string, string> = {
   "draft.rangeTip": "Przy {count} grach prawdziwy współczynnik zwycięstw jest prawdopodobnie między {lo} a {hi}",
   "tl.recent": "Ostatnio oglądane",
   "tl.recentClear": "Wyczyść",
+  "tl.leaning": "tendencja, to wciąż może być przypadek",
+  "cp.leaningNote": "Przerywana ramka: liczby na to wskazują, ale jest jeszcze za mało gier, by wykluczyć przypadek.",
 };
 export default dict;

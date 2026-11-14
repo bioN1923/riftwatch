@@ -956,5 +956,7 @@ const en = {
   "draft.rangeTip": "Over {count} games the real win rate is likely between {lo} and {hi}",
   "tl.recent": "Recently viewed",
   "tl.recentClear": "Clear",
+  "tl.leaning": "leaning, could still be chance",
+  "cp.leaningNote": "Dashed: the numbers lean that way but there aren't enough games yet to rule out chance.",
 };
 export default en;

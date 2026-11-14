@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.54',
+    date: '2026-11-14',
+    items: ['Counters are clearer about how sure they are: on champion pages and the tier list, matchups that are beyond chance come first in red or green, and ones that only lean that way are shown dashed or faded (hover to see why).'],
+  },
+  {
     version: '3.53',
     date: '2026-11-14',
     items: ['Tier list: a "Recently viewed" row with the champion pages you opened lately (in the role you looked at), one click away. Kept only in your browser, with a Clear button.'],

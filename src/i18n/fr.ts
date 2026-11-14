@@ -956,5 +956,7 @@ const dict: Record<string, string> = {
   "draft.rangeTip": "Sur {count} parties, le vrai taux de victoire est probablement entre {lo} et {hi}",
   "tl.recent": "Consultés récemment",
   "tl.recentClear": "Effacer",
+  "tl.leaning": "tendance, peut encore être le hasard",
+  "cp.leaningNote": "En pointillés : les chiffres penchent dans ce sens, mais il n’y a pas encore assez de parties pour écarter le hasard.",
 };
 export default dict;
