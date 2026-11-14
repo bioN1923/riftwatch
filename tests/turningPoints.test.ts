@@ -26,7 +26,7 @@ describe('turningPoints', () => {
     ];
     const diff = [0, -200, -800, -1500, -2600, -3000, -2400, -1000, 1200, 2500];
     const tp = turningPoints(events, diff, side, 100);
-    expect(tp[0]).toEqual({ kind: 'firstBlood', t: 200, killer: 6, victim: 1 });
+    expect(tp[0]).toEqual({ kind: 'firstBlood', t: 200, killer: 6, victim: 1, x: 0, y: 0 });
     expect(tp.find((x) => x.kind === 'swing')).toMatchObject({ team: 100, from: 6, to: 9, gold: 4900 });
     expect(tp.find((x) => x.kind === 'fight')).toMatchObject({ t: 1500, won: 3, lost: 1, towers: 1 });
     expect(tp.find((x) => x.kind === 'comeback')).toEqual({ kind: 'comeback', team: 100, gold: 3000, minute: 5 });

@@ -4,11 +4,11 @@ type Kill = Extract<TimelineEvent, { type: 'kill' }>;
 type Objective = Extract<TimelineEvent, { type: 'objective' }>;
 
 export type TurningPoint =
-  | { kind: 'firstBlood'; t: number; killer: number; victim: number }
+  | { kind: 'firstBlood'; t: number; killer: number; victim: number; x: number; y: number }
   /** Team `team` gained `gold` on the other team between minute `from` and `to`. */
   | { kind: 'swing'; from: number; to: number; team: number; gold: number }
   /** A fight `team` won `won`-for-`lost`, with what they took right after. */
-  | { kind: 'fight'; t: number; team: number; won: number; lost: number; objectives: Objective[]; towers: number }
+  | { kind: 'fight'; t: number; team: number; won: number; lost: number; objectives: Objective[]; towers: number; x: number; y: number }
   /** The winners were `gold` behind at `minute` and still won. */
   | { kind: 'comeback'; team: number; gold: number; minute: number }
   /** The winners took the lead at `minute` and never gave it back. */
@@ -48,7 +48,7 @@ export function turningPoints(events: TimelineEvent[], diff: number[], side: num
   const lead = (m: number) => (winner === 100 ? diff[m] : -diff[m]); // the winners' lead
 
   const first = events.find((e): e is Kill => e.type === 'kill' && e.killer >= 0);
-  if (first) out.push({ kind: 'firstBlood', t: first.t, killer: first.killer, victim: first.victim });
+  if (first) out.push({ kind: 'firstBlood', t: first.t, killer: first.killer, victim: first.victim, x: first.x, y: first.y });
 
   // Biggest change in the gold lead over a few minutes, whoever it favoured.
   let best: { from: number; to: number; d: number } | null = null;
@@ -74,7 +74,7 @@ export function turningPoints(events: TimelineEvent[], diff: number[], side: num
     // Ties go to the later fight: late fights close games.
     if (won + lost >= 2 && won > lost && s >= score && s >= 2) {
       score = s;
-      decider = { kind: 'fight', t: start, team: winner, won, lost, objectives, towers };
+      decider = { kind: 'fight', t: start, team: winner, won, lost, objectives, towers, x: f[0].x, y: f[0].y };
     }
   }
   if (decider) out.push(decider);

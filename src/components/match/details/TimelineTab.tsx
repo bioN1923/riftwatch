@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { Skull, Swords, Handshake, Castle, Crown, X } from 'lucide-react';
+import { Skull, Swords, Handshake, Castle, Crown, MapPin, X } from 'lucide-react';
 import type { MatchSummary, MatchTimeline, TimelineEvent } from '../../../../shared/types';
 import { assets, useStaticData } from '../../../lib/ddragon';
 import { GameImg } from '../../ui/GameImg';
@@ -15,6 +15,8 @@ import { decimal } from '../../../lib/format';
 export function TimelineTab({ match, puuid, platform }: { match: MatchSummary; puuid: string; platform: string }) {
   const q = useTimeline(platform, match.id);
   const [who, setWho] = useState(puuid);
+  // A moment picked from Turning points, shown in the map popup below (n: so the same one can be re-picked).
+  const [focus, setFocus] = useState<{ t: number; x: number; y: number; n: number } | null>(null);
   return (
     <div className="space-y-6 p-4">
       <TimelineGate q={q}>
@@ -28,12 +30,12 @@ export function TimelineTab({ match, puuid, platform }: { match: MatchSummary; p
                 <SectionTitle aside={t('tl.hover')}>{t('tl.goldLead')}</SectionTitle>
                 <GoldChart diff={diff} events={tl.events} />
               </section>
-              <TurningPoints match={match} tl={tl} diff={diff} side={side} />
+              <TurningPoints match={match} tl={tl} diff={diff} side={side} onShow={(f) => setFocus({ ...f, n: Date.now() })} />
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
                 <h3 className="font-display text-lg font-bold">{t('tl.events')}</h3>
                 <PlayerPicker match={match} value={who} onChange={setWho} />
               </div>
-              <PlayerTimeline match={match} tl={tl} who={who} />
+              <PlayerTimeline match={match} tl={tl} who={who} focus={focus} />
             </>
           );
         }}
@@ -42,7 +44,7 @@ export function TimelineTab({ match, puuid, platform }: { match: MatchSummary; p
   );
 }
 
-function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTimeline; who: string }) {
+function PlayerTimeline({ match, tl, who, focus }: { match: MatchSummary; tl: MatchTimeline; who: string; focus: { t: number; x: number; y: number; n: number } | null }) {
   const [scope, setScope] = useState<'player' | 'all'>('player');
   // The picked moment: game time and map position, plus where on the map (in %) its popup points.
   const [sel, setSel] = useState<{
@@ -96,6 +98,9 @@ function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTime
   // From the list: on phones the map sits above the list, so bring it back into view to show the answer.
   const pickFromList = (t0: number, x: number, y: number) => {
     pick(t0, x, y);
+    showMap();
+  };
+  const showMap = () => {
     // Only when the map square isn't fully on screen (64 px: the sticky header).
     const sq = mapRef.current?.querySelector('svg')?.getBoundingClientRect();
     if (sq && (sq.top < 64 || sq.bottom > window.innerHeight)) {
@@ -132,6 +137,14 @@ function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTime
       pick(t0, x, y, at);
     }
   };
+  useEffect(() => {
+    if (!focus) return;
+    // Show everyone's kills when the moment isn't one of this player's, so its dot is on the map.
+    if (!mine.some(({ e }) => e.t === focus.t && e.x === focus.x && e.y === focus.y)) setScope('all');
+    const [ax, ay] = pos(focus.x, focus.y);
+    setSel({ t: focus.t, x: focus.x, y: focus.y, ax, ay });
+    showMap();
+  }, [focus?.n]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!sel) return;
     const esc = (ev: KeyboardEvent) => ev.key === 'Escape' && setSel(null);
@@ -373,7 +386,7 @@ function Row({ on, pick, className, children }: { on: boolean; pick?: () => void
 }
 
 /** The few moments that decided the game, in plain sentences (see lib/turningPoints). */
-function TurningPoints({ match, tl, diff, side }: { match: MatchSummary; tl: MatchTimeline; diff: number[]; side: number[] }) {
+function TurningPoints({ match, tl, diff, side, onShow }: { match: MatchSummary; tl: MatchTimeline; diff: number[]; side: number[]; onShow: (at: { t: number; x: number; y: number }) => void }) {
   const { data } = useStaticData();
   const a = assets(data);
   const winner = match.participants.find((p) => p.win)?.teamId;
@@ -439,7 +452,15 @@ function TurningPoints({ match, tl, diff, side }: { match: MatchSummary; tl: Mat
           return (
             <li key={p.kind} className="flex items-baseline gap-3">
               <span className="num w-16 shrink-0 text-xs text-faint">{when}</span>
-              <span className="text-muted">{what}</span>
+              {p.kind === 'firstBlood' || p.kind === 'fight' ? (
+                <button type="button" onClick={() => onShow({ t: p.t, x: p.x, y: p.y })} className="group inline-flex items-baseline gap-1.5 text-left text-muted hover:text-text">
+                  <span>{what}</span>
+                  <MapPin className="size-3.5 shrink-0 translate-y-0.5 text-faint group-hover:text-gold" aria-hidden />
+                  <span className="sr-only">{t('tl.showOnMap')}</span>
+                </button>
+              ) : (
+                <span className="text-muted">{what}</span>
+              )}
             </li>
           );
         })}

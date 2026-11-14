@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.63',
+    date: '2026-11-14',
+    items: ['Turning points: click first blood or the deciding fight to see it on the map, in the same popup as the map dots.'],
+  },
+  {
     version: '3.62',
     date: '2026-11-14',
     items: ['Match timeline map: clicking a dot (or a row in the event list) opens a small popup right at that spot with what happened there. Close it with ×, Esc, or a click on empty map.'],

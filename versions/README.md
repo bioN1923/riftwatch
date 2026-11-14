@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.63](v3.63/CHANGES.md) | 2026-11-14 | Turning points: first blood and deciding fight open the map popup |
 | [v3.62](v3.62/CHANGES.md) | 2026-11-14 | Timeline map: events in a popup on the clicked dot |
 | [v3.61](v3.61/CHANGES.md) | 2026-11-14 | Turning points: first blood, biggest swing, deciding fight, comeback/lead |
 | [v3.60](v3.60/CHANGES.md) | 2026-11-14 | Timeline: tapping a list row on phones scrolls the map back into view |
