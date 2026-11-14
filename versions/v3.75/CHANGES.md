@@ -11,3 +11,7 @@ The draft helper's "Ban for your pool" painted every suggestion red, including V
 
 ## Checks
 tsc clean · a11y `{}` · demo `draft-bans.png`: Hwei and Mel are clear (red); Viktor at 49.8% over 134 games is leaning (dashed).
+
+## Live check (2026-11-14 15:43)
+- Deploy finished cleanly at 15:42 and `/draft` loads.
+- The user's browser has no saved champion pool, so the ban panel doesn't show there. Adding champions would write to their storage, so I didn't. The change was verified on the demo server and by the unit test.
