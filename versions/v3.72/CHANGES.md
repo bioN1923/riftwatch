@@ -15,3 +15,7 @@ tsc clean · 116 tests pass · a11y `{}` · demo:
 - Grandmaster: "Lowest Challenger right now: 903 LP". No chips, because demo GM LP stays below that.
 - Master: "Lowest Grandmaster right now: 451 LP".
 - Live game: "2 AD · 3 AP".
+
+## Live check (2026-11-14 15:14)
+- Deploy finished cleanly at 15:13. EUNE Grandmaster: "Players in Grandmaster: 500 · lowest right now: 1,210 LP / Lowest Challenger right now: 1,868 LP".
+- The top 11 GM players (1,909 down to 1,874 LP) carry the "Challenger LP" chip; #12 at 1,867 doesn't. Screenshot: `live/ladder-upper-cut.jpg`.
