@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.81',
+    date: '2026-11-14',
+    items: ['Arena stats work again. Riot moved Arena to a new queue (1710), so Riftwatch collected no new Arena games and the Arena tier list was empty. Old and new Arena games are now both recognised, and the profile\'s Arena filter asks for the current queue.'],
+  },
+  {
     version: '3.80',
     date: '2026-11-14',
     items: ['Tier list: sorting by win, pick or ban rate lists champions with few games in a role (marked *) after the rest, and their win rate is greyed out, so 66.7% over 36 off-role games no longer tops the list.'],

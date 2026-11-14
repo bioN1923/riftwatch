@@ -2,6 +2,7 @@ import type { Platform } from '../shared/regions';
 import type { RiotClient } from './riot';
 import type { ChampionStatsStore } from './champStats';
 import { shapeMatch, shapeTimeline } from './shape';
+import { ARENA_QUEUE } from '../shared/queues';
 
 /**
  * Background match collector for champion stats. It walks the Challenger, Grandmaster and
@@ -66,7 +67,7 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
           const ids = await paced(() => riot.matchIds(platform, puuid, 0, count, { queue: 420 })).catch(() => [] as string[]);
           // Every third player or so, also take their recent ARAM and Arena games (no timelines needed).
           if (Math.random() < 0.35) {
-            for (const queue of [450, 1700]) {
+            for (const queue of [450, ARENA_QUEUE]) {
               const extra = await paced(() => riot.matchIds(platform, puuid, 0, 5, { queue })).catch(() => [] as string[]);
               for (const id of extra) {
                 if (stats.has(id)) continue;

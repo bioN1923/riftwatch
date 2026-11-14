@@ -1,4 +1,5 @@
 import type { LeagueEntry, LiveGame, MatchSummary, MatchTimeline, Participant, TeamSummary, TimelineEvent } from '../shared/types';
+import { isArena } from '../shared/queues';
 
 const POSITIONS = new Set(['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY']);
 
@@ -145,7 +146,7 @@ export function scoreMatch(m: MatchSummary) {
     p.score = Math.round(Math.max(0, Math.min(1, raw / 0.85)) * 100) / 10;
   }
 
-  if (m.remake || m.queueId === 1700) return;
+  if (m.remake || isArena(m.queueId)) return;
   const best = (win: boolean) => ps.filter((p) => p.win === win).sort((a, b) => b.score - a.score)[0];
   const mvp = best(true);
   const ace = best(false);

@@ -24,6 +24,7 @@ import { STATIC_LOCALES, slimStatic } from '../shared/staticSlim';
 import { HTML_LANG, OG_LOCALE, alternateLinks, pickLang, seoText, sitemapXml } from './seo';
 import { allChampions, championByKey, championBySlug, championCard, compareCard, draftCard, loadOgData, matchupCard, profileCard, siteCard, type CompareSide, type ProfileCard } from './og';
 import type { ApiErrorBody, HealthResponse, PrivacyChallenge, PrivacyResult, Ladder, LadderEntry, LpHistory, MatchPage, MatchSummary, MatchTimeline, PlayerHit, Profile, ScoutInfo, ServerStatus, StatsGroup } from '../shared/types';
+import { ARENA_QUEUE } from '../shared/queues';
 
 const PORT = Number(process.env.PORT ?? 3001);
 const API_KEY = process.env.RIOT_API_KEY?.trim() ?? '';
@@ -189,7 +190,7 @@ const QUEUE_FILTERS: Record<string, { queue?: number; type?: string }> = {
   flex: { queue: 440 },
   normal: { type: 'normal' },
   aram: { queue: 450 },
-  arena: { queue: 1700 },
+  arena: { queue: ARENA_QUEUE },
 };
 
 // Fair use per visitor: the site's API is for the site's own pages, not for scraping or

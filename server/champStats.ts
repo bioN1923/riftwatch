@@ -3,6 +3,7 @@ import path from 'node:path';
 import type { BlindPicks, Benchmark, ChampionStats, MatchSummary, MatchTimeline, MatchupStats, PatchMover, Rated, StatsGroup, TierList, TierRow } from '../shared/types';
 import { itemKind } from './items';
 import { getPlatform } from '../shared/regions';
+import { isArena } from '../shared/queues';
 
 /**
  * Champion statistics built from the matches this server sees — the same idea as u.gg/op.gg,
@@ -169,7 +170,7 @@ const LENGTHS = [
 const KEYS = ['Q', 'W', 'E'];
 
 export const groupOf = (queueId: number): StatsGroup | null =>
-  queueId === 420 || queueId === 440 ? 'ranked' : queueId === 450 ? 'aram' : queueId === 1700 ? 'arena' : null;
+  queueId === 420 || queueId === 440 ? 'ranked' : queueId === 450 ? 'aram' : isArena(queueId) ? 'arena' : null;
 export const patchOf = (version: string) => version.split('.').slice(0, 2).join('.');
 const patchCmp = (a: string, b: string) => {
   const [a1, a2] = a.split('.').map(Number);
@@ -433,7 +434,7 @@ export class ChampionStatsStore {
     this.seen.add(m.id);
     this.dirty = true;
     g.matches++;
-    const arena = m.queueId === 1700;
+    const arena = isArena(m.queueId);
     const aram = m.queueId === 450 || arena; // no lanes: one 'ALL' role
     const minutes = m.duration / 60;
     const lenIdx = LENGTHS.findIndex((l) => minutes < l.max);
