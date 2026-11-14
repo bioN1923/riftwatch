@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.59',
+    date: '2026-11-14',
+    items: [
+      'Match timeline: click a row in the event list to see it on the map, and picking a map dot outlines the matching rows in the list.',
+      'Duo finder: players you checked by Riot ID can be removed, and stay listed in this tab when you reload or come back from a profile.',
+    ],
+  },
+  {
     version: '3.58',
     date: '2026-11-14',
     items: [

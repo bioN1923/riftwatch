@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { ChevronDown, HeartHandshake } from 'lucide-react';
+import { ChevronDown, HeartHandshake, X } from 'lucide-react';
 import type { MatchPage, MatchSummary, ScoutInfo } from '../../shared/types';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api } from '../lib/api';
@@ -251,7 +251,7 @@ function rankLabel(r: { tier: string; rank: string }) {
   return ['MASTER', 'GRANDMASTER', 'CHALLENGER'].includes(r.tier) ? tierName(r.tier) : `${tierName(r.tier)} ${r.rank}`;
 }
 
-function DuoCard({ platform, c, s, them, me, fit, myRankLabel }: { platform: string; c: Candidate; s: ScoutInfo; them: PlayStyle; me: PlayStyle; fit: Fit; myRankLabel: string }) {
+function DuoCard({ platform, c, s, them, me, fit, myRankLabel, aside }: { platform: string; c: Candidate; s: ScoutInfo; them: PlayStyle; me: PlayStyle; fit: Fit; myRankLabel: string; aside?: React.ReactNode }) {
   const topClass = (st: PlayStyle) => Object.entries(st.classes).sort((x, y) => y[1] - x[1])[0]?.[0];
   const peak = (st: PlayStyle) => st.hours.indexOf(Math.max(...st.hours));
   const line = (p: FitPart) => {
@@ -290,6 +290,7 @@ function DuoCard({ platform, c, s, them, me, fit, myRankLabel }: { platform: str
           <p className="display-num text-3xl font-extrabold leading-none text-gold">{fit.score}</p>
           <p className="text-[10px] uppercase tracking-wide text-faint">{t('duo.fit')}</p>
         </div>
+        {aside}
       </div>
       <ul className="mt-3 space-y-1.5 text-xs">
         {fit.parts.map((p) => (
@@ -314,7 +315,27 @@ const classLabel = (c?: string) => (c ? t(`class.${c}` as 'class.Mage') : '–')
  */
 function CheckPlayer({ platform, me, myRank, myRankLabel, tagsOf, skip }: { platform: string; me: PlayStyle; myRank: number; myRankLabel: string; tagsOf: (id: number) => string[]; skip: string }) {
   const [text, setText] = useState('');
-  const [ids, setIds] = useState<RiotId[]>([]);
+  // Kept for this browser tab only (sessionStorage), so a reload or a trip to a profile and back keeps them.
+  const key = `rw:duo-checked:${platform}`;
+  const [ids, setIdsState] = useState<RiotId[]>(() => {
+    try {
+      const v = JSON.parse(sessionStorage.getItem(key) ?? '[]');
+      return Array.isArray(v) ? v.filter((x): x is RiotId => typeof x?.gameName === 'string' && typeof x?.tagLine === 'string').slice(0, 4) : [];
+    } catch {
+      return [];
+    }
+  });
+  const setIds = (f: (l: RiotId[]) => RiotId[]) =>
+    setIdsState((l) => {
+      const next = f(l);
+      try {
+        if (next.length) sessionStorage.setItem(key, JSON.stringify(next));
+        else sessionStorage.removeItem(key);
+      } catch {
+        /* storage blocked: keep them in memory only */
+      }
+      return next;
+    });
   const parsed = parseRiotId(text, getPlatform(platform)?.defaultTag ?? 'EUW');
   return (
     <section className="mt-8 border-t border-line pt-6" aria-labelledby="duo-check-h">
@@ -348,7 +369,27 @@ function CheckPlayer({ platform, me, myRank, myRankLabel, tagsOf, skip }: { plat
       {ids.length > 0 && (
         <ul className="mt-4 grid items-start gap-3 md:grid-cols-2">
           {ids.map((id) => (
-            <CheckedPlayer key={querySlug(id)} platform={platform} id={id} me={me} myRank={myRank} myRankLabel={myRankLabel} tagsOf={tagsOf} skip={skip} />
+            <CheckedPlayer
+              key={querySlug(id)}
+              platform={platform}
+              id={id}
+              me={me}
+              myRank={myRank}
+              myRankLabel={myRankLabel}
+              tagsOf={tagsOf}
+              skip={skip}
+              remove={
+                <button
+                  type="button"
+                  onClick={() => setIds((l) => l.filter((x) => querySlug(x) !== querySlug(id)))}
+                  aria-label={t('duo.remove', { name: `${id.gameName}#${id.tagLine}` })}
+                  title={t('duo.remove', { name: `${id.gameName}#${id.tagLine}` })}
+                  className="-mr-1 -mt-1 grid size-[28px] shrink-0 place-items-center self-start rounded text-faint hover:bg-raised hover:text-text"
+                >
+                  <X className="size-4" aria-hidden />
+                </button>
+              }
+            />
           ))}
         </ul>
       )}
@@ -356,7 +397,7 @@ function CheckPlayer({ platform, me, myRank, myRankLabel, tagsOf, skip }: { plat
   );
 }
 
-function CheckedPlayer({ platform, id, me, myRank, myRankLabel, tagsOf, skip }: { platform: string; id: RiotId; me: PlayStyle; myRank: number; myRankLabel: string; tagsOf: (id: number) => string[]; skip: string }) {
+function CheckedPlayer({ platform, id, me, myRank, myRankLabel, tagsOf, skip, remove }: { platform: string; id: RiotId; me: PlayStyle; myRank: number; myRankLabel: string; tagsOf: (id: number) => string[]; skip: string; remove: React.ReactNode }) {
   const pq = useQuery({
     queryKey: ['profile', platform, id.gameName.toLowerCase(), id.tagLine.toLowerCase()],
     queryFn: ({ signal }) => api.profile(platform, id.gameName, id.tagLine, { signal }),
@@ -369,7 +410,12 @@ function CheckedPlayer({ platform, id, me, myRank, myRankLabel, tagsOf, skip }: 
     queryFn: ({ signal }) => api.matches(platform, puuid!, { start: 0, count: 10, queue: 'solo' }, signal),
     staleTime: 10 * 60_000,
   });
-  const box = (body: React.ReactNode) => <li className="panel p-4 text-sm">{body}</li>;
+  const box = (body: React.ReactNode) => (
+    <li className="panel flex gap-2 p-4 text-sm">
+      <div className="min-w-0 flex-1">{body}</div>
+      {remove}
+    </li>
+  );
   if (pq.isError) return box(<p className="text-muted">{t('duo.checkNotFound', { name: `${id.gameName}#${id.tagLine}` })}</p>);
   if (pq.isPending || (puuid !== skip && gq.isPending)) return <li><Skeleton className="h-40" /></li>;
   const p = pq.data!;
@@ -391,5 +437,5 @@ function CheckedPlayer({ platform, id, me, myRank, myRankLabel, tagsOf, skip }: 
   }
   const c: Candidate = { puuid: p.account.puuid, gameName: p.account.gameName, tagLine: p.account.tagLine, seen: 0, together: 0, togetherWins: 0 };
   const s: ScoutInfo = { puuid: c.puuid, level: p.summoner.summonerLevel, profileIconId: p.summoner.profileIconId, solo: solo ?? null, flex: null, mastery: null };
-  return <DuoCard platform={platform} c={c} s={s} them={them} me={me} fit={fit} myRankLabel={myRankLabel} />;
+  return <DuoCard platform={platform} c={c} s={s} them={them} me={me} fit={fit} myRankLabel={myRankLabel} aside={remove} />;
 }

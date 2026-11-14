@@ -980,7 +980,6 @@ const dict: Record<string, string> = {
   "tl.mapScopePlayer": "Acest jucător",
   "tl.mapScopeAll": "Toți",
   "tl.mapObjectives": "Monștri epici",
-  "tl.mapHint": "Apasă pe un punct de pe hartă ca să vezi ce s-a întâmplat acolo atunci.",
   "tl.around": "În jur de {time}, pe aici",
   "tl.killedWord": "l-a ucis pe",
   "tl.tookWord": "a luat",
@@ -1021,5 +1020,9 @@ const dict: Record<string, string> = {
   "duo.whyNot.unranked": "Fără rang în solo în acest sezon.",
   "duo.whyNot.role": "Joacă tot mai ales {role}, același rol ca tine.",
   "duo.whyNot.rank": "{rank} e prea departe de {you} al tău ca să jucați bine împreună.",
+  "tl.mapHint": "Apasă pe un punct de pe hartă sau pe un rând din listă ca să vezi ce s-a întâmplat acolo atunci.",
+  "tl.listAria": "Evenimentele acestui meci",
+  "tl.showOnMap": "Arată pe hartă",
+  "duo.remove": "Elimină {name}",
 };
 export default dict;

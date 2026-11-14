@@ -998,7 +998,6 @@ const dict: Record<string, string> = {
   "tl.mapScopePlayer": "Ten gracz",
   "tl.mapScopeAll": "Wszyscy",
   "tl.mapObjectives": "Potwory epickie",
-  "tl.mapHint": "Kliknij punkt na mapie, by zobaczyć, co się tam wtedy stało.",
   "tl.around": "Około {time}, w pobliżu",
   "tl.killedWord": "zabił",
   "tl.tookWord": "zdobył",
@@ -1041,5 +1040,9 @@ const dict: Record<string, string> = {
   "duo.whyNot.unranked": "Brak rangi w solo w tym sezonie.",
   "duo.whyNot.role": "Też gra najczęściej {role}, tę samą rolę co ty.",
   "duo.whyNot.rank": "{rank} jest za daleko od twojego {you}, by dobrze grać razem.",
+  "tl.mapHint": "Kliknij punkt na mapie lub wiersz listy, by zobaczyć, co się tam wtedy stało.",
+  "tl.listAria": "Wydarzenia tej gry",
+  "tl.showOnMap": "Pokaż na mapie",
+  "duo.remove": "Usuń {name}",
 };
 export default dict;

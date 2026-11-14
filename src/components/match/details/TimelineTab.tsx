@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Skull, Swords, Handshake, Castle, Crown } from 'lucide-react';
 import type { MatchSummary, MatchTimeline, TimelineEvent } from '../../../../shared/types';
@@ -67,6 +67,17 @@ function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTime
   const dots = scope === 'player' ? mine : allKills;
   const objectives = tl.events.filter((e): e is Extract<TimelineEvent, { type: 'objective' }> => e.type === 'objective');
   const happenings = sel ? happeningsNear(tl.events, sel) : [];
+  // Rows of the event list that the selected map spot covers, so map and list point at the same moment.
+  const hit = new Set<TimelineEvent>(happenings.filter((h) => h.kind !== 'multi').map((h) => h.e as TimelineEvent));
+  const listRef = useRef<HTMLOListElement>(null);
+  useEffect(() => {
+    // Scroll only the list (not the page) so the first matching row is in view.
+    const list = listRef.current;
+    const row = list?.querySelector<HTMLElement>('[data-hit]');
+    if (list && row && (row.offsetTop < list.scrollTop || row.offsetTop + row.offsetHeight > list.scrollTop + list.clientHeight)) {
+      list.scrollTo({ top: Math.max(0, row.offsetTop - 8), behavior: 'smooth' });
+    }
+  }, [sel]);
   // ARAM is played on the Howling Abyss (map 12, about 12,900 units across), everything else here on the Rift.
   const aram = RANDOM_CHAMP_QUEUES.has(match.queueId);
   const size = aram ? 12900 : MAP_SIZE;
@@ -202,7 +213,7 @@ function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTime
         </div>
       </figure>
 
-      <ol className="max-h-[360px] space-y-0.5 overflow-y-auto pr-1 text-sm">
+      <ol ref={listRef} aria-label={t('tl.listAria')} className="relative max-h-[360px] space-y-0.5 overflow-y-auto pr-1 text-sm">
         {feed.length === 0 && <li className="text-muted">{t('tl.nothing')}</li>}
         {feed.map((f, i) => {
           const time = <span className="num w-11 shrink-0 text-xs text-faint">{fmtTime(f.t)}</span>;
@@ -210,13 +221,16 @@ function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTime
             const e = f.e as Extract<TimelineEvent, { type: 'objective' }>;
             const ours = e.teamId === myTeam;
             const Icon = e.monster === 'BARON_NASHOR' ? Crown : Castle;
+            const p = objectivePos(e);
             return (
-              <li key={i} className="flex items-center gap-2 rounded px-2 py-1 text-muted">
-                {time}
-                <Icon className={clsx('size-4', e.teamId === 100 ? 'text-side-blue' : 'text-side-red')} aria-hidden />
-                <span>
-                  {t.rich(ours ? 'tl.ourTook' : 'tl.enemyTook', { objective: <span className="text-text">{objectiveLabel(e)}</span> })}
-                </span>
+              <li key={i} data-hit={hit.has(e) || undefined}>
+                <Row on={hit.has(e)} pick={p ? () => pick(e.t, p[0], p[1]) : undefined} className="text-muted">
+                  {time}
+                  <Icon className={clsx('size-4', e.teamId === 100 ? 'text-side-blue' : 'text-side-red')} aria-hidden />
+                  <span>
+                    {t.rich(ours ? 'tl.ourTook' : 'tl.enemyTook', { objective: <span className="text-text">{objectiveLabel(e)}</span> })}
+                  </span>
+                </Row>
               </li>
             );
           }
@@ -224,17 +238,30 @@ function PlayerTimeline({ match, tl, who }: { match: MatchSummary; tl: MatchTime
           const other = f.kind === 'death' ? champAt(e.killer) : champAt(e.victim);
           const Icon = f.kind === 'kill' ? Swords : f.kind === 'death' ? Skull : Handshake;
           return (
-            <li key={i} className={clsx('flex items-center gap-2 rounded px-2 py-1', f.kind === 'death' ? 'bg-loss-tint' : f.kind === 'kill' ? 'bg-win-tint' : '')}>
-              {time}
-              <Icon className={clsx('size-4', f.kind === 'death' ? 'text-loss' : 'text-win')} aria-hidden />
-              <GameImg src={other.url} alt="" size={20} rounded="sm" />
-              <span>
-                {t.rich(f.kind === 'kill' ? 'tl.killed' : f.kind === 'death' ? 'tl.killedBy' : 'tl.helped', { champion: <span className="font-medium">{other.name}</span> })}
-              </span>
+            <li key={i} data-hit={hit.has(e) || undefined}>
+              <Row on={hit.has(e)} pick={() => pick(e.t, e.x, e.y)} className={f.kind === 'death' ? 'bg-loss-tint' : f.kind === 'kill' ? 'bg-win-tint' : ''}>
+                {time}
+                <Icon className={clsx('size-4', f.kind === 'death' ? 'text-loss' : 'text-win')} aria-hidden />
+                <GameImg src={other.url} alt="" size={20} rounded="sm" />
+                <span>
+                  {t.rich(f.kind === 'kill' ? 'tl.killed' : f.kind === 'death' ? 'tl.killedBy' : 'tl.helped', { champion: <span className="font-medium">{other.name}</span> })}
+                </span>
+              </Row>
             </li>
           );
         })}
       </ol>
     </div>
+  );
+}
+
+/** One event-list row: a button that shows the spot on the map, outlined while the map spot covers it. */
+function Row({ on, pick, className, children }: { on: boolean; pick?: () => void; className: string; children: React.ReactNode }) {
+  const cls = clsx('flex w-full items-center gap-2 rounded px-2 py-1 text-left', className, on && 'ring-1 ring-gold/70');
+  if (!pick) return <div className={cls}>{children}</div>;
+  return (
+    <button type="button" onClick={pick} aria-pressed={on} title={t('tl.showOnMap')} className={clsx(cls, 'transition-colors hover:ring-1 hover:ring-line-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/60')}>
+      {children}
+    </button>
   );
 }

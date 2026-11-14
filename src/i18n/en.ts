@@ -962,7 +962,7 @@ const en = {
   "tl.mapScopePlayer": "This player",
   "tl.mapScopeAll": "Everyone",
   "tl.mapObjectives": "Epic monsters",
-  "tl.mapHint": "Click a dot on the map to see what happened there and then.",
+  "tl.mapHint": "Click a dot on the map, or a row in the list, to see what happened there and then.",
   "tl.around": "Around {time}, near here",
   "tl.killedWord": "killed",
   "tl.tookWord": "took",
@@ -1001,5 +1001,8 @@ const en = {
   "duo.whyNot.unranked": "Not ranked in solo queue this season.",
   "duo.whyNot.role": "Also plays {role} most, the same role as you.",
   "duo.whyNot.rank": "{rank} is too far from your {you} to queue together well.",
+  "tl.listAria": "Events of this game",
+  "tl.showOnMap": "Show on the map",
+  "duo.remove": "Remove {name}",
 };
 export default en;

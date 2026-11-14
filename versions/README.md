@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.59](v3.59/CHANGES.md) | 2026-11-14 | Timeline list rows link to the map; duo checks removable and kept per tab |
 | [v3.58](v3.58/CHANGES.md) | 2026-11-14 | Duo finder: check a specific player, check more co-players, apex rank labels |
 | [v3.57](v3.57/CHANGES.md) | 14 Nov 2026 | Duo finder (user request): candidates from your recent ranked games, other roles, within ~1 tier; 7-part transparent fit score |
 | [v3.56](v3.56/CHANGES.md) | 14 Nov 2026 | Clickable timeline map (user request): event details near a dot (kills+assists, objectives with killer, multi-kills), Everyone/This player, objective markers, ARAM map |
