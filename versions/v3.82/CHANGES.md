@@ -12,3 +12,9 @@ At 14:38 UTC, about 3 minutes after the v3.81 deploy, Arena still had 0 matches 
 
 ## Checks
 tsc clean · a11y `{}` · demo shots.
+
+## Live check (2026-11-14 16:47)
+- Deploy finished cleanly at 16:45. bioN1923's champion pool now reads "44% (9)" muted, while "75% (4)", "0% (4)" and "100% (1)" are neutral; before, they were green or grey.
+- Arena re-check: still 0 matches about 10 minutes after v3.81. A probe of 4 Master players' last 5 games (queue "all") found only ranked solo (420), and their Arena lists were empty. Apex ladder players, the only ones the collector visits, rarely play Arena.
+- Arena data will still come from visitors: every match the server fetches for a profile already feeds the stats (`server/index.ts`). Since v3.81, Arena games on 1710 count there too.
+- Follow-up: the collector's Arena lookups on apex players are mostly wasted calls. Consider sourcing Arena games another way, e.g. from co-players in visitors' Arena matches, or dropping that lookup.
