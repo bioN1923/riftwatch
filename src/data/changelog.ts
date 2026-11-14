@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.76',
+    date: '2026-11-14',
+    items: ['Profiles on phones: the last 20 games show as two rows of ten, all visible, instead of a strip cut off at the right edge.'],
+  },
+  {
     version: '3.75',
     date: '2026-11-14',
     items: ['Draft helper, "Ban for your pool": each suggestion now shows how many games it rests on. Bans where your pool only leans behind (it could still be chance) are marked and listed after the clear ones.'],

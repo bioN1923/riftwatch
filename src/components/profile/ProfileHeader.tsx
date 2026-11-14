@@ -279,7 +279,8 @@ function FormRibbon({ matches, puuid }: { matches: MatchSummary[] | undefined; p
 
   return (
     <div className="mt-7 flex flex-wrap items-end gap-x-5 gap-y-2">
-      <ol className="flex items-end gap-1 overflow-x-auto pb-1" aria-label={t('form.aria', { total: recent.length, wins, losses: counted.length - wins })}>
+      {/* Phones: two rows of ten, so all 20 games are visible without sideways scrolling. */}
+      <ol className="grid grid-cols-10 justify-items-center gap-1 pb-1 sm:flex sm:items-end sm:overflow-x-auto" aria-label={t('form.aria', { total: recent.length, wins, losses: counted.length - wins })}>
         {ordered.map(({ m, p, r }, i) => {
           const c = a.champion(p.championId);
           const label = t(r === 'win' ? 'form.win' : r === 'loss' ? 'form.loss' : 'form.remake', { champion: c.name, kda: `${p.kills}/${p.deaths}/${p.assists}` });

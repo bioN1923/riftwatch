@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.76](v3.76/CHANGES.md) | 2026-11-14 | Phones: recent games strip as two rows of ten |
 | [v3.75](v3.75/CHANGES.md) | 2026-11-14 | Draft: ban suggestions show games and clear vs leaning |
 | [v3.74](v3.74/CHANGES.md) | 2026-11-14 | Lobby summary: open roles only for 4+ players; Duo on the home page |
 | [v3.73](v3.73/CHANGES.md) | 2026-11-14 | Multi-search: lobby summary (average rank, mains, role clashes) |
