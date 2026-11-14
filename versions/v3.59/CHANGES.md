@@ -7,3 +7,7 @@
 
 ## Checks
 tsc clean · 101 tests pass · a11y `{}` · demo: `timeline-row-link.png` (a death row picked from the list, outlined, and its dot ringed on the map), `duo-check-remove.png` (after reload, one of two checks removed).
+
+## Live check (2026-11-14 07:41)
+- Deploy finished cleanly. On bioN1923's third match, the timeline list has 30 clickable rows. Clicking "Killed Tristana" (4:38) outlined that row, ringed its dot, and showed "Tristana killed Nasus / Lillia killed Tristana · with Nasus" under the map. Screenshot: `live/timeline-row-link.jpg`.
+- The duo-check removal and memory weren't exercised live, so nothing was written to the user's browser storage. They were verified on the demo server.
