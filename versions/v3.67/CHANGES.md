@@ -10,3 +10,7 @@
 
 ## Checks
 tsc clean · 110 tests pass · a11y `{}` · demo: `win-conditions-goal.png` (after adding "5 deaths or fewer"), `goals-from-stats.png` (Overview: Deaths ≤ 5, met in 10 of 16).
+
+## Live check (2026-11-14 08:55)
+- Deploy finished cleanly. All three of bioN1923's conditions (8 deaths or fewer, 6.7+ CS a minute, 40%+ kill participation) show "Make it a goal". Screenshot: `live/goal-buttons.jpg`.
+- Not clicked live: it would write a goal into the user's own browser storage. The click flow was verified on the demo server.
