@@ -1004,5 +1004,14 @@ const dict: Record<string, string> = {
   "tl.listAria": "Événements de cette partie",
   "tl.showOnMap": "Afficher sur la carte",
   "duo.remove": "Retirer {name}",
+  "tp.title": "Moments clés",
+  "tp.firstBlood": "Premier sang : {killer} a tué {victim}",
+  "tp.swing": "{team} a gagné {gold} d'or en {minutes} minutes, le plus gros renversement de la partie",
+  "tp.fight": "{team} a gagné un combat {won} contre {lost}",
+  "tp.took": "et a pris {things}",
+  "tp.towers_one": "{count} tour",
+  "tp.towers_other": "{count} tours",
+  "tp.comeback": "{team} est revenu de {gold} d'or de retard",
+  "tp.led": "{team} a mené d'ici jusqu'à la fin",
 };
 export default dict;

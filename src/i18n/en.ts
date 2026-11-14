@@ -1004,5 +1004,14 @@ const en = {
   "tl.listAria": "Events of this game",
   "tl.showOnMap": "Show on the map",
   "duo.remove": "Remove {name}",
+  "tp.title": "Turning points",
+  "tp.firstBlood": "First blood: {killer} killed {victim}",
+  "tp.swing": "{team} gained {gold} gold in {minutes} minutes, the biggest swing of the game",
+  "tp.fight": "{team} won a {won}-for-{lost} fight",
+  "tp.took": "and took {things}",
+  "tp.towers_one": "{count} tower",
+  "tp.towers_other": "{count} towers",
+  "tp.comeback": "{team} came back from {gold} gold behind",
+  "tp.led": "{team} led from here to the end",
 };
 export default en;

@@ -1024,5 +1024,15 @@ const dict: Record<string, string> = {
   "tl.listAria": "Evenimentele acestui meci",
   "tl.showOnMap": "Arată pe hartă",
   "duo.remove": "Elimină {name}",
+  "tp.title": "Momente-cheie",
+  "tp.firstBlood": "First blood: {killer} l-a ucis pe {victim}",
+  "tp.swing": "{team} a câștigat {gold} aur în {minutes} minute, cea mai mare întoarcere din meci",
+  "tp.fight": "{team} a câștigat o luptă {won} la {lost}",
+  "tp.took": "și a luat {things}",
+  "tp.towers_one": "{count} turn",
+  "tp.towers_few": "{count} turnuri",
+  "tp.towers_other": "{count} de turnuri",
+  "tp.comeback": "{team} a revenit de la {gold} aur în urmă",
+  "tp.led": "{team} a condus de aici până la final",
 };
 export default dict;

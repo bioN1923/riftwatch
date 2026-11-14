@@ -9,6 +9,8 @@ import { fmtTime, PlayerPicker, SectionTitle, TimelineGate, useTimeline } from '
 import { t } from '../../../i18n';
 import { happeningsNear, MAP_SIZE, objectivePos } from '../../../lib/mapEvents';
 import { RANDOM_CHAMP_QUEUES } from '../../../lib/liveTags';
+import { turningPoints, type TurningPoint } from '../../../lib/turningPoints';
+import { decimal } from '../../../lib/format';
 
 
 export function TimelineTab({ match, puuid, platform }: { match: MatchSummary; puuid: string; platform: string }) {
@@ -27,6 +29,7 @@ export function TimelineTab({ match, puuid, platform }: { match: MatchSummary; p
                 <SectionTitle aside={t('tl.hover')}>{t('tl.goldLead')}</SectionTitle>
                 <GoldChart diff={diff} events={tl.events} />
               </section>
+              <TurningPoints match={match} tl={tl} diff={diff} side={side} />
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
                 <h3 className="font-display text-lg font-bold">{t('tl.events')}</h3>
                 <PlayerPicker match={match} value={who} onChange={setWho} />
@@ -274,5 +277,64 @@ function Row({ on, pick, className, children }: { on: boolean; pick?: () => void
     <button type="button" onClick={pick} aria-pressed={on} title={t('tl.showOnMap')} className={clsx(cls, 'transition-colors hover:ring-1 hover:ring-line-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/60')}>
       {children}
     </button>
+  );
+}
+
+/** The few moments that decided the game, in plain sentences (see lib/turningPoints). */
+function TurningPoints({ match, tl, diff, side }: { match: MatchSummary; tl: MatchTimeline; diff: number[]; side: number[] }) {
+  const { data } = useStaticData();
+  const a = assets(data);
+  const winner = match.participants.find((p) => p.win)?.teamId;
+  if (!winner || diff.length < 6) return null; // remakes and very short games have no story to tell
+  // In game order, so they read as the story of the match.
+  const at = (p: TurningPoint) => (p.kind === 'firstBlood' || p.kind === 'fight' ? p.t : p.kind === 'swing' ? p.from * 60 : p.minute * 60);
+  const points = turningPoints(tl.events, diff, side, winner).sort((x, y) => at(x) - at(y));
+  if (!points.length) return null;
+  const champ = (i: number) => {
+    const p = match.participants.find((x) => x.puuid === tl.puuids[i]);
+    const team = side[i] ?? 0;
+    return <span className={clsx('font-medium', team === 200 ? 'text-side-red' : 'text-side-blue')}>{p ? a.champion(p.championId).name : t('tl.minions')}</span>;
+  };
+  const team = (id: number) => <span className={clsx('font-medium', id === 200 ? 'text-side-red' : 'text-side-blue')}>{id === 200 ? t('live.red') : t('live.blue')}</span>;
+  const gold = (g: number) => `${decimal(g / 1000, 1)}k`;
+  const row = (p: TurningPoint): [string, React.ReactNode] => {
+    switch (p.kind) {
+      case 'firstBlood':
+        return [fmtTime(p.t), t.rich('tp.firstBlood', { killer: champ(p.killer), victim: champ(p.victim) })];
+      case 'swing':
+        return [`${p.from}–${p.to} min`, t.rich('tp.swing', { team: team(p.team), gold: gold(p.gold), minutes: p.to - p.from })];
+      case 'fight': {
+        const took = [...p.objectives.map((o) => objectiveLabel(o)), ...(p.towers ? [t('tp.towers', { count: p.towers })] : [])];
+        return [
+          fmtTime(p.t),
+          <>
+            {t.rich('tp.fight', { team: team(p.team), won: p.won, lost: p.lost })}
+            {took.length > 0 && <> {t('tp.took', { things: took.join(', ') })}</>}
+          </>,
+        ];
+      }
+      case 'comeback':
+        return [`${p.minute} min`, t.rich('tp.comeback', { team: team(p.team), gold: gold(p.gold) })];
+      case 'led':
+        return [`${p.minute} min`, t.rich('tp.led', { team: team(p.team) })];
+    }
+  };
+  return (
+    <section aria-labelledby="tp-h">
+      <h3 id="tp-h" className="mb-2 font-display text-lg font-bold">
+        {t('tp.title')}
+      </h3>
+      <ol className="max-w-3xl space-y-1.5 text-sm">
+        {points.map((p) => {
+          const [when, what] = row(p);
+          return (
+            <li key={p.kind} className="flex items-baseline gap-3">
+              <span className="num w-16 shrink-0 text-xs text-faint">{when}</span>
+              <span className="text-muted">{what}</span>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
   );
 }

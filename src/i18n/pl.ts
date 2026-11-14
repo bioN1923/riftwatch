@@ -1044,5 +1044,16 @@ const dict: Record<string, string> = {
   "tl.listAria": "Wydarzenia tej gry",
   "tl.showOnMap": "Pokaż na mapie",
   "duo.remove": "Usuń {name}",
+  "tp.title": "Punkty zwrotne",
+  "tp.firstBlood": "Pierwsza krew: {killer} zabił {victim}",
+  "tp.swing": "{team} zyskała {gold} złota w {minutes} min, największy zwrot w grze",
+  "tp.fight": "{team} wygrała walkę {won} na {lost}",
+  "tp.took": "i zdobyła {things}",
+  "tp.towers_one": "{count} wieżę",
+  "tp.towers_few": "{count} wieże",
+  "tp.towers_many": "{count} wież",
+  "tp.towers_other": "{count} wieży",
+  "tp.comeback": "{team} odrobiła {gold} złota straty",
+  "tp.led": "{team} prowadziła od tego momentu do końca",
 };
 export default dict;

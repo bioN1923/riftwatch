@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.61](v3.61/CHANGES.md) | 2026-11-14 | Turning points: first blood, biggest swing, deciding fight, comeback/lead |
 | [v3.60](v3.60/CHANGES.md) | 2026-11-14 | Timeline: tapping a list row on phones scrolls the map back into view |
 | [v3.59](v3.59/CHANGES.md) | 2026-11-14 | Timeline list rows link to the map; duo checks removable and kept per tab |
 | [v3.58](v3.58/CHANGES.md) | 2026-11-14 | Duo finder: check a specific player, check more co-players, apex rank labels |
