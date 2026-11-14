@@ -1013,5 +1013,6 @@ const dict: Record<string, string> = {
   "tp.towers_other": "{count} Türme",
   "tp.comeback": "{team} kam von {gold} Gold Rückstand zurück",
   "tp.led": "{team} lag von hier bis zum Ende vorn",
+  "tl.fightAt": "Der Kampf ab {time} und was danach geholt wurde",
 };
 export default dict;

@@ -1013,5 +1013,6 @@ const en = {
   "tp.towers_other": "{count} towers",
   "tp.comeback": "{team} came back from {gold} gold behind",
   "tp.led": "{team} led from here to the end",
+  "tl.fightAt": "Fight at {time} and what followed",
 };
 export default en;

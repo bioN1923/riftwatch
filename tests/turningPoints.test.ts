@@ -43,3 +43,15 @@ describe('turningPoints', () => {
     expect(tp.some((x) => x.kind === 'fight')).toBe(false);
   });
 });
+
+describe('happeningsOf', () => {
+  it('lists a whole fight wherever it happened, with its multi-kill', async () => {
+    const { happeningsOf } = await import('../src/lib/mapEvents');
+    const a: TimelineEvent = { type: 'kill', t: 100, killer: 0, victim: 5, assists: [], x: 1000, y: 1000 };
+    const b: TimelineEvent = { type: 'kill', t: 105, killer: 0, victim: 6, assists: [], x: 9000, y: 9000 };
+    const other: TimelineEvent = { type: 'kill', t: 104, killer: 7, victim: 2, assists: [], x: 1000, y: 1000 };
+    const baron: TimelineEvent = { type: 'objective', t: 140, teamId: 100, monster: 'BARON_NASHOR' };
+    const h = happeningsOf([a, other, b, baron], [a, b, baron]);
+    expect(h.map((x) => x.kind)).toEqual(['kill', 'kill', 'multi', 'objective']);
+  });
+});

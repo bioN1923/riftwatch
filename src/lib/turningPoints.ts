@@ -8,7 +8,7 @@ export type TurningPoint =
   /** Team `team` gained `gold` on the other team between minute `from` and `to`. */
   | { kind: 'swing'; from: number; to: number; team: number; gold: number }
   /** A fight `team` won `won`-for-`lost`, with what they took right after. */
-  | { kind: 'fight'; t: number; team: number; won: number; lost: number; objectives: Objective[]; towers: number; x: number; y: number }
+  | { kind: 'fight'; t: number; team: number; won: number; lost: number; objectives: Objective[]; towers: number; x: number; y: number; kills: Kill[] }
   /** The winners were `gold` behind at `minute` and still won. */
   | { kind: 'comeback'; team: number; gold: number; minute: number }
   /** The winners took the lead at `minute` and never gave it back. */
@@ -74,7 +74,7 @@ export function turningPoints(events: TimelineEvent[], diff: number[], side: num
     // Ties go to the later fight: late fights close games.
     if (won + lost >= 2 && won > lost && s >= score && s >= 2) {
       score = s;
-      decider = { kind: 'fight', t: start, team: winner, won, lost, objectives, towers, x: f[0].x, y: f[0].y };
+      decider = { kind: 'fight', t: start, team: winner, won, lost, objectives, towers, x: f[0].x, y: f[0].y, kills: f };
     }
   }
   if (decider) out.push(decider);

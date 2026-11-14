@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.64',
+    date: '2026-11-14',
+    items: ['Turning points: opening the deciding fight on the map now lists all of its kills and what was taken after, and outlines all their dots, even when the fight spread across the map.'],
+  },
+  {
     version: '3.63',
     date: '2026-11-14',
     items: ['Turning points: click first blood or the deciding fight to see it on the map, in the same popup as the map dots.'],

@@ -7,16 +7,19 @@ import { GameImg } from '../../ui/GameImg';
 import { GoldChart, objectiveLabel } from '../../charts/GoldChart';
 import { fmtTime, PlayerPicker, SectionTitle, TimelineGate, useTimeline } from './shared';
 import { t } from '../../../i18n';
-import { happeningsNear, MAP_SIZE, objectivePos } from '../../../lib/mapEvents';
+import { happeningsNear, happeningsOf, MAP_SIZE, objectivePos } from '../../../lib/mapEvents';
 import { RANDOM_CHAMP_QUEUES } from '../../../lib/liveTags';
 import { turningPoints, type TurningPoint } from '../../../lib/turningPoints';
 import { decimal } from '../../../lib/format';
+
+/** A moment picked from Turning points; `n` lets the same one be picked again. */
+type Focus = { t: number; x: number; y: number; n: number; only?: TimelineEvent[] };
 
 export function TimelineTab({ match, puuid, platform }: { match: MatchSummary; puuid: string; platform: string }) {
   const q = useTimeline(platform, match.id);
   const [who, setWho] = useState(puuid);
   // A moment picked from Turning points, shown in the map popup below (n: so the same one can be re-picked).
-  const [focus, setFocus] = useState<{ t: number; x: number; y: number; n: number } | null>(null);
+  const [focus, setFocus] = useState<Focus | null>(null);
   return (
     <div className="space-y-6 p-4">
       <TimelineGate q={q}>
@@ -44,16 +47,11 @@ export function TimelineTab({ match, puuid, platform }: { match: MatchSummary; p
   );
 }
 
-function PlayerTimeline({ match, tl, who, focus }: { match: MatchSummary; tl: MatchTimeline; who: string; focus: { t: number; x: number; y: number; n: number } | null }) {
+function PlayerTimeline({ match, tl, who, focus }: { match: MatchSummary; tl: MatchTimeline; who: string; focus: Focus | null }) {
   const [scope, setScope] = useState<'player' | 'all'>('player');
   // The picked moment: game time and map position, plus where on the map (in %) its popup points.
-  const [sel, setSel] = useState<{
-    t: number;
-    x: number;
-    y: number;
-    ax: number;
-    ay: number;
-  } | null>(null);
+  // `only`: a set of events to list instead of "what happened near here" (a whole fight from Turning points).
+  const [sel, setSel] = useState<{ t: number; x: number; y: number; ax: number; ay: number; only?: TimelineEvent[] } | null>(null);
   const { data } = useStaticData();
   const a = assets(data);
   const me = tl.puuids.indexOf(who);
@@ -90,7 +88,7 @@ function PlayerTimeline({ match, tl, who, focus }: { match: MatchSummary; tl: Ma
   }));
   const dots = scope === 'player' ? mine : allKills;
   const objectives = tl.events.filter((e): e is Extract<TimelineEvent, { type: 'objective' }> => e.type === 'objective');
-  const happenings = sel ? happeningsNear(tl.events, sel) : [];
+  const happenings = sel ? (sel.only ? happeningsOf(tl.events, sel.only) : happeningsNear(tl.events, sel)) : [];
   // Rows of the event list that the selected map spot covers, so map and list point at the same moment.
   const hit = new Set<TimelineEvent>(happenings.filter((h) => h.kind !== 'multi').map((h) => h.e as TimelineEvent));
   const listRef = useRef<HTMLOListElement>(null);
@@ -140,9 +138,11 @@ function PlayerTimeline({ match, tl, who, focus }: { match: MatchSummary; tl: Ma
   useEffect(() => {
     if (!focus) return;
     // Show everyone's kills when the moment isn't one of this player's, so its dot is on the map.
-    if (!mine.some(({ e }) => e.t === focus.t && e.x === focus.x && e.y === focus.y)) setScope('all');
+    const wanted = focus.only?.filter((e) => e.type === 'kill') ?? [];
+    const isMine = (e: { t: number; x: number; y: number }) => mine.some((m) => m.e.t === e.t && m.e.x === e.x && m.e.y === e.y);
+    if (!isMine(focus) || wanted.some((e) => !isMine(e as { t: number; x: number; y: number }))) setScope('all');
     const [ax, ay] = pos(focus.x, focus.y);
-    setSel({ t: focus.t, x: focus.x, y: focus.y, ax, ay });
+    setSel({ t: focus.t, x: focus.x, y: focus.y, ax, ay, only: focus.only });
     showMap();
   }, [focus?.n]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -218,7 +218,7 @@ function PlayerTimeline({ match, tl, who, focus }: { match: MatchSummary; tl: Ma
                 const [cx, cy] = pos(e.x, e.y);
                 // "This player": green kills, red deaths. "Everyone": coloured by the killer's side.
                 const color = scope === 'all' ? (sideOf(e.killer) === 200 ? 'var(--side-red)' : 'var(--side-blue)') : role === 'death' ? 'var(--loss)' : 'var(--win)';
-                const active = sel && sel.t === e.t && sel.x === e.x && sel.y === e.y;
+                const active = sel && (sel.only ? sel.only.includes(e) : sel.t === e.t && sel.x === e.x && sel.y === e.y);
                 const label = `${fmtTime(e.t)} · ${t('tl.xKilledY', { killer: name(e.killer), victim: name(e.victim) })}`;
                 return (
                   <g
@@ -251,7 +251,7 @@ function PlayerTimeline({ match, tl, who, focus }: { match: MatchSummary; tl: Ma
                 const [px, py] = pos(p[0], p[1]);
                 const cx = px + ((k % 4) - 1.5) * 4.6;
                 const cy = py + Math.floor(k / 4) * 4.6;
-                const active = sel && sel.t === e.t && sel.x === p[0] && sel.y === p[1];
+                const active = sel && (sel.only ? sel.only.includes(e) : sel.t === e.t && sel.x === p[0] && sel.y === p[1]);
                 return (
                   <g
                     key={`o${i}`}
@@ -386,7 +386,7 @@ function Row({ on, pick, className, children }: { on: boolean; pick?: () => void
 }
 
 /** The few moments that decided the game, in plain sentences (see lib/turningPoints). */
-function TurningPoints({ match, tl, diff, side, onShow }: { match: MatchSummary; tl: MatchTimeline; diff: number[]; side: number[]; onShow: (at: { t: number; x: number; y: number }) => void }) {
+function TurningPoints({ match, tl, diff, side, onShow }: { match: MatchSummary; tl: MatchTimeline; diff: number[]; side: number[]; onShow: (at: Omit<Focus, 'n'>) => void }) {
   const { data } = useStaticData();
   const a = assets(data);
   const winner = match.participants.find((p) => p.win)?.teamId;
@@ -453,7 +453,7 @@ function TurningPoints({ match, tl, diff, side, onShow }: { match: MatchSummary;
             <li key={p.kind} className="flex items-baseline gap-3">
               <span className="num w-16 shrink-0 text-xs text-faint">{when}</span>
               {p.kind === 'firstBlood' || p.kind === 'fight' ? (
-                <button type="button" onClick={() => onShow({ t: p.t, x: p.x, y: p.y })} className="group inline-flex items-baseline gap-1.5 text-left text-muted hover:text-text">
+                <button type="button" onClick={() => onShow({ t: p.t, x: p.x, y: p.y, only: p.kind === 'fight' ? [...p.kills, ...p.objectives] : undefined })} className="group inline-flex items-baseline gap-1.5 text-left text-muted hover:text-text">
                   <span>{what}</span>
                   <MapPin className="size-3.5 shrink-0 translate-y-0.5 text-faint group-hover:text-gold" aria-hidden />
                   <span className="sr-only">{t('tl.showOnMap')}</span>
@@ -473,13 +473,14 @@ function TurningPoints({ match, tl, diff, side, onShow }: { match: MatchSummary;
  * The events at a picked spot, in a small box pinned to that spot on the map. It opens above the
  * spot in the lower half of the map and below it in the upper half, and leans inwards near the edges.
  */
-function MapPopup({ sel, onClose, children }: { sel: { t: number; ax: number; ay: number }; onClose: () => void; children: React.ReactNode }) {
+function MapPopup({ sel, onClose, children }: { sel: { t: number; ax: number; ay: number; only?: unknown[] }; onClose: () => void; children: React.ReactNode }) {
+  const title = sel.only ? t('tl.fightAt', { time: fmtTime(sel.t) }) : t('tl.around', { time: fmtTime(sel.t) });
   const below = sel.ay < 45;
   const shift = sel.ax < 30 ? '-12%' : sel.ax > 70 ? '-88%' : '-50%';
   return (
     <div
       role="dialog"
-      aria-label={t('tl.around', { time: fmtTime(sel.t) })}
+      aria-label={title}
       aria-live="polite"
       className="absolute z-20 w-[min(280px,85vw)] rounded border border-line-strong bg-surface p-3 text-sm shadow-xl shadow-black/40"
       style={{
@@ -495,7 +496,7 @@ function MapPopup({ sel, onClose, children }: { sel: { t: number; ax: number; ay
         style={{ left: shift.slice(1) }}
       />
       <div className="mb-1.5 flex items-center justify-between gap-2">
-        <span className="text-xs font-medium text-muted">{t('tl.around', { time: fmtTime(sel.t) })}</span>
+        <span className="text-xs font-medium text-muted">{title}</span>
         <button type="button" onClick={onClose} aria-label={t('pc.close')} className="-my-1 -mr-1 grid size-[24px] place-items-center rounded text-faint hover:bg-raised hover:text-text">
           <X className="size-3.5" aria-hidden />
         </button>

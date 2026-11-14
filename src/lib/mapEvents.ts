@@ -77,3 +77,25 @@ export function happeningsNear(events: TimelineEvent[], at: { t: number; x: numb
   for (const m of multiKills(events)) if (near(m.t, m.x, m.y)) out.push({ kind: 'multi', e: m });
   return out.sort((a, b) => a.e.t - b.e.t || (a.kind === 'multi' ? 1 : 0) - (b.kind === 'multi' ? 1 : 0));
 }
+
+/**
+ * The same list as happeningsNear, for a given set of events (a whole fight and what was taken
+ * after it), wherever on the map they happened, plus the multi-kills scored during it.
+ */
+export function happeningsOf(events: TimelineEvent[], only: TimelineEvent[]): MapHappening[] {
+  const set = new Set(only);
+  const out: MapHappening[] = [];
+  for (const e of events) {
+    if (!set.has(e)) continue;
+    if (e.type === 'kill') out.push({ kind: 'kill', e });
+    else if (e.type === 'objective') out.push({ kind: 'objective', e });
+  }
+  const kills = only.filter((e): e is Kill => e.type === 'kill');
+  if (kills.length) {
+    const from = Math.min(...kills.map((k) => k.t));
+    const to = Math.max(...kills.map((k) => k.t));
+    const killers = new Set(kills.map((k) => k.killer));
+    for (const m of multiKills(events)) if (m.t >= from && m.t <= to && killers.has(m.killer)) out.push({ kind: 'multi', e: m });
+  }
+  return out.sort((a, b) => a.e.t - b.e.t || (a.kind === 'multi' ? 1 : 0) - (b.kind === 'multi' ? 1 : 0));
+}

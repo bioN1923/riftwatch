@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.64](v3.64/CHANGES.md) | 2026-11-14 | Deciding fight on the map: all its kills and follow-up objectives |
 | [v3.63](v3.63/CHANGES.md) | 2026-11-14 | Turning points: first blood and deciding fight open the map popup |
 | [v3.62](v3.62/CHANGES.md) | 2026-11-14 | Timeline map: events in a popup on the clicked dot |
 | [v3.61](v3.61/CHANGES.md) | 2026-11-14 | Turning points: first blood, biggest swing, deciding fight, comeback/lead |
