@@ -22,3 +22,9 @@ I also considered "Items by game length" and "Build when ahead/behind" for the c
 - Typecheck clean, a11y `{}`.
 - Demo: after opening Ahri, Zed (Mid), Jinx (Bot), Ahri (Mid) and Thresh, the row reads Thresh, Ahri · Mid, Jinx · Bot, Zed · Mid. In ARAM mode the links carry `?queue=aram`. Clear removes the row.
 - Screenshot `demo/recent-champs.png` plus the standard set.
+
+## Live check (06:35, after a pause in the loop overnight)
+- Deployed automatically (EXIT CODE 0, 06:34:25).
+- `/changelog` lists v3.53 first, with the NEW badge.
+- The tier list shows **no** "Recently viewed" row in the owner's browser. That's correct: no champion page has been opened since the deploy, so the list is empty. I deliberately didn't open champion pages here, so as not to write anything into the owner's browser storage.
+- The row itself is checked in the demo (`demo/recent-champs.png`). Live screenshot: `live/tier-list.jpg`. The tier list now reads 11,148 ranked games on 16.22.
