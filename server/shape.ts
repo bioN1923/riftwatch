@@ -211,7 +211,15 @@ export function shapeTimeline(raw: any, order: string[]): MatchTimeline {
           events.push({ type: 'kill', t, killer: idx(e.killerId), victim: idx(e.victimId), assists: (e.assistingParticipantIds ?? []).map(idx).filter((x: number) => x >= 0), x: e.position?.x ?? 0, y: e.position?.y ?? 0 });
           break;
         case 'ELITE_MONSTER_KILL':
-          events.push({ type: 'objective', t, teamId: e.killerTeamId, monster: e.monsterType, sub: e.monsterSubType });
+          events.push({
+            type: 'objective',
+            t,
+            teamId: e.killerTeamId,
+            monster: e.monsterType,
+            sub: e.monsterSubType,
+            killer: idx(e.killerId),
+            ...(e.position ? { x: e.position.x, y: e.position.y } : {}),
+          });
           break;
         case 'BUILDING_KILL':
           // Riot reports the team that LOST the building; store the team that destroyed it.

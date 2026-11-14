@@ -373,6 +373,12 @@ export function mockTimeline(m: MatchSummary): MatchTimeline {
     for (let k = 0; k < t.objectives.tower; k++) events.push({ type: 'building', t: int(r, 600, m.duration - 10), teamId: t.teamId, building: 'TOWER', lane: pick(r, ['TOP_LANE', 'MID_LANE', 'BOT_LANE']) });
     for (let k = 0; k < t.objectives.inhibitor; k++) events.push({ type: 'building', t: int(r, Math.min(1300, m.duration - 60), m.duration - 10), teamId: t.teamId, building: 'INHIBITOR', lane: pick(r, ['TOP_LANE', 'MID_LANE', 'BOT_LANE']) });
   }
+  // Who took each epic monster: the team's jungler when there is one.
+  for (const e of events) {
+    if (e.type !== 'objective') continue;
+    const team = ps.map((_, j) => j).filter((j) => ps[j].teamId === e.teamId);
+    e.killer = team.find((j) => ps[j].position === 'JUNGLE') ?? team[0];
+  }
   events.sort((a, b) => a.t - b.t);
 
   const items = ps.map((p) => {

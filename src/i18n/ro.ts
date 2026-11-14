@@ -976,5 +976,15 @@ const dict: Record<string, string> = {
   "tl.recentClear": "Șterge",
   "tl.leaning": "tendință, poate fi încă întâmplare",
   "cp.leaningNote": "Punctat: cifrele înclină într-acolo, dar încă nu sunt destule meciuri ca să excludem întâmplarea.",
+  "tl.mapScope": "Arată pe hartă",
+  "tl.mapScopePlayer": "Acest jucător",
+  "tl.mapScopeAll": "Toți",
+  "tl.mapObjectives": "Monștri epici",
+  "tl.mapHint": "Apasă pe un punct de pe hartă ca să vezi ce s-a întâmplat acolo atunci.",
+  "tl.around": "În jur de {time}, pe aici",
+  "tl.killedWord": "l-a ucis pe",
+  "tl.tookWord": "a luat",
+  "tl.withAssists": "cu {names}",
+  "tl.xKilledY": "{killer} l-a ucis pe {victim}",
 };
 export default dict;

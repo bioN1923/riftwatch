@@ -994,5 +994,15 @@ const dict: Record<string, string> = {
   "tl.recentClear": "Wyczyść",
   "tl.leaning": "tendencja, to wciąż może być przypadek",
   "cp.leaningNote": "Przerywana ramka: liczby na to wskazują, ale jest jeszcze za mało gier, by wykluczyć przypadek.",
+  "tl.mapScope": "Pokaż na mapie",
+  "tl.mapScopePlayer": "Ten gracz",
+  "tl.mapScopeAll": "Wszyscy",
+  "tl.mapObjectives": "Potwory epickie",
+  "tl.mapHint": "Kliknij punkt na mapie, by zobaczyć, co się tam wtedy stało.",
+  "tl.around": "Około {time}, w pobliżu",
+  "tl.killedWord": "zabił",
+  "tl.tookWord": "zdobył",
+  "tl.withAssists": "z pomocą: {names}",
+  "tl.xKilledY": "{killer} zabił {victim}",
 };
 export default dict;

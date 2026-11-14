@@ -792,3 +792,22 @@ describe('sticky sidebars that are taller than the window', async () => {
     expect(stickyTop(812, 900)).toBe(72); // exactly fits
   });
 });
+
+describe('timeline map: what happened here', async () => {
+  const { multiKills, happeningsNear, objectivePos } = await import('../src/lib/mapEvents');
+  const kill = (t: number, killer: number, victim: number, x = 5000, y = 5000) => ({ type: 'kill' as const, t, killer, victim, assists: [], x, y });
+  it('finds multi-kills with the 10-second rule (30 s for the fifth)', () => {
+    const m = multiKills([kill(100, 1, 5), kill(108, 1, 6), kill(117, 1, 7), kill(300, 1, 8), kill(305, 2, 9), kill(400, -1, 3)]);
+    expect(m).toEqual([{ killer: 1, count: 3, t: 117, x: 5000, y: 5000 }]);
+    const penta = multiKills([kill(10, 0, 5), kill(15, 0, 6), kill(20, 0, 7), kill(25, 0, 8), kill(50, 0, 9)]);
+    expect(penta[0].count).toBe(5);
+  });
+  it('gathers kills, objectives and multi-kills around a clicked spot', () => {
+    const drake = { type: 'objective' as const, t: 610, teamId: 100, monster: 'DRAGON', sub: 'FIRE_DRAGON', killer: 1 };
+    const ev = [kill(600, 1, 6, 9600, 4500), kill(605, 1, 7, 9700, 4300), drake, kill(605, 3, 8, 2000, 12000), kill(900, 1, 9, 9600, 4500)];
+    const h = happeningsNear(ev, { t: 600, x: 9600, y: 4500 });
+    expect(h.map((x) => x.kind)).toEqual(['kill', 'kill', 'multi', 'objective']);
+    expect(objectivePos(drake)).toEqual([9866, 4414]); // no saved position: the pit
+    expect(objectivePos({ ...drake, x: 9000, y: 4000 })).toEqual([9000, 4000]);
+  });
+});

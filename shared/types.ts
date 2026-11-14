@@ -134,7 +134,7 @@ export interface TimelineFrame {
 
 export type TimelineEvent =
   | { type: 'kill'; t: number; killer: number; victim: number; assists: number[]; x: number; y: number }
-  | { type: 'objective'; t: number; teamId: number; monster: string; sub?: string }
+  | { type: 'objective'; t: number; teamId: number; monster: string; sub?: string; killer?: number; x?: number; y?: number }
   | { type: 'building'; t: number; teamId: number; building: string; lane: string };
 
 export interface MatchTimeline {

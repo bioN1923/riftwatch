@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.56',
+    date: '2026-11-14',
+    items: [
+      'Match timeline map: click (or Tab to) any dot to see what happened there and then: who killed whom with which assists, who took a Drake, Baron or Herald, and multi-kills like "Triple kill".',
+      'The map can show just this player or everyone (by side), and epic monsters appear as diamonds. ARAM games now use the Howling Abyss map.',
+    ],
+  },
+  {
     version: '3.55',
     date: '2026-11-14',
     items: ['Desktop: the sidebar on profiles and champion pages now scrolls along with the page until its last card is in view, instead of hiding its bottom until you reach the very end.'],

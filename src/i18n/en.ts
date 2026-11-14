@@ -958,5 +958,15 @@ const en = {
   "tl.recentClear": "Clear",
   "tl.leaning": "leaning, could still be chance",
   "cp.leaningNote": "Dashed: the numbers lean that way but there aren't enough games yet to rule out chance.",
+  "tl.mapScope": "Show on the map",
+  "tl.mapScopePlayer": "This player",
+  "tl.mapScopeAll": "Everyone",
+  "tl.mapObjectives": "Epic monsters",
+  "tl.mapHint": "Click a dot on the map to see what happened there and then.",
+  "tl.around": "Around {time}, near here",
+  "tl.killedWord": "killed",
+  "tl.tookWord": "took",
+  "tl.withAssists": "with {names}",
+  "tl.xKilledY": "{killer} killed {victim}",
 };
 export default en;
