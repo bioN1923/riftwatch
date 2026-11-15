@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.119',
+    date: '2026-11-16',
+    items: ['Matchup calls are more careful. A side is only called “favoured” (in green or red) when the gap is too large to be chance. A smaller gap reads “Leaning …, could still be chance”. The live game’s lane line now gives the same call as the matchup page, instead of colouring 48.7% over 113 games red.'],
+  },
+  {
     version: '3.118',
     date: '2026-11-16',
     items: ['Profile Stats tab: a new Arena panel for players with Arena games in their loaded history. It shows average place, top-four rate, first places, how often each place came up, the champions played and the augments picked most. Augments show only how often they were picked, never win rates.'],

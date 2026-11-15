@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { callText } from '../../lib/matchupText';
+import { callTone, matchupCall, MATCHUP_MIN_GAMES } from '../../lib/matchupVerdict';
 import { Link } from 'react-router';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
@@ -7,7 +9,7 @@ import { api } from '../../lib/api';
 import { assets, matchupPath, rankEmblem, useStaticData } from '../../lib/ddragon';
 import { guessRoles, roleGames, SR_QUEUES } from '../../lib/lanes';
 import { ROLE_LABEL } from '../ui/RoleIcon';
-import { compact, duration, pct, tierName, wlTone } from '../../lib/format';
+import { compact, duration, pct, tierName } from '../../lib/format';
 import { useLadderPosition } from '../../lib/useLadderPosition';
 import { getPlatform } from '../../../shared/regions';
 import { queueName } from '../../lib/queues';
@@ -148,7 +150,7 @@ function LaneMatchup({ game, puuid }: { game: Live; puuid: string }) {
   const me = a.champion(self.championId);
   const them = a.champion(lane.opp.championId);
   const m = mu.data;
-  const enough = m && m.games >= 10;
+  const enough = m && m.games >= MATCHUP_MIN_GAMES;
   return (
     <div className="panel flex flex-wrap items-center gap-x-5 gap-y-3 px-4 py-3" role="group" aria-labelledby="live-lane-h">
       <div className="flex items-center gap-2">
@@ -165,7 +167,9 @@ function LaneMatchup({ game, puuid }: { game: Live; puuid: string }) {
             <Skeleton className="mt-1 h-3 w-48" />
           ) : enough ? (
             <>
-              {t.rich('live.laneRate', { a: me.name, rate: <b className={wlTone(m.winRate, m.games)}>{pct(m.winRate, 1)}</b>, count: m.games })}
+              <span className={clsx('font-semibold', callTone(matchupCall(m)))}>{callText(matchupCall(m), me.name, them.name)}</span>
+              {' · '}
+              {t.rich('live.laneRate', { a: me.name, rate: <b className="text-text">{pct(m.winRate, 1)}</b>, count: m.games })}
               {m.goldDiff15 != null && ` · ${t('draft.gold15', { gold: `${m.goldDiff15 >= 0 ? '+' : '−'}${Math.abs(Math.round(m.goldDiff15))}` })}`}
             </>
           ) : (

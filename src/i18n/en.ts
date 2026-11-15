@@ -1184,5 +1184,6 @@ const en = {
   "ars.picks_one": "{count} pick",
   "ars.picks_other": "{count} picks",
   "ars.augmentsNote": "How often you took each one. Riot doesn’t allow win rates for augments.",
+  "mp.leans": "Leaning {champion}, could still be chance",
 };
 export default en;

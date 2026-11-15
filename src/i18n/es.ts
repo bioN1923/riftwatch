@@ -1184,5 +1184,6 @@ const dict: Record<string, string> = {
   "ars.picks_one": "{count} vez",
   "ars.picks_other": "{count} veces",
   "ars.augmentsNote": "Cuántas veces elegiste cada uno. Riot no permite tasas de victoria para los aumentos.",
+  "mp.leans": "Se inclina hacia {champion}, aún puede ser casualidad",
 };
 export default dict;

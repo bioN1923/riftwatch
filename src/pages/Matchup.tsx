@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { Link, Navigate, useLocation, useParams, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
+import { callText } from '../lib/matchupText';
+import { callTone, matchupCall } from '../lib/matchupVerdict';
 import { ArrowLeftRight } from 'lucide-react';
 import type { MatchupStats } from '../../shared/types';
 import { api, ApiClientError } from '../lib/api';
@@ -240,8 +242,8 @@ function Side({ id }: { id: number }) {
 /** The headline: who's favoured, by how much, and the laning picture. */
 function Verdict({ m, me, them }: { m: MatchupStats; me: string; them: string }) {
   const low = m.games < LOW_SAMPLE;
-  const edge = m.adjusted - 0.5;
-  const verdict = low ? t('mp.tooFew') : edge > 0.02 ? t('mp.favoured', { champion: me }) : edge < -0.02 ? t('mp.favoured', { champion: them }) : t('mp.even');
+  const call = matchupCall(m);
+  const verdict = callText(call, me, them);
   const vsUsual = m.baseline ? m.winRate - m.baseline.winRate : null;
   const tile = (label: string, value: React.ReactNode, note?: React.ReactNode) => (
     <div className="min-w-0">
@@ -252,11 +254,11 @@ function Verdict({ m, me, them }: { m: MatchupStats; me: string; them: string })
   );
   return (
     <div className="mt-5">
-      <p className={clsx('font-display text-xl font-bold', low ? 'text-muted' : edge > 0.02 ? 'text-win' : edge < -0.02 ? 'text-loss' : 'text-text')}>{verdict}</p>
+      <p className={clsx('font-display text-xl font-bold', callTone(call))}>{verdict}</p>
       <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3 lg:grid-cols-6">
         {tile(
           t('mp.wr', { champion: me }),
-          <span className={clsx(low ? 'text-faint' : m.winRate >= 0.5 ? 'text-win' : 'text-loss')}>
+          <span className={clsx(low ? 'text-faint' : callTone(call))}>
             {pct(m.winRate, 1)}
             {low && '*'}
           </span>,
