@@ -6,3 +6,6 @@
 - One string in seven languages; 150 tests.
 
 **Checks.** tsc, tests, build, a11y `{}`. Demo: clicking "#81" → `/leaderboard?region=euw1&page=2&hl=81`, row 81 (CrimsonGank, +90) highlighted and in view. Shot `demo/ladder-jump-to-row.png`.
+
+## Live check (2026-11-15)
+Deployed 23:31 (local). On the EUNE Challenger ladder, clicking "#118" in Climbing fastest went to page 3 with row 118 highlighted and in view. Arena: **151 games**, 864 lined up.
