@@ -9,3 +9,6 @@
 - Test: learned ids survive a restart (148 tests).
 
 **Checks.** tsc, tests, build, a11y `{}`. Demo health shows `queue: 1710`. No UI change.
+
+## Live check (2026-11-15)
+Deployed 22:20 (local). Three minutes later `/api/health` → `arena: { queue: 1750, queued: 235 }`: the fallback read a lined-up player's latest games, **learned that Arena currently runs on queue 1750**, and the line grew from 150 to 235 players. That confirms the diagnosis. The Arena tier list still read 21 games at 22:23 (the tier list is cached for a few minutes); to be re-checked next time.
