@@ -16,3 +16,8 @@
 - No page errors.
 
 Screens: `demo/duo-card.png`, `demo/champion-hero.png`.
+
+## Live check (2026-11-16 00:59 local)
+- The live build serves `Duo-BEfA_MXA.js`, which has the compare link (200).
+- Live tier list, 268 champion-role rows with enough games: under the new rule, 33 would show a coloured headline win rate. The old rule coloured all of them. The champion page headline is the row for the chosen role.
+- Arena: 338 games.
