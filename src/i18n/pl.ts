@@ -1197,5 +1197,9 @@ const dict: Record<string, string> = {
   "kbd.help": "Pokaż lub ukryj tę listę",
   "kbd.goTo": "Przejdź do: {page}",
   "kbd.esc": "Zamknij menu, okna i tę listę",
+  "tl.earlyData_one": "Na razie zebrano tylko {count} grę: za mało, by ocenić bohaterów. Tiery pojawią się, gdy bohater będzie miał około 20 gier; do tego czasu lista pokazuje to, co widziano.",
+  "tl.earlyData_few": "Na razie zebrano tylko {count} gry: za mało, by ocenić bohaterów. Tiery pojawią się, gdy bohater będzie miał około 20 gier; do tego czasu lista pokazuje to, co widziano.",
+  "tl.earlyData_many": "Na razie zebrano tylko {count} gier: za mało, by ocenić bohaterów. Tiery pojawią się, gdy bohater będzie miał około 20 gier; do tego czasu lista pokazuje to, co widziano.",
+  "tl.earlyData_other": "Na razie zebrano tylko {count} gry: za mało, by ocenić bohaterów. Tiery pojawią się, gdy bohater będzie miał około 20 gier; do tego czasu lista pokazuje to, co widziano.",
 };
 export default dict;

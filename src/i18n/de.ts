@@ -1139,5 +1139,7 @@ const dict: Record<string, string> = {
   "kbd.help": "Diese Liste ein- oder ausblenden",
   "kbd.goTo": "Zu {page}",
   "kbd.esc": "Menüs, Pop-ups und diese Liste schließen",
+  "tl.earlyData_one": "Bisher erst {count} Spiel gesammelt: zu wenig, um Champions einzustufen. Tiers erscheinen, sobald ein Champion etwa 20 Spiele hat; bis dahin zeigt die Liste, was gesehen wurde.",
+  "tl.earlyData_other": "Bisher erst {count} Spiele gesammelt: zu wenig, um Champions einzustufen. Tiers erscheinen, sobald ein Champion etwa 20 Spiele hat; bis dahin zeigt die Liste, was gesehen wurde.",
 };
 export default dict;

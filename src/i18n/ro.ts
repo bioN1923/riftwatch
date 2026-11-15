@@ -1168,5 +1168,8 @@ const dict: Record<string, string> = {
   "kbd.help": "Arată sau ascunde lista aceasta",
   "kbd.goTo": "Mergi la {page}",
   "kbd.esc": "Închide meniuri, ferestre și lista aceasta",
+  "tl.earlyData_one": "Deocamdată doar {count} meci adunat: prea puțin ca să clasăm vreun campion. Tier-urile apar când un campion are în jur de 20 de meciuri; până atunci lista arată ce s-a văzut.",
+  "tl.earlyData_few": "Deocamdată doar {count} meciuri adunate: prea puține ca să clasăm vreun campion. Tier-urile apar când un campion are în jur de 20 de meciuri; până atunci lista arată ce s-a văzut.",
+  "tl.earlyData_other": "Deocamdată doar {count} de meciuri adunate: prea puține ca să clasăm vreun campion. Tier-urile apar când un campion are în jur de 20 de meciuri; până atunci lista arată ce s-a văzut.",
 };
 export default dict;

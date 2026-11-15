@@ -43,7 +43,8 @@ describe('champion statistics', () => {
     for (const r of t.rows) {
       expect(r.winRate).toBeGreaterThanOrEqual(0);
       expect(r.winRate).toBeLessThanOrEqual(1);
-      expect(['S+', 'S', 'A', 'B', 'C', 'D']).toContain(r.tier);
+      expect(['S+', 'S', 'A', 'B', 'C', 'D']).toContain(r.tier === '–' && r.lowSample ? 'D' : r.tier);
+      if (r.lowSample) expect(r.tier).toBe('–');
     }
   });
 

@@ -1139,5 +1139,7 @@ const en = {
   "kbd.help": "Show or hide this list",
   "kbd.goTo": "Go to {page}",
   "kbd.esc": "Close menus, pop-ups and this list",
+  "tl.earlyData_one": "Only {count} game collected so far: too few to rank any champion yet. Tiers appear once a champion has about 20 games; until then this lists what has been seen.",
+  "tl.earlyData_other": "Only {count} games collected so far: too few to rank any champion yet. Tiers appear once a champion has about 20 games; until then this lists what has been seen.",
 };
 export default en;

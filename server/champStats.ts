@@ -707,7 +707,8 @@ export class ChampionStatsStore {
         const q = i / Math.max(1, list.length);
         r.rank = i + 1;
         r.tier = q < 0.06 ? 'S+' : q < 0.18 ? 'S' : q < 0.4 ? 'A' : q < 0.65 ? 'B' : q < 0.85 ? 'C' : 'D';
-        if (r.lowSample && (r.tier === 'S+' || r.tier === 'S' || r.tier === 'A')) r.tier = 'B';
+        // Too few games to rank: no tier at all rather than a guess (it still has a place in the list).
+        if (r.lowSample) r.tier = '–';
       });
     }
     return rows;

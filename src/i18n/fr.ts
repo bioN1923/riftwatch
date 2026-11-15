@@ -1139,5 +1139,7 @@ const dict: Record<string, string> = {
   "kbd.help": "Afficher ou masquer cette liste",
   "kbd.goTo": "Aller à {page}",
   "kbd.esc": "Fermer menus, fenêtres et cette liste",
+  "tl.earlyData_one": "Seulement {count} partie collectée pour l’instant : trop peu pour classer un champion. Les tiers apparaissent quand un champion a environ 20 parties ; d’ici là, la liste montre ce qui a été vu.",
+  "tl.earlyData_other": "Seulement {count} parties collectées pour l’instant : trop peu pour classer un champion. Les tiers apparaissent quand un champion a environ 20 parties ; d’ici là, la liste montre ce qui a été vu.",
 };
 export default dict;

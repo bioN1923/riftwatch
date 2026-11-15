@@ -1139,5 +1139,7 @@ const dict: Record<string, string> = {
   "kbd.help": "Mostrar ou ocultar esta lista",
   "kbd.goTo": "Ir para {page}",
   "kbd.esc": "Fechar menus, janelas e esta lista",
+  "tl.earlyData_one": "Só {count} partida coletada até agora: poucas para classificar campeões. Os tiers aparecem quando um campeão tem cerca de 20 partidas; até lá a lista mostra o que foi visto.",
+  "tl.earlyData_other": "Só {count} partidas coletadas até agora: poucas para classificar campeões. Os tiers aparecem quando um campeão tem cerca de 20 partidas; até lá a lista mostra o que foi visto.",
 };
 export default dict;

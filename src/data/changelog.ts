@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.98',
+    date: '2026-11-15',
+    items: ['Tier lists no longer give a tier to champions with too few games (they show “–” instead of B, C or D), and a list that is all early data says so up front. The Arena list has its first games and is in that state now.'],
+  },
+  {
     version: '3.97',
     date: '2026-11-15',
     items: ['Keyboard shortcuts: press ? for the list, “g” then a letter to jump to a page (g c Champions, g l Ladder, g d Draft…), / to search. Also linked in the footer.'],

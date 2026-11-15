@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.98](v3.98/CHANGES.md) | 2026-11-15 | Tier lists: no tier on too few games; early-data note |
 | [v3.97](v3.97/CHANGES.md) | 2026-11-15 | Keyboard shortcuts (? list, g + letter) |
 | [v3.96](v3.96/CHANGES.md) | 2026-11-15 | Draft: your team’s damage mix |
 | [v3.95](v3.95/CHANGES.md) | 2026-11-15 | Live game: ladder place for apex players |

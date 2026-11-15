@@ -186,6 +186,11 @@ export function ChampionsPage() {
         </div>
       ) : (
         <div className="mt-2 overflow-x-auto">
+          {rows.every((x) => x.lowSample) && (
+            <p className="mb-2 rounded border border-line bg-surface px-3 py-2 text-sm text-muted" role="note">
+              {t('tl.earlyData', { count: q.data.matches })}
+            </p>
+          )}
           {(sort.key === 'winRate' || sort.key === 'pickRate' || sort.key === 'banRate') && rows.some((x) => x.lowSample) && (
             <p className="px-3 pb-1 text-xs text-faint">{t('tl.smallLast')}</p>
           )}
@@ -256,7 +261,8 @@ export function ChampionsPage() {
                     </td>
                     <td className="px-3 py-2 text-right">
                       <span className="inline-flex items-center gap-2.5">
-                        <span className="hidden sm:inline">
+                        {/* No bar on a handful of games: its length would read as a result. */}
+                        <span className={clsx('hidden sm:inline', r.lowSample && 'invisible')}>
                           <WinRateBar value={r.winRate} />
                         </span>
                         <span className="flex w-12 flex-col items-end leading-tight">
