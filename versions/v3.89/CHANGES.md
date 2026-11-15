@@ -12,3 +12,6 @@
 **Checks.** tsc, tests, build, a11y `{}`. Playwright with a mocked 429 (Retry-After 4 s): one failure → countdown, then the profile loads at ~4 s (2 requests). Nine failures → requests at 0.2 s, 4.3 s, 8.3 s, then it stops and leaves the button (3 requests). Shot: `demo/rate-limit-countdown.png`.
 
 Found on the way: the production server reads `dist/index.html` once at start, so the demo server must be restarted after every build (a stale index → 404 on the new bundle).
+
+## Live check (2026-11-15)
+Deployed 16:16 (local). riftwatch.fly.dev/changelog lists v3.89; the live bundle carries the countdown string and the rate-limit handling. A real 429 wasn't provoked on purpose (it would spend the shared key's budget for everyone); the behaviour was verified against the demo server with a mocked 429 (see above). Arena tier list: still 0 matches.
