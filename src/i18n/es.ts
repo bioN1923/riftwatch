@@ -1186,5 +1186,6 @@ const dict: Record<string, string> = {
   "ars.augmentsNote": "Cuántas veces elegiste cada uno. Riot no permite tasas de victoria para los aumentos.",
   "mp.leans": "Se inclina hacia {champion}, aún puede ser casualidad",
   "mu.toneNote": "Las tasas de victoria solo se colorean cuando la diferencia es demasiado grande para ser casualidad.",
+  "home.recentChamps": "Campeones que consultaste",
 };
 export default dict;

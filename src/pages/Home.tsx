@@ -5,14 +5,15 @@ import { RoleIcon, ROLE_LABEL } from '../components/ui/RoleIcon';
 import { TierBadge } from '../components/champions/common';
 import { pct, thousands, timeAgo } from '../lib/format';
 import { Link } from 'react-router';
-import { Star, Clock, Swords, Scale, Users, Trophy, HeartHandshake, TrendingUp, TrendingDown } from 'lucide-react';
+import { Star, Clock, LayoutGrid, Swords, Scale, Users, Trophy, HeartHandshake, TrendingUp, TrendingDown } from 'lucide-react';
 import clsx from 'clsx';
 import type { PatchMover } from '../../shared/types';
 import { SearchBox } from '../components/SearchBox';
 import { GameImg } from '../components/ui/GameImg';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
 import { profilePath } from '../lib/riotId';
-import { isFavorite, useFavorites, useRecent, useRegion, type SavedPlayer } from '../lib/storage';
+import { isFavorite, useFavorites, useRecent, useRecentChamps, useRegion, type SavedPlayer } from '../lib/storage';
+import { RecentChampList } from '../components/champions/RecentChamps';
 import { getPlatform } from '../../shared/regions';
 import { tierName } from '../lib/format';
 import { fadeIn } from '../lib/motion';
@@ -54,6 +55,7 @@ export function HomePage() {
     document.title = t('home.title');
   }, []);
 
+  const champs = useRecentChamps();
   const saved = favorites.length + recent.length > 0;
   return (
     <div className="mx-auto max-w-6xl px-4">
@@ -97,6 +99,14 @@ export function HomePage() {
               </div>
             </section>
           )}
+          {champs.length > 0 && (
+            <section aria-labelledby="recent-champs-h">
+              <h2 id="recent-champs-h" className="mb-2 flex items-center gap-2 font-display text-lg font-bold text-muted">
+                <LayoutGrid className="size-4" aria-hidden /> {t('home.recentChamps')}
+              </h2>
+              <RecentChampList list={champs} />
+            </section>
+          )}
           {!saved && (
             <div className="panel panel-tick p-5 text-sm text-muted">
               <p className="font-display text-lg font-bold text-text">{t('home.emptyTitle')}</p>
@@ -127,7 +137,7 @@ function Climbers() {
   const list = q.data?.climbers ?? [];
   if (!q.data?.since || list.length < 3) return null;
   return (
-    <section className="mt-10" aria-labelledby="home-climb-h">
+    <section className="pb-20" aria-labelledby="home-climb-h">
       <div className="flex items-end justify-between gap-3">
         <h2 id="home-climb-h" className="flex items-center gap-2 font-display text-2xl font-bold">
           <TrendingUp className="size-5 text-win" aria-hidden />
@@ -194,7 +204,7 @@ function Movers({ m }: { m: { against: string; up: PatchMover[]; down: PatchMove
   const down = m.down.slice(0, 3);
   if (!up.length && !down.length) return null;
   return (
-    <div className="mt-4 grid gap-2 md:grid-cols-2" role="group" aria-label={t('home.moversAria', { from: m.against })}>
+    <div className={clsx('mt-4 grid gap-2', up.length && down.length && 'md:grid-cols-2')} role="group" aria-label={t('home.moversAria', { from: m.against })}>
       <MoverRow icon={<TrendingUp className="size-4 shrink-0 text-win" aria-hidden />} label={t('home.moversUp', { from: m.against })} list={up} />
       <MoverRow icon={<TrendingDown className="size-4 shrink-0 text-loss" aria-hidden />} label={t('home.moversDown', { from: m.against })} list={down} />
     </div>

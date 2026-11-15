@@ -1186,5 +1186,6 @@ const dict: Record<string, string> = {
   "ars.augmentsNote": "Wie oft du jedes gewählt hast. Riot erlaubt keine Siegquoten für Augments.",
   "mp.leans": "Tendenz zu {champion}, kann noch Zufall sein",
   "mu.toneNote": "Siegquoten sind nur farbig, wenn der Abstand zu groß für Zufall ist.",
+  "home.recentChamps": "Zuletzt angesehene Champions",
 };
 export default dict;

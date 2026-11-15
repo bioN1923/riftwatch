@@ -1250,5 +1250,6 @@ const dict: Record<string, string> = {
   "ars.augmentsNote": "Ile razy wybrałeś każde z nich. Riot nie pozwala na współczynniki zwycięstw dla wzmocnień.",
   "mp.leans": "Lekka przewaga: {champion}, to wciąż może być przypadek",
   "mu.toneNote": "Współczynniki zwycięstw są kolorowane tylko wtedy, gdy różnica jest zbyt duża, by była przypadkiem.",
+  "home.recentChamps": "Przeglądani bohaterowie",
 };
 export default dict;

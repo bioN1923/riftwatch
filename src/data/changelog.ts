@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.121',
+    date: '2026-11-16',
+    items: [
+      'Home page: champions you looked at recently now sit next to your recent players, one click back to each page, in the role you viewed.',
+      'Home page spacing is even between sections. The patch-movers row now spans the full width when only one direction has movers.',
+    ],
+  },
+  {
     version: '3.120',
     date: '2026-11-16',
     items: ['The same careful matchup call now runs everywhere. On champion pages, the counters strip and the lane matchups table colour a win rate only when the gap is too large to be chance. In the Draft helper, the ban suggestions do the same. Smaller gaps stay plain or dashed.'],

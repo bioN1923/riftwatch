@@ -1,3 +1,4 @@
+import { RecentChampList } from '../components/champions/RecentChamps';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
@@ -322,12 +323,9 @@ export function ChampionsPage() {
   );
 }
 
-/** This week's free champions on the selected region. */
 /** Champion pages opened lately in this browser, one click back (in the role they were viewed in). */
 function RecentChamps({ group }: { group: StatsGroup }) {
   const list = useRecentChamps();
-  const { data: sd } = useStaticData();
-  const a = assets(sd);
   if (!list.length) return null;
   return (
     <section aria-labelledby="recent-champs-h" className="mt-6">
@@ -339,32 +337,12 @@ function RecentChamps({ group }: { group: StatsGroup }) {
           {t('tl.recentClear')}
         </button>
       </div>
-      <ul className="flex flex-wrap gap-1.5">
-        {list.map((r) => {
-          const c = sd?.champions.get(r.id);
-          if (!c) return null;
-          const q = new URLSearchParams();
-          if (group !== 'ranked') q.set('queue', group);
-          else if (r.role) q.set('role', r.role);
-          const label = r.role && group === 'ranked' ? `${c.name} · ${ROLE_LABEL[r.role] ?? r.role}` : c.name;
-          return (
-            <li key={r.id}>
-              <Link to={`/champions/${champSlug(c.id)}${q.size ? `?${q}` : ''}`} aria-label={label} className="group relative block rounded-[5px] ring-1 ring-line transition hover:-translate-y-0.5 hover:ring-gold">
-                <GameImg src={a.champion(r.id).url} alt="" size={34} rounded="md" tip={label} />
-                {r.role && group === 'ranked' && (
-                  <span className="absolute -bottom-1 -right-1 grid size-4 place-items-center rounded-sm bg-bg text-muted ring-1 ring-line" aria-hidden>
-                    <RoleIcon role={r.role} size={10} />
-                  </span>
-                )}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+      <RecentChampList list={list} group={group} />
     </section>
   );
 }
 
+/** This week's free champions on the selected region. */
 function FreeRotation() {
   const [region] = useRegion();
   const { data: sd } = useStaticData();
