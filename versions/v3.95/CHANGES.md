@@ -8,3 +8,6 @@
 - 142 tests.
 
 **Checks.** tsc, tests, build, a11y `{}`. Demo (scout ranks mocked to Challenger/Grandmaster since demo ranks are random, positions mocked): rows read "1,420 LP · #41" and "760 LP · #512"; only apex players triggered position requests (2). Shot `demo/live-ladder-rows.png`.
+
+## Live check (2026-11-15)
+Deployed 17:24 (local); /changelog shows v3.95. No apex player was in a live game to look at, so the row itself was checked on the demo; the position endpoint it uses was verified live in v3.91. Arena search after this restart: `probes: 1, found: 0`; Arena matches 0.
