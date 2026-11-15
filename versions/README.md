@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.115](v3.115/CHANGES.md) | 2026-11-15 | Ladder places jump to the highlighted row |
 | [v3.114](v3.114/CHANGES.md) | 2026-11-15 | Ladder: dropping fastest |
 | [v3.113](v3.113/CHANGES.md) | 2026-11-15 | No win/loss colour on under 5 games, everywhere |
 | [v3.112](v3.112/CHANGES.md) | 2026-11-15 | Compare: best games side by side |

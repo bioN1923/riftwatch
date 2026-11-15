@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.115',
+    date: '2026-11-15',
+    items: ['Ladder places now lead straight to the row: the “#357 on the EUW ladder” link on profiles, and the places in the climbing/dropping strip, open the right page with that player highlighted.'],
+  },
+  {
     version: '3.114',
     date: '2026-11-15',
     items: ['Ladder: next to “Climbing fastest”, a “Dropping fastest” line lists the five biggest LP losses in the tier, so the strip shows both directions.'],

@@ -1169,5 +1169,6 @@ const en = {
   "cmp.bestRecord": "Record",
   "lb.fallers": "Dropping fastest (compared with {when})",
   "lb.movers": "Biggest LP changes",
+  "lb.showRow": "Show place {rank} on the ladder",
 };
 export default en;

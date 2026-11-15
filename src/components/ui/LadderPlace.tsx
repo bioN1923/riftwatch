@@ -15,6 +15,8 @@ export function LadderPlace({ entry, ladder }: { entry: Pick<LeagueEntry, 'tier'
   const qs = new URLSearchParams({ region: ladder.platform, tier });
   if (ladder.queue === 'flex') qs.set('queue', 'flex');
   if (pos.page > 1) qs.set('page', String(pos.page));
+  // Highlight their row on arrival (the ladder scrolls to it).
+  qs.set('hl', String(pos.rank));
   return (
     <Link
       to={`/leaderboard?${qs}`}

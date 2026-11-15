@@ -1199,5 +1199,6 @@ const dict: Record<string, string> = {
   "cmp.bestRecord": "Record",
   "lb.fallers": "Coboară cel mai repede (față de {when})",
   "lb.movers": "Cele mai mari schimbări de LP",
+  "lb.showRow": "Arată locul {rank} în clasament",
 };
 export default dict;

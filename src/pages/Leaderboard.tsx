@@ -61,6 +61,17 @@ export function LeaderboardPage() {
   };
   const pages = q.data ? Math.max(1, Math.ceil(q.data.total / q.data.pageSize)) : 1;
 
+  /** Jump to a place on this tier (its page) and highlight the row. */
+  const goToRank = (rank: number) => {
+    const next = new URLSearchParams(params);
+    const size = q.data?.pageSize ?? 50;
+    const pg = Math.ceil(rank / size);
+    if (pg > 1) next.set('page', String(pg));
+    else next.delete('page');
+    next.set('hl', String(rank));
+    setParams(next, { replace: true });
+  };
+
   // Find a player on this ladder: jump to their page and highlight the row.
   const [find, setFind] = useState('');
   const [finding, setFinding] = useState(false);
@@ -237,7 +248,14 @@ export function LeaderboardPage() {
                           <span className={clsx('num text-xs font-semibold', dir === 'up' ? 'text-win' : 'text-loss')}>
                             {dir === 'up' ? `+${c.lpChange}` : `−${Math.abs(c.lpChange!)}`}
                           </span>
-                          <span className="num text-xs text-faint">#{c.rank}</span>
+                          <button
+                            type="button"
+                            onClick={() => goToRank(c.rank)}
+                            className="num text-xs text-faint underline-offset-2 hover:text-text hover:underline"
+                            aria-label={t('lb.showRow', { rank: c.rank })}
+                          >
+                            #{c.rank}
+                          </button>
                         </li>
                       ))}
                     </ol>
