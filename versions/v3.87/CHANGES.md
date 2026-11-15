@@ -8,3 +8,6 @@
 - Strings in all seven languages.
 
 **Checks.** tsc, 123 tests, build, a11y `{}`. Demo shots: `demo/home-movers-desk.png`, `demo/home-movers-phone.png` (demo data has only fallers, so the rising row is hidden — as intended).
+
+## Live check (2026-11-15)
+Deployed 15:39 (local). On riftwatch.fly.dev, patch 16.22 against 16.21: *Rising* — Sylas, Cassiopeia, Lux; *Falling* — Vladimir, Aurora, Zaahen (server order: by the change we can be fairly sure of, so Cassiopeia +10.3% sits above Lux +10.6% on more games). Screenshot `live/home-movers.png` (cropped to the section; saved players left out). Arena tier list still has 0 matches.
