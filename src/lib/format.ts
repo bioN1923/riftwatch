@@ -46,6 +46,12 @@ export function kdaTone(ratio: number) {
 export const TONE_MIN_GAMES = 5;
 
 /** Colour for a win rate; pass the game count so small samples stay neutral. */
+/** Win (green) or loss (red) colour for a win rate, plain under TONE_MIN_GAMES games: 1–0 isn't "winning". */
+export function wlTone(wr: number, games?: number) {
+  if (games != null && games < TONE_MIN_GAMES) return 'text-text';
+  return wr >= 0.5 ? 'text-win' : 'text-loss';
+}
+
 export function winRateTone(wr: number, games?: number) {
   if (games != null && games < TONE_MIN_GAMES) return 'text-text';
   if (wr >= 0.6) return 'text-kda-great';

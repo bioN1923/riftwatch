@@ -941,3 +941,13 @@ describe('laneOpponents', async () => {
     ]);
   });
 });
+
+describe('wlTone', () => {
+  it('stays plain on a handful of games', async () => {
+    const { wlTone } = await import('../src/lib/format');
+    expect(wlTone(1, 1)).toBe('text-text');
+    expect(wlTone(0, 3)).toBe('text-text');
+    expect(wlTone(0.6, 20)).toBe('text-win');
+    expect(wlTone(0.4, 20)).toBe('text-loss');
+  });
+});

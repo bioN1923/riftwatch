@@ -7,7 +7,7 @@ import type { MatchSummary, Profile } from '../../shared/types';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api, ApiClientError } from '../lib/api';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
-import { compact, decimal, formatKda, kdaRatio, kdaTone, multikill, pct, regionName, thousands, tierName } from '../lib/format';
+import { compact, decimal, formatKda, kdaRatio, kdaTone, multikill, pct, regionName, thousands, tierName, wlTone } from '../lib/format';
 import { fromSlug, parseRiotId, profilePath, querySlug, type RiotId } from '../lib/riotId';
 import { useFavorites, useRecent, useRegion, type SavedPlayer } from '../lib/storage';
 import { me, result } from '../lib/stats';
@@ -638,7 +638,7 @@ function ChampList({ s, name, color, shared }: { s: PlayerSummary; name: string;
                   {t('common.games', { count: c.games })} · <span className={kdaTone(ratio)}>{formatKda(ratio)}</span>
                 </span>
               </span>
-              <span className={clsx('num text-xs font-semibold', c.wins / c.games >= 0.5 ? 'text-win' : 'text-loss')}>{pct(c.wins / c.games, 0)}</span>
+              <span className={clsx('num text-xs font-semibold', wlTone(c.wins / c.games, c.games))}>{pct(c.wins / c.games, 0)}</span>
             </li>
           );
         })}

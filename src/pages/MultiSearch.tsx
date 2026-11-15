@@ -7,7 +7,7 @@ import { ChevronDown, History, Users } from 'lucide-react';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api, ApiClientError } from '../lib/api';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
-import { formatKda, kdaRatio, kdaTone, pct, tierName } from '../lib/format';
+import { formatKda, kdaRatio, kdaTone, pct, tierName, wlTone } from '../lib/format';
 import { fromSlug, profilePath, querySlug, type RiotId } from '../lib/riotId';
 import { parseLobby } from '../lib/lobby';
 import { addLobby, clearLobbies, useLobbies, useRegion } from '../lib/storage';
@@ -285,7 +285,7 @@ function PlayerCard({ platform, id, duos }: { platform: string; id: RiotId; duos
                   {ch.name}
                 </Link>
                 <span className="num text-xs text-muted">{c.games}</span>
-                <span className={clsx('num w-9 text-right text-xs font-semibold', c.wins / c.games >= 0.5 ? 'text-win' : 'text-loss')}>{pct(c.wins / c.games)}</span>
+                <span className={clsx('num w-9 text-right text-xs font-semibold', wlTone(c.wins / c.games, c.games))}>{pct(c.wins / c.games)}</span>
                 <span className={clsx('num w-9 text-right text-xs', kdaTone(ratio))}>{formatKda(ratio)}</span>
               </li>
             );

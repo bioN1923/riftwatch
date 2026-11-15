@@ -7,7 +7,7 @@ import { api } from '../../lib/api';
 import { assets, matchupPath, rankEmblem, useStaticData } from '../../lib/ddragon';
 import { guessRoles, roleGames, SR_QUEUES } from '../../lib/lanes';
 import { ROLE_LABEL } from '../ui/RoleIcon';
-import { compact, duration, pct, tierName } from '../../lib/format';
+import { compact, duration, pct, tierName, wlTone } from '../../lib/format';
 import { useLadderPosition } from '../../lib/useLadderPosition';
 import { getPlatform } from '../../../shared/regions';
 import { queueName } from '../../lib/queues';
@@ -165,7 +165,7 @@ function LaneMatchup({ game, puuid }: { game: Live; puuid: string }) {
             <Skeleton className="mt-1 h-3 w-48" />
           ) : enough ? (
             <>
-              {t.rich('live.laneRate', { a: me.name, rate: <b className={m.winRate >= 0.5 ? 'text-win' : 'text-loss'}>{pct(m.winRate, 1)}</b>, count: m.games })}
+              {t.rich('live.laneRate', { a: me.name, rate: <b className={wlTone(m.winRate, m.games)}>{pct(m.winRate, 1)}</b>, count: m.games })}
               {m.goldDiff15 != null && ` · ${t('draft.gold15', { gold: `${m.goldDiff15 >= 0 ? '+' : '−'}${Math.abs(Math.round(m.goldDiff15))}` })}`}
             </>
           ) : (

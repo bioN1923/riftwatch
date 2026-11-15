@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import type { ChampionStats, Rated, StatsGroup } from '../../shared/types';
 import { api, ApiClientError } from '../lib/api';
 import { assets, championBySlug, champSlug, matchupPath, useChampionDetail, useStaticData, type ChampionDetail } from '../lib/ddragon';
-import { formatKda, kdaTone, pct, thousands, champClass } from '../lib/format';
+import { formatKda, kdaTone, pct, thousands, champClass, wlTone } from '../lib/format';
 import { profilePath } from '../lib/riotId';
 import { getPlatform } from '../../shared/regions';
 import { GameImg, Tooltip } from '../components/ui/GameImg';
@@ -1044,7 +1044,7 @@ function Synergy({ s }: { s: ChampionStats }) {
                   <span className="block truncate text-sm font-medium group-hover:text-gold">{c.name}</span>
                   <span className="num text-xs text-muted">{t('common.games', { count: m.games })}</span>
                 </span>
-                <span className={clsx('num text-sm font-semibold', m.winRate >= 0.5 ? 'text-win' : 'text-loss')}>{pct(m.winRate, 1)}</span>
+                <span className={clsx('num text-sm font-semibold', wlTone(m.winRate, m.games))}>{pct(m.winRate, 1)}</span>
               </Link>
             </li>
           );
@@ -1074,7 +1074,7 @@ function TopPlayers({ s }: { s: ChampionStats }) {
                 <span className="ml-1 text-[10px] text-faint">{getPlatform(p.platform)?.label}</span>
               </span>
               <span className="num text-right text-xs">
-                <span className={clsx('font-semibold', p.winRate >= 0.5 ? 'text-win' : 'text-loss')}>{pct(p.winRate)}</span>
+                <span className={clsx('font-semibold', wlTone(p.winRate, p.games))}>{pct(p.winRate)}</span>
                 <span className="text-muted"> · {p.games}</span>
                 <span className={clsx('ml-1', kdaTone(p.kda))}>{formatKda(p.kda)}</span>
               </span>
