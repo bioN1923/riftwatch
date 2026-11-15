@@ -1110,5 +1110,7 @@ const dict: Record<string, string> = {
   "ses.lateWorseLean": "Tendance : les résultats baissent à partir de la quatrième partie (trop peu de parties pour être sûr).",
   "ses.lateBetter": "Vous gagnez nettement plus une fois échauffé (à partir de la quatrième partie).",
   "ses.lateBetterLean": "Tendance : mieux plus tard dans la session (trop peu de parties pour être sûr).",
+  "profile.ladderPlace": "#{n} au classement {region}",
+  "profile.ladderTip": "#{rank} sur {total} en {tier}",
 };
 export default dict;

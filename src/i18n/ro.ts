@@ -1139,5 +1139,7 @@ const dict: Record<string, string> = {
   "ses.lateWorseLean": "Tendință: rezultatele scad de la al patrulea meci al sesiunii (prea puține meciuri ca să fie sigur).",
   "ses.lateBetter": "Câștigi clar mai des după ce te încălzești (de la al patrulea meci).",
   "ses.lateBetterLean": "Tendință: îți merge mai bine mai târziu în sesiune (prea puține meciuri ca să fie sigur).",
+  "profile.ladderPlace": "#{n} în clasamentul {region}",
+  "profile.ladderTip": "#{rank} din {total} în {tier}",
 };
 export default dict;

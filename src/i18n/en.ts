@@ -1110,5 +1110,7 @@ const en = {
   "ses.lateWorseLean": "Leaning: results dip from the fourth game of a sitting (too few games to be sure).",
   "ses.lateBetter": "You win clearly more often once you have warmed up (fourth game on).",
   "ses.lateBetterLean": "Leaning: you do better later in a sitting (too few games to be sure).",
+  "profile.ladderPlace": "#{n} on the {region} ladder",
+  "profile.ladderTip": "#{rank} of {total} in {tier}",
 };
 export default en;

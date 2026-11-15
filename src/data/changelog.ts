@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.91',
+    date: '2026-11-15',
+    items: ['Profiles of Master, Grandmaster and Challenger players show their place on the region’s ladder (for example “#357 on the EUW ladder”), linking straight to that page of the ladder.'],
+  },
+  {
     version: '3.90',
     date: '2026-11-15',
     items: ['Profile Stats tab: “Within a sitting” compares how you do right after a win and right after a loss, and in games 1–3 of a sitting against later ones. It only calls a difference clear with enough games on both sides.'],

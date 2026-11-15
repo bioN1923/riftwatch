@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '../../lib/api';
 import { Link } from 'react-router';
 import clsx from 'clsx';
 import { RefreshCw, Star, Flame, Link2, Check, Scale, HeartHandshake } from 'lucide-react';
@@ -141,8 +143,8 @@ export function ProfileHeader({
 
           {/* Side by side even on phones (emblem above the text there), so the match list isn't a full screen away. */}
           <div className="grid grid-cols-2 gap-3 lg:flex lg:gap-6">
-            <RankBlock label={t('profile.solo')} entry={solo} big />
-            <RankBlock label={t('profile.flex')} entry={flex} />
+            <RankBlock label={t('profile.solo')} entry={solo} big ladder={{ platform: profile.platform, puuid: profile.account.puuid, queue: 'solo' }} />
+            <RankBlock label={t('profile.flex')} entry={flex} ladder={{ platform: profile.platform, puuid: profile.account.puuid, queue: 'flex' }} />
           </div>
         </div>
 
@@ -196,7 +198,34 @@ function CopyLink() {
   );
 }
 
-function RankBlock({ label, entry, big }: { label: string; entry?: LeagueEntry; big?: boolean }) {
+type LadderRef = { platform: string; puuid: string; queue: 'solo' | 'flex' };
+
+/** "#57 on the EUW ladder" for Master and above, linking to that page of the ladder. */
+function LadderPlace({ entry, ladder }: { entry: LeagueEntry; ladder: LadderRef }) {
+  const tier = entry.tier.toLowerCase();
+  const q = useQuery({
+    queryKey: ['ladderPos', ladder.platform, ladder.puuid, ladder.queue, tier],
+    queryFn: ({ signal }) => api.ladderPosition(ladder.platform, ladder.puuid, { queue: ladder.queue, tier }, signal),
+    staleTime: 5 * 60_000,
+    retry: false,
+  });
+  const pos = q.data;
+  if (!pos) return null;
+  const qs = new URLSearchParams({ region: ladder.platform, tier });
+  if (ladder.queue === 'flex') qs.set('queue', 'flex');
+  if (pos.page > 1) qs.set('page', String(pos.page));
+  return (
+    <Link
+      to={`/leaderboard?${qs}`}
+      className="num block text-xs font-medium text-gold hover:underline"
+      title={t('profile.ladderTip', { rank: pos.rank, tier: tierName(entry.tier), total: pos.tierTotal })}
+    >
+      {t('profile.ladderPlace', { n: pos.overall.toLocaleString(), region: getPlatform(ladder.platform)?.label ?? ladder.platform })}
+    </Link>
+  );
+}
+
+function RankBlock({ label, entry, big, ladder }: { label: string; entry?: LeagueEntry; big?: boolean; ladder?: LadderRef }) {
   if (!entry) {
     return (
       <div className="flex flex-col items-start gap-1.5 sm:flex-row sm:items-center sm:gap-3">
@@ -235,6 +264,7 @@ function RankBlock({ label, entry, big }: { label: string; entry?: LeagueEntry; 
         <p className="num text-xs text-muted">
           {t('common.wins', { count: entry.wins })} {t('common.losses', { count: entry.losses })} · <span className={clsx('font-semibold', wr >= 0.5 ? 'text-win' : 'text-loss')}>{pct(wr)}</span>
         </p>
+        {ladder && APEX.has(entry.tier) && <LadderPlace entry={entry} ladder={ladder} />}
       </div>
     </div>
   );

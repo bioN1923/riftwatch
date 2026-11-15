@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { APEX_TIERS, ladderPosition, type ApexTier } from '../shared/ladderPosition';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import compression from 'compression';
 import path from 'node:path';
@@ -559,6 +560,28 @@ app.get(
     const hidden = e && (privacy.isHidden(e.puuid) || (nameOf(e) && privacy.isHiddenPlayer({ puuid: e.puuid, ...nameOf(e)! })));
     res.setHeader('Cache-Control', 'no-store');
     res.json(e && !hidden ? { rank: idx + 1, page: Math.floor(idx / LADDER_PAGE) + 1 } : { rank: null, page: null });
+  }),
+);
+
+/**
+ * A player's place on their region's apex ladder (for the profile header). Reads only the cached
+ * apex leagues (10 minutes), the tiers above included, so the overall place is right.
+ */
+app.get(
+  '/api/leaderboard/:platform/position/:puuid',
+  wrap(async (req, res) => {
+    const p = platformOr400(String(req.params.platform));
+    const queue = req.query.queue === 'flex' ? 'flex' : 'solo';
+    const tier = APEX_TIERS.find((t) => t === req.query.tier);
+    const puuid = String(req.params.puuid);
+    if (!tier) throw new ApiError(400, 'BAD_REQUEST', 'Pick an apex tier.');
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    if (privacy.isHidden(puuid)) return res.json(null);
+    const upto = APEX_TIERS.slice(0, APEX_TIERS.indexOf(tier) + 1);
+    const got = await Promise.all(upto.map((t) => ladderAll(p, t, queue)));
+    const lists = { challenger: [], grandmaster: [], master: [] } as Record<ApexTier, { puuid: string }[]>;
+    upto.forEach((t, i) => (lists[t] = got[i]));
+    res.json(ladderPosition(lists, tier, puuid, LADDER_PAGE));
   }),
 );
 
