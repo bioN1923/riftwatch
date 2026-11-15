@@ -7,3 +7,6 @@
 - No new strings; 143 tests.
 
 **Checks.** tsc, tests, build, a11y `{}`. Demo (profile response mocked to Grandmaster for a demo ladder player): both pages show "#357 on the EUW ladder" linking to Grandmaster page 2. Shots `demo/*-ladder-place.png`.
+
+## Live check (2026-11-15)
+Deployed 18:09 (local); /changelog lists v3.100 first (3.100 sorts after 3.99 — versions compare by number). The cards use the position endpoint already verified live in v3.91; no extra profiles were opened. Arena: still 13 games; every probe so far (one per restart, every 15 minutes otherwise) has found nobody.
