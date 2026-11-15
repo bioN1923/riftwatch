@@ -1159,5 +1159,6 @@ const dict: Record<string, string> = {
   "home.climbers": "Am schnellsten im Challenger {region}",
   "home.climbersAll": "Ganze Rangliste",
   "home.climbersLead": "Größte LP-Gewinne im Vergleich zu {when}.",
+  "profile.ladderChange": "{lp} LP im Vergleich zu {when}",
 };
 export default dict;

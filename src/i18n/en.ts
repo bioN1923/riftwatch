@@ -1159,5 +1159,6 @@ const en = {
   "home.climbers": "Climbing fastest in {region} Challenger",
   "home.climbersAll": "Full ladder",
   "home.climbersLead": "Biggest LP gains compared with {when}.",
+  "profile.ladderChange": "{lp} LP compared with {when}",
 };
 export default en;

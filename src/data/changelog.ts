@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.107',
+    date: '2026-11-15',
+    items: ['Challenger and Grandmaster profiles (and their Compare and Multi-search cards) show the LP change next to the ladder place, for example “#357 on the EUW ladder · +47 LP compared with yesterday”.'],
+  },
+  {
     version: '3.106',
     date: '2026-11-15',
     items: ['Home page: “Climbing fastest” shows the five biggest LP gains in your region’s Challenger since the earlier ladder snapshot, each linking to the player.'],

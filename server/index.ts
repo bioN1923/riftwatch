@@ -593,7 +593,12 @@ app.get(
     const got = await Promise.all(upto.map((t) => ladderAll(p, t, queue)));
     const lists = { challenger: [], grandmaster: [], master: [] } as Record<ApexTier, { puuid: string }[]>;
     upto.forEach((t, i) => (lists[t] = got[i]));
-    res.json(ladderPosition(lists, tier, puuid, LADDER_PAGE));
+    const pos = ladderPosition(lists, tier, puuid, LADDER_PAGE);
+    // LP change against the ladder snapshot (Challenger/Grandmaster only), like the ladder's column.
+    const base = pos && tier !== 'master' && !DEMO ? ladderHistory.baseline(`${p.id}:${queue}:${tier}`) : null;
+    const before = base?.lp[puuid];
+    const now = pos ? lists[tier][pos.rank - 1] as { lp?: number } : undefined;
+    res.json(pos && before != null && now?.lp != null ? { ...pos, lpChange: now.lp - before, since: base!.at } : pos);
   }),
 );
 
