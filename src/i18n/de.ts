@@ -1132,5 +1132,12 @@ const dict: Record<string, string> = {
   "draft.teamLeanAp": "Überwiegend magisch: Gegner können Magieresistenz stapeln. Ein Pick mit physischem Schaden würde ausgleichen.",
   "draft.teamBalanced": "Bisher eine gute Mischung.",
   "draft.teamRemove": "{champion} aus dem Team entfernen",
+  "kbd.title": "Tastenkürzel",
+  "kbd.close": "Schließen",
+  "kbd.home": "Startseite",
+  "kbd.search": "Spieler und Champions suchen",
+  "kbd.help": "Diese Liste ein- oder ausblenden",
+  "kbd.goTo": "Zu {page}",
+  "kbd.esc": "Menüs, Pop-ups und diese Liste schließen",
 };
 export default dict;

@@ -1132,5 +1132,12 @@ const dict: Record<string, string> = {
   "draft.teamLeanAp": "Surtout magique : l’adversaire peut empiler la résistance magique. Un choix à dégâts physiques équilibrerait.",
   "draft.teamBalanced": "Un bon mélange pour l’instant.",
   "draft.teamRemove": "Retirer {champion} de l’équipe",
+  "kbd.title": "Raccourcis clavier",
+  "kbd.close": "Fermer",
+  "kbd.home": "Accueil",
+  "kbd.search": "Chercher des joueurs et des champions",
+  "kbd.help": "Afficher ou masquer cette liste",
+  "kbd.goTo": "Aller à {page}",
+  "kbd.esc": "Fermer menus, fenêtres et cette liste",
 };
 export default dict;

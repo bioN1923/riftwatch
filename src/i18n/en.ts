@@ -1132,5 +1132,12 @@ const en = {
   "draft.teamLeanAp": "Mostly magic: the enemy can stack magic resist. A physical-damage pick would balance it.",
   "draft.teamBalanced": "A fair mix so far.",
   "draft.teamRemove": "Remove {champion} from your team",
+  "kbd.title": "Keyboard shortcuts",
+  "kbd.close": "Close",
+  "kbd.home": "Home",
+  "kbd.search": "Search players and champions",
+  "kbd.help": "Show or hide this list",
+  "kbd.goTo": "Go to {page}",
+  "kbd.esc": "Close menus, pop-ups and this list",
 };
 export default en;

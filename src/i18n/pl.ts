@@ -1190,5 +1190,12 @@ const dict: Record<string, string> = {
   "draft.teamLeanAp": "Głównie magiczne: przeciwnik może zbierać odporność na magię. Wybór z obrażeniami fizycznymi by to wyrównał.",
   "draft.teamBalanced": "Na razie dobra mieszanka.",
   "draft.teamRemove": "Usuń {champion} z drużyny",
+  "kbd.title": "Skróty klawiszowe",
+  "kbd.close": "Zamknij",
+  "kbd.home": "Strona główna",
+  "kbd.search": "Szukaj graczy i bohaterów",
+  "kbd.help": "Pokaż lub ukryj tę listę",
+  "kbd.goTo": "Przejdź do: {page}",
+  "kbd.esc": "Zamknij menu, okna i tę listę",
 };
 export default dict;

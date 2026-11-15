@@ -1161,5 +1161,12 @@ const dict: Record<string, string> = {
   "draft.teamLeanAp": "Mai ales magic: inamicii pot strânge rezistență magică. O alegere cu damage fizic l-ar echilibra.",
   "draft.teamBalanced": "Un amestec echilibrat deocamdată.",
   "draft.teamRemove": "Scoate {champion} din echipă",
+  "kbd.title": "Scurtături de tastatură",
+  "kbd.close": "Închide",
+  "kbd.home": "Acasă",
+  "kbd.search": "Caută jucători și campioni",
+  "kbd.help": "Arată sau ascunde lista aceasta",
+  "kbd.goTo": "Mergi la {page}",
+  "kbd.esc": "Închide meniuri, ferestre și lista aceasta",
 };
 export default dict;

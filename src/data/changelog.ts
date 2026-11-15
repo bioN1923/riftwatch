@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.97',
+    date: '2026-11-15',
+    items: ['Keyboard shortcuts: press ? for the list, “g” then a letter to jump to a page (g c Champions, g l Ladder, g d Draft…), / to search. Also linked in the footer.'],
+  },
+  {
     version: '3.96',
     date: '2026-11-15',
     items: ['Draft helper: “Your team’s damage” — add your team’s picks as they lock in and see whether the damage leans physical or magic, so the last picks can balance it. Kept in the link, nothing saved.'],

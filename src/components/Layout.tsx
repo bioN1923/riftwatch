@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import { getPlatform } from '../../shared/regions';
 import { pageRegion } from '../lib/pageRegion';
 import { SearchBox } from './SearchBox';
+import { Shortcuts } from './Shortcuts';
 import { api } from '../lib/api';
 import { setSeenVersion, useRegion, useSeenVersion, useTheme, type Theme } from '../lib/storage';
 import { CHANGELOG, newerThan } from '../data/changelog';
@@ -331,6 +332,7 @@ export function Layout() {
         </div>
       </main>
       <MobileNav />
+      <Shortcuts />
       {/* A new page starts at the top (Back returns to where you were). Profile tabs and filter
           changes keep the same key, so they don't jump. */}
       <ScrollRestoration getKey={(l) => l.pathname.replace(/\/(live|stats)$/, '')} />
@@ -354,6 +356,9 @@ export function Layout() {
               </>
             )}
           </Link>
+          <button type="button" onClick={() => window.dispatchEvent(new Event('rw:shortcuts'))} className="hidden hover:text-text hover:underline lg:inline">
+            {t('kbd.title')}
+          </button>
         </nav>
         {/* Riot's required legal notice, kept in its exact English wording in every language. */}
         <p lang="en" className="mx-auto max-w-3xl">

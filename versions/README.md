@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.97](v3.97/CHANGES.md) | 2026-11-15 | Keyboard shortcuts (? list, g + letter) |
 | [v3.96](v3.96/CHANGES.md) | 2026-11-15 | Draft: your team’s damage mix |
 | [v3.95](v3.95/CHANGES.md) | 2026-11-15 | Live game: ladder place for apex players |
 | [v3.94](v3.94/CHANGES.md) | 2026-11-15 | Arena recognised by game mode; probe runs when ladder is quiet |
