@@ -8,3 +8,6 @@
 - Seven languages; server test for the history (144 tests).
 
 **Checks.** tsc, tests, build, a11y `{}`. Demo Ahri mid: 52.5% (394) → 50.3% (443): "No clear change since 15.19." (a 2.2-point drop on those games is within 2 SE ≈ 6.9 points). Shots `demo/patch-history-*.png`.
+
+## Live check (2026-11-15)
+Deployed 18:18 (local). API only (champion pages aren't opened in the owner's browser): Ahri mid history 16.19 52.9% (17 games, would be faded) → 16.20 50.7% (205) → 16.21 50.0% (1,109) → 16.22 50.7% (2,587). Latest change +0.8 points against a 2-SE bar of 3.6 → the page says "No clear change since 16.21." Arena unchanged (13; probe found nobody).
