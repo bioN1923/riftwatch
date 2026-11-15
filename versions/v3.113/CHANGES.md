@@ -9,3 +9,6 @@
 - Test for `wlTone` (150 tests).
 
 **Checks.** tsc, tests, build, a11y `{}`. Demo Multi-search Caps: Sylas 3 games 33%, Graves 2 games 0%, Kha'Zix 1 game 100% — all plain now. Shot `demo/multisearch-card-tone.png`.
+
+## Live check (2026-11-15)
+Deployed 23:11 (local); /changelog shows v3.113. Arena: **118 games**, line now past the old cap (332 lined up, room for 1,000), queue 1750.
