@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.102',
+    date: '2026-11-15',
+    items: ['Profiles show the player’s overall Challenges level and how far up they are (for example “Challenges: Diamond · top 4.2%”), with their challenge points on hover.'],
+  },
+  {
     version: '3.101',
     date: '2026-11-15',
     items: ['Champion pages: “Across patches” shows the champion’s win rate, pick rate and games on each recent patch, and says plainly whether the latest change is real or within normal swings.'],

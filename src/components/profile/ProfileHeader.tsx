@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '../../lib/api';
 import { LadderPlace, type LadderRef } from '../ui/LadderPlace';
 import { Link } from 'react-router';
 import clsx from 'clsx';
-import { RefreshCw, Star, Flame, Link2, Check, Scale, HeartHandshake } from 'lucide-react';
+import { RefreshCw, Star, Flame, Link2, Check, Scale, HeartHandshake, Medal } from 'lucide-react';
 import type { LeagueEntry, MatchSummary, Profile } from '../../../shared/types';
 import { getPlatform } from '../../../shared/regions';
 import { GameImg, Tooltip } from '../ui/GameImg';
@@ -100,7 +102,10 @@ export function ProfileHeader({
                   <Star className={clsx('size-5', fav && 'fill-gold text-gold')} aria-hidden />
                 </button>
               </div>
-              <p className="mt-1 text-sm text-muted sm:mt-1.5">{platform ? regionName(platform.id) : ''}</p>
+              <p className="mt-1 flex flex-wrap items-center gap-x-2 text-sm text-muted sm:mt-1.5">
+                {platform ? regionName(platform.id) : ''}
+                <Challenges platform={profile.platform} puuid={profile.account.puuid} />
+              </p>
               <TagList
                 className="mt-2"
                 tags={playerTags({ matches, puuid: profile.account.puuid, solo, level: profile.summoner.summonerLevel, champName: (cid) => a.champion(cid).name })}
@@ -194,6 +199,22 @@ function CopyLink() {
         {done ? t('profile.copied') : t('profile.copyLink')}
       </span>
     </button>
+  );
+}
+
+/** Overall challenge level and how few players have as many points (Riot's challenges). */
+function Challenges({ platform, puuid }: { platform: string; puuid: string }) {
+  const q = useQuery({ queryKey: ['challenges', platform, puuid], queryFn: ({ signal }) => api.challenges(platform, puuid, signal), staleTime: 30 * 60_000, retry: false });
+  const c = q.data;
+  if (!c) return null;
+  const top = c.percentile != null && c.percentile > 0 && c.percentile <= 0.5 ? (c.percentile * 100).toFixed(c.percentile < 0.01 ? 2 : 1) : null;
+  return (
+    <span className="inline-flex items-center gap-1" title={t('profile.challengesTip', { points: c.points.toLocaleString() })}>
+      <span aria-hidden>·</span>
+      <Medal className="size-3.5 text-gold" aria-hidden />
+      {t('profile.challenges', { level: tierName(c.level) })}
+      {top && <span className="num text-faint">· {t('profile.challengesTop', { pct: top })}</span>}
+    </span>
   );
 }
 

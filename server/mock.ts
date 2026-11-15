@@ -650,3 +650,11 @@ export function mockArenaMatch(seed: number): MatchSummary {
     participants,
   };
 }
+
+/** A stable made-up challenge standing for demo profiles. */
+export function mockChallenges(puuid: string) {
+  const r = rng(hash(`challenges-${puuid}`));
+  const levels = ['SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'GRANDMASTER'];
+  const i = Math.floor(r() * levels.length);
+  return { level: levels[i], points: 4000 + i * 3500 + Math.round(r() * 2000), percentile: Math.round((0.61 - i * 0.11) * 1000) / 1000 };
+}

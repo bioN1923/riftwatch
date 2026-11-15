@@ -1149,5 +1149,8 @@ const en = {
   "ph.same": "No clear change since {from}.",
   "ph.few": "Too few games on a patch to tell a change from chance.",
   "ph.note": "* fewer than {n} games: mostly chance.",
+  "profile.challenges": "Challenges: {level}",
+  "profile.challengesTop": "top {pct}%",
+  "profile.challengesTip": "{points} challenge points",
 };
 export default en;

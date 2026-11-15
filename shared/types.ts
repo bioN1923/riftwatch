@@ -193,6 +193,14 @@ export interface ApiErrorBody {
   error: { code: ApiErrorCode; message: string; retryAfter?: number };
 }
 
+/** A player's overall challenge standing (lol-challenges-v1), for the profile header. */
+export interface ChallengeSummary {
+  level: string; // IRON … CHALLENGER, or NONE
+  points: number;
+  /** Share of players at or above this total: 0.042 = top 4.2%. */
+  percentile: number | null;
+}
+
 export interface HealthResponse {
   ok: true;
   mode: 'live' | 'demo';

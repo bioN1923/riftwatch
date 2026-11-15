@@ -1149,5 +1149,8 @@ const dict: Record<string, string> = {
   "ph.same": "Pas de changement net depuis {from}.",
   "ph.few": "Trop peu de parties sur un patch pour distinguer un changement du hasard.",
   "ph.note": "* moins de {n} parties : surtout du hasard.",
+  "profile.challenges": "Défis : {level}",
+  "profile.challengesTop": "top {pct} %",
+  "profile.challengesTip": "{points} points de défis",
 };
 export default dict;

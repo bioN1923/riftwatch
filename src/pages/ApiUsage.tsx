@@ -11,6 +11,7 @@ const CACHE: [string, string, string][] = [
   ['summoner-v4 (icon, level)', '5 minutes', ''],
   ['league-v4 (rank)', '2 minutes', 'Ladder pages (Challenger, Grandmaster, Master): 10 minutes. One page of a lower tier, read now and then by the collector to find Arena players: 30 minutes.'],
   ['champion-mastery-v4', '30 minutes', ''],
+  ['lol-challenges-v1 (player challenges)', '30 minutes', 'Only the overall level, points and percentile are shown, on profiles.'],
   ['match-v5 match IDs', '2 minutes', ''],
   ['match-v5 match', 'Permanent (on disk)', 'Finished matches never change; each is downloaded once. Up to 20,000 kept, least recently used removed first.'],
   ['match-v5 timeline', '6 hours (processed form)', 'Only when someone opens a game’s details.'],

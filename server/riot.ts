@@ -182,6 +182,11 @@ export class RiotClient {
     }
   }
 
+  /** Challenge progress: total points, level and percentile (lol-challenges-v1). */
+  challenges(p: Platform, puuid: string) {
+    return this.get<any>(p.id, `/lol/challenges/v1/player-data/${puuid}`, 30 * MINUTE, { allow404: true, method: 'challenges-player' }) as Promise<any>;
+  }
+
   mastery(p: Platform, puuid: string, fresh = false) {
     return this.get<unknown[]>(p.id, `/lol/champion-mastery/v4/champion-masteries/by-puuid/${puuid}/top?count=10`, 30 * MINUTE, {
       fresh,

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { ApiError } from './errors';
 import { RiotClient } from './riot';
 import { shapeLeague, shapeLive, shapeMatch, shapeTimeline } from './shape';
-import { DEMO_SEED, mockArenaMatch, mockLadder, mockLive, mockLpHistory, mockMatchById, mockMatches, mockProfile, mockRotation, mockScout, mockTimeline, nameFromDemoPuuid } from './mock';
+import { DEMO_SEED, mockArenaMatch, mockLadder, mockLive, mockLpHistory, mockMatchById, mockMatches, mockProfile, mockRotation, mockScout, mockTimeline, nameFromDemoPuuid, mockChallenges } from './mock';
 import { LpStore } from './lpStore';
 import { PlayerIndex } from './playerIndex';
 import { ChampionStatsStore, matchupMin } from './champStats';
@@ -26,7 +26,7 @@ import { champAddressFix } from '../shared/champSearch';
 import { STATIC_LOCALES, slimStatic } from '../shared/staticSlim';
 import { HTML_LANG, OG_LOCALE, alternateLinks, pickLang, seoText, sitemapXml } from './seo';
 import { allChampions, championByKey, championBySlug, championCard, compareCard, draftCard, loadOgData, matchupCard, profileCard, siteCard, type CompareSide, type ProfileCard } from './og';
-import type { ApiErrorBody, HealthResponse, PrivacyChallenge, PrivacyResult, Ladder, LadderEntry, LpHistory, MatchPage, MatchSummary, MatchTimeline, PlayerHit, Profile, ScoutInfo, ServerStatus, StatsGroup } from '../shared/types';
+import type { ApiErrorBody, HealthResponse, PrivacyChallenge, PrivacyResult, Ladder, LadderEntry, LpHistory, MatchPage, MatchSummary, MatchTimeline, PlayerHit, Profile, ScoutInfo, ServerStatus, StatsGroup, ChallengeSummary } from '../shared/types';
 import { arenaQueue } from '../shared/queues';
 
 const PORT = Number(process.env.PORT ?? 3001);
@@ -681,6 +681,22 @@ app.get(
     }
     res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
     res.type('application/json').send(body);
+  }),
+);
+
+/** Overall challenge level and percentile; nothing for hidden players or when Riot has none. */
+app.get(
+  '/api/challenges/:platform/:puuid',
+  wrap(async (req, res) => {
+    const p = platformOr400(String(req.params.platform));
+    const puuid = String(req.params.puuid);
+    res.setHeader('Cache-Control', 'private, max-age=1800');
+    if (privacy.isHidden(puuid)) return res.json(null);
+    if (DEMO) return res.json(mockChallenges(puuid) satisfies ChallengeSummary);
+    const d = await riot.challenges(p, puuid).catch(() => null);
+    const tp = d?.totalPoints;
+    if (!tp || !tp.level || tp.level === 'NONE') return res.json(null);
+    res.json({ level: String(tp.level), points: Number(tp.current) || 0, percentile: typeof tp.percentile === 'number' ? tp.percentile : null } satisfies ChallengeSummary);
   }),
 );
 
