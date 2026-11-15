@@ -8,3 +8,6 @@
 - No UI change; 148 tests.
 
 **Checks.** tsc, tests, build.
+
+## Live check (2026-11-15)
+Deployed 22:29 (local). At 22:32: Arena **36 games** (26 five minutes earlier, 13 most of the day), queue 1750 remembered across this deploy, line full at 300.
