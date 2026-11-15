@@ -10,3 +10,6 @@
 The 13 games already collected can't be replayed (their players weren't saved), so the line restarts from the next probe find; from then on it carries over deploys.
 
 **Checks.** tsc, tests, build, a11y `{}`. No UI change (demo shots for the record).
+
+## Live check (2026-11-15)
+Deployed 17:58 (local); the data folder is on the Fly volume (`/app/server/data`), so `arena-seeds.json` persists. At 18:01: `probes: 1, found: 0, queued: 0`, Arena still 13 — the first probe after the restart found nobody, so the line is empty until a probe (every 15 minutes) or a visitor's Arena game lines players up; from then on it carries over deploys. The 13 games so far were never counted as probe finds, so they most likely came from a visitor's Arena games.
