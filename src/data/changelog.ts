@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.87',
+    date: '2026-11-15',
+    items: ['Home page: under Strongest picks, the champions whose win rate clearly rose or fell since last patch (top three each way), each linking to its page.'],
+  },
+  {
     version: '3.86',
     date: '2026-11-14',
     items: ['Ladder: "Find a player" also looks in the other apex tiers. If your friend is in Master while you are on Challenger, it switches to the Master ladder and highlights them.'],

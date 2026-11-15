@@ -1074,5 +1074,8 @@ const dict: Record<string, string> = {
   "stats.oppLead_other": "Die Champions, die dir auf deiner Lane am häufigsten begegnen, aus {count} Spielen mit Lane-Gegner, und deine Bilanz gegen jeden.",
   "lb.notFoundAny": "{name} ist hier nicht in Challenger, Grandmaster oder Master (oder der Name ist hier noch nicht bekannt).",
   "lb.foundIn": "{name} ist in {tier}: diese Rangliste wird angezeigt.",
+  "home.moversUp": "Im Aufwind seit {from}",
+  "home.moversDown": "Im Abwind seit {from}",
+  "home.moversAria": "Größte Siegquoten-Änderungen seit Patch {from}",
 };
 export default dict;

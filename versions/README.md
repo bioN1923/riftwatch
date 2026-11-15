@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.87](v3.87/CHANGES.md) | 2026-11-15 | Home: patch risers and fallers under Strongest picks |
 | [v3.86](v3.86/CHANGES.md) | 2026-11-14 | Ladder: find a player across all apex tiers |
 | [v3.85](v3.85/CHANGES.md) | 2026-11-14 | Stats tab: lane opponents across all champions |
 | [v3.84](v3.84/CHANGES.md) | 2026-11-14 | Arena tier list empty state explains its source |

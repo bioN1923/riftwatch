@@ -1,11 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { RoleIcon, ROLE_LABEL } from '../components/ui/RoleIcon';
 import { TierBadge } from '../components/champions/common';
 import { pct } from '../lib/format';
 import { Link } from 'react-router';
-import { Star, Clock, Swords, Scale, Users, Trophy, HeartHandshake } from 'lucide-react';
+import { Star, Clock, Swords, Scale, Users, Trophy, HeartHandshake, TrendingUp, TrendingDown } from 'lucide-react';
+import clsx from 'clsx';
+import type { PatchMover } from '../../shared/types';
 import { SearchBox } from '../components/SearchBox';
 import { GameImg } from '../components/ui/GameImg';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
@@ -143,6 +145,55 @@ function Tools() {
   );
 }
 
+/** The three clearest risers and fallers since last patch, from the same tier-list data (no extra request). */
+function Movers({ m }: { m: { against: string; up: PatchMover[]; down: PatchMover[] } }) {
+  const up = m.up.slice(0, 3);
+  const down = m.down.slice(0, 3);
+  if (!up.length && !down.length) return null;
+  return (
+    <div className="mt-4 grid gap-2 md:grid-cols-2" role="group" aria-label={t('home.moversAria', { from: m.against })}>
+      <MoverRow icon={<TrendingUp className="size-4 shrink-0 text-win" aria-hidden />} label={t('home.moversUp', { from: m.against })} list={up} />
+      <MoverRow icon={<TrendingDown className="size-4 shrink-0 text-loss" aria-hidden />} label={t('home.moversDown', { from: m.against })} list={down} />
+    </div>
+  );
+}
+
+function MoverRow({ icon, label, list }: { icon: ReactNode; label: string; list: PatchMover[] }) {
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  if (!list.length) return null;
+  return (
+    <div className="panel flex flex-wrap items-center gap-x-3 gap-y-1.5 px-3 py-2">
+      <span className="flex items-center gap-1.5 text-sm font-semibold">
+        {icon}
+        {label}
+      </span>
+      <ul className="flex flex-wrap gap-x-3 gap-y-1">
+        {list.map((x) => {
+          const c = sd?.champions.get(x.championId);
+          return (
+            <li key={`${x.championId}-${x.role}`}>
+              <Link
+                to={c ? `/champions/${champSlug(c.id)}${x.role !== 'ALL' ? `?role=${x.role}` : ''}` : '/champions'}
+                className="flex items-center gap-1.5 rounded px-1 py-0.5 text-sm hover:bg-raised"
+                title={t('mv.was', { from: pct(x.prevWinRate, 1), to: pct(x.winRate, 1) })}
+              >
+                <GameImg src={a.champion(x.championId).url} alt="" size={22} rounded="sm" />
+                <span>{a.champion(x.championId).name}</span>
+                {x.role !== 'ALL' && <RoleIcon role={x.role} size={12} />}
+                <span className={clsx('num text-xs font-bold', x.delta > 0 ? 'text-win' : 'text-loss')}>
+                  {x.delta > 0 ? '+' : '−'}
+                  {pct(Math.abs(x.delta), 1)}
+                </span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 const ROLES = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'];
 
 /** The best-placed champion in each role, straight from the tier list. */
@@ -191,6 +242,7 @@ function StrongestPicks() {
           );
         })}
       </ul>
+      {q.data?.movers && q.data.patch && <Movers m={q.data.movers} />}
     </section>
   );
 }

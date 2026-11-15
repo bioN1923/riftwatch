@@ -1074,5 +1074,8 @@ const en = {
   "stats.oppLead_other": "The champions you meet in your own lane most often, from {count} games with a lane opponent, and your record against each.",
   "lb.notFoundAny": "{name} isn't in Challenger, Grandmaster or Master here (or their name isn't known here yet).",
   "lb.foundIn": "{name} is in {tier}: showing that ladder.",
+  "home.moversUp": "Rising since {from}",
+  "home.moversDown": "Falling since {from}",
+  "home.moversAria": "Biggest win-rate changes since patch {from}",
 };
 export default en;
