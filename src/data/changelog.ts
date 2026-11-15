@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.88',
+    date: '2026-11-15',
+    items: ['Match details, Item build tab: this game’s first three finished items and skill max order next to what high-elo players most often build on the same champion and role, with matching items outlined and a link to the full build.'],
+  },
+  {
     version: '3.87',
     date: '2026-11-15',
     items: ['Home page: under Strongest picks, the champions whose win rate clearly rose or fell since last patch (top three each way), each linking to its page.'],
