@@ -2,9 +2,9 @@ import type { Platform } from '../shared/regions';
 import type { RiotClient } from './riot';
 import type { ChampionStatsStore } from './champStats';
 import { shapeMatch, shapeTimeline } from './shape';
-import { ARENA_QUEUE } from '../shared/queues';
+import { arenaQueue, isArenaMatch } from '../shared/queues';
 import type { ArenaSeeds } from './arenaSeeds';
-import { findArenaPlayer, PROBE_EVERY_MS } from './arenaProbe';
+import { findArenaPlayer, probeStatus, PROBE_EVERY_MS } from './arenaProbe';
 
 /**
  * Background match collector for champion stats. It walks the Challenger, Grandmaster and
@@ -59,6 +59,33 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
     }
   }
 
+  /** Nobody lined up for Arena: look for a first Arena player in an everyday tier to start the chain. */
+  async function maybeProbe() {
+    if (!opts.arenaSeeds || opts.arenaSeeds.size > 0 || Date.now() - lastProbe < PROBE_EVERY_MS) return;
+    lastProbe = Date.now();
+    probeStatus.runs++;
+    probeStatus.lastAt = lastProbe;
+    const found = await findArenaPlayer({
+      page: (tier, division, page) => paced(() => riot.leaguePage(platform, tier, division, page)),
+      arenaIds: (puuid) => paced(() => riot.matchIds(platform, puuid, 0, 3, { queue: arenaQueue() })),
+      recentArena: async (puuid) => {
+        const ids = await paced(() => riot.matchIds(platform, puuid, 0, 3, {}));
+        for (const id of ids) {
+          if (stats.has(id)) continue;
+          const m = shapeMatch(await paced(() => riot.match(platform, id, false))); // learns a new Arena queue id
+          stats.addMatch(m);
+          if (isArenaMatch(m)) return true;
+        }
+        return false;
+      },
+    });
+    console.log(found ? 'Arena: found a player with recent Arena games; following their games.' : 'Arena: no recent Arena games among the players asked; trying again later.');
+    if (found) {
+      probeStatus.found++;
+      await readQueue(found, arenaQueue());
+    }
+  }
+
   async function loop() {
     stats.collecting = true;
     console.log(`Collecting ranked matches from ${platform.label} for champion stats (one request every ${opts.paceMs / 1000}s).`);
@@ -87,16 +114,8 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
           if (Math.random() < 0.35) await readQueue(puuid, 450);
           // Arena comes from Arena players instead: the next one lined up from an Arena game already read.
           const seed = opts.arenaSeeds?.take();
-          if (seed) await readQueue(seed, ARENA_QUEUE);
-          else if (opts.arenaSeeds && Date.now() - lastProbe > PROBE_EVERY_MS) {
-            // Nobody lined up: look for a first Arena player in an everyday tier to start the chain.
-            lastProbe = Date.now();
-            const found = await findArenaPlayer({
-              page: (tier, division, page) => paced(() => riot.leaguePage(platform, tier, division, page)),
-              arenaIds: (puuid) => paced(() => riot.matchIds(platform, puuid, 0, 3, { queue: ARENA_QUEUE })),
-            });
-            if (found) await readQueue(found, ARENA_QUEUE);
-          }
+          if (seed) await readQueue(seed, arenaQueue());
+          else await maybeProbe();
           for (const id of ids) {
             if (stats.has(id) && stats.hasTimeline(id)) continue;
             try {
@@ -115,7 +134,11 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
         }
         // Nobody on the ladder has played since the last pass (league data refreshes every 10
         // minutes): spend the quiet time on the lane-curve backfill, or rest if that's done too.
-        if (!active && !(await backfill(20))) await sleep(2 * 60_000);
+        if (!active) {
+          // The Arena search shouldn't wait for the ladder to wake up.
+          await maybeProbe();
+          if (!(await backfill(20))) await sleep(2 * 60_000);
+        }
       } catch (e) {
         if ((e as any)?.code === 'KEY_INVALID') {
           console.warn('Match collector stopped: the Riot API key was rejected.');

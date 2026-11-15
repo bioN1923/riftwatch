@@ -8,7 +8,7 @@ import { assets, champSlug, useStaticData } from '../../../lib/ddragon';
 import { api } from '../../../lib/api';
 import { compareCore, isLegendary, purchasedCore } from '../../../lib/buildCompare';
 import { pct, winRateTone } from '../../../lib/format';
-import { isArena } from '../../../../shared/queues';
+import { isArenaMatch } from '../../../../shared/queues';
 import { ROLE_LABEL } from '../../ui/RoleIcon';
 import { MaxOrder, maxOrderOf, RuneTrees, SkillGrid } from '../../build/BuildParts';
 import { GameImg } from '../../ui/GameImg';
@@ -30,7 +30,7 @@ export function ItemBuild({ match, puuid, platform }: { match: MatchSummary; puu
             <>
               <PurchasePath items={q.data!.items[i] ?? []} />
               <SkillOrder skills={q.data!.skills[i] ?? []} />
-              {p.position && match.queueId !== 450 && !isArena(match.queueId) && <VsHighElo p={p} purchases={q.data!.items[i] ?? []} skills={q.data!.skills[i] ?? []} />}
+              {p.position && match.queueId !== 450 && !isArenaMatch(match) && <VsHighElo p={p} purchases={q.data!.items[i] ?? []} skills={q.data!.skills[i] ?? []} />}
             </>
           );
         }}

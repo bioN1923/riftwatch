@@ -1,5 +1,5 @@
 import type { LeagueEntry, LiveGame, MatchSummary, MatchTimeline, Participant, TeamSummary, TimelineEvent } from '../shared/types';
-import { isArena } from '../shared/queues';
+import { isArena, noteArenaQueue } from '../shared/queues';
 
 const POSITIONS = new Set(['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY']);
 
@@ -21,6 +21,7 @@ export function shapeLeague(raw: any[]): LeagueEntry[] {
 /** Convert a raw match-v5 payload into the compact MatchSummary the client renders. */
 export function shapeMatch(raw: any): MatchSummary {
   const info = raw.info;
+  if (noteArenaQueue(info.queueId, info.gameMode)) console.log(`Arena: learned queue id ${info.queueId} from a game in the Arena mode.`);
   const remake = info.participants.some((p: any) => p.gameEndedInEarlySurrender) || info.gameDuration < 240;
 
   const teamKills = new Map<number, number>();

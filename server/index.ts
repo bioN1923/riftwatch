@@ -15,6 +15,7 @@ import { ChampionStatsStore, matchupMin } from './champStats';
 import { loadItemKinds } from './items';
 import { startCrawler } from './crawler';
 import { ArenaSeeds } from './arenaSeeds';
+import { probeStatus } from './arenaProbe';
 import { TtlCache } from './cache';
 import { getPlatform, type Platform } from '../shared/regions';
 import { MatchStore } from './matchStore';
@@ -26,7 +27,7 @@ import { STATIC_LOCALES, slimStatic } from '../shared/staticSlim';
 import { HTML_LANG, OG_LOCALE, alternateLinks, pickLang, seoText, sitemapXml } from './seo';
 import { allChampions, championByKey, championBySlug, championCard, compareCard, draftCard, loadOgData, matchupCard, profileCard, siteCard, type CompareSide, type ProfileCard } from './og';
 import type { ApiErrorBody, HealthResponse, PrivacyChallenge, PrivacyResult, Ladder, LadderEntry, LpHistory, MatchPage, MatchSummary, MatchTimeline, PlayerHit, Profile, ScoutInfo, ServerStatus, StatsGroup } from '../shared/types';
-import { ARENA_QUEUE } from '../shared/queues';
+import { arenaQueue } from '../shared/queues';
 
 const PORT = Number(process.env.PORT ?? 3001);
 const API_KEY = process.env.RIOT_API_KEY?.trim() ?? '';
@@ -194,7 +195,9 @@ const QUEUE_FILTERS: Record<string, { queue?: number; type?: string }> = {
   flex: { queue: 440 },
   normal: { type: 'normal' },
   aram: { queue: 450 },
-  arena: { queue: ARENA_QUEUE },
+  get arena() {
+    return { queue: arenaQueue() };
+  },
 };
 
 // Fair use per visitor: the site's API is for the site's own pages, not for scraping or
@@ -223,7 +226,13 @@ app.use('/api', (req, _res, next) => {
 });
 
 app.get('/api/health', (_req, res) => {
-  res.json({ ok: true, mode: DEMO ? 'demo' : 'live', contact: process.env.CONTACT_EMAIL || undefined } satisfies HealthResponse);
+  res.json({
+    ok: true,
+    mode: DEMO ? 'demo' : 'live',
+    contact: process.env.CONTACT_EMAIL || undefined,
+    // Counts only, so the Arena collection can be checked from outside.
+    arena: { probes: probeStatus.runs, found: probeStatus.found, lastProbeAt: probeStatus.lastAt, queued: arenaSeeds.size },
+  } satisfies HealthResponse);
 });
 
 const UPDATE_COOLDOWN_MS = 3 * 60_000;

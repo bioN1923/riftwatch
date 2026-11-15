@@ -886,12 +886,12 @@ describe('banSuggestions certainty', async () => {
 });
 
 describe('Arena queue ids', async () => {
-  const { isArena, ARENA_QUEUE } = await import('../shared/queues');
+  const { isArena, arenaQueue } = await import('../shared/queues');
   it('recognises old and new Arena games and asks Riot for the current queue', () => {
     expect(isArena(1700)).toBe(true);
     expect(isArena(1710)).toBe(true);
     expect(isArena(450)).toBe(false);
-    expect(ARENA_QUEUE).toBe(1710);
+    expect(arenaQueue()).toBe(1710);
   });
 });
 

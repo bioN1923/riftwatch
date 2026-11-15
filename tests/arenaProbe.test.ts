@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { findArenaPlayer, PROBE_PLAYERS } from '../server/arenaProbe';
+import { FALLBACK_PLAYERS, findArenaPlayer, PROBE_PLAYERS } from '../server/arenaProbe';
+import { arenaQueue, isArena, isArenaMatch, noteArenaQueue } from '../shared/queues';
 
 describe('findArenaPlayer', () => {
   const page = async () => Array.from({ length: 20 }, (_, i) => ({ puuid: `p${i}` }));
@@ -15,5 +16,25 @@ describe('findArenaPlayer', () => {
     expect(found).toBeNull();
     expect(n).toBe(PROBE_PLAYERS);
     expect(await findArenaPlayer({ page: () => Promise.reject(new Error('x')), arenaIds: async () => ['a'] })).toBeNull();
+  });
+});
+
+describe('Arena by game mode', () => {
+  it('uses the any-queue fallback for the first players only', async () => {
+    const page = async () => Array.from({ length: 20 }, (_, i) => ({ puuid: `p${i}` }));
+    let fallbacks = 0;
+    const found = await findArenaPlayer({ page, arenaIds: async () => [], recentArena: async () => (++fallbacks, false) });
+    expect(found).toBeNull();
+    expect(fallbacks).toBe(FALLBACK_PLAYERS);
+    expect(await findArenaPlayer({ page, arenaIds: async () => [], recentArena: async () => true, random: () => 0 })).toBe('p0');
+  });
+  it('learns a new Arena queue id from the CHERRY game mode', () => {
+    expect(isArenaMatch({ queueId: 1790, gameMode: 'CHERRY' })).toBe(true);
+    expect(isArena(1790)).toBe(false);
+    expect(noteArenaQueue(1790, 'CLASSIC')).toBe(false);
+    expect(noteArenaQueue(1790, 'CHERRY')).toBe(true);
+    expect(isArena(1790)).toBe(true);
+    expect(arenaQueue()).toBe(1790);
+    expect(noteArenaQueue(1790, 'CHERRY')).toBe(false);
   });
 });

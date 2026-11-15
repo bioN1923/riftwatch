@@ -14,7 +14,7 @@ import { MatchDetails } from './MatchDetails';
 import { fadeIn } from '../../lib/motion';
 import { Collapse } from '../ui/Motion';
 import { getLang, t } from '../../i18n';
-import { isArena } from '../../../shared/queues';
+import { isArenaMatch } from '../../../shared/queues';
 
 const resultLabel = (r: 'win' | 'loss' | 'remake') => t(`result.${r}`);
 
@@ -36,7 +36,7 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
   const champ = a.champion(p.championId);
   const ratio = kdaRatio(p.kills, p.deaths, p.assists);
   const minutes = match.duration / 60;
-  const arena = isArena(match.queueId);
+  const arena = isArenaMatch(match);
   const teams = arena ? [] : [100, 200].map((t) => match.participants.filter((x) => x.teamId === t));
   const ended = match.startedAt + match.duration * 1000;
   const splash = a.splash(p.championId);

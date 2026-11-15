@@ -1,5 +1,5 @@
 import type { MatchSummary, Participant } from '../../shared/types';
-import { isArena } from '../../shared/queues';
+import { isArenaMatch } from '../../shared/queues';
 import { me } from './stats';
 
 export type RecordId = 'kills' | 'kda' | 'damage' | 'cspm' | 'vision' | 'multi' | 'length';
@@ -28,7 +28,7 @@ export function personalRecords(matches: MatchSummary[], puuid: string): Persona
   };
   for (const m of matches) {
     const p = me(m, puuid);
-    if (!p || m.remake || isArena(m.queueId) || !m.duration) continue;
+    if (!p || m.remake || isArenaMatch(m) || !m.duration) continue;
     const min = m.duration / 60;
     offer('kills', p.kills, m, p);
     offer('kda', (p.kills + p.assists) / Math.max(1, p.deaths), m, p);

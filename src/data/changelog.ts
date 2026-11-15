@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.94',
+    date: '2026-11-15',
+    items: ['Arena games are now recognised by their game mode too, so Arena events with a new queue (like 3×6) are counted instead of skipped; the Arena search also runs when the ladder is quiet.'],
+  },
+  {
     version: '3.93',
     date: '2026-11-15',
     items: ['Arena tier list: the collector now goes looking for Arena players by itself (a few everyday ranked players, a few times an hour), so the list can start filling without waiting for someone to look up an Arena player.'],
