@@ -8,3 +8,6 @@
 - Note under it that builds can change a champion's damage. Strings in seven languages.
 
 **Checks.** tsc, 142 tests, build, a11y `{}`. Demo: Zed/Draven/Lee Sin → "3 AD — Mostly physical…"; adding Syndra by search + Enter → "3 AD · 1 AP — A fair mix so far.", URL updated. Shots `demo/team-damage-*.png`.
+
+## Live check (2026-11-15)
+Deployed 17:34 (local). On riftwatch.fly.dev/draft?team=zed,draven,leesin,syndra: Zed/Draven/Lee Sin "Physical", Syndra "Magic", summary "3 AD · 1 AP — A fair mix so far." (live static data has the damage ratings). Arena search after this restart: probes 1, found 0; Arena matches 0.
