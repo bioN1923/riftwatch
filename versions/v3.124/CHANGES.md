@@ -19,3 +19,9 @@
   - ARAM: ban column dropped (no bans in the demo data).
 
 Screen: `demo/arena-tierlist.png`.
+
+## Live check (2026-11-16 01:09 local)
+- The live build serves `Champions-n5NsEPsX.js` (200).
+- Live Arena tier list: all 173 rows carry `avgPlacement`. The best one with enough games is Rell (id 526), averaging 2.43 over 35 games.
+- Live data does record Arena bans, so the Arena list keeps its Ban rate column. ARAM has none, so its column is hidden there. Ranked keeps it.
+- Arena: 359 games.
