@@ -18,3 +18,8 @@
 - Demo (one Arena game): the panel reads "Average place 3.00 · Top 4 100% (plain) · 1st places 0", with Aurora and 4 augments. No page errors at 1280 px or 390 px.
 
 Screens: `demo/arena-stats-*.png`.
+
+## Live check (2026-11-16 00:08 local)
+- The live build serves the same chunks as the local one: `Profile-DY_pAg-0.js` (contains the `ars-h` panel) and `i18n-CoC3sJX7.js`, both 200.
+- I didn't open a profile with Arena games (none allowed to open); the panel is checked on the demo.
+- Arena: 225 games (199 at 21:58 UTC); health `arena` queue 1750, 1000 lined up (the line is full).
