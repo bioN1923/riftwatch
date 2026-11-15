@@ -12,3 +12,6 @@
 - Strings in seven languages; `tests/sessions.test.ts` (134 tests).
 
 **Checks.** tsc, tests, build, a11y `{}`. Demo shots `demo/sittings-*.png` (Caps: "hardly change"; Faker demo: 6–2 after a win vs 1–5 after a loss → a lean, not "clearly", on that few games).
+
+## Live check (2026-11-15)
+Deployed 16:32 (local). On one EUNE profile's Stats tab (19 ranked games in 2 sittings): after a win 6–3 (67%) vs after a loss 4–4 (50%) → "Leaning: you do worse right after a loss"; games 1–3 2–4 (33%) vs game 4 on 9–4 (69%) → "Leaning: you do better later in a sitting". Both correctly stay at *leaning* on this few games. Screenshot `live/within-a-sitting.png`. Arena tier list: still 0 matches.
