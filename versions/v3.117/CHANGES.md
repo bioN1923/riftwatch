@@ -13,3 +13,8 @@
 **Checks.** tsc, 154 tests (4 new in `tests/augments.test.ts`), a11y `{}` (18 states × 2 themes). Demo: 4 augment icons load from CommunityDragon, tooltip "Ocean Soul · Silver augment · Gain the Ocean Soul, …", no console errors on expanding the Arena game. Romanian endpoint returns translated names.
 
 Screens: `demo/arena-row-*.png`, `demo/arena-details.png`.
+
+## Live check (2026-11-15 23:58 local)
+- `/api/augments/en_US` → 200, 225 augments, 200 with descriptions; `ro_RO` gives Romanian names ("Exercițiu de încălzire"). An icon loads from CommunityDragon (200).
+- Not seen on a real Arena game yet (none in the histories I may open); ids follow CommunityDragon's, which match Riot's `playerAugment` ids.
+- Arena: 199 games (163 at 21:41 UTC); health `arena` queue 1750, 999 lined up.
