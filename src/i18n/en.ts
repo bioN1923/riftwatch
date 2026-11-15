@@ -1155,5 +1155,6 @@ const en = {
   "lb.changeSince": "Green and red numbers by the LP: change since {when}.",
   "lb.changeTip": "{lp} LP since the earlier snapshot",
   "ph.captionGames": "Win rate and games on each recent patch",
+  "lb.climbers": "Climbing fastest since {when}",
 };
 export default en;

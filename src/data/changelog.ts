@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.105',
+    date: '2026-11-15',
+    items: ['Ladder: a “Climbing fastest” strip above Challenger and Grandmaster lists the five players with the biggest LP gains in the whole tier since the earlier snapshot.'],
+  },
+  {
     version: '3.104',
     date: '2026-11-15',
     items: ['Matchup pages: “Across patches” shows how this matchup went on each recent patch, with the same plain verdict on whether the latest change is real.'],

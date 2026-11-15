@@ -1155,5 +1155,6 @@ const dict: Record<string, string> = {
   "lb.changeSince": "Números verdes y rojos junto a los LP: cambio desde {when}.",
   "lb.changeTip": "{lp} LP desde la instantánea anterior",
   "ph.captionGames": "Tasa de victoria y partidas en cada parche reciente",
+  "lb.climbers": "Los que más suben desde {when}",
 };
 export default dict;

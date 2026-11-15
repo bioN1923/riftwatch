@@ -448,6 +448,8 @@ export interface Ladder {
   entries: LadderEntry[];
   /** When the LP changes are measured from (an earlier snapshot of this ladder), if there is one. */
   since?: number;
+  /** The biggest LP gains in the whole tier since `since` (named players only), best first. */
+  climbers?: LadderEntry[];
 }
 
 export interface ServerStatus {
