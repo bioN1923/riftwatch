@@ -1160,5 +1160,9 @@ const en = {
   "home.climbersAll": "Full ladder",
   "home.climbersLead": "Biggest LP gains compared with {when}.",
   "profile.ladderChange": "{lp} LP compared with {when}",
+  "champ.dmgTip": "Mostly physical or magic damage, from Riot’s attack and magic ratings; builds can change it.",
+  "champ.dmgAd": "Physical damage",
+  "champ.dmgAp": "Magic damage",
+  "champ.dmgMixed": "Mixed damage",
 };
 export default en;

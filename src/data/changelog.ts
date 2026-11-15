@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.110',
+    date: '2026-11-15',
+    items: ['Champion pages show the champion’s damage type next to its classes (Physical, Magic or Mixed damage), the same read the live game and the draft helper use.'],
+  },
+  {
     version: '3.109',
     date: '2026-11-15',
     items: ['Arena collection reads more of its line of Arena players when the ranked ladder is quiet, so the Arena tier list fills faster (still paced and paused while visitors use the site).'],

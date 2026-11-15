@@ -1190,5 +1190,9 @@ const dict: Record<string, string> = {
   "home.climbersAll": "Tot clasamentul",
   "home.climbersLead": "Cele mai mari câștiguri de LP față de {when}.",
   "profile.ladderChange": "{lp} LP față de {when}",
+  "champ.dmgTip": "Damage mai ales fizic sau magic, după ratingurile de atac și magie ale Riot; build-urile îl pot schimba.",
+  "champ.dmgAd": "Damage fizic",
+  "champ.dmgAp": "Damage magic",
+  "champ.dmgMixed": "Damage mixt",
 };
 export default dict;

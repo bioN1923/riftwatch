@@ -23,6 +23,7 @@ import { LaneCurve } from '../components/champions/LaneCurve';
 import { PatchHistory } from '../components/champions/PatchHistory';
 import { guessChampion } from '../lib/champSearch';
 import { addRecentChamp } from '../lib/storage';
+import { damageType } from '../lib/damageMix';
 
 export function ChampionPage() {
   const { slug = '' } = useParams();
@@ -128,6 +129,15 @@ function ChampionView({ championId }: { championId: number }) {
                       {champClass(tag)}
                     </span>
                   ))}
+                  {(() => {
+                    const k = damageType(info?.dmg);
+                    if (!k) return null;
+                    return (
+                      <span className={clsx('rounded-sm border px-1.5 py-px text-xs', k === 'ad' ? 'border-orange-400/40 text-orange-300' : k === 'ap' ? 'border-sky-400/40 text-sky-300' : 'border-line-strong text-muted')} title={t('champ.dmgTip')}>
+                        {k === 'ad' ? t('champ.dmgAd') : k === 'ap' ? t('champ.dmgAp') : t('champ.dmgMixed')}
+                      </span>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
