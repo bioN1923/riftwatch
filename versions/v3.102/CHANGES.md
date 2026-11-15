@@ -9,3 +9,6 @@
 - `/api-usage` cache table lists lol-challenges-v1. Seven languages; 144 tests.
 
 **Checks.** tsc, tests, build, a11y `{}`. Demo: "Europe West · Challenges: Master · top 17.0%", tooltip "18,153 challenge points". Shots `demo/challenges-*.png`.
+
+## Live check (2026-11-15)
+Deployed 18:27 (local). API only, on the EUNE profile already in the owner's recents: `/api/challenges` → `{ level: PLATINUM, points: 11310, percentile: 0.108 }`, so the header reads "Challenges: Platinum · top 10.8%". Riot's `percentile` is the share of players at or above (lower is better), which fits a Platinum total. Arena unchanged (13; probe found nobody).
