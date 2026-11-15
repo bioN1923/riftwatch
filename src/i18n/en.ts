@@ -1112,5 +1112,15 @@ const en = {
   "ses.lateBetterLean": "Leaning: you do better later in a sitting (too few games to be sure).",
   "profile.ladderPlace": "#{n} on the {region} ladder",
   "profile.ladderTip": "#{rank} of {total} in {tier}",
+  "rec.title": "Personal records",
+  "rec.lead": "Best single games among the ones loaded here (no remakes or Arena). Each opens that game.",
+  "rec.kills": "Most kills",
+  "rec.kda": "Best KDA",
+  "rec.perfect": "Perfect",
+  "rec.damage": "Most damage to champions",
+  "rec.cspm": "Best CS per minute",
+  "rec.vision": "Best vision per minute",
+  "rec.multi": "Biggest multi-kill",
+  "rec.length": "Longest game",
 };
 export default en;

@@ -1141,5 +1141,15 @@ const dict: Record<string, string> = {
   "ses.lateBetterLean": "Tendință: îți merge mai bine mai târziu în sesiune (prea puține meciuri ca să fie sigur).",
   "profile.ladderPlace": "#{n} în clasamentul {region}",
   "profile.ladderTip": "#{rank} din {total} în {tier}",
+  "rec.title": "Recorduri personale",
+  "rec.lead": "Cele mai bune meciuri dintre cele încărcate aici (fără remake-uri sau Arena). Fiecare deschide meciul.",
+  "rec.kills": "Cele mai multe kill-uri",
+  "rec.kda": "Cel mai bun KDA",
+  "rec.perfect": "Perfect",
+  "rec.damage": "Cel mai mult damage la campioni",
+  "rec.cspm": "Cel mai bun CS pe minut",
+  "rec.vision": "Cea mai bună viziune pe minut",
+  "rec.multi": "Cel mai mare multi-kill",
+  "rec.length": "Cel mai lung meci",
 };
 export default dict;

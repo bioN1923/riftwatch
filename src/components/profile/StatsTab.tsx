@@ -5,11 +5,12 @@ import clsx from 'clsx';
 import { ArrowDown, ArrowUp, Target } from 'lucide-react';
 import type { MatchSummary } from '../../../shared/types';
 import { assets, champSlug, useStaticData } from '../../lib/ddragon';
-import { decimal, formatKda, kdaRatio, kdaTone, pct, winRateTone } from '../../lib/format';
+import { compact, decimal, duration as fmtDuration, formatKda, kdaRatio, kdaTone, multikill, pct, timeAgo, winRateTone } from '../../lib/format';
 import { me } from '../../lib/stats';
 import { winConditions, type WinCondition } from '../../lib/winConditions';
 import { laneOpponents } from '../../lib/laneOpponents';
 import { sessions, type Split } from '../../lib/sessions';
+import { personalRecords, type PersonalRecord } from '../../lib/records';
 import { GameImg, Tooltip } from '../ui/GameImg';
 import { RoleIcon, ROLE_LABEL } from '../ui/RoleIcon';
 import { EmptyState, Skeleton } from '../ui/States';
@@ -132,6 +133,7 @@ export function StatsTab({
       <Sittings matches={matches} puuid={puuid} />
       <ChampionTable matches={matches} puuid={puuid} onOpen={onOpenChampion} />
       <LaneOpponents matches={matches} puuid={puuid} />
+      <Records matches={matches} puuid={puuid} />
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <RoleTable matches={matches} puuid={puuid} />
         <ActivityCalendar matches={matches} puuid={puuid} />
@@ -548,6 +550,56 @@ function Sittings({ matches, puuid }: { matches: MatchSummary[]; puuid: string }
       <ul className="mt-3 space-y-2.5">
         {s.afterResult && row(s.afterResult, 'after', t('ses.afterWin'), t('ses.afterLoss'))}
         {s.early && row(s.early, 'late', t('ses.early'), t('ses.late'))}
+      </ul>
+    </section>
+  );
+}
+
+/** Best single games among the loaded ones, each linking to that game in the match list. */
+function Records({ matches, puuid }: { matches: MatchSummary[]; puuid: string }) {
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  const list = useMemo(() => personalRecords(matches, puuid), [matches, puuid]);
+  const overview = useLocation().pathname.replace(/\/stats$/, '');
+  if (list.length < 3) return null;
+  const value = (r: PersonalRecord) =>
+    r.id === 'kda'
+      ? r.p.deaths === 0
+        ? t('rec.perfect')
+        : formatKda(r.value)
+      : r.id === 'damage'
+        ? compact(r.value)
+        : r.id === 'cspm' || r.id === 'vision'
+          ? decimal(r.value, 1)
+          : r.id === 'multi'
+            ? multikill(r.value)
+            : r.id === 'length'
+              ? fmtDuration(r.value)
+              : String(r.value);
+  return (
+    <section className="panel p-4" aria-labelledby="rec-h">
+      <h2 id="rec-h" className="panel-title">
+        {t('rec.title')}
+      </h2>
+      <p className="mt-0.5 text-xs text-muted">{t('rec.lead')}</p>
+      <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+        {list.map((r) => {
+          const c = a.champion(r.p.championId);
+          return (
+            <li key={r.id}>
+              <Link to={`${overview}#m-${r.match.id}`} className="flex h-full items-center gap-2.5 rounded border border-line bg-surface p-2.5 transition-colors hover:border-gold/60 hover:bg-raised">
+                <GameImg src={c.url} alt="" size={36} rounded="sm" />
+                <span className="min-w-0">
+                  <span className="block truncate text-[11px] text-muted">{t(`rec.${r.id}` as 'rec.kills')}</span>
+                  <span className="num block font-display text-lg font-bold leading-tight">{value(r)}</span>
+                  <span className="block truncate text-[11px] text-faint">
+                    <span className={r.p.win ? 'text-win' : 'text-loss'}>{r.p.win ? t('result.win') : t('result.loss')}</span> · {c.name} · {timeAgo(r.match.startedAt)}
+                  </span>
+                </span>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );

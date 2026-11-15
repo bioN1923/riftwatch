@@ -1170,5 +1170,15 @@ const dict: Record<string, string> = {
   "ses.lateBetterLean": "Skłonność: później w sesji idzie ci lepiej (za mało gier, by mieć pewność).",
   "profile.ladderPlace": "#{n} w rankingu {region}",
   "profile.ladderTip": "#{rank} z {total} w {tier}",
+  "rec.title": "Rekordy osobiste",
+  "rec.lead": "Najlepsze pojedyncze gry spośród wczytanych tutaj (bez remake’ów i Areny). Każda otwiera tę grę.",
+  "rec.kills": "Najwięcej zabójstw",
+  "rec.kda": "Najlepsze KDA",
+  "rec.perfect": "Perfekcyjne",
+  "rec.damage": "Najwięcej obrażeń bohaterom",
+  "rec.cspm": "Najlepsze CS na minutę",
+  "rec.vision": "Najlepsza wizja na minutę",
+  "rec.multi": "Największe wielozabójstwo",
+  "rec.length": "Najdłuższa gra",
 };
 export default dict;

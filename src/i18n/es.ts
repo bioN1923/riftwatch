@@ -1112,5 +1112,15 @@ const dict: Record<string, string> = {
   "ses.lateBetterLean": "Tendencia: te va mejor más tarde en la sesión (pocas partidas para estar seguros).",
   "profile.ladderPlace": "#{n} en la clasificación de {region}",
   "profile.ladderTip": "#{rank} de {total} en {tier}",
+  "rec.title": "Récords personales",
+  "rec.lead": "Las mejores partidas sueltas entre las cargadas aquí (sin remakes ni Arena). Cada una abre esa partida.",
+  "rec.kills": "Más asesinatos",
+  "rec.kda": "Mejor KDA",
+  "rec.perfect": "Perfecto",
+  "rec.damage": "Más daño a campeones",
+  "rec.cspm": "Mejor CS por minuto",
+  "rec.vision": "Mejor visión por minuto",
+  "rec.multi": "Mayor multiasesinato",
+  "rec.length": "Partida más larga",
 };
 export default dict;

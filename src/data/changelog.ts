@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.92',
+    date: '2026-11-15',
+    items: ['Profile Stats tab: Personal records — most kills, best KDA, most damage, biggest multi-kill, best CS and vision per minute and longest game among the loaded games. Each one jumps to that game in the match list.'],
+  },
+  {
     version: '3.91',
     date: '2026-11-15',
     items: ['Profiles of Master, Grandmaster and Challenger players show their place on the region’s ladder (for example “#357 on the EUW ladder”), linking straight to that page of the ladder.'],

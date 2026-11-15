@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router';
+import { Link, useLocation, useParams, useSearchParams } from 'react-router';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { getPlatform } from '../../shared/regions';
@@ -110,6 +110,21 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
     const solo = profile.ranked.find((r) => r.queueType === 'RANKED_SOLO_5x5');
     addRecent({ platform, gameName: profile.account.gameName, tagLine: profile.account.tagLine, profileIconId: profile.summoner.profileIconId, tier: solo?.tier, rank: solo?.rank });
   }, [profile, platform]);
+
+  // "#m-<id>" (e.g. from Personal records): bring that game into view once it's in the list, and mark it briefly.
+  const { hash } = useLocation();
+  const shownHash = useRef('');
+  useEffect(() => {
+    if (tab !== 'overview' || !matches || !hash.startsWith('#m-') || shownHash.current === hash) return;
+    const el = document.getElementById(decodeURIComponent(hash.slice(1)));
+    if (!el) return;
+    shownHash.current = hash;
+    requestAnimationFrame(() => {
+      el.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      el.classList.add('ring-2', 'ring-gold');
+      setTimeout(() => el.classList.remove('ring-2', 'ring-gold'), 2500);
+    });
+  }, [hash, tab, matches]);
 
   async function update() {
     setUpdating(true);
