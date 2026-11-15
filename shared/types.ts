@@ -207,7 +207,7 @@ export interface HealthResponse {
   /** Where players can send privacy or data requests (CONTACT_EMAIL). */
   contact?: string;
   /** The background search for Arena games: probes run, players found, last probe time, players lined up. */
-  arena?: { probes: number; found: number; lastProbeAt: number | null; queued: number };
+  arena?: { probes: number; found: number; lastProbeAt: number | null; queued: number; queue?: number };
 }
 
 /* ---------- Champion statistics (aggregated by the server from matches it has seen) ---------- */

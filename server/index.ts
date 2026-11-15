@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { ApiError } from './errors';
 import { RiotClient } from './riot';
-import { shapeLeague, shapeLive, shapeMatch, shapeTimeline } from './shape';
+import { shapeLeague, shapeLive, shapeMatch, shapeTimeline, whenArenaQueueLearned } from './shape';
 import { DEMO_SEED, mockArenaMatch, mockLadder, mockLive, mockLpHistory, mockMatchById, mockMatches, mockProfile, mockRotation, mockScout, mockTimeline, nameFromDemoPuuid, mockChallenges } from './mock';
 import { LpStore } from './lpStore';
 import { PlayerIndex } from './playerIndex';
@@ -51,6 +51,7 @@ const ladderHistory = new LadderHistory(DEMO ? null : path.resolve(here, 'data',
 const champStats = new ChampionStatsStore(DEMO ? null : path.resolve(here, 'data', 'champions.json'));
 // Players from Arena games already read, for the collector to look up next (see arenaSeeds.ts).
 const arenaSeeds = new ArenaSeeds((getPlatform(process.env.CRAWL_REGION ?? 'euw1') ?? getPlatform('euw1')!).id, 300, 20_000, DEMO ? null : path.resolve(here, 'data', 'arena-seeds.json'));
+whenArenaQueueLearned(() => arenaSeeds.touch());
 const timelines = new TtlCache<MatchTimeline>(300);
 const privacy = new PrivacyStore(DEMO ? null : path.resolve(here, 'data', 'privacy.json'));
 players.isBlocked = (puuid) => privacy.isHidden(puuid);
@@ -234,7 +235,7 @@ app.get('/api/health', (_req, res) => {
     mode: DEMO ? 'demo' : 'live',
     contact: process.env.CONTACT_EMAIL || undefined,
     // Counts only, so the Arena collection can be checked from outside.
-    arena: { probes: probeStatus.runs, found: probeStatus.found, lastProbeAt: probeStatus.lastAt, queued: arenaSeeds.size },
+    arena: { probes: probeStatus.runs, found: probeStatus.found, lastProbeAt: probeStatus.lastAt, queued: arenaSeeds.size, queue: arenaQueue() },
   } satisfies HealthResponse);
 });
 

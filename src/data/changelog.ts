@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.108',
+    date: '2026-11-15',
+    items: ['Arena collection fix: the Arena event’s own queue is now remembered across updates, and players lined up for Arena are read even when Arena runs under a queue we haven’t seen yet, so the Arena list grows again.'],
+  },
+  {
     version: '3.107',
     date: '2026-11-15',
     items: ['Challenger and Grandmaster profiles (and their Compare and Multi-search cards) show the LP change next to the ladder place, for example “#357 on the EUW ladder · +47 LP compared with yesterday”.'],

@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { isArena } from '../shared/queues';
+import { ARENA_QUEUES, isArena, noteArenaQueue } from '../shared/queues';
 import type { MatchSummary } from '../shared/types';
 
 /**
@@ -25,7 +25,10 @@ export class ArenaSeeds {
   ) {
     if (!file) return;
     try {
-      const saved = JSON.parse(fs.readFileSync(file, 'utf8')) as { queue?: string[]; known?: string[] };
+      const saved = JSON.parse(fs.readFileSync(file, 'utf8')) as { queue?: string[]; known?: string[]; queues?: number[] };
+      // Arena queue ids learned from the game mode (an Arena event's own id) must survive restarts too,
+      // or the line is read with the old id and every lined-up player turns up nothing.
+      for (const q of saved.queues ?? []) noteArenaQueue(q, 'CHERRY');
       this.queue = (saved.queue ?? []).slice(0, maxQueue);
       this.known = new Set((saved.known ?? []).slice(-maxKnown));
     } catch {
@@ -40,13 +43,18 @@ export class ArenaSeeds {
     this.dirty = false;
     try {
       fs.mkdirSync(path.dirname(this.file), { recursive: true });
-      fs.writeFileSync(this.file, JSON.stringify({ queue: this.queue, known: [...this.known].slice(-5000) }));
+      fs.writeFileSync(this.file, JSON.stringify({ queue: this.queue, known: [...this.known].slice(-5000), queues: [...ARENA_QUEUES] }));
     } catch (e) {
       console.warn('Could not save the Arena line:', (e as Error).message);
     }
   }
 
   /** Line up the players of an Arena game from this platform (match ids start with the platform, e.g. EUW1_). */
+  /** A new Arena queue id was learned: make sure it gets saved. */
+  touch() {
+    this.dirty = true;
+  }
+
   note(m: Pick<MatchSummary, 'id' | 'queueId' | 'participants'>) {
     if (!isArena(m.queueId) || !m.id.toUpperCase().startsWith(`${this.platformId.toUpperCase()}_`)) return;
     for (const p of m.participants) {

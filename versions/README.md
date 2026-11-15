@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.108](v3.108/CHANGES.md) | 2026-11-15 | Arena: remember learned queue ids; fallback read |
 | [v3.107](v3.107/CHANGES.md) | 2026-11-15 | Profile: LP change next to the ladder place |
 | [v3.106](v3.106/CHANGES.md) | 2026-11-15 | Home: climbing fastest in your region |
 | [v3.105](v3.105/CHANGES.md) | 2026-11-15 | Ladder: climbing fastest |

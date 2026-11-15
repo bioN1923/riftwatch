@@ -58,3 +58,24 @@ describe('ArenaSeeds on disk', () => {
     expect(b.size).toBe(1);
   });
 });
+
+describe('learned Arena queue ids', () => {
+  it('are saved with the line and restored after a restart', async () => {
+    const fs = await import('node:fs');
+    const os = await import('node:os');
+    const path = await import('node:path');
+    const q = await import('../shared/queues');
+    const { ArenaSeeds } = await import('../server/arenaSeeds');
+    const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'rw-')), 'arena-seeds.json');
+    q.noteArenaQueue(1777, 'CHERRY');
+    const a = new ArenaSeeds('euw1', 300, 20_000, file);
+    a.touch();
+    a.flush();
+    expect(JSON.parse(fs.readFileSync(file, 'utf8')).queues).toContain(1777);
+    // A "restart": drop the learned id, then load the file again.
+    q.ARENA_QUEUES.delete(1777);
+    expect(q.isArena(1777)).toBe(false);
+    new ArenaSeeds('euw1', 300, 20_000, file);
+    expect(q.isArena(1777)).toBe(true);
+  });
+});

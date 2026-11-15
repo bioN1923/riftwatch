@@ -2,7 +2,7 @@ import type { Platform } from '../shared/regions';
 import type { RiotClient } from './riot';
 import type { ChampionStatsStore } from './champStats';
 import { shapeMatch, shapeTimeline } from './shape';
-import { arenaQueue, isArenaMatch } from '../shared/queues';
+import { arenaQueue, isArena, isArenaMatch } from '../shared/queues';
 import type { ArenaSeeds } from './arenaSeeds';
 import { findArenaPlayer, probeStatus, PROBE_EVERY_MS } from './arenaProbe';
 
@@ -46,7 +46,11 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
 
   /** A player's last few games in one queue, without timelines; Arena games line up their players. */
   async function readQueue(puuid: string, queue: number) {
-    const ids = await paced(() => riot.matchIds(platform, puuid, 0, 5, { queue })).catch(() => [] as string[]);
+    let ids = await paced(() => riot.matchIds(platform, puuid, 0, 5, { queue })).catch(() => [] as string[]);
+    // A lined-up Arena player with no games in the queue we asked for: Arena may be running under an
+    // event queue id we haven't learned yet (or forgot on a restart). Read their latest games of any
+    // queue instead; an Arena one teaches the id (shapeMatch) and lines up its players.
+    if (!ids.length && isArena(queue)) ids = await paced(() => riot.matchIds(platform, puuid, 0, 3, {})).catch(() => [] as string[]);
     for (const id of ids) {
       if (stats.has(id)) continue;
       try {

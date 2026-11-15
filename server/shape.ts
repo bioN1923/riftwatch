@@ -19,9 +19,16 @@ export function shapeLeague(raw: any[]): LeagueEntry[] {
 }
 
 /** Convert a raw match-v5 payload into the compact MatchSummary the client renders. */
+/** Called when a new Arena queue id is learned (index.ts saves it with the Arena line). */
+let onArenaQueueLearned: (() => void) | undefined;
+export const whenArenaQueueLearned = (f: () => void) => (onArenaQueueLearned = f);
+
 export function shapeMatch(raw: any): MatchSummary {
   const info = raw.info;
-  if (noteArenaQueue(info.queueId, info.gameMode)) console.log(`Arena: learned queue id ${info.queueId} from a game in the Arena mode.`);
+  if (noteArenaQueue(info.queueId, info.gameMode)) {
+    console.log(`Arena: learned queue id ${info.queueId} from a game in the Arena mode.`);
+    onArenaQueueLearned?.();
+  }
   const remake = info.participants.some((p: any) => p.gameEndedInEarlySurrender) || info.gameDuration < 240;
 
   const teamKills = new Map<number, number>();
