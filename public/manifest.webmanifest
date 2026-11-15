@@ -1,0 +1,20 @@
+{
+  "name": "Riftwatch — League of Legends stats",
+  "short_name": "Riftwatch",
+  "description": "Look up any League of Legends player: rank, match history, champion stats and live games.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#091315",
+  "theme_color": "#091315",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Champions", "url": "/champions" },
+    { "name": "Ladder", "url": "/leaderboard" },
+    { "name": "Draft helper", "url": "/draft" }
+  ]
+}

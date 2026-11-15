@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.116',
+    date: '2026-11-15',
+    items: ['Riftwatch can be added to your phone’s home screen or installed as an app on desktop: it now has an app icon, a name and shortcuts to Champions, the Ladder and the Draft helper. The browser bar matches the dark or light theme.'],
+  },
+  {
     version: '3.115',
     date: '2026-11-15',
     items: ['Ladder places now lead straight to the row: the “#357 on the EUW ladder” link on profiles, and the places in the climbing/dropping strip, open the right page with that player highlighted.'],
