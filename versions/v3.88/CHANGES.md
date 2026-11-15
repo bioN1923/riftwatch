@@ -10,3 +10,6 @@
 - Uses our own `/api/champion` (cached on the server); no Riot calls. Strings in all seven languages. New tests: `tests/buildCompare.test.ts` (128 total).
 
 **Checks.** tsc, tests, build, a11y `{}`. Demo shots `demo/build-vs-highelo-*.png`.
+
+## Live check (2026-11-15)
+Deployed 15:51 (local). First profile load hit Riot's rate limit ("Too many requests right now" — the shared dev key; the page's retry worked a minute later). On an EUNE Illaoi top game (Ranked Solo, 23:55) the Item build tab showed *Against high-elo Illaoi Top players*: most played core 50.0% over 18 games; "Only 2 items finished this game"; max order E > Q > W against the most played Q > E > W (47.3%, 112 games) — "Different from the most played order"; note for patch 16.22. `/api/champions/517?group=ranked&role=MIDDLE` returns 5 cores and max orders as expected. No live screenshot this time: Chrome's screenshot call timed out (window likely not in front), so the check was read from the page text. Arena tier list: still 0 matches.
