@@ -1175,5 +1175,14 @@ const dict: Record<string, string> = {
   "aug.silver": "Aumento de plata",
   "aug.gold": "Aumento de oro",
   "aug.prismatic": "Aumento prismático",
+  "ars.title": "Arena",
+  "ars.lead_one": "De tu {count} partida de Arena cargada.",
+  "ars.lead_other": "De tus {count} partidas de Arena cargadas.",
+  "ars.firsts": "1.ᵒˢ puestos",
+  "ars.champions": "Campeones",
+  "ars.augments": "Aumentos que más eliges",
+  "ars.picks_one": "{count} vez",
+  "ars.picks_other": "{count} veces",
+  "ars.augmentsNote": "Cuántas veces elegiste cada uno. Riot no permite tasas de victoria para los aumentos.",
 };
 export default dict;

@@ -1205,5 +1205,16 @@ const dict: Record<string, string> = {
   "aug.silver": "Augmentare de argint",
   "aug.gold": "Augmentare de aur",
   "aug.prismatic": "Augmentare prismatică",
+  "ars.title": "Arena",
+  "ars.lead_one": "Din jocul tău de Arena încărcat.",
+  "ars.lead_few": "Din cele {count} jocuri de Arena încărcate.",
+  "ars.lead_other": "Din cele {count} de jocuri de Arena încărcate.",
+  "ars.firsts": "Locuri 1",
+  "ars.champions": "Campioni",
+  "ars.augments": "Augmentările alese cel mai des",
+  "ars.picks_one": "{count} alegere",
+  "ars.picks_few": "{count} alegeri",
+  "ars.picks_other": "{count} de alegeri",
+  "ars.augmentsNote": "De câte ori ai ales fiecare. Riot nu permite rate de victorie pentru augmentări.",
 };
 export default dict;

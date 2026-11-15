@@ -1175,5 +1175,14 @@ const en = {
   "aug.silver": "Silver augment",
   "aug.gold": "Gold augment",
   "aug.prismatic": "Prismatic augment",
+  "ars.title": "Arena",
+  "ars.lead_one": "From your {count} Arena game loaded.",
+  "ars.lead_other": "From your {count} Arena games loaded.",
+  "ars.firsts": "1st places",
+  "ars.champions": "Champions",
+  "ars.augments": "Augments you pick most",
+  "ars.picks_one": "{count} pick",
+  "ars.picks_other": "{count} picks",
+  "ars.augmentsNote": "How often you took each one. Riot doesn’t allow win rates for augments.",
 };
 export default en;

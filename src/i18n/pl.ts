@@ -1235,5 +1235,18 @@ const dict: Record<string, string> = {
   "aug.silver": "Srebrne wzmocnienie",
   "aug.gold": "Złote wzmocnienie",
   "aug.prismatic": "Pryzmatyczne wzmocnienie",
+  "ars.title": "Arena",
+  "ars.lead_one": "Z twojej {count} wczytanej gry na Arenie.",
+  "ars.lead_few": "Z twoich {count} wczytanych gier na Arenie.",
+  "ars.lead_many": "Z twoich {count} wczytanych gier na Arenie.",
+  "ars.lead_other": "Z twoich {count} wczytanych gier na Arenie.",
+  "ars.firsts": "1. miejsca",
+  "ars.champions": "Bohaterowie",
+  "ars.augments": "Najczęściej wybierane wzmocnienia",
+  "ars.picks_one": "{count} wybór",
+  "ars.picks_few": "{count} wybory",
+  "ars.picks_many": "{count} wyborów",
+  "ars.picks_other": "{count} wyboru",
+  "ars.augmentsNote": "Ile razy wybrałeś każde z nich. Riot nie pozwala na współczynniki zwycięstw dla wzmocnień.",
 };
 export default dict;

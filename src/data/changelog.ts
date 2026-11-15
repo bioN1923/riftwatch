@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.118',
+    date: '2026-11-16',
+    items: ['Profile Stats tab: a new Arena panel for players with Arena games in their loaded history. It shows average place, top-four rate, first places, how often each place came up, the champions played and the augments picked most. Augments show only how often they were picked, never win rates.'],
+  },
+  {
     version: '3.117',
     date: '2026-11-15',
     items: [

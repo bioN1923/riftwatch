@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.118](v3.118/CHANGES.md) | 2026-11-16 | Arena panel on the profile Stats tab |
 | [v3.117](v3.117/CHANGES.md) | 2026-11-15 | Arena augments in match rows and post-game |
 | [v3.116](v3.116/CHANGES.md) | 2026-11-15 | Installable: web app manifest and icons |
 | [v3.115](v3.115/CHANGES.md) | 2026-11-15 | Ladder places jump to the highlighted row |

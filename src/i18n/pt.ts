@@ -1175,5 +1175,14 @@ const dict: Record<string, string> = {
   "aug.silver": "Aprimoramento de prata",
   "aug.gold": "Aprimoramento de ouro",
   "aug.prismatic": "Aprimoramento prismático",
+  "ars.title": "Arena",
+  "ars.lead_one": "Da sua {count} partida de Arena carregada.",
+  "ars.lead_other": "Das suas {count} partidas de Arena carregadas.",
+  "ars.firsts": "1.ºs lugares",
+  "ars.champions": "Campeões",
+  "ars.augments": "Aprimoramentos que você mais escolhe",
+  "ars.picks_one": "{count} escolha",
+  "ars.picks_other": "{count} escolhas",
+  "ars.augmentsNote": "Quantas vezes você escolheu cada um. A Riot não permite taxas de vitória para aprimoramentos.",
 };
 export default dict;

@@ -5,12 +5,14 @@ import clsx from 'clsx';
 import { ArrowDown, ArrowUp, Target } from 'lucide-react';
 import type { MatchSummary } from '../../../shared/types';
 import { assets, champSlug, useStaticData } from '../../lib/ddragon';
-import { compact, decimal, duration as fmtDuration, formatKda, kdaRatio, kdaTone, multikill, pct, timeAgo, winRateTone } from '../../lib/format';
+import { compact, decimal, duration as fmtDuration, formatKda, kdaRatio, kdaTone, multikill, pct, timeAgo, TONE_MIN_GAMES, winRateTone } from '../../lib/format';
 import { me } from '../../lib/stats';
 import { winConditions, type WinCondition } from '../../lib/winConditions';
 import { laneOpponents } from '../../lib/laneOpponents';
 import { sessions, type Split } from '../../lib/sessions';
 import { personalRecords, type PersonalRecord } from '../../lib/records';
+import { arenaSummary } from '../../lib/arenaSummary';
+import { useAugments } from '../../lib/augments';
 import { GameImg, Tooltip } from '../ui/GameImg';
 import { RoleIcon, ROLE_LABEL } from '../ui/RoleIcon';
 import { EmptyState, Skeleton } from '../ui/States';
@@ -132,6 +134,7 @@ export function StatsTab({
       <WinConditions matches={matches} puuid={puuid} />
       <Sittings matches={matches} puuid={puuid} />
       <ChampionTable matches={matches} puuid={puuid} onOpen={onOpenChampion} />
+      <ArenaStats matches={matches} puuid={puuid} />
       <LaneOpponents matches={matches} puuid={puuid} />
       <Records matches={matches} puuid={puuid} />
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -551,6 +554,87 @@ function Sittings({ matches, puuid }: { matches: MatchSummary[]; puuid: string }
         {s.afterResult && row(s.afterResult, 'after', t('ses.afterWin'), t('ses.afterLoss'))}
         {s.early && row(s.early, 'late', t('ses.early'), t('ses.late'))}
       </ul>
+    </section>
+  );
+}
+
+/** Their Arena games among the loaded ones: places, champions and the augments they pick most. */
+function ArenaStats({ matches, puuid }: { matches: MatchSummary[]; puuid: string }) {
+  const s = useMemo(() => arenaSummary(matches, puuid), [matches, puuid]);
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  const { data: augs } = useAugments(!!s && s.augments.length > 0);
+  if (!s) return null;
+  const max = Math.max(1, ...s.placements);
+  // Green for a top-half average, red otherwise; plain on a handful of games.
+  const placeTone = (avg: number, games: number) => (games < TONE_MIN_GAMES ? 'text-text' : avg <= 4.5 ? 'text-win' : 'text-loss');
+  const stat = (label: string, value: string, tone = 'text-text') => (
+    <div>
+      <dt className="text-[11px] text-muted">{label}</dt>
+      <dd className={clsx('num font-display text-xl font-bold leading-tight', tone)}>{value}</dd>
+    </div>
+  );
+  return (
+    <section className="panel p-4" aria-labelledby="ars-h">
+      <h2 id="ars-h" className="panel-title">
+        {t('ars.title')}
+      </h2>
+      <p className="mt-0.5 text-xs text-muted">{t('ars.lead', { count: s.games })}</p>
+      <div className="mt-3 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]">
+        <div>
+          <dl className="grid grid-cols-3 gap-2">
+            {stat(t('arena.avgPlace'), decimal(s.avgPlacement, 2), placeTone(s.avgPlacement, s.games))}
+            {stat(t('arena.top4'), pct(s.top4 / s.games), winRateTone(s.top4 / s.games, s.games))}
+            {stat(t('ars.firsts'), String(s.firsts))}
+          </dl>
+          <ol className="mt-3 flex h-16 items-end gap-1" aria-label={t('arena.placements')}>
+            {s.placements.map((n, i) => (
+              <li key={i} className="flex h-full flex-1 flex-col items-center justify-end gap-0.5" title={`${t('arena.place', { n: i + 1 })}: ${t('common.games', { count: n })}`}>
+                <span className={clsx('w-full rounded-t-[2px]', i < 4 ? 'bg-win/70' : 'bg-loss/60')} style={{ height: `${Math.max(n ? 8 : 2, (n / max) * 100)}%` }} />
+                <span className="num text-[10px] text-faint">{i + 1}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div>
+          <h3 className="mb-1.5 text-xs font-semibold text-muted">{t('ars.champions')}</h3>
+          <ul className="space-y-1">
+            {s.champions.slice(0, 5).map((c) => {
+              const ch = a.champion(c.championId);
+              return (
+                <li key={c.championId} className="flex items-center gap-2 text-sm">
+                  <GameImg src={ch.url} alt="" size={24} rounded="sm" />
+                  <span className="min-w-0 flex-1 truncate">{ch.name}</span>
+                  <span className="num text-xs text-muted">{t('common.games', { count: c.games })}</span>
+                  <span className={clsx('num w-10 text-right font-semibold', placeTone(c.avgPlacement, c.games))} title={t('arena.avgPlace')}>
+                    {decimal(c.avgPlacement, 1)}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+        {s.augments.length > 0 && (
+          <div>
+            <h3 className="mb-1.5 text-xs font-semibold text-muted">{t('ars.augments')}</h3>
+            <ul className="space-y-1">
+              {s.augments.slice(0, 5).map((g) => {
+                const x = augs?.get(g.id);
+                return (
+                  <li key={g.id} className="flex items-center gap-2 text-sm">
+                    <GameImg src={x?.url} alt="" size={24} rounded="sm" className="!bg-[#141c2b]" />
+                    <span className="min-w-0 flex-1 truncate" title={x?.desc || undefined}>
+                      {x?.name ?? t('aug.fallback', { id: String(g.id) })}
+                    </span>
+                    <span className="num text-xs text-muted">{t('ars.picks', { count: g.picks })}</span>
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="mt-1.5 text-[11px] text-faint">{t('ars.augmentsNote')}</p>
+          </div>
+        )}
+      </div>
     </section>
   );
 }

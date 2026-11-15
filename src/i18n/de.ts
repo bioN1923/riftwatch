@@ -1175,5 +1175,14 @@ const dict: Record<string, string> = {
   "aug.silver": "Silber-Augment",
   "aug.gold": "Gold-Augment",
   "aug.prismatic": "Prismatisches Augment",
+  "ars.title": "Arena",
+  "ars.lead_one": "Aus deinem {count} geladenen Arena-Spiel.",
+  "ars.lead_other": "Aus deinen {count} geladenen Arena-Spielen.",
+  "ars.firsts": "1. Plätze",
+  "ars.champions": "Champions",
+  "ars.augments": "Deine häufigsten Augments",
+  "ars.picks_one": "{count}× gewählt",
+  "ars.picks_other": "{count}× gewählt",
+  "ars.augmentsNote": "Wie oft du jedes gewählt hast. Riot erlaubt keine Siegquoten für Augments.",
 };
 export default dict;
