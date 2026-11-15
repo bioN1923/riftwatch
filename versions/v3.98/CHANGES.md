@@ -9,3 +9,6 @@
 - Server test updated: low-sample rows must be `–`.
 
 **Checks.** tsc, 142 tests, build, a11y `{}`. Demo with the Arena response mocked to the live situation (13 games, all low-sample): note shown, tier column all "–", no bars. Shot `demo/arena-early.png`.
+
+## Live check (2026-11-15)
+Deployed 17:50 (local). Live API: Arena 13 games, 66 rows, all tier `–`. Ranked (20,803 games): 39 low-sample rows now `–`; the rest keep S+…D. Arena hasn't grown since 17:42 and the seed line is empty (`queued: 0`): every deploy restarts the server, which forgets the lined-up Arena players, and the 13 stored games aren't re-read, so their players never get lined up again. Next: rebuild the seed line from stored Arena games at start-up.
