@@ -25,6 +25,7 @@ import { ErrorLog, errorsPage } from './errorLog';
 import { timingSafeEqual } from 'node:crypto';
 import { champAddressFix } from '../shared/champSearch';
 import { STATIC_LOCALES, slimStatic } from '../shared/staticSlim';
+import { slimAugments } from '../shared/augments';
 import { HTML_LANG, OG_LOCALE, alternateLinks, pickLang, seoText, sitemapXml } from './seo';
 import { allChampions, championByKey, championBySlug, championCard, compareCard, draftCard, loadOgData, matchupCard, profileCard, siteCard, type CompareSide, type ProfileCard } from './og';
 import type { ApiErrorBody, HealthResponse, PrivacyChallenge, PrivacyResult, Ladder, LadderEntry, LpHistory, MatchPage, MatchSummary, MatchTimeline, PlayerHit, Profile, ScoutInfo, ServerStatus, StatsGroup, ChallengeSummary } from '../shared/types';
@@ -702,6 +703,30 @@ async function slimStaticFor(locale: string): Promise<string> {
     staticPending.delete(locale);
   }
 }
+
+/** Arena augment names and icons (CommunityDragon), slimmed and cached for six hours per language. */
+const augmentCache = new Map<string, { at: number; body: string }>();
+app.get(
+  '/api/augments/:locale',
+  wrap(async (req, res) => {
+    const locale = String(req.params.locale);
+    if (!STATIC_LOCALES.has(locale)) throw new ApiError(400, 'BAD_REQUEST', 'Unknown language.');
+    let hit = augmentCache.get(locale);
+    if (!hit || Date.now() - hit.at > 6 * 60 * 60_000) {
+      try {
+        const r = await fetch(`https://raw.communitydragon.org/latest/cdragon/arena/${locale.toLowerCase()}.json`, { signal: AbortSignal.timeout(10_000) });
+        if (!r.ok) throw new Error(`CommunityDragon ${r.status}`);
+        hit = { at: Date.now(), body: JSON.stringify(slimAugments((await r.json()) as { augments: any[] })) };
+        augmentCache.set(locale, hit);
+      } catch {
+        // Keep serving the last good copy through a CDN hiccup.
+        if (!hit) throw new ApiError(503, 'UPSTREAM', 'Augment data is unavailable right now.');
+      }
+    }
+    res.setHeader('Cache-Control', 'public, max-age=21600, stale-while-revalidate=86400');
+    res.type('application/json').send(hit.body);
+  }),
+);
 
 app.get(
   '/api/static/:locale',

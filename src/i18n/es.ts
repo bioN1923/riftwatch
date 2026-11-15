@@ -1170,5 +1170,10 @@ const dict: Record<string, string> = {
   "lb.fallers": "Los que más bajan (respecto a {when})",
   "lb.movers": "Mayores cambios de LP",
   "lb.showRow": "Mostrar el puesto {rank} en la clasificación",
+  "aug.label": "Aumentos",
+  "aug.fallback": "Aumento {id}",
+  "aug.silver": "Aumento de plata",
+  "aug.gold": "Aumento de oro",
+  "aug.prismatic": "Aumento prismático",
 };
 export default dict;

@@ -1200,5 +1200,10 @@ const dict: Record<string, string> = {
   "lb.fallers": "Coboară cel mai repede (față de {when})",
   "lb.movers": "Cele mai mari schimbări de LP",
   "lb.showRow": "Arată locul {rank} în clasament",
+  "aug.label": "Augmentări",
+  "aug.fallback": "Augmentare {id}",
+  "aug.silver": "Augmentare de argint",
+  "aug.gold": "Augmentare de aur",
+  "aug.prismatic": "Augmentare prismatică",
 };
 export default dict;

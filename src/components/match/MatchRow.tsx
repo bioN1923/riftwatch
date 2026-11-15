@@ -9,7 +9,7 @@ import { queueName } from '../../lib/queues';
 import { profilePath } from '../../lib/riotId';
 import { result } from '../../lib/stats';
 import { GameImg } from '../ui/GameImg';
-import { Items, SpellsRunes } from './Loadout';
+import { Augments, Items, SpellsOnly, SpellsRunes } from './Loadout';
 import { MatchDetails } from './MatchDetails';
 import { fadeIn } from '../../lib/motion';
 import { Collapse } from '../ui/Motion';
@@ -97,7 +97,14 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
             </p>
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-              <SpellsRunes p={p} a={a} size={22} />
+              {arena && p.augments?.length ? (
+                <div className="flex gap-0.5">
+                  <SpellsOnly p={p} a={a} size={22} />
+                  <Augments ids={p.augments} size={22} />
+                </div>
+              ) : (
+                <SpellsRunes p={p} a={a} size={22} />
+              )}
               <div>
                 <p className="display-num text-[28px] font-extrabold leading-none">
                   {p.kills}

@@ -159,7 +159,19 @@ export function mockProfile(platform: string, gameName: string, tagLine: string)
 const QUEUE_MIX = [420, 420, 420, 420, 420, 420, 440, 440, 450, 450, 490];
 const TOTAL_MATCHES = 80;
 
+/** One game in each demo history is Arena, so augments and placements show up on profiles. */
+const DEMO_ARENA_INDEX = 4;
+
 function mockMatch(p: Persona, index: number): MatchSummary {
+  const base = mockRiftMatch(p, index);
+  if (index !== DEMO_ARENA_INDEX) return base;
+  const arena = mockArenaMatch(2000 + (p.seed % 5000));
+  const slot = p.seed % arena.participants.length;
+  arena.participants[slot] = { ...arena.participants[slot], puuid: p.puuid, gameName: p.gameName, tagLine: p.tagLine };
+  return { ...arena, id: base.id, startedAt: base.startedAt };
+}
+
+function mockRiftMatch(p: Persona, index: number): MatchSummary {
   const r = rng(p.seed * 31 + index * 977);
   const queueId = pick(r, QUEUE_MIX);
   const aram = queueId === 450;
@@ -354,12 +366,14 @@ export function mockTimeline(m: MatchSummary): MatchTimeline {
 
   const events: TimelineEvent[] = [];
   const left = ps.map((p) => ({ k: p.kills, d: p.deaths, a: p.assists }));
+  // Arena duos share teamId 100 and differ by subteam.
+  const side = (j: number) => `${ps[j].teamId}-${ps[j].subteam ?? 0}`;
   for (let i = 0; i < n; i++) {
     for (let k = 0; k < ps[i].kills; k++) {
-      const enemies = ps.map((_, j) => j).filter((j) => ps[j].teamId !== ps[i].teamId);
+      const enemies = ps.map((_, j) => j).filter((j) => side(j) !== side(i));
       const victim = enemies.find((j) => left[j].d > 0) ?? pick(r, enemies);
       left[victim].d--;
-      const mates = ps.map((_, j) => j).filter((j) => j !== i && ps[j].teamId === ps[i].teamId && left[j].a > 0);
+      const mates = ps.map((_, j) => j).filter((j) => j !== i && side(j) === side(i) && left[j].a > 0);
       const assists = mates.sort(() => r() - 0.5).slice(0, int(r, 0, Math.min(3, mates.length)));
       assists.forEach((j) => left[j].a--);
       const [x, y] = lanePoint(r, ps[victim].position);

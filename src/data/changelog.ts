@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.117',
+    date: '2026-11-15',
+    items: [
+      'Arena games in match history show the augments each player picked, with their tier (silver, gold or prismatic) and what they do on hover, in the row and in the post-game table. As Riot requires, there are no win rates for augments.',
+      'Post-game tables leave out the CS and ward columns in modes that have neither, instead of showing zeros.',
+    ],
+  },
+  {
     version: '3.116',
     date: '2026-11-15',
     items: ['Riftwatch can be added to your phone’s home screen or installed as an app on desktop: it now has an app icon, a name and shortcuts to Champions, the Ladder and the Draft helper. The browser bar matches the dark or light theme.'],

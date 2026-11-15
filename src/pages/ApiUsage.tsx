@@ -129,7 +129,7 @@ export function ApiUsagePage() {
           Live games show only public profile data (rank, champion mastery, ranked record). No session-specific information such as premade groups, and
           players the game hides (e.g. streamer mode) are not looked up.
         </li>
-        <li>Arena: no win rates for augments or Arena items. Augments aren’t shown at all; items show only how often they’re bought.</li>
+        <li>Arena: no win rates for augments or Arena items. Augments appear only as what a player picked in their own games (names and icons from CommunityDragon); items show only how often they’re bought.</li>
         <li>Custom games (queue 0) are never shown in public match history.</li>
         <li>Players are shown by their current Riot ID only; an old Riot ID is dropped from search as soon as we see the new one.</li>
         <li>Multi-search only looks up Riot IDs the visitor types or pastes. It never reveals the names ranked champion select hides.</li>

@@ -10,7 +10,7 @@ import { t } from '../../i18n';
 /**
  * Arena on champion pages. Riot's policy: products may not show win rates for Augments or Arena
  * items. So this shows the champion's own results, finishing places, duo partners, and items by
- * how often they're bought — never augments, and never item win rates.
+ * how often they’re bought — never augment stats, and never item win rates.
  */
 type Arena = NonNullable<ChampionStats['arena']>;
 

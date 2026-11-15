@@ -5,7 +5,7 @@ import { assets, useStaticData } from '../../../lib/ddragon';
 import { compact, formatKda, kdaRatio, kdaTone, pct, thousands } from '../../../lib/format';
 import { profilePath } from '../../../lib/riotId';
 import { GameImg } from '../../ui/GameImg';
-import { Items, SpellsRunes } from '../Loadout';
+import { Augments, Items, SpellsOnly, SpellsRunes } from '../Loadout';
 import { Badge, ordinal } from '../MatchRow';
 import { t } from '../../../i18n';
 
@@ -42,6 +42,9 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
   const maxTaken = Math.max(1, ...match.participants.map((p) => p.damageTaken));
   const minutes = match.duration / 60;
   const gs = groups(match);
+  // Arena and other modes without minions or wards: leave those columns out rather than show zeros.
+  const hasCs = match.participants.some((p) => p.cs > 0);
+  const hasVision = match.participants.some((p) => p.visionScore > 0);
   const blue = match.teams.find((t) => t.teamId === 100);
   const red = match.teams.find((t) => t.teamId === 200);
 
@@ -69,12 +72,16 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
                 <th scope="col" className="hidden w-[52px] px-2 text-right font-medium @[680px]:table-cell">
                   {t('pg.gold')}
                 </th>
-                <th scope="col" className="hidden w-[60px] px-2 text-right font-medium @[580px]:table-cell">
-                  {t('pg.cs')}
-                </th>
-                <th scope="col" className="hidden w-[56px] px-2 text-right font-medium @[740px]:table-cell">
-                  {t('pg.wards')}
-                </th>
+                {hasCs && (
+                  <th scope="col" className="hidden w-[60px] px-2 text-right font-medium @[580px]:table-cell">
+                    {t('pg.cs')}
+                  </th>
+                )}
+                {hasVision && (
+                  <th scope="col" className="hidden w-[56px] px-2 text-right font-medium @[740px]:table-cell">
+                    {t('pg.wards')}
+                  </th>
+                )}
                 <th scope="col" className="hidden w-[170px] px-2 pr-3 font-medium @[580px]:table-cell">
                   {t('pg.items')}
                 </th>
@@ -96,7 +103,14 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
                           </span>
                         </div>
                         <span className="shrink-0">
-                          <SpellsRunes p={p} a={a} size={15} />
+                          {p.augments?.length ? (
+                            <span className="flex gap-0.5">
+                              <SpellsOnly p={p} a={a} size={15} />
+                              <Augments ids={p.augments} size={15} />
+                            </span>
+                          ) : (
+                            <SpellsRunes p={p} a={a} size={15} />
+                          )}
                         </span>
                         <div className="ml-1 min-w-0 flex-1">
                           {self ? (
@@ -116,9 +130,11 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
                       {/* Narrow screens: items and CS under the player instead of in columns off the edge. */}
                       <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 @[580px]:hidden">
                         <Items items={p.items} size={16} />
-                        <span className="num text-muted">
-                          {p.cs} {t('pg.cs')} · {t('pg.perMin', { value: (p.cs / minutes).toFixed(1) })}
-                        </span>
+                        {hasCs && (
+                          <span className="num text-muted">
+                            {p.cs} {t('pg.cs')} · {t('pg.perMin', { value: (p.cs / minutes).toFixed(1) })}
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td className="num px-2">
@@ -150,16 +166,20 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
                       </div>
                     </td>
                     <td className="num hidden px-2 text-right @[680px]:table-cell">{compact(p.gold)}</td>
-                    <td className="num hidden px-2 text-right @[580px]:table-cell">
-                      {p.cs}
-                      <span className="block text-muted">{t('pg.perMin', { value: (p.cs / minutes).toFixed(1) })}</span>
-                    </td>
-                    <td className="num hidden px-2 text-right @[740px]:table-cell" title={t('pg.wardsTip')}>
-                      {p.visionScore}
-                      <span className="block text-muted">
-                        {p.wardsPlaced} · {p.controlWards}
-                      </span>
-                    </td>
+                    {hasCs && (
+                      <td className="num hidden px-2 text-right @[580px]:table-cell">
+                        {p.cs}
+                        <span className="block text-muted">{t('pg.perMin', { value: (p.cs / minutes).toFixed(1) })}</span>
+                      </td>
+                    )}
+                    {hasVision && (
+                      <td className="num hidden px-2 text-right @[740px]:table-cell" title={t('pg.wardsTip')}>
+                        {p.visionScore}
+                        <span className="block text-muted">
+                          {p.wardsPlaced} · {p.controlWards}
+                        </span>
+                      </td>
+                    )}
                     <td className="hidden px-2 pr-3 @[580px]:table-cell">
                       <Items items={p.items} size={19} />
                     </td>
