@@ -10,3 +10,6 @@
 - `tests/arenaProbe.test.ts` (140 tests).
 
 **Checks.** tsc, tests, build, a11y `{}`. The collector doesn't run in demo mode, so the real check is the live Arena match count over the next hours.
+
+## Live check (2026-11-15)
+Deployed 17:02 (local). `/api/health` ok (live mode), collector running (`collecting: true`), `/api-usage` serves the updated text. Arena matches still 0 at 17:05 — expected so soon: the probe only runs inside the collector loop when ladder players have new games and visitors are idle, and every request waits for the pacing. To be re-checked in the next iterations.
