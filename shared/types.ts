@@ -350,6 +350,8 @@ export interface MatchupStats
   role: string;
   /** Roles where these two met in lane, most games first. */
   roles: { role: string; games: number }[];
+  /** This matchup in the chosen role on each kept patch, oldest first. */
+  history?: (Rated & { patch: string })[];
   games: number;
   winRate: number;
   adjusted: number; // win rate pulled toward 50% for small samples

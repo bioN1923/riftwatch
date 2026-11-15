@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.104',
+    date: '2026-11-15',
+    items: ['Matchup pages: “Across patches” shows how this matchup went on each recent patch, with the same plain verdict on whether the latest change is real.'],
+  },
+  {
     version: '3.103',
     date: '2026-11-15',
     items: ['Ladder: Challenger and Grandmaster show how much LP each player gained or lost since about a day ago (green and red numbers next to their LP).'],

@@ -47,6 +47,15 @@ describe('champion statistics', () => {
     expect(latest.games).toBe(s.summary!.games);
   });
 
+  it('lists a matchup across patches, matching the viewed patch', () => {
+    const row = store.tierList('ranked').rows[0];
+    const opp = store.champion(row.championId, 'ranked', row.role).matchups[0];
+    if (!opp) return;
+    const m = store.matchup(row.championId, opp.championId, 'ranked', row.role);
+    const latest = (m.history ?? []).find((x) => x.patch === m.patch);
+    expect(latest?.games).toBe(m.games);
+  });
+
   it('builds a tier list with sensible rates', () => {
     const t = store.tierList('ranked');
     expect(t.rows.length).toBeGreaterThan(0);

@@ -751,6 +751,10 @@ export class ChampionStatsStore {
           ? { minutes: LANE_MINUTES, gold: v.ld.slice(0, 3).map((x) => x / v.ln!), cs: v.ld.slice(3).map((x) => x / v.ln!), games: v.ln }
           : null,
       baseline: r?.g ? rated(r) : null,
+      history: [...patches].reverse().flatMap((p) => {
+        const x = this.s.patches[p]?.[group]?.champs[championId]?.roles[chosen]?.vs[opponentId];
+        return x && x.g ? [{ patch: p, ...rated(x) }] : [];
+      }),
       others: Object.entries(r?.vs ?? {})
         .filter(([id]) => Number(id) !== opponentId)
         .sort((a, b) => b[1].g - a[1].g)

@@ -1154,5 +1154,6 @@ const en = {
   "profile.challengesTip": "{points} challenge points",
   "lb.changeSince": "Green and red numbers by the LP: change since {when}.",
   "lb.changeTip": "{lp} LP since the earlier snapshot",
+  "ph.captionGames": "Win rate and games on each recent patch",
 };
 export default en;

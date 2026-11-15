@@ -17,6 +17,7 @@ import { LaneCurve } from '../components/champions/LaneCurve';
 import { ItemsBlock, Lead, LOW_SAMPLE, RunesBlock, SpellsAndStart } from './Champion';
 import { t } from '../i18n';
 import { guessChampion } from '../lib/champSearch';
+import { PatchHistory } from '../components/champions/PatchHistory';
 
 export function MatchupPage() {
   const { slug = '', opp = '' } = useParams();
@@ -191,6 +192,8 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
             </section>
           </>
         )}
+
+        {m && (m.history?.length ?? 0) >= 2 && <PatchHistory history={m.history} current={m.patch} />}
 
         {m && m.others.length > 0 && (
           <section className="panel p-5" aria-labelledby="mu-others-h">
