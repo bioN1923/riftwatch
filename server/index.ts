@@ -47,7 +47,7 @@ if (DEMO) DEMO_SEED.forEach((p) => players.add(p));
 
 const champStats = new ChampionStatsStore(DEMO ? null : path.resolve(here, 'data', 'champions.json'));
 // Players from Arena games already read, for the collector to look up next (see arenaSeeds.ts).
-const arenaSeeds = new ArenaSeeds((getPlatform(process.env.CRAWL_REGION ?? 'euw1') ?? getPlatform('euw1')!).id);
+const arenaSeeds = new ArenaSeeds((getPlatform(process.env.CRAWL_REGION ?? 'euw1') ?? getPlatform('euw1')!).id, 300, 20_000, DEMO ? null : path.resolve(here, 'data', 'arena-seeds.json'));
 const timelines = new TtlCache<MatchTimeline>(300);
 const privacy = new PrivacyStore(DEMO ? null : path.resolve(here, 'data', 'privacy.json'));
 players.isBlocked = (puuid) => privacy.isHidden(puuid);
@@ -1186,13 +1186,17 @@ if (!DEMO) {
   setTimeout(() => void refreshTracked(), 15_000).unref();
 }
 
-process.on('SIGINT', () => {
+// Fly stops machines with SIGINT by default; SIGTERM covers other hosts. Save everything first.
+const shutdown = () => {
   errorLog.flush();
   lp.flush();
   players.flush();
   champStats.flush();
+  arenaSeeds.flush();
   process.exit(0);
-});
+};
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
 
 app.listen(PORT, () => {
   console.log(`API listening on http://localhost:${PORT}  (${DEMO ? 'demo data — set RIOT_API_KEY in .env for live data' : 'live Riot data'})`);

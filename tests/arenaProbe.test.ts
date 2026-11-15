@@ -38,3 +38,23 @@ describe('Arena by game mode', () => {
     expect(noteArenaQueue(1790, 'CHERRY')).toBe(false);
   });
 });
+
+describe('ArenaSeeds on disk', () => {
+  it('keeps the line across restarts', async () => {
+    const fs = await import('node:fs');
+    const os = await import('node:os');
+    const path = await import('node:path');
+    const { ArenaSeeds } = await import('../server/arenaSeeds');
+    const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'rw-')), 'arena-seeds.json');
+    const a = new ArenaSeeds('euw1', 300, 20_000, file);
+    a.note({ id: 'EUW1_1', queueId: 1710, participants: [{ puuid: 'x' }, { puuid: 'y' }, { puuid: 'z' }] as never });
+    a.note({ id: 'EUN1_2', queueId: 1710, participants: [{ puuid: 'other' }] as never }); // another platform: ignored
+    expect(a.take()).toBe('x');
+    a.flush();
+    const b = new ArenaSeeds('euw1', 300, 20_000, file);
+    expect(b.size).toBe(2);
+    expect(b.take()).toBe('y');
+    b.note({ id: 'EUW1_3', queueId: 1710, participants: [{ puuid: 'x' }] as never }); // already known: not lined up again
+    expect(b.size).toBe(1);
+  });
+});
