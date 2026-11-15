@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.111',
+    date: '2026-11-15',
+    items: ['Match lists and the live game call Arena games “Arena” again when Riot runs Arena under an event queue (they showed as “Special mode”).'],
+  },
+  {
     version: '3.110',
     date: '2026-11-15',
     items: ['Champion pages show the champion’s damage type next to its classes (Physical, Magic or Mixed damage), the same read the live game and the draft helper use.'],

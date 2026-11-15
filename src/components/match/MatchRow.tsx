@@ -44,7 +44,7 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
   return (
     <article
       id={`m-${match.id}`}
-      aria-label={t('match.aria', { result: resultLabel(r), champion: champ.name, queue: queueName(match.queueId), ago: timeAgo(ended) })}
+      aria-label={t('match.aria', { result: resultLabel(r), champion: champ.name, queue: queueName(match.queueId, match.gameMode), ago: timeAgo(ended) })}
       className={clsx(
         'group/card scroll-mt-20 overflow-hidden rounded border bg-surface transition-colors duration-200',
         open ? 'border-line-strong' : 'border-line hover:border-line-strong',
@@ -82,7 +82,7 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
           <div className="min-w-0 flex-1 space-y-2.5">
             {/* Wraps between the pieces, never inside one ("4 days" / "ago" on separate lines on phones). */}
             <p className="flex flex-wrap items-baseline gap-x-1.5 text-xs text-muted">
-              <span className="whitespace-nowrap font-medium text-text">{queueName(match.queueId)}</span>
+              <span className="whitespace-nowrap font-medium text-text">{queueName(match.queueId, match.gameMode)}</span>
               <span className="text-faint" aria-hidden>
                 /
               </span>

@@ -33,8 +33,9 @@ const QUEUE_KEYS: Record<number, MessageKey | string> = {
   2400: 'queue.aramMayhem',
 };
 
-export const queueName = (id: number) => {
-  const k = QUEUE_KEYS[id];
+/** A queue's name. Arena events can come with queue ids of their own; the game mode still says Arena. */
+export const queueName = (id: number, gameMode?: string) => {
+  const k = gameMode === 'CHERRY' ? 'queue.arena' : QUEUE_KEYS[id];
   return k == null ? t('queue.special') : k.startsWith('queue.') ? t(k as MessageKey) : k;
 };
 

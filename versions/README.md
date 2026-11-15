@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.111](v3.111/CHANGES.md) | 2026-11-15 | Arena event games named Arena |
 | [v3.110](v3.110/CHANGES.md) | 2026-11-15 | Champion page: damage type tag |
 | [v3.109](v3.109/CHANGES.md) | 2026-11-15 | Arena: read more of the line when the ladder is quiet |
 | [v3.108](v3.108/CHANGES.md) | 2026-11-15 | Arena: remember learned queue ids; fallback read |

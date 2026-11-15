@@ -60,7 +60,7 @@ export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string;
           <span className="live-dot size-1.5 rounded-full bg-on-accent" aria-hidden /> {t('live.badge')}
         </span>
         <h2 id="live-h" className="font-display text-xl font-bold">
-          {queueName(game.queueId)}
+          {queueName(game.queueId, game.gameMode)}
         </h2>
         <span className="num text-muted">
           {duration(elapsed)}
