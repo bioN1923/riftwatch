@@ -9,3 +9,7 @@
 - No service worker (no offline caching to go stale against live data).
 
 **Checks.** Demo: manifest served as `application/manifest+json`, Chrome's `Page.getAppManifest` reports no errors and `getInstallabilityErrors` is empty. a11y `{}`. Icon: `demo/icon-512.png`.
+
+## Live check (2026-11-15 23:41 local)
+- `/manifest.webmanifest` → 200, `application/manifest+json`, short name "Riftwatch", 3 icons, 3 shortcuts; `/icon-512.png` → 200; live index links the manifest and both theme colours.
+- Arena: 163 games (151 at 21:32 UTC); health `arena` queue 1750, 998 players lined up, no probes needed.
