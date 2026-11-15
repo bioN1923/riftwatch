@@ -21,3 +21,10 @@
 Screens: `demo/matchups-table.png`, `demo/counters.png`.
 
 Unchanged: win-rate bars still show position (red under 50%), not certainty.
+
+## Live check (2026-11-16 00:29 local)
+- The live build serves `i18n-CpUEkk_n.js` with the new note.
+- Live data for Ahri mid (2,718 games), comparing the old rule with the new one:
+  - counters strip: 1 of 10 usable chips is now "sure", down from 4;
+  - lane matchups table: 5 matchups get a colour, down from 52 (every one with 10+ games used to be coloured).
+- Arena: 267 games.
