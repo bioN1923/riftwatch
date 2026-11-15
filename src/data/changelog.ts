@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.89',
+    date: '2026-11-15',
+    items: ['When Riot’s rate limit is hit, the error panel now counts down and tries again by itself once the wait is over (up to twice), instead of leaving you to keep pressing Try again.'],
+  },
+  {
     version: '3.88',
     date: '2026-11-15',
     items: ['Match details, Item build tab: this game’s first three finished items and skill max order next to what high-elo players most often build on the same champion and role, with matching items outlined and a link to the full build.'],

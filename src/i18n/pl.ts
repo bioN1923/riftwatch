@@ -1145,5 +1145,9 @@ const dict: Record<string, string> = {
   "ib.vsMaxSame": "Tak jak najczęstsza kolejność.",
   "ib.vsMaxDiff": "Inaczej niż najczęstsza kolejność.",
   "ib.vsNote": "Gry rankingowe high elo na patchu {patch}. Współczynniki zwycięstw pochodzą z tamtych gier, nie z tej.",
+  "error.retryIn_one": "Ponowna próba za {count} sekundę…",
+  "error.retryIn_few": "Ponowna próba za {count} sekundy…",
+  "error.retryIn_many": "Ponowna próba za {count} sekund…",
+  "error.retryIn_other": "Ponowna próba za {count} sekundy…",
 };
 export default dict;

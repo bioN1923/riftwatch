@@ -16,8 +16,10 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false,
       staleTime: 2 * 60 * 1000,
-      // Don't retry answers that won't change (not found, bad key, bad input).
-      retry: (count, err) => !(err instanceof ApiClientError && [400, 404, 502].includes(err.status) && err.code !== 'UPSTREAM') && count < 1,
+      // Don't retry answers that won't change (not found, bad key, bad input), and don't retry a rate
+      // limit straight away: the error panel waits for Retry-After and tries again itself.
+      retry: (count, err) =>
+        !(err instanceof ApiClientError && (err.code === 'RATE_LIMITED' || ([400, 404, 502].includes(err.status) && err.code !== 'UPSTREAM'))) && count < 1,
     },
   },
 });

@@ -198,7 +198,7 @@ function Results({ platform, id }: { platform: string; id: RiotId }) {
   }) as { data?: MatchPage; isPending: boolean }[];
 
   if (profileQ.isPending) return <Skeleton className="mt-8 h-48" />;
-  if (profileQ.isError) return <ErrorState error={profileQ.error} />;
+  if (profileQ.isError) return <ErrorState error={profileQ.error} onRetry={() => profileQ.refetch()} />;
   if (mineQ.isPending || !sd) return <Skeleton className="mt-8 h-48" />;
   if (!solo || myRank == null) return <p className="mt-8 text-sm text-muted">{t('duo.unranked')}</p>;
   if (!me?.mainRole || me.games < 5) return <p className="mt-8 text-sm text-muted">{t('duo.tooFew')}</p>;

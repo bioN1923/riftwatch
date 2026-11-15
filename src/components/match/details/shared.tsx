@@ -34,7 +34,7 @@ export function TimelineGate({ q, children }: { q: ReturnType<typeof useTimeline
   if (q.isError) {
     return (
       <div className="p-4">
-        <ErrorState error={q.error} />
+        <ErrorState error={q.error} onRetry={() => q.refetch()} />
       </div>
     );
   }

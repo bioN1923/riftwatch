@@ -133,6 +133,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
         <ErrorState
           page
           error={profileQ.error}
+          onRetry={() => profileQ.refetch()}
           action={
             <button onClick={() => profileQ.refetch()} className="rounded-lg border border-line-strong px-4 py-2 font-semibold hover:bg-raised">
               {t('common.tryAgain')}
@@ -220,6 +221,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
               {matchesQ.isError ? (
                 <ErrorState
                   error={matchesQ.error}
+                  onRetry={() => matchesQ.refetch()}
                   action={
                     <button onClick={() => matchesQ.refetch()} className="rounded border border-line-strong px-4 py-2 font-semibold hover:bg-raised">
                       {t('common.tryAgain')}

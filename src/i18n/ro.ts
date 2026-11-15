@@ -1118,5 +1118,8 @@ const dict: Record<string, string> = {
   "ib.vsMaxSame": "La fel ca ordinea cea mai jucată.",
   "ib.vsMaxDiff": "Diferită de ordinea cea mai jucată.",
   "ib.vsNote": "Meciuri ranked high-elo pe patch-ul {patch}. Win rate-urile vin din acele meciuri, nu din acesta.",
+  "error.retryIn_one": "Reîncerc într-o secundă…",
+  "error.retryIn_few": "Reîncerc în {count} secunde…",
+  "error.retryIn_other": "Reîncerc în {count} de secunde…",
 };
 export default dict;

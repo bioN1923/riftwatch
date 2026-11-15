@@ -194,7 +194,7 @@ export function LeaderboardPage() {
         </div>
       ) : q.isError ? (
         <div className="mt-6">
-          <ErrorState error={q.error} />
+          <ErrorState error={q.error} onRetry={() => q.refetch()} />
         </div>
       ) : q.data.entries.length === 0 ? (
         <div className="panel mt-6">

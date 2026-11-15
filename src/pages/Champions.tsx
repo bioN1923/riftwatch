@@ -176,7 +176,7 @@ export function ChampionsPage() {
         </div>
       ) : q.isError ? (
         <div className="mt-6">
-          <ErrorState error={q.error} />
+          <ErrorState error={q.error} onRetry={() => q.refetch()} />
         </div>
       ) : rows.length === 0 ? (
         <div className="panel mt-6">

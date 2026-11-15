@@ -1091,5 +1091,7 @@ const en = {
   "ib.vsMaxSame": "Same as the most played order.",
   "ib.vsMaxDiff": "Different from the most played order.",
   "ib.vsNote": "High-elo ranked games on patch {patch}. Win rates come from those games, not from this one.",
+  "error.retryIn_one": "Trying again in {count} second…",
+  "error.retryIn_other": "Trying again in {count} seconds…",
 };
 export default en;

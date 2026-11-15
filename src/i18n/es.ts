@@ -1091,5 +1091,7 @@ const dict: Record<string, string> = {
   "ib.vsMaxSame": "Igual que el orden más jugado.",
   "ib.vsMaxDiff": "Distinto del orden más jugado.",
   "ib.vsNote": "Partidas clasificatorias de alto elo en el parche {patch}. Las tasas de victoria vienen de esas partidas, no de esta.",
+  "error.retryIn_one": "Reintentando en {count} segundo…",
+  "error.retryIn_other": "Reintentando en {count} segundos…",
 };
 export default dict;
