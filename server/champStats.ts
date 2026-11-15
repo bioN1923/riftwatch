@@ -691,6 +691,7 @@ export class ChampionStatsStore {
           rank: 0,
           lowSample: r.g < minGames,
           ...(role === 'ALL' ? { counters: [], countersSure: 0 } : (({ ids, sure }) => ({ counters: ids, countersSure: sure }))(countersOf(r))),
+          ...(r.ar && r.ar.pl.some((n) => n > 0) ? { avgPlacement: r.ar.pl.reduce((s, n, i) => s + n * (i + 1), 0) / r.ar.pl.reduce((s, n) => s + n, 0) } : {}),
         });
       }
     }

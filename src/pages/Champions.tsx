@@ -10,7 +10,7 @@ import type { StatsGroup, TierRow } from '../../shared/types';
 import { api } from '../lib/api';
 import { assets, champSlug, useStaticData, matchupPath } from '../lib/ddragon';
 import { clearRecentChamps, useRecentChamps, useRegion } from '../lib/storage';
-import { pct, thousands } from '../lib/format';
+import { decimal, pct, thousands } from '../lib/format';
 import { GameImg } from '../components/ui/GameImg';
 import { RoleIcon, ROLE_LABEL } from '../components/ui/RoleIcon';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
@@ -20,7 +20,7 @@ import { t } from '../i18n';
 import { champHit } from '../lib/champSearch';
 import { readPools } from '../lib/pool';
 
-type SortKey = 'rank' | 'name' | 'tier' | 'winRate' | 'pickRate' | 'banRate' | 'games';
+type SortKey = 'rank' | 'name' | 'tier' | 'winRate' | 'pickRate' | 'banRate' | 'games' | 'avgPlacement';
 const TIER_ORDER = { 'S+': 0, S: 1, A: 2, B: 3, C: 4, D: 5, '–': 6 };
 
 export function ChampionsPage() {
@@ -66,9 +66,9 @@ export function ChampionsPage() {
       .filter((r) => !needle || champHit(needle, { id: sd?.champions.get(r.championId)?.id ?? r.name, name: r.name }) != null)
       .filter((r) => !(showPool && onlyPool) || inPool(r));
     const val = (r: TierRow & { name: string }) =>
-      sort.key === 'name' ? r.name : sort.key === 'tier' ? TIER_ORDER[r.tier] * 1000 + r.rank : sort.key === 'rank' ? r.rank : (r[sort.key] as number);
+      sort.key === 'name' ? r.name : sort.key === 'tier' ? TIER_ORDER[r.tier] * 1000 + r.rank : sort.key === 'rank' ? r.rank : ((r[sort.key] as number | undefined) ?? 9);
     // Sorting by a rate puts small samples after the rest: 66.7% over 36 games shouldn't top the list.
-    const rated = sort.key === 'winRate' || sort.key === 'pickRate' || sort.key === 'banRate';
+    const rated = sort.key === 'winRate' || sort.key === 'pickRate' || sort.key === 'banRate' || sort.key === 'avgPlacement';
     return named.sort((x, y) => {
       if (rated && !!x.lowSample !== !!y.lowSample) return x.lowSample ? 1 : -1;
       const vx = val(x);
@@ -78,6 +78,10 @@ export function ChampionsPage() {
     });
   }, [q.data, role, query, sort, a, onlyPool, showPool, sd]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Arena: average place is the number players read first. Bans: a column of 0.0% only when a mode
+  // (or the games read so far) records none, so it's left out then.
+  const arenaCols = group === 'arena' && (q.data?.rows ?? []).some((r) => r.avgPlacement != null);
+  const showBans = (q.data?.rows ?? []).some((r) => r.banRate > 0);
   const header = (key: SortKey, label: string, align: 'left' | 'right' = 'right', defaultDir: 1 | -1 = -1, extra?: string) => {
     const active = sort.key === key;
     return (
@@ -209,8 +213,9 @@ export function ChampionsPage() {
                 )}
                 {header('tier', t('tl.col.tier'), 'left', 1)}
                 {header('winRate', t('tl.col.wr'))}
+                {arenaCols && header('avgPlacement', t('arena.avgPlaceShort'), 'right', 1, 'hidden sm:table-cell')}
                 {header('pickRate', t('tl.col.pick'), 'right', -1, 'hidden sm:table-cell')}
-                {header('banRate', t('tl.col.ban'), 'right', -1, 'hidden sm:table-cell')}
+                {showBans && header('banRate', t('tl.col.ban'), 'right', -1, 'hidden sm:table-cell')}
                 {header('games', t('tl.col.games'), 'right', -1, 'hidden sm:table-cell')}
                 {group === 'ranked' && (
                   <th scope="col" className="hidden px-3 py-2 text-left font-medium xl:table-cell">
@@ -275,8 +280,13 @@ export function ChampionsPage() {
                         </span>
                       </span>
                     </td>
+                    {arenaCols && (
+                      <td className={clsx('num hidden px-3 py-2 text-right sm:table-cell', r.lowSample ? 'text-faint' : 'text-text')} title={t('arena.avgPlace')}>
+                        {r.avgPlacement != null ? decimal(r.avgPlacement, 2) : '–'}
+                      </td>
+                    )}
                     <td className="num hidden px-3 py-2 text-right text-muted sm:table-cell">{pct(r.pickRate, 1)}</td>
-                    <td className="num hidden px-3 py-2 text-right text-muted sm:table-cell">{pct(r.banRate, 1)}</td>
+                    {showBans && <td className="num hidden px-3 py-2 text-right text-muted sm:table-cell">{pct(r.banRate, 1)}</td>}
                     <td className="num hidden px-3 py-2 text-right text-muted sm:table-cell">
                       {thousands(r.games)}
                       {r.lowSample && (

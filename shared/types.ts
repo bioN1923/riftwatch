@@ -234,6 +234,8 @@ export interface TierRow {
   /** Win rate on the previous patch, when both patches have enough games for it to mean something. */
   prevWinRate?: number;
   prevGames?: number;
+  /** Arena only: average finishing place, 1 (best) to 8. */
+  avgPlacement?: number;
 }
 
 export interface TierList {

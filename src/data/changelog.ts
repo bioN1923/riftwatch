@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.124',
+    date: '2026-11-16',
+    items: [
+      'The Arena tier list has an “Avg place” column, sortable with the best average first: the number Arena players look at before the top-four rate.',
+      'Tier lists hide the ban-rate column for modes where no bans are recorded, instead of filling it with 0.0%.',
+    ],
+  },
+  {
     version: '3.123',
     date: '2026-11-16',
     items: [
