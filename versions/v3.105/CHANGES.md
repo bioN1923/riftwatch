@@ -8,3 +8,6 @@
 - One string in seven languages; 147 tests.
 
 **Checks.** tsc, tests, build, a11y `{}` (18 states × 2 themes). Demo strip shown on desktop and phone. Shots `demo/ladder-climbers-*.png`.
+
+## Live check (2026-11-15)
+Deployed 21:51 (local). EUNE Challenger, against the 16:33 UTC snapshot: climbers #120 +116, #130 +89, #165 +87, #59 +75, #161 +48 — all named. Arena after this restart: 21 games and **167 players still lined up** (`probes 0` — no probe needed because the line survived the deploy, which is exactly what v3.99 was for).
