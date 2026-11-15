@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../../lib/api';
+import { useLadderPosition } from '../../lib/useLadderPosition';
 import { Link } from 'react-router';
 import clsx from 'clsx';
 import { RefreshCw, Star, Flame, Link2, Check, Scale, HeartHandshake } from 'lucide-react';
@@ -203,12 +202,7 @@ type LadderRef = { platform: string; puuid: string; queue: 'solo' | 'flex' };
 /** "#57 on the EUW ladder" for Master and above, linking to that page of the ladder. */
 function LadderPlace({ entry, ladder }: { entry: LeagueEntry; ladder: LadderRef }) {
   const tier = entry.tier.toLowerCase();
-  const q = useQuery({
-    queryKey: ['ladderPos', ladder.platform, ladder.puuid, ladder.queue, tier],
-    queryFn: ({ signal }) => api.ladderPosition(ladder.platform, ladder.puuid, { queue: ladder.queue, tier }, signal),
-    staleTime: 5 * 60_000,
-    retry: false,
-  });
+  const q = useLadderPosition(ladder.platform, ladder.puuid, entry.tier, ladder.queue);
   const pos = q.data;
   if (!pos) return null;
   const qs = new URLSearchParams({ region: ladder.platform, tier });

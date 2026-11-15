@@ -8,6 +8,8 @@ import { assets, matchupPath, rankEmblem, useStaticData } from '../../lib/ddrago
 import { guessRoles, roleGames, SR_QUEUES } from '../../lib/lanes';
 import { ROLE_LABEL } from '../ui/RoleIcon';
 import { compact, duration, pct, tierName } from '../../lib/format';
+import { useLadderPosition } from '../../lib/useLadderPosition';
+import { getPlatform } from '../../../shared/regions';
 import { queueName } from '../../lib/queues';
 import { profilePath } from '../../lib/riotId';
 import { GameImg } from '../ui/GameImg';
@@ -198,6 +200,18 @@ function tagText(tag: LiveTag, champion: string): { label: string; title: string
   }
 }
 
+/** "· #357" after an apex player's LP: their place on the region's ladder. */
+function LadderTag({ platform, puuid, tier }: { platform: string; puuid?: string; tier: string }) {
+  const pos = useLadderPosition(platform, puuid, tier).data;
+  if (!pos) return null;
+  return (
+    <span className="text-gold" title={t('profile.ladderPlace', { n: pos.overall.toLocaleString(), region: getPlatform(platform)?.label ?? platform })}>
+      {' · #'}
+      {pos.overall.toLocaleString()}
+    </span>
+  );
+}
+
 function PlayerRow({ p, s, loading, self, platform, queueId }: { p: LiveParticipant; s?: ScoutInfo; loading: boolean; self: boolean; platform: string; queueId?: number }) {
   const { data } = useStaticData();
   const a = assets(data);
@@ -246,7 +260,10 @@ function PlayerRow({ p, s, loading, self, platform, queueId }: { p: LiveParticip
               <p className="truncate text-sm font-semibold">
                 {tierName(solo.tier)} {APEX.has(solo.tier) ? '' : solo.rank}
               </p>
-              <p className="num text-xs text-muted">{t('common.lp', { lp: solo.leaguePoints })}</p>
+              <p className="num text-xs text-muted">
+                {t('common.lp', { lp: solo.leaguePoints })}
+                <LadderTag platform={platform} puuid={p.hidden ? undefined : p.puuid} tier={solo.tier} />
+              </p>
             </div>
           </>
         ) : (
