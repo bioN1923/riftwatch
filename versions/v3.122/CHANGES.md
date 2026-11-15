@@ -18,3 +18,8 @@
 - Demo: pasting 5 lobby lines (one of them a leaver) gives 4 untagged names. Clicking the button turns them into "Caps#EUW…Bwipo#EUW", Scout becomes "Scout 4 players", and 4 cards load. No page errors.
 
 Screens: `demo/multi-untagged.png`, `demo/multi-after.png`.
+
+## Live check (2026-11-16 00:49 local)
+- The live build serves `MultiSearch-DK4GdnEU.js` (with the lobby parsing) and `i18n-D5v3vH4F.js` (with the strings), both 200.
+- No lookups were run on the live site, to spare the shared API key.
+- Arena: 316 games.
