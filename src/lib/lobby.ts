@@ -21,3 +21,34 @@ export function parseLobby(text: string): RiotId[] {
   }
   return found;
 }
+
+/** Lobby lines from the English client ("Name joined the lobby"); the name is kept, the rest dropped. */
+const LOBBY_SUFFIX = /\s+(?:joined|left) the lobby\.?$/i;
+
+/**
+ * Names pasted without a #tag (one per line or comma-separated, or "Name joined the lobby"). A Riot
+ * ID needs its tag, so these can't be looked up as they are; the page offers to add the region's
+ * default tag, which most players keep. Lines that already hold a "Name#TAG" are left out.
+ */
+export function untaggedNames(text: string): string[] {
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const piece of text.split(/[\n\r,]+/)) {
+    if (piece.includes('#')) continue;
+    if (/\bleft the lobby/i.test(piece)) continue;
+    const name = piece.replace(LOBBY_SUFFIX, '').replace(/^[\s\-–•*]+/, '').trim();
+    // Riot game names are 3–16 characters; longer pieces are sentences, not names.
+    if (name.length < 3 || name.length > 16) continue;
+    const key = name.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(name);
+  }
+  return out;
+}
+
+/** The pasted text with each untagged name given `#tag`, one Riot ID per line. */
+export function withDefaultTag(text: string, tag: string): string {
+  const tagged = parseLobby(text).map((p) => `${p.gameName}#${p.tagLine}`);
+  return [...tagged, ...untaggedNames(text).map((n) => `${n}#${tag}`)].join('\n');
+}

@@ -1187,5 +1187,8 @@ const dict: Record<string, string> = {
   "mp.leans": "Se inclina hacia {champion}, aún puede ser casualidad",
   "mu.toneNote": "Las tasas de victoria solo se colorean cuando la diferencia es demasiado grande para ser casualidad.",
   "home.recentChamps": "Campeones que consultaste",
+  "ms.untagged_one": "{names} no tiene #tag, así que aún no se puede buscar.",
+  "ms.untagged_other": "{count} nombres no tienen #tag, así que aún no se pueden buscar: {names}",
+  "ms.addTag": "Añadir #{tag}, el tag por defecto del servidor",
 };
 export default dict;

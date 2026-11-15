@@ -1219,5 +1219,9 @@ const dict: Record<string, string> = {
   "mp.leans": "Înclină spre {champion}, poate fi încă întâmplare",
   "mu.toneNote": "Ratele de victorie sunt colorate doar când diferența e prea mare ca să fie întâmplare.",
   "home.recentChamps": "Campioni pe care i-ai văzut",
+  "ms.untagged_one": "{names} nu are #tag, așa că nu poate fi căutat încă.",
+  "ms.untagged_few": "{count} nume nu au #tag, așa că nu pot fi căutate încă: {names}",
+  "ms.untagged_other": "{count} de nume nu au #tag, așa că nu pot fi căutate încă: {names}",
+  "ms.addTag": "Adaugă #{tag}, tagul implicit al serverului",
 };
 export default dict;

@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.122](v3.122/CHANGES.md) | 2026-11-16 | Multi-search: add the default tag to untagged names |
 | [v3.121](v3.121/CHANGES.md) | 2026-11-16 | Home: recently viewed champions, even section spacing |
 | [v3.120](v3.120/CHANGES.md) | 2026-11-16 | One matchup test everywhere: counters strip, matchups table, Draft bans |
 | [v3.119](v3.119/CHANGES.md) | 2026-11-16 | Honest matchup calls (favoured vs leaning), shared by live game and matchup page |

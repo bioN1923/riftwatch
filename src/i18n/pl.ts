@@ -1251,5 +1251,10 @@ const dict: Record<string, string> = {
   "mp.leans": "Lekka przewaga: {champion}, to wciąż może być przypadek",
   "mu.toneNote": "Współczynniki zwycięstw są kolorowane tylko wtedy, gdy różnica jest zbyt duża, by była przypadkiem.",
   "home.recentChamps": "Przeglądani bohaterowie",
+  "ms.untagged_one": "{names} nie ma #tagu, więc nie da się go jeszcze wyszukać.",
+  "ms.untagged_few": "{count} nazwy nie mają #tagu, więc nie da się ich jeszcze wyszukać: {names}",
+  "ms.untagged_many": "{count} nazw nie ma #tagu, więc nie da się ich jeszcze wyszukać: {names}",
+  "ms.untagged_other": "{count} nazwy nie ma #tagu, więc nie da się ich jeszcze wyszukać: {names}",
+  "ms.addTag": "Dodaj #{tag}, domyślny tag serwera",
 };
 export default dict;

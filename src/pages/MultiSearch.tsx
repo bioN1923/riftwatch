@@ -9,7 +9,7 @@ import { api, ApiClientError } from '../lib/api';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
 import { formatKda, kdaRatio, kdaTone, pct, tierName, wlTone } from '../lib/format';
 import { fromSlug, profilePath, querySlug, type RiotId } from '../lib/riotId';
-import { parseLobby } from '../lib/lobby';
+import { parseLobby, untaggedNames, withDefaultTag } from '../lib/lobby';
 import { addLobby, clearLobbies, useLobbies, useRegion } from '../lib/storage';
 import { me, overview, result } from '../lib/stats';
 import { playerTags, type PlayerTag } from '../lib/tags';
@@ -42,6 +42,8 @@ export function MultiSearchPage() {
   );
   const [text, setText] = useState(() => fromUrl.map((p) => `${p.gameName}#${p.tagLine}`).join('\n'));
   const parsed = parseLobby(text);
+  const untagged = untaggedNames(text);
+  const defaultTag = getPlatform(region)?.defaultTag ?? 'EUW';
 
   useEffect(() => {
     document.title = t('ms.title');
@@ -128,6 +130,14 @@ export function MultiSearchPage() {
           <p className="text-xs text-muted" aria-live="polite">
             {parsed.length ? t('ms.found', { names: parsed.map((p) => p.gameName).join(', ') }) : t('ms.none')}
           </p>
+          {untagged.length > 0 && (
+            <div className="rounded border border-line bg-surface p-2 text-xs text-muted">
+              <p>{t('ms.untagged', { count: untagged.length, names: untagged.slice(0, 4).join(', ') + (untagged.length > 4 ? '…' : '') })}</p>
+              <button type="button" onClick={() => setText(withDefaultTag(text, defaultTag))} className="mt-1 text-left font-medium text-gold underline-offset-2 hover:underline">
+                {t('ms.addTag', { tag: defaultTag })}
+              </button>
+            </div>
+          )}
         </div>
       </form>
 

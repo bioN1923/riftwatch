@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.122',
+    date: '2026-11-16',
+    items: ['Multi-search notices names pasted without a #tag, including English “Name joined the lobby” lines. It offers to add the server’s default tag (such as #EUW) in one click, instead of saying no Riot IDs were found.'],
+  },
+  {
     version: '3.121',
     date: '2026-11-16',
     items: [
