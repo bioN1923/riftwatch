@@ -9,3 +9,6 @@
 - Strings in seven languages; 136 tests.
 
 **Checks.** tsc, tests, build, a11y `{}`. Demo (profile response mocked to Grandmaster for a demo ladder player, since demo ranks are random): "#357 on the EUW ladder", link opens Grandmaster page 2 with that player at rank 57. Shots `demo/profile-ladder-place-*.png`.
+
+## Live check (2026-11-15)
+Deployed 16:41 (local). Checked through the API only (no extra profile opened): on EUNE the 57th Grandmaster player (ladder page 2) gets `{ rank: 57, overall: 257, tierTotal: 500, page: 2 }`, and 200 Challenger + 57 = 257 is right. No Riot calls beyond the already-cached apex leagues. Arena tier list: still 0 matches.
