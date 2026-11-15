@@ -21,3 +21,8 @@
 - No page errors.
 
 Screen: `demo/footer-install.png`.
+
+## Live check (2026-11-16 01:19 local)
+- The live index serves `index-DJg5QM6p.js`, which contains the install handling.
+- Whether Chrome actually offers the install on the live site wasn't checked: that needs the open tab reloaded, and the check stayed API-only. Chrome decides on its own whether to offer an install, and the site's basic auth may affect that.
+- Arena: 382 games.
