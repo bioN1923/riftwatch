@@ -13,6 +13,9 @@ import { findArenaPlayer, probeStatus, PROBE_EVERY_MS } from './arenaProbe';
  * under the key's limit and pauses whenever someone is using the site, so page loads
  * always come first.
  */
+/** Lined-up Arena players read per quiet spell of the ladder (instead of resting). */
+export const ARENA_QUIET_BATCH = 10;
+
 export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats: ChampionStatsStore; lastUserRequest: () => number; paceMs: number; onStop?: (message: string) => void; arenaSeeds?: ArenaSeeds }) {
   // Never take the last half of the key's budget: visitors' lookups come first.
   const { riot, platform, stats } = opts;
@@ -60,6 +63,15 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
       } catch (e) {
         if ((e as any)?.code === 'KEY_INVALID') throw e;
       }
+    }
+  }
+
+  /** Read up to `n` lined-up Arena players' latest Arena games (each one paced like everything else). */
+  async function readArenaLine(n: number) {
+    for (let i = 0; i < n; i++) {
+      const seed = opts.arenaSeeds?.take();
+      if (!seed) return;
+      await readQueue(seed, arenaQueue());
     }
   }
 
@@ -117,8 +129,7 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
           // Every third player or so, also take their recent ARAM games (no timelines needed).
           if (Math.random() < 0.35) await readQueue(puuid, 450);
           // Arena comes from Arena players instead: the next one lined up from an Arena game already read.
-          const seed = opts.arenaSeeds?.take();
-          if (seed) await readQueue(seed, arenaQueue());
+          if (opts.arenaSeeds?.size) await readArenaLine(1);
           else await maybeProbe();
           for (const id of ids) {
             if (stats.has(id) && stats.hasTimeline(id)) continue;
@@ -139,8 +150,9 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
         // Nobody on the ladder has played since the last pass (league data refreshes every 10
         // minutes): spend the quiet time on the lane-curve backfill, or rest if that's done too.
         if (!active) {
-          // The Arena search shouldn't wait for the ladder to wake up.
-          await maybeProbe();
+          // The Arena list shouldn't wait for the ladder to wake up: read some of the line, or search.
+          if (opts.arenaSeeds?.size) await readArenaLine(ARENA_QUIET_BATCH);
+          else await maybeProbe();
           if (!(await backfill(20))) await sleep(2 * 60_000);
         }
       } catch (e) {

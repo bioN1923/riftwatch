@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.109',
+    date: '2026-11-15',
+    items: ['Arena collection reads more of its line of Arena players when the ranked ladder is quiet, so the Arena tier list fills faster (still paced and paused while visitors use the site).'],
+  },
+  {
     version: '3.108',
     date: '2026-11-15',
     items: ['Arena collection fix: the Arena event’s own queue is now remembered across updates, and players lined up for Arena are read even when Arena runs under a queue we haven’t seen yet, so the Arena list grows again.'],
