@@ -9,3 +9,6 @@
 - Demo: a made-up day-old snapshot so the column can be seen. `/api-usage` mentions the snapshots. Seven languages; `tests/ladderHistory.test.ts` (146 tests).
 
 **Checks.** tsc, tests, build, a11y `{}`. Demo ladder shows the column and the note. Shots `demo/ladder-lp-change-*.png`.
+
+## Live check (2026-11-15)
+Deployed 18:36 (local). EUNE Challenger ladder via API: 200 players, `since` absent and no `lpChange` yet — as intended: this read took the first snapshot, and changes appear once a snapshot is at least an hour old (and are measured against ~a day once there's that much history). To re-check from the next iterations. Arena unchanged (13).
