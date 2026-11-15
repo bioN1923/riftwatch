@@ -1201,5 +1201,13 @@ const dict: Record<string, string> = {
   "tl.earlyData_few": "Na razie zebrano tylko {count} gry: za mało, by ocenić bohaterów. Tiery pojawią się, gdy bohater będzie miał około 20 gier; do tego czasu lista pokazuje to, co widziano.",
   "tl.earlyData_many": "Na razie zebrano tylko {count} gier: za mało, by ocenić bohaterów. Tiery pojawią się, gdy bohater będzie miał około 20 gier; do tego czasu lista pokazuje to, co widziano.",
   "tl.earlyData_other": "Na razie zebrano tylko {count} gry: za mało, by ocenić bohaterów. Tiery pojawią się, gdy bohater będzie miał około 20 gier; do tego czasu lista pokazuje to, co widziano.",
+  "ph.title": "Między patchami",
+  "ph.caption": "Współczynnik zwycięstw, wyborów i liczba gier na każdym ostatnim patchu",
+  "ph.patch": "Patch",
+  "ph.up": "Wzrost o {points} pkt od {from}: realna zmiana, ponad zwykłe wahania.",
+  "ph.down": "Spadek o {points} pkt od {from}: realna zmiana, ponad zwykłe wahania.",
+  "ph.same": "Brak wyraźnej zmiany od {from}.",
+  "ph.few": "Za mało gier na patchu, by odróżnić zmianę od przypadku.",
+  "ph.note": "* mniej niż {n} gier: głównie przypadek.",
 };
 export default dict;

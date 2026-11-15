@@ -1171,5 +1171,13 @@ const dict: Record<string, string> = {
   "tl.earlyData_one": "Deocamdată doar {count} meci adunat: prea puțin ca să clasăm vreun campion. Tier-urile apar când un campion are în jur de 20 de meciuri; până atunci lista arată ce s-a văzut.",
   "tl.earlyData_few": "Deocamdată doar {count} meciuri adunate: prea puține ca să clasăm vreun campion. Tier-urile apar când un campion are în jur de 20 de meciuri; până atunci lista arată ce s-a văzut.",
   "tl.earlyData_other": "Deocamdată doar {count} de meciuri adunate: prea puține ca să clasăm vreun campion. Tier-urile apar când un campion are în jur de 20 de meciuri; până atunci lista arată ce s-a văzut.",
+  "ph.title": "De la un patch la altul",
+  "ph.caption": "Win rate, pick rate și meciuri pe fiecare patch recent",
+  "ph.patch": "Patch",
+  "ph.up": "Crescut cu {points} puncte față de {from}: o schimbare reală, peste variațiile obișnuite.",
+  "ph.down": "Scăzut cu {points} puncte față de {from}: o schimbare reală, peste variațiile obișnuite.",
+  "ph.same": "Nicio schimbare clară față de {from}.",
+  "ph.few": "Prea puține meciuri pe un patch ca să deosebim o schimbare de întâmplare.",
+  "ph.note": "* sub {n} meciuri: mai mult întâmplare.",
 };
 export default dict;

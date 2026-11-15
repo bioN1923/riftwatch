@@ -1141,5 +1141,13 @@ const dict: Record<string, string> = {
   "kbd.esc": "Menüs, Pop-ups und diese Liste schließen",
   "tl.earlyData_one": "Bisher erst {count} Spiel gesammelt: zu wenig, um Champions einzustufen. Tiers erscheinen, sobald ein Champion etwa 20 Spiele hat; bis dahin zeigt die Liste, was gesehen wurde.",
   "tl.earlyData_other": "Bisher erst {count} Spiele gesammelt: zu wenig, um Champions einzustufen. Tiers erscheinen, sobald ein Champion etwa 20 Spiele hat; bis dahin zeigt die Liste, was gesehen wurde.",
+  "ph.title": "Über die Patches",
+  "ph.caption": "Siegquote, Pickrate und Spiele auf jedem der letzten Patches",
+  "ph.patch": "Patch",
+  "ph.up": "Seit {from} um {points} Punkte gestiegen: eine echte Änderung, über normale Schwankungen hinaus.",
+  "ph.down": "Seit {from} um {points} Punkte gefallen: eine echte Änderung, über normale Schwankungen hinaus.",
+  "ph.same": "Keine klare Änderung seit {from}.",
+  "ph.few": "Zu wenige Spiele auf einem Patch, um eine Änderung von Zufall zu unterscheiden.",
+  "ph.note": "* weniger als {n} Spiele: größtenteils Zufall.",
 };
 export default dict;

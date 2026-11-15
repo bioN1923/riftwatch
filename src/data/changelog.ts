@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.101',
+    date: '2026-11-15',
+    items: ['Champion pages: “Across patches” shows the champion’s win rate, pick rate and games on each recent patch, and says plainly whether the latest change is real or within normal swings.'],
+  },
+  {
     version: '3.100',
     date: '2026-11-15',
     items: ['Compare and Multi-search show the ladder place of Master, Grandmaster and Challenger players too (“#357 on the EUW ladder”), linking to that page of the ladder.'],

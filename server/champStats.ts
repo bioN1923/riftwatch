@@ -808,6 +808,13 @@ export class ChampionStatsStore {
     if (!g || !r || !r.g) return empty;
 
     const rated = (x: C): Rated => ({ games: x.g, winRate: x.w / Math.max(1, x.g) });
+    const history = [...patches]
+      .reverse()
+      .flatMap((p) => {
+        const gg = this.s.patches[p]?.[group];
+        const rr = gg?.champs[championId]?.roles[chosen];
+        return gg && rr && rr.g ? [{ patch: p, ...rated(rr), pickRate: rr.g / Math.max(1, gg.matches) }] : [];
+      });
     // Options with almost no games behind them are noise; keep the most popular one regardless.
     const minG = Math.max(2, Math.round(r.g * 0.015));
     const top = (map: Record<string, C>, n: number) =>
@@ -871,6 +878,7 @@ export class ChampionStatsStore {
         }))
         .sort((a, b) => b.games - a.games),
       byLength: r.len.map((x, i) => ({ ...rated(x), label: LENGTHS[i].label })),
+      history,
       lane: chosen === 'ALL' ? null : laneOverall(r),
       synergy:
         r.duo && PARTNER[chosen]

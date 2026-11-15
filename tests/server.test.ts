@@ -37,6 +37,16 @@ describe('champion statistics', () => {
     expect(before).toBe(matches.filter((m) => !m.remake && (m.queueId === 420 || m.queueId === 440)).length);
   });
 
+  it('lists the champion across patches, oldest first, matching each patch', () => {
+    const row = store.tierList('ranked').rows[0];
+    const s = store.champion(row.championId, 'ranked', row.role);
+    const h = s.history ?? [];
+    expect(h.length).toBeGreaterThanOrEqual(1);
+    expect(h.map((x) => x.patch)).toEqual([...s.patches].reverse().filter((p) => h.some((x) => x.patch === p)));
+    const latest = h.find((x) => x.patch === s.patch)!;
+    expect(latest.games).toBe(s.summary!.games);
+  });
+
   it('builds a tier list with sensible rates', () => {
     const t = store.tierList('ranked');
     expect(t.rows.length).toBeGreaterThan(0);

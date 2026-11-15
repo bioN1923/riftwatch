@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.101](v3.101/CHANGES.md) | 2026-11-15 | Champion page: across patches |
 | [v3.100](v3.100/CHANGES.md) | 2026-11-15 | Ladder place on Compare and Multi-search |
 | [v3.99](v3.99/CHANGES.md) | 2026-11-15 | Arena player line survives restarts |
 | [v3.98](v3.98/CHANGES.md) | 2026-11-15 | Tier lists: no tier on too few games; early-data note |

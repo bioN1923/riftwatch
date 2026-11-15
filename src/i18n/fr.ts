@@ -1141,5 +1141,13 @@ const dict: Record<string, string> = {
   "kbd.esc": "Fermer menus, fenêtres et cette liste",
   "tl.earlyData_one": "Seulement {count} partie collectée pour l’instant : trop peu pour classer un champion. Les tiers apparaissent quand un champion a environ 20 parties ; d’ici là, la liste montre ce qui a été vu.",
   "tl.earlyData_other": "Seulement {count} parties collectées pour l’instant : trop peu pour classer un champion. Les tiers apparaissent quand un champion a environ 20 parties ; d’ici là, la liste montre ce qui a été vu.",
+  "ph.title": "D’un patch à l’autre",
+  "ph.caption": "Taux de victoire, de sélection et parties sur chaque patch récent",
+  "ph.patch": "Patch",
+  "ph.up": "En hausse de {points} points depuis {from} : un vrai changement, au-delà des variations normales.",
+  "ph.down": "En baisse de {points} points depuis {from} : un vrai changement, au-delà des variations normales.",
+  "ph.same": "Pas de changement net depuis {from}.",
+  "ph.few": "Trop peu de parties sur un patch pour distinguer un changement du hasard.",
+  "ph.note": "* moins de {n} parties : surtout du hasard.",
 };
 export default dict;

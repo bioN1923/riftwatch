@@ -314,6 +314,8 @@ export interface ChampionStats {
   skills: { order: string; path: number[]; maxOrders: (Rated & { order: string })[]; sample: number };
   matchups: (Rated & { championId: number; adjusted: number; goldDiff15: number | null; csDiff15: number | null; xpDiff15: number | null })[];
   byLength: (Rated & { label: string })[];
+  /** The same champion and role on each patch Riftwatch keeps (up to four), oldest first. */
+  history?: (Rated & { patch: string; pickRate: number })[];
   /** Lane leads over every lane opponent combined (ranked, one role). */
   lane?: LaneCurve | null;
   synergy: { role: string; list: (Rated & { championId: number })[] } | null;

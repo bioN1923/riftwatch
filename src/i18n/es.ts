@@ -1141,5 +1141,13 @@ const dict: Record<string, string> = {
   "kbd.esc": "Cerrar menús, ventanas y esta lista",
   "tl.earlyData_one": "Solo {count} partida recopilada por ahora: muy pocas para clasificar campeones. Los tiers aparecen cuando un campeón tiene unas 20 partidas; hasta entonces la lista muestra lo visto.",
   "tl.earlyData_other": "Solo {count} partidas recopiladas por ahora: muy pocas para clasificar campeones. Los tiers aparecen cuando un campeón tiene unas 20 partidas; hasta entonces la lista muestra lo visto.",
+  "ph.title": "Entre parches",
+  "ph.caption": "Tasa de victoria, de selección y partidas en cada parche reciente",
+  "ph.patch": "Parche",
+  "ph.up": "Sube {points} puntos desde {from}: un cambio real, más allá de las oscilaciones normales.",
+  "ph.down": "Baja {points} puntos desde {from}: un cambio real, más allá de las oscilaciones normales.",
+  "ph.same": "Sin cambio claro desde {from}.",
+  "ph.few": "Muy pocas partidas en un parche para distinguir un cambio del azar.",
+  "ph.note": "* menos de {n} partidas: sobre todo azar.",
 };
 export default dict;
