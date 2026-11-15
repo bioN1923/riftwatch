@@ -1164,5 +1164,8 @@ const en = {
   "champ.dmgAd": "Physical damage",
   "champ.dmgAp": "Magic damage",
   "champ.dmgMixed": "Mixed damage",
+  "cmp.bestTitle": "Best games",
+  "cmp.bestLead": "Each player’s best single game for each, among the loaded ones; the better one is in gold. Each opens that game.",
+  "cmp.bestRecord": "Record",
 };
 export default en;

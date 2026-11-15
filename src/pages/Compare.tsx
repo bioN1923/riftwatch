@@ -7,10 +7,11 @@ import type { MatchSummary, Profile } from '../../shared/types';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api, ApiClientError } from '../lib/api';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
-import { decimal, formatKda, kdaRatio, kdaTone, pct, regionName, thousands, tierName } from '../lib/format';
+import { compact, decimal, formatKda, kdaRatio, kdaTone, multikill, pct, regionName, thousands, tierName } from '../lib/format';
 import { fromSlug, parseRiotId, profilePath, querySlug, type RiotId } from '../lib/riotId';
 import { useFavorites, useRecent, useRegion, type SavedPlayer } from '../lib/storage';
 import { me, result } from '../lib/stats';
+import { personalRecords, type PersonalRecord } from '../lib/records';
 import { clearEdge, ROLE_NEUTRAL, roleGap, summarize, together, type PlayerSummary } from '../lib/compare';
 import { GameImg } from '../components/ui/GameImg';
 import { ROLE_LABEL, RoleIcon } from '../components/ui/RoleIcon';
@@ -265,6 +266,7 @@ function Comparison({ a, b, queue }: { a: Pick; b: Pick; queue: Queue }) {
               <Roles a={sa} b={sb} nameA={pa.account.gameName} nameB={pb.account.gameName} />
               <Champions a={sa} b={sb} nameA={pa.account.gameName} nameB={pb.account.gameName} />
             </div>
+            <BestGames a={ma} b={mb} pa={pa} pb={pb} />
           </>
         )
       ) : (
@@ -515,6 +517,69 @@ function Roles({ a, b, nameA, nameB }: { a: PlayerSummary; b: PlayerSummary; nam
           .map(([n, s]) => `${n}: ${roles.map((r) => `${t(`role.${r}` as 'role.TOP')} ${pct(share(s as PlayerSummary, r), 0)}`).join(', ')}`)
           .join('. ')}
       </p>
+    </section>
+  );
+}
+
+/** Each player's personal records side by side (the best single game for each, among the loaded ones). */
+function BestGames({ a, b, pa, pb }: { a: MatchSummary[]; b: MatchSummary[]; pa: Profile; pb: Profile }) {
+  const { data: sd } = useStaticData();
+  const as = useMemo(() => personalRecords(a, pa.account.puuid), [a, pa.account.puuid]);
+  const bs = useMemo(() => personalRecords(b, pb.account.puuid), [b, pb.account.puuid]);
+  const ids = (['kills', 'kda', 'damage', 'multi', 'cspm', 'vision'] as const).filter((id) => as.some((r) => r.id === id) || bs.some((r) => r.id === id));
+  if (ids.length < 3) return null;
+  const show = (r: PersonalRecord | undefined) => {
+    if (!r) return '–';
+    if (r.id === 'kda') return r.p.deaths === 0 ? t('rec.perfect') : formatKda(r.value);
+    if (r.id === 'damage') return compact(r.value);
+    if (r.id === 'cspm' || r.id === 'vision') return decimal(r.value, 1);
+    if (r.id === 'multi') return multikill(r.value);
+    return String(r.value);
+  };
+  const cell = (r: PersonalRecord | undefined, other: PersonalRecord | undefined, path: string) => {
+    // Perfect KDAs compare as equal-best; otherwise the higher value gets the mark.
+    const best = r && (!other || r.value > other.value || (r.id === 'kda' && r.p.deaths === 0 && other.p.deaths !== 0));
+    return (
+      <td className="px-2 py-1.5 text-right">
+        {r ? (
+          <Link to={`${path}#m-${r.match.id}`} className={clsx('num inline-flex items-center gap-1.5 hover:underline', best ? 'font-semibold text-gold' : 'text-text')}>
+            <GameImg src={assets(sd).champion(r.p.championId).url} alt="" size={18} rounded="sm" />
+            {show(r)}
+          </Link>
+        ) : (
+          <span className="text-faint">–</span>
+        )}
+      </td>
+    );
+  };
+  return (
+    <section className="panel p-4" aria-labelledby="cmp-best-h">
+      <h2 id="cmp-best-h" className="panel-title">
+        {t('cmp.bestTitle')}
+      </h2>
+      <p className="mt-0.5 text-xs text-muted">{t('cmp.bestLead')}</p>
+      <table className="mt-2 w-full text-sm">
+        <thead className="text-xs text-muted">
+          <tr>
+            <th scope="col" className="sr-only">{t('cmp.bestRecord')}</th>
+            <th scope="col" className="px-2 py-1 text-right font-medium">{pa.account.gameName}</th>
+            <th scope="col" className="px-2 py-1 text-right font-medium">{pb.account.gameName}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ids.map((id) => {
+            const ra = as.find((r) => r.id === id);
+            const rb = bs.find((r) => r.id === id);
+            return (
+              <tr key={id} className="border-t border-line">
+                <th scope="row" className="py-1.5 pr-2 text-left font-normal text-muted">{t(`rec.${id}` as 'rec.kills')}</th>
+                {cell(ra, rb, profilePath(pa.platform, pa.account))}
+                {cell(rb, ra, profilePath(pb.platform, pb.account))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </section>
   );
 }

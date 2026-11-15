@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.112',
+    date: '2026-11-15',
+    items: ['Compare: “Best games” puts both players’ personal records side by side (most kills, best KDA, most damage, CS and vision per minute…), the better one in gold, each linking to that game.'],
+  },
+  {
     version: '3.111',
     date: '2026-11-15',
     items: ['Match lists and the live game call Arena games “Arena” again when Riot runs Arena under an event queue (they showed as “Special mode”).'],

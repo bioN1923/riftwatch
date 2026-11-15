@@ -1224,5 +1224,8 @@ const dict: Record<string, string> = {
   "champ.dmgAd": "Obrażenia fizyczne",
   "champ.dmgAp": "Obrażenia magiczne",
   "champ.dmgMixed": "Obrażenia mieszane",
+  "cmp.bestTitle": "Najlepsze gry",
+  "cmp.bestLead": "Najlepsza gra każdego gracza w każdej kategorii spośród wczytanych; lepsza jest złota. Każda otwiera tę grę.",
+  "cmp.bestRecord": "Rekord",
 };
 export default dict;
