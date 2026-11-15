@@ -1224,5 +1224,6 @@ const dict: Record<string, string> = {
   "ms.untagged_other": "{count} de nume nu au #tag, așa că nu pot fi căutate încă: {names}",
   "ms.addTag": "Adaugă #{tag}, tagul implicit al serverului",
   "duo.compare": "Compară cu tine",
+  "footer.install": "Instalează aplicația",
 };
 export default dict;

@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.125',
+    date: '2026-11-16',
+    items: ['In browsers that can install web apps (Chrome, Edge, Android), an “Install app” button appears in the footer. It opens the browser’s own install dialog instead of a pop-up banner.'],
+  },
+  {
     version: '3.124',
     date: '2026-11-16',
     items: [

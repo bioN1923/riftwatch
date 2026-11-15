@@ -1,13 +1,14 @@
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
-import { AlertTriangle, Check, Globe, LayoutGrid, Monitor, Moon, Scale, Sun, Swords, Trophy, User, Users, Wrench, X, HeartHandshake } from 'lucide-react';
+import { AlertTriangle, Check, Download, Globe, LayoutGrid, Monitor, Moon, Scale, Sun, Swords, Trophy, User, Users, Wrench, X, HeartHandshake } from 'lucide-react';
 import clsx from 'clsx';
 import { getPlatform } from '../../shared/regions';
 import { pageRegion } from '../lib/pageRegion';
 import { SearchBox } from './SearchBox';
 import { Shortcuts } from './Shortcuts';
 import { api } from '../lib/api';
+import { promptInstall, useCanInstall } from '../lib/install';
 import { setSeenVersion, useRegion, useSeenVersion, useTheme, type Theme } from '../lib/storage';
 import { CHANGELOG, newerThan } from '../data/changelog';
 import { LANGS, setLang, t, useLang, type Lang } from '../i18n';
@@ -310,6 +311,7 @@ export function Layout() {
     if (!seen) setSeenVersion(latest);
   }, [seen, latest]);
   const unseen = !!seen && newerThan(latest, seen);
+  const canInstall = useCanInstall();
   return (
     <div className="flex min-h-dvh flex-col">
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded focus:bg-gold focus:px-3 focus:py-2 focus:text-gold-ink">
@@ -337,7 +339,7 @@ export function Layout() {
           changes keep the same key, so they don't jump. */}
       <ScrollRestoration getKey={(l) => l.pathname.replace(/\/(live|stats)$/, '')} />
       <footer className="border-t border-line px-4 py-6 text-center text-xs text-faint">
-        <nav aria-label={t('footer.nav')} className="mb-2 flex justify-center gap-4">
+        <nav aria-label={t('footer.nav')} className="mb-2 flex flex-wrap justify-center gap-x-4 gap-y-1">
           <Link to="/privacy" className="hover:text-text hover:underline">
             {t('footer.privacy')}
           </Link>
@@ -359,6 +361,12 @@ export function Layout() {
           <button type="button" onClick={() => window.dispatchEvent(new Event('rw:shortcuts'))} className="hidden hover:text-text hover:underline lg:inline">
             {t('kbd.title')}
           </button>
+          {canInstall && (
+            <button type="button" onClick={() => void promptInstall()} className="inline-flex items-center gap-1 text-gold hover:underline">
+              <Download className="size-3" aria-hidden />
+              {t('footer.install')}
+            </button>
+          )}
         </nav>
         {/* Riot's required legal notice, kept in its exact English wording in every language. */}
         <p lang="en" className="mx-auto max-w-3xl">

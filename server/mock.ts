@@ -388,6 +388,8 @@ export function mockTimeline(m: MatchSummary): MatchTimeline {
     for (let k = 0; k < t.objectives.tower; k++) events.push({ type: 'building', t: int(r, 600, m.duration - 10), teamId: t.teamId, building: 'TOWER', lane: pick(r, ['TOP_LANE', 'MID_LANE', 'BOT_LANE']) });
     for (let k = 0; k < t.objectives.inhibitor; k++) events.push({ type: 'building', t: int(r, Math.min(1300, m.duration - 60), m.duration - 10), teamId: t.teamId, building: 'INHIBITOR', lane: pick(r, ['TOP_LANE', 'MID_LANE', 'BOT_LANE']) });
   }
+  // Short games (remakes) still carry team objective counts; keep only what fits inside the game.
+  for (let i = events.length - 1; i >= 0; i--) if (events[i].t < 0 || events[i].t >= m.duration) events.splice(i, 1);
   // Who took each epic monster: the team's jungler when there is one.
   for (const e of events) {
     if (e.type !== 'objective') continue;

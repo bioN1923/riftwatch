@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.125](v3.125/CHANGES.md) | 2026-11-16 | Footer "Install app" button; demo remake timelines end with the game |
 | [v3.124](v3.124/CHANGES.md) | 2026-11-16 | Arena tier list: average place column; no empty ban column |
 | [v3.123](v3.123/CHANGES.md) | 2026-11-16 | Champion headline/partner win rates coloured only when clear; Duo → Compare |
 | [v3.122](v3.122/CHANGES.md) | 2026-11-16 | Multi-search: add the default tag to untagged names |
