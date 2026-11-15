@@ -1185,5 +1185,6 @@ const en = {
   "ars.picks_other": "{count} picks",
   "ars.augmentsNote": "How often you took each one. Riot doesn’t allow win rates for augments.",
   "mp.leans": "Leaning {champion}, could still be chance",
+  "mu.toneNote": "Win rates are coloured only when the gap is too large to be chance.",
 };
 export default en;

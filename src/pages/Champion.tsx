@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useParams, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
+import { callTone, matchupCall } from '../lib/matchupVerdict';
 import type { ChampionStats, Rated, StatsGroup } from '../../shared/types';
 import { api, ApiClientError } from '../lib/api';
 import { assets, championBySlug, champSlug, matchupPath, useChampionDetail, useStaticData, type ChampionDetail } from '../lib/ddragon';
@@ -642,15 +643,18 @@ function laneMatchups(s: ChampionStats) {
   // Same bar as the server's counters: at least 8 games and 3% of the champion's games.
   const min = Math.max(8, Math.round((s.summary?.games ?? 0) * 0.03));
   const usable = s.matchups.filter((m) => m.games >= min);
-  // Clear ones (beyond about one standard error from 50%) first, then the ones that only lean that way.
-  const se = (m: Matchup) => 0.5 / Math.sqrt(m.games + 25);
+  // Clear ones first (the same test as the matchup page: past two standard errors), then the ones that only lean.
+  const sure = (m: Matchup) => {
+    const c = matchupCall(m);
+    return (c.side === 'me' || c.side === 'them') && c.sure;
+  };
   const easiest = usable
     .filter((m) => m.adjusted >= 0.5)
-    .map((m) => ({ ...m, sure: m.adjusted - se(m) > 0.5 }))
+    .map((m) => ({ ...m, sure: sure(m) }))
     .sort((a, b) => Number(b.sure) - Number(a.sure) || b.adjusted - a.adjusted);
   const hardest = usable
     .filter((m) => m.adjusted < 0.5)
-    .map((m) => ({ ...m, sure: m.adjusted + se(m) < 0.5 }))
+    .map((m) => ({ ...m, sure: sure(m) }))
     .sort((a, b) => Number(b.sure) - Number(a.sure) || a.adjusted - b.adjusted);
   return { usable, easiest, hardest };
 }
@@ -818,7 +822,7 @@ function Matchups({ s }: { s: ChampionStats }) {
                     <td className="num px-2 text-right">
                       <span className="inline-flex items-center gap-2">
                         <WinRateBar value={m.winRate} />
-                        <span className={clsx('w-12 font-semibold', low ? 'text-faint' : m.winRate >= 0.5 ? 'text-win' : 'text-loss')} title={low ? t('cp.only', { count: m.games }) : undefined}>
+                        <span className={clsx('w-12 font-semibold', low ? 'text-faint' : callTone(matchupCall(m)))} title={low ? t('cp.only', { count: m.games }) : undefined}>
                           {pct(m.winRate, 1)}
                           {low && '*'}
                         </span>
@@ -841,7 +845,10 @@ function Matchups({ s }: { s: ChampionStats }) {
           </table>
         </div>
       )}
-      {tab !== 'all' && <p className="mt-3 text-xs text-faint">{t('mu.adjustedNote')}</p>}
+      <p className="mt-3 text-xs text-faint">
+        {tab !== 'all' && `${t('mu.adjustedNote')} `}
+        {t('mu.toneNote')}
+      </p>
     </section>
   );
 }

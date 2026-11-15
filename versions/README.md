@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.120](v3.120/CHANGES.md) | 2026-11-16 | One matchup test everywhere: counters strip, matchups table, Draft bans |
 | [v3.119](v3.119/CHANGES.md) | 2026-11-16 | Honest matchup calls (favoured vs leaning), shared by live game and matchup page |
 | [v3.118](v3.118/CHANGES.md) | 2026-11-16 | Arena panel on the profile Stats tab |
 | [v3.117](v3.117/CHANGES.md) | 2026-11-15 | Arena augments in match rows and post-game |

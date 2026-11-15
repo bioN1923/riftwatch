@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
+import { callTone, matchupCall } from '../lib/matchupVerdict';
 import { Ban, ChevronDown, Crosshair, Plus, Search, Shield, Swords, X } from 'lucide-react';
 import type { ChampionStats } from '../../shared/types';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
@@ -475,7 +476,7 @@ function BanPanel({ role, pool, onPick }: { role: Role; pool: number[]; onPick: 
                   {b.against.map((x) => (
                     <li key={x.championId} className="flex items-center gap-1 rounded border border-line px-1.5 py-0.5 text-[11px]" title={a.champion(x.championId).name}>
                       <GameImg src={a.champion(x.championId).url} alt={a.champion(x.championId).name} size={18} rounded="sm" />
-                      <span className={clsx('num font-semibold', x.winRate >= 0.5 ? 'text-win' : 'text-loss')}>{pct(x.winRate)}</span>
+                      <span className={clsx('num font-semibold', callTone(matchupCall(x)))}>{pct(x.winRate)}</span>
                     </li>
                   ))}
                 </ul>

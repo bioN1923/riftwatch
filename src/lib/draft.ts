@@ -8,7 +8,7 @@ export interface BanPick {
   /** The pool's average win rate against this champion (shrunk toward 50% for small samples). */
   poolRate: number;
   /** Pool champions with enough games against it, worst first. */
-  against: { championId: number; winRate: number; games: number }[];
+  against: { championId: number; winRate: number; adjusted: number; games: number }[];
   /** All those games together. */
   games: number;
   /**
@@ -37,7 +37,7 @@ export function banSuggestions(pool: number[], stats: Map<number, ChampionStats 
       if (pool.includes(m.championId) || m.games < min) continue;
       const e = enemies.get(m.championId) ?? { sum: 0, against: [] };
       e.sum += m.adjusted;
-      e.against.push({ championId: id, winRate: m.winRate, games: m.games });
+      e.against.push({ championId: id, winRate: m.winRate, adjusted: m.adjusted, games: m.games });
       enemies.set(m.championId, e);
     }
   }

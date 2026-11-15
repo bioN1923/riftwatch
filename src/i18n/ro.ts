@@ -1217,5 +1217,6 @@ const dict: Record<string, string> = {
   "ars.picks_other": "{count} de alegeri",
   "ars.augmentsNote": "De câte ori ai ales fiecare. Riot nu permite rate de victorie pentru augmentări.",
   "mp.leans": "Înclină spre {champion}, poate fi încă întâmplare",
+  "mu.toneNote": "Ratele de victorie sunt colorate doar când diferența e prea mare ca să fie întâmplare.",
 };
 export default dict;

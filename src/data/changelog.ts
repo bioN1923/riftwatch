@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.120',
+    date: '2026-11-16',
+    items: ['The same careful matchup call now runs everywhere. On champion pages, the counters strip and the lane matchups table colour a win rate only when the gap is too large to be chance. In the Draft helper, the ban suggestions do the same. Smaller gaps stay plain or dashed.'],
+  },
+  {
     version: '3.119',
     date: '2026-11-16',
     items: ['Matchup calls are more careful. A side is only called “favoured” (in green or red) when the gap is too large to be chance. A smaller gap reads “Leaning …, could still be chance”. The live game’s lane line now gives the same call as the matchup page, instead of colouring 48.7% over 113 games red.'],
