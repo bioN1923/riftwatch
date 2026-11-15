@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.123',
+    date: '2026-11-16',
+    items: [
+      'Champion pages: the headline win rate and the “Best with” partners turn green or red only when the gap from 50% is too large to be chance. For example, Ahri’s 49.6% over 423 games now shows as plain rather than red.',
+      'Duo finder: every suggested player has a “Compare with you” link that opens both of you side by side.',
+    ],
+  },
+  {
     version: '3.122',
     date: '2026-11-16',
     items: ['Multi-search notices names pasted without a #tag, including English “Name joined the lobby” lines. It offers to add the server’s default tag (such as #EUW) in one click, instead of saying no Riot IDs were found.'],

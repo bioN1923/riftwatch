@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { ChevronDown, HeartHandshake, X } from 'lucide-react';
+import { ChevronDown, HeartHandshake, Scale, X } from 'lucide-react';
 import type { MatchPage, MatchSummary, ScoutInfo } from '../../shared/types';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api } from '../lib/api';
@@ -216,7 +216,8 @@ function Results({ platform, id }: { platform: string; id: RiotId }) {
     .sort((a, b) => b.fit.score - a.fit.score);
 
   return (
-    <section className="mt-8" aria-labelledby="duo-res-h" aria-busy={checking}>
+    <YouCtx.Provider value={id}>
+      <section className="mt-8" aria-labelledby="duo-res-h" aria-busy={checking}>
       <h2 id="duo-res-h" className="font-display text-2xl font-bold">
         {t('duo.results', { name: profileQ.data!.account.gameName })}
       </h2>
@@ -242,7 +243,8 @@ function Results({ platform, id }: { platform: string; id: RiotId }) {
       )}
       <CheckPlayer platform={platform} me={me} myRank={myRank} myRankLabel={rankLabel(solo)} tagsOf={tagsOf} skip={puuid!} />
       <p className="mt-6 max-w-3xl text-xs text-faint">{t('duo.note')}</p>
-    </section>
+      </section>
+    </YouCtx.Provider>
   );
 }
 
@@ -251,7 +253,11 @@ function rankLabel(r: { tier: string; rank: string }) {
   return ['MASTER', 'GRANDMASTER', 'CHALLENGER'].includes(r.tier) ? tierName(r.tier) : `${tierName(r.tier)} ${r.rank}`;
 }
 
+/** Who the duo finder is searching for, so each card can offer "compare with you". */
+const YouCtx = createContext<RiotId | null>(null);
+
 function DuoCard({ platform, c, s, them, me, fit, myRankLabel, aside }: { platform: string; c: Candidate; s: ScoutInfo; them: PlayStyle; me: PlayStyle; fit: Fit; myRankLabel: string; aside?: React.ReactNode }) {
+  const you = useContext(YouCtx);
   const topClass = (st: PlayStyle) => Object.entries(st.classes).sort((x, y) => y[1] - x[1])[0]?.[0];
   const peak = (st: PlayStyle) => st.hours.indexOf(Math.max(...st.hours));
   const line = (p: FitPart) => {
@@ -302,7 +308,14 @@ function DuoCard({ platform, c, s, them, me, fit, myRankLabel, aside }: { platfo
           </li>
         ))}
       </ul>
-      <p className="mt-3 text-[11px] text-faint">{t('duo.sample', { count: them.games })}</p>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+        <p className="text-[11px] text-faint">{t('duo.sample', { count: them.games })}</p>
+        {you && (
+          <Link to={`/compare?a=${platform}/${querySlug(you)}&b=${platform}/${querySlug(c)}`} className="inline-flex items-center gap-1 text-xs font-medium text-gold underline-offset-2 hover:underline">
+            <Scale className="size-3.5" aria-hidden /> {t('duo.compare')}
+          </Link>
+        )}
+      </div>
     </li>
   );
 }

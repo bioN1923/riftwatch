@@ -1256,5 +1256,6 @@ const dict: Record<string, string> = {
   "ms.untagged_many": "{count} nazw nie ma #tagu, więc nie da się ich jeszcze wyszukać: {names}",
   "ms.untagged_other": "{count} nazwy nie ma #tagu, więc nie da się ich jeszcze wyszukać: {names}",
   "ms.addTag": "Dodaj #{tag}, domyślny tag serwera",
+  "duo.compare": "Porównaj z sobą",
 };
 export default dict;

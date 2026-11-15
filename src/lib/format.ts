@@ -52,6 +52,18 @@ export function wlTone(wr: number, games?: number) {
   return wr >= 0.5 ? 'text-win' : 'text-loss';
 }
 
+/**
+ * Green or red only when a win rate is more than two standard errors from 50% (the same test as
+ * matchup calls); plain otherwise. For headline numbers like a champion's win rate, where 49.6% over
+ * a few hundred games is a coin flip, not a weakness.
+ */
+export function sureTone(wr: number, games: number) {
+  if (games < TONE_MIN_GAMES) return 'text-text';
+  const se = Math.sqrt(Math.max(wr * (1 - wr), 0.01) / games);
+  if (Math.abs(wr - 0.5) <= 2 * se) return 'text-text';
+  return wr > 0.5 ? 'text-win' : 'text-loss';
+}
+
 export function winRateTone(wr: number, games?: number) {
   if (games != null && games < TONE_MIN_GAMES) return 'text-text';
   if (wr >= 0.6) return 'text-kda-great';

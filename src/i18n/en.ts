@@ -1190,5 +1190,6 @@ const en = {
   "ms.untagged_one": "{names} has no #tag, so it can’t be looked up yet.",
   "ms.untagged_other": "{count} names have no #tag, so they can’t be looked up yet: {names}",
   "ms.addTag": "Add #{tag}, the server’s default tag",
+  "duo.compare": "Compare with you",
 };
 export default en;

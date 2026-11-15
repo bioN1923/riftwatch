@@ -6,7 +6,7 @@ import { callTone, matchupCall } from '../lib/matchupVerdict';
 import type { ChampionStats, Rated, StatsGroup } from '../../shared/types';
 import { api, ApiClientError } from '../lib/api';
 import { assets, championBySlug, champSlug, matchupPath, useChampionDetail, useStaticData, type ChampionDetail } from '../lib/ddragon';
-import { formatKda, kdaTone, pct, thousands, champClass, wlTone } from '../lib/format';
+import { formatKda, kdaTone, pct, thousands, champClass, wlTone, sureTone } from '../lib/format';
 import { profilePath } from '../lib/riotId';
 import { getPlatform } from '../../shared/regions';
 import { GameImg, Tooltip } from '../components/ui/GameImg';
@@ -217,7 +217,7 @@ function StatStrip({ s, loading }: { s?: ChampionStats; loading: boolean }) {
   const sum = s?.summary;
   if (!sum) return <div className="mt-6" />;
   const items: [string, string, string?][] = [
-    [t('cp.winRate'), pct(sum.winRate, 1), sum.winRate >= 0.5 ? 'text-win' : 'text-loss'],
+    [t('cp.winRate'), pct(sum.winRate, 1), sureTone(sum.winRate, sum.games)],
     [t('cp.pickRate'), pct(sum.pickRate, 1)],
     [t('cp.banRate'), pct(sum.banRate, 1)],
     [t('cp.games'), thousands(sum.games)],
@@ -1051,7 +1051,7 @@ function Synergy({ s }: { s: ChampionStats }) {
                   <span className="block truncate text-sm font-medium group-hover:text-gold">{c.name}</span>
                   <span className="num text-xs text-muted">{t('common.games', { count: m.games })}</span>
                 </span>
-                <span className={clsx('num text-sm font-semibold', wlTone(m.winRate, m.games))}>{pct(m.winRate, 1)}</span>
+                <span className={clsx('num text-sm font-semibold', sureTone(m.winRate, m.games))}>{pct(m.winRate, 1)}</span>
               </Link>
             </li>
           );

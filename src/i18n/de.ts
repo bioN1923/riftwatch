@@ -1190,5 +1190,6 @@ const dict: Record<string, string> = {
   "ms.untagged_one": "{names} hat kein #Tag und kann so noch nicht gesucht werden.",
   "ms.untagged_other": "{count} Namen haben kein #Tag und können so noch nicht gesucht werden: {names}",
   "ms.addTag": "#{tag} ergänzen, den Standard-Tag des Servers",
+  "duo.compare": "Mit dir vergleichen",
 };
 export default dict;
