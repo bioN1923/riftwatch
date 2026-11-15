@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { RoleIcon, ROLE_LABEL } from '../components/ui/RoleIcon';
 import { TierBadge } from '../components/champions/common';
-import { pct } from '../lib/format';
+import { pct, thousands, timeAgo } from '../lib/format';
 import { Link } from 'react-router';
 import { Star, Clock, Swords, Scale, Users, Trophy, HeartHandshake, TrendingUp, TrendingDown } from 'lucide-react';
 import clsx from 'clsx';
@@ -12,7 +12,7 @@ import { SearchBox } from '../components/SearchBox';
 import { GameImg } from '../components/ui/GameImg';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
 import { profilePath } from '../lib/riotId';
-import { isFavorite, useFavorites, useRecent, type SavedPlayer } from '../lib/storage';
+import { isFavorite, useFavorites, useRecent, useRegion, type SavedPlayer } from '../lib/storage';
 import { getPlatform } from '../../shared/regions';
 import { tierName } from '../lib/format';
 import { fadeIn } from '../lib/motion';
@@ -109,8 +109,51 @@ export function HomePage() {
         </div>
       </section>
       <StrongestPicks />
+      <Climbers />
       <Tools />
     </div>
+  );
+}
+
+/** The fastest climbers in Challenger on the visitor's region (from the ladder's LP snapshots; no name lookups). */
+function Climbers() {
+  const [region] = useRegion();
+  const q = useQuery({
+    queryKey: ['climbers', region],
+    queryFn: ({ signal }) => api.leaderboard(region, { queue: 'solo', tier: 'challenger', page: 1, climbersOnly: true }, signal),
+    staleTime: 5 * 60_000,
+    retry: false,
+  });
+  const list = q.data?.climbers ?? [];
+  if (!q.data?.since || list.length < 3) return null;
+  return (
+    <section className="mt-10" aria-labelledby="home-climb-h">
+      <div className="flex items-end justify-between gap-3">
+        <h2 id="home-climb-h" className="flex items-center gap-2 font-display text-2xl font-bold">
+          <TrendingUp className="size-5 text-win" aria-hidden />
+          {t('home.climbers', { region: getPlatform(region)?.label ?? region })}
+        </h2>
+        <Link to={`/leaderboard?region=${region}`} className="text-sm font-medium text-gold hover:underline">
+          {t('home.climbersAll')}
+        </Link>
+      </div>
+      <p className="mt-0.5 text-xs text-muted">{t('home.climbersLead', { when: timeAgo(q.data.since) })}</p>
+      <ol className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+        {list.map((c) => (
+          <li key={c.puuid}>
+            <Link to={profilePath(region, { gameName: c.gameName!, tagLine: c.tagLine ?? '' })} className="panel flex h-full items-center justify-between gap-2 px-3 py-2.5 transition-colors hover:border-gold/60">
+              <span className="min-w-0">
+                <span className="block truncate font-medium">{c.gameName}</span>
+                <span className="num text-xs text-muted">
+                  #{c.rank} · {t('common.lp', { lp: thousands(c.lp) })}
+                </span>
+              </span>
+              <span className="num shrink-0 font-display text-lg font-bold text-win">+{c.lpChange}</span>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }
 

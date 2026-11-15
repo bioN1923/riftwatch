@@ -1156,5 +1156,8 @@ const en = {
   "lb.changeTip": "{lp} LP since the earlier snapshot",
   "ph.captionGames": "Win rate and games on each recent patch",
   "lb.climbers": "Climbing fastest since {when}",
+  "home.climbers": "Climbing fastest in {region} Challenger",
+  "home.climbersAll": "Full ladder",
+  "home.climbersLead": "Biggest LP gains since {when}.",
 };
 export default en;

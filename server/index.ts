@@ -615,7 +615,9 @@ app.get(
             { at: Date.now() - 24 * 3600_000, lp: Object.fromEntries(all.map((e, i) => [e.puuid, e.lp - (((i * 37) % 141) - 50)] as const).reverse()) } // first entry wins for repeated demo names
           : ladderHistory.baseline(histKey);
     if (tier !== 'master') ladderHistory.record(histKey, all);
-    const slice = all.slice((page - 1) * LADDER_PAGE, page * LADDER_PAGE);
+    // The home page only wants the climbers: skip the page of entries and its name lookups.
+    const climbersOnly = req.query.view === 'climbers';
+    const slice = climbersOnly ? [] : all.slice((page - 1) * LADDER_PAGE, page * LADDER_PAGE);
     // Names: from the player index when known. Each request looks up at most a few unknown
     // names directly; the rest are queued for the background name filler, so one ladder page
     // never eats the key's budget that other visitors' lookups need.

@@ -1156,5 +1156,8 @@ const dict: Record<string, string> = {
   "lb.changeTip": "{lp} LP desde la instantánea anterior",
   "ph.captionGames": "Tasa de victoria y partidas en cada parche reciente",
   "lb.climbers": "Los que más suben desde {when}",
+  "home.climbers": "Los que más suben en Challenger {region}",
+  "home.climbersAll": "Clasificación completa",
+  "home.climbersLead": "Mayores subidas de LP desde {when}.",
 };
 export default dict;

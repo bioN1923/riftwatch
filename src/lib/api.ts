@@ -71,8 +71,8 @@ export const api = {
     request<{ rank: number | null; page: number | null }>(`/leaderboard/${platform}/find?queue=${p.queue}&tier=${p.tier}&q=${encodeURIComponent(p.q)}`),
   ladderPosition: (platform: string, puuid: string, p: { queue: 'solo' | 'flex'; tier: string }, signal?: AbortSignal) =>
     request<{ tier: string; rank: number; overall: number; tierTotal: number; page: number } | null>(`/leaderboard/${platform}/position/${enc(puuid)}?queue=${p.queue}&tier=${p.tier}`, signal),
-  leaderboard: (platform: string, p: { queue: string; tier: string; page: number }, signal?: AbortSignal) =>
-    request<Ladder>(`/leaderboard/${platform}?queue=${p.queue}&tier=${p.tier}&page=${p.page}`, signal),
+  leaderboard: (platform: string, p: { queue: string; tier: string; page: number; climbersOnly?: boolean }, signal?: AbortSignal) =>
+    request<Ladder>(`/leaderboard/${platform}?queue=${p.queue}&tier=${p.tier}&page=${p.page}${p.climbersOnly ? '&view=climbers' : ''}`, signal),
   rotation: (platform: string, signal?: AbortSignal) => request<{ championIds: number[] }>(`/rotation/${platform}`, signal),
   status: (platform: string, signal?: AbortSignal) => request<ServerStatus>(`/status/${platform}`, signal),
   privacyChallenge: (body: { platform: string; gameName: string; tagLine: string; action: 'hide' | 'show' }) =>
