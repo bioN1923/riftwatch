@@ -13,3 +13,6 @@
 - Tests: probe fallback and queue-id learning (142 tests).
 
 **Checks.** tsc, tests, build, a11y `{}`. Demo `/api/health` shows the new block; demo Arena data unaffected (1500 games).
+
+## Live check (2026-11-15)
+Deployed 17:14 (local). `/api/health` → `arena: { probes: 1, found: 0, queued: 0 }`: the probe ran right after start-up (including the any-queue fallback for two players) and found no recent Arena games; Arena matches still 0. With the mode check in place, a 0 now most likely means few or no Arena games are being played on EUW right now (Arena is a rotating featured mode in 2026), not that they're being dropped. Probes repeat every 15 minutes; the counts will tell over the next hours.
