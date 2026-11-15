@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.93',
+    date: '2026-11-15',
+    items: ['Arena tier list: the collector now goes looking for Arena players by itself (a few everyday ranked players, a few times an hour), so the list can start filling without waiting for someone to look up an Arena player.'],
+  },
+  {
     version: '3.92',
     date: '2026-11-15',
     items: ['Profile Stats tab: Personal records — most kills, best KDA, most damage, biggest multi-kill, best CS and vision per minute and longest game among the loaded games. Each one jumps to that game in the match list.'],

@@ -1118,7 +1118,7 @@ const dict: Record<string, string> = {
   "ms.lobbyOpen": "Nikt nie gra głównie na {roles}.",
   "home.tool.duo": "Gracze z twoich ostatnich gier, którzy pasowaliby do ciebie, blisko twojej rangi.",
   "tl.smallLast": "Bohaterowie z małą liczbą gier na danej roli (oznaczeni *) są na końcu, żeby szczęśliwa passa nie trafiła na szczyt listy.",
-  "tl.collectingArena": "Gry na Arenie pochodzą od graczy wyszukiwanych w Riftwatch: otwórz profil kogoś, kto gra na Arenie, a jego gry, a potem gry jego przeciwników, zaczną wypełniać tę listę.",
+  "tl.collectingArena": "Gry na Arenie wciąż są zbierane. Riftwatch kilka razy na godzinę szuka graczy Areny wśród zwykłych graczy rankingowych, a potem podąża za ich przeciwnikami; otwarcie profilu kogoś, kto gra na Arenie, też pomaga.",
   "stats.oppTitle": "Przeciwnicy na linii",
   "stats.oppLead_one": "Bohaterowie, których najczęściej spotykasz na swojej linii, z {count} gry z przeciwnikiem na linii, i twój bilans z każdym.",
   "stats.oppLead_few": "Bohaterowie, których najczęściej spotykasz na swojej linii, z {count} gier z przeciwnikiem na linii, i twój bilans z każdym.",

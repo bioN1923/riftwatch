@@ -9,7 +9,7 @@ import { getLang, t } from '../i18n';
 const CACHE: [string, string, string][] = [
   ['account-v1 (Riot ID → account)', '30 minutes', 'Names rarely change. Ladder names by PUUID: 24 hours.'],
   ['summoner-v4 (icon, level)', '5 minutes', ''],
-  ['league-v4 (rank)', '2 minutes', 'Ladder pages (Challenger, Grandmaster, Master): 10 minutes.'],
+  ['league-v4 (rank)', '2 minutes', 'Ladder pages (Challenger, Grandmaster, Master): 10 minutes. One page of a lower tier, read now and then by the collector to find Arena players: 30 minutes.'],
   ['champion-mastery-v4', '30 minutes', ''],
   ['match-v5 match IDs', '2 minutes', ''],
   ['match-v5 match', 'Permanent (on disk)', 'Finished matches never change; each is downloaded once. Up to 20,000 kept, least recently used removed first.'],
@@ -96,7 +96,8 @@ export function ApiUsagePage() {
         </li>
         <li>
           Background work only runs when visitors are idle: the champion-stats collector (high-elo ranked games, paced 2.5 s apart) pauses whenever someone
-          is using the site, and rank tracking for starred players runs every 20 minutes.
+          is using the site, and rank tracking for starred players runs every 20 minutes. For the Arena list, when it has no Arena players lined up, the
+          collector asks a handful of players from one page of an everyday tier for recent Arena games, at most every 15 minutes (about ten requests).
         </li>
         <li>Rate-limit errors and an expired or rejected key are logged and alert the site owner.</li>
         <li>

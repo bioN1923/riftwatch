@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.93](v3.93/CHANGES.md) | 2026-11-15 | Arena: collector finds its own first Arena players |
 | [v3.92](v3.92/CHANGES.md) | 2026-11-15 | Stats tab: personal records that jump to the game |
 | [v3.91](v3.91/CHANGES.md) | 2026-11-15 | Profile: ladder place for apex players |
 | [v3.90](v3.90/CHANGES.md) | 2026-11-15 | Stats tab: results after a win/loss and late in a sitting |

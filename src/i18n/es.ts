@@ -1068,7 +1068,7 @@ const dict: Record<string, string> = {
   "ms.lobbyOpen": "Nadie mainea {roles}.",
   "home.tool.duo": "Jugadores de tus partidas recientes que encajarían contigo, cerca de tu rango.",
   "tl.smallLast": "Los campeones con pocas partidas en un rol (marcados con *) van después del resto, para que una racha de suerte no encabece la lista.",
-  "tl.collectingArena": "Las partidas de Arena vienen de jugadores buscados en Riftwatch: abre el perfil de alguien que juegue Arena y sus partidas, y luego las de sus rivales, empezarán a llenar esta lista.",
+  "tl.collectingArena": "Todavía se están recopilando partidas de Arena. Riftwatch busca jugadores de Arena entre jugadores de clasificatoria corrientes unas cuantas veces por hora y luego sigue a sus rivales; abrir el perfil de alguien que juegue Arena también ayuda.",
   "stats.oppTitle": "Rivales de línea",
   "stats.oppLead_one": "Los campeones que más te encuentras en tu línea, de {count} partida con rival de línea, y tu balance contra cada uno.",
   "stats.oppLead_other": "Los campeones que más te encuentras en tu línea, de {count} partidas con rival de línea, y tu balance contra cada uno.",

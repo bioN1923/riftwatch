@@ -4,6 +4,7 @@ import type { ChampionStatsStore } from './champStats';
 import { shapeMatch, shapeTimeline } from './shape';
 import { ARENA_QUEUE } from '../shared/queues';
 import type { ArenaSeeds } from './arenaSeeds';
+import { findArenaPlayer, PROBE_EVERY_MS } from './arenaProbe';
 
 /**
  * Background match collector for champion stats. It walks the Challenger, Grandmaster and
@@ -19,6 +20,7 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
   /** Each ladder player's ranked game count when last visited; unchanged means nothing new to fetch. */
   const lastPlayed = new Map<string, number>();
   let collected = 0;
+  let lastProbe = 0;
 
   async function paced<T>(fn: () => Promise<T>): Promise<T> {
     while (Date.now() - opts.lastUserRequest() < 8000 || riot.headroom(platform.regional) < 0.5 || riot.headroom(platform.id) < 0.5) await sleep(2000);
@@ -86,6 +88,15 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
           // Arena comes from Arena players instead: the next one lined up from an Arena game already read.
           const seed = opts.arenaSeeds?.take();
           if (seed) await readQueue(seed, ARENA_QUEUE);
+          else if (opts.arenaSeeds && Date.now() - lastProbe > PROBE_EVERY_MS) {
+            // Nobody lined up: look for a first Arena player in an everyday tier to start the chain.
+            lastProbe = Date.now();
+            const found = await findArenaPlayer({
+              page: (tier, division, page) => paced(() => riot.leaguePage(platform, tier, division, page)),
+              arenaIds: (puuid) => paced(() => riot.matchIds(platform, puuid, 0, 3, { queue: ARENA_QUEUE })),
+            });
+            if (found) await readQueue(found, ARENA_QUEUE);
+          }
           for (const id of ids) {
             if (stats.has(id) && stats.hasTimeline(id)) continue;
             try {

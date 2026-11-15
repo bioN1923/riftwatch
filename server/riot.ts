@@ -212,6 +212,11 @@ export class RiotClient {
     return data as any;
   }
 
+  /** One page (about 200 players) of a tier below Master; entries include each player's puuid. */
+  leaguePage(p: Platform, tier: string, division: string, page: number, queue = 'RANKED_SOLO_5x5') {
+    return this.get<any[]>(p.id, `/lol/league/v4/entries/${queue}/${tier}/${division}?page=${page}`, 30 * MINUTE, { method: 'league-entries-tier' }) as Promise<any[]>;
+  }
+
   /** Top of the ladder; entries include each player's puuid. */
   apexLeague(p: Platform, tier: 'challenger' | 'grandmaster' | 'master', queue = 'RANKED_SOLO_5x5') {
     return this.get<any>(p.id, `/lol/league/v4/${tier}leagues/by-queue/${queue}`, 10 * MINUTE, { method: 'apex-league' }) as Promise<any>;
