@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.96',
+    date: '2026-11-15',
+    items: ['Draft helper: “Your team’s damage” — add your team’s picks as they lock in and see whether the damage leans physical or magic, so the last picks can balance it. Kept in the link, nothing saved.'],
+  },
+  {
     version: '3.95',
     date: '2026-11-15',
     items: ['Live game: Master, Grandmaster and Challenger players show their ladder place next to their LP (for example “760 LP · #512”).'],

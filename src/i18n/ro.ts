@@ -1151,5 +1151,15 @@ const dict: Record<string, string> = {
   "rec.vision": "Cea mai bună viziune pe minut",
   "rec.multi": "Cel mai mare multi-kill",
   "rec.length": "Cel mai lung meci",
+  "draft.teamTitle": "Damage-ul echipei tale",
+  "draft.teamLead": "Adaugă alegerile echipei pe măsură ce se blochează, ca să vezi dacă damage-ul înclină spre fizic sau magic și ultimele alegeri să-l poată echilibra.",
+  "draft.teamAdd": "Adaugă alegerea unui coechipier",
+  "draft.teamAd": "Fizic",
+  "draft.teamAp": "Magic",
+  "draft.teamMixed": "Mixt",
+  "draft.teamLeanAd": "Mai ales fizic: inamicii pot strânge armură. O alegere cu damage magic l-ar echilibra.",
+  "draft.teamLeanAp": "Mai ales magic: inamicii pot strânge rezistență magică. O alegere cu damage fizic l-ar echilibra.",
+  "draft.teamBalanced": "Un amestec echilibrat deocamdată.",
+  "draft.teamRemove": "Scoate {champion} din echipă",
 };
 export default dict;

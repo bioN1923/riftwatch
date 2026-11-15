@@ -1122,5 +1122,15 @@ const dict: Record<string, string> = {
   "rec.vision": "Mejor visión por minuto",
   "rec.multi": "Mayor multiasesinato",
   "rec.length": "Partida más larga",
+  "draft.teamTitle": "Daño de tu equipo",
+  "draft.teamLead": "Añade las elecciones de tu equipo a medida que se fijan para ver si el daño se inclina a físico o mágico, y que las últimas elecciones lo equilibren.",
+  "draft.teamAdd": "Añadir la elección de un compañero",
+  "draft.teamAd": "Físico",
+  "draft.teamAp": "Mágico",
+  "draft.teamMixed": "Mixto",
+  "draft.teamLeanAd": "Sobre todo físico: el rival puede acumular armadura. Una elección de daño mágico lo equilibraría.",
+  "draft.teamLeanAp": "Sobre todo mágico: el rival puede acumular resistencia mágica. Una elección de daño físico lo equilibraría.",
+  "draft.teamBalanced": "Una mezcla equilibrada por ahora.",
+  "draft.teamRemove": "Quitar a {champion} del equipo",
 };
 export default dict;

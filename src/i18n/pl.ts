@@ -1180,5 +1180,15 @@ const dict: Record<string, string> = {
   "rec.vision": "Najlepsza wizja na minutę",
   "rec.multi": "Największe wielozabójstwo",
   "rec.length": "Najdłuższa gra",
+  "draft.teamTitle": "Obrażenia twojej drużyny",
+  "draft.teamLead": "Dodawaj wybory drużyny w miarę zatwierdzania, aby zobaczyć, czy obrażenia są głównie fizyczne czy magiczne, i żeby ostatnie wybory je zrównoważyły.",
+  "draft.teamAdd": "Dodaj wybór sojusznika",
+  "draft.teamAd": "Fizyczne",
+  "draft.teamAp": "Magiczne",
+  "draft.teamMixed": "Mieszane",
+  "draft.teamLeanAd": "Głównie fizyczne: przeciwnik może zbierać pancerz. Wybór z obrażeniami magicznymi by to wyrównał.",
+  "draft.teamLeanAp": "Głównie magiczne: przeciwnik może zbierać odporność na magię. Wybór z obrażeniami fizycznymi by to wyrównał.",
+  "draft.teamBalanced": "Na razie dobra mieszanka.",
+  "draft.teamRemove": "Usuń {champion} z drużyny",
 };
 export default dict;

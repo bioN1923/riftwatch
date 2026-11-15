@@ -1122,5 +1122,15 @@ const dict: Record<string, string> = {
   "rec.vision": "Beste Sicht pro Minute",
   "rec.multi": "Größter Multikill",
   "rec.length": "Längstes Spiel",
+  "draft.teamTitle": "Schaden deines Teams",
+  "draft.teamLead": "Füge die Picks deines Teams hinzu, sobald sie feststehen, um zu sehen, ob der Schaden eher physisch oder magisch ist – so können die letzten Picks ausgleichen.",
+  "draft.teamAdd": "Pick eines Mitspielers hinzufügen",
+  "draft.teamAd": "Physisch",
+  "draft.teamAp": "Magisch",
+  "draft.teamMixed": "Gemischt",
+  "draft.teamLeanAd": "Überwiegend physisch: Gegner können Rüstung stapeln. Ein Pick mit magischem Schaden würde ausgleichen.",
+  "draft.teamLeanAp": "Überwiegend magisch: Gegner können Magieresistenz stapeln. Ein Pick mit physischem Schaden würde ausgleichen.",
+  "draft.teamBalanced": "Bisher eine gute Mischung.",
+  "draft.teamRemove": "{champion} aus dem Team entfernen",
 };
 export default dict;

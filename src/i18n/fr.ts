@@ -1122,5 +1122,15 @@ const dict: Record<string, string> = {
   "rec.vision": "Meilleure vision par minute",
   "rec.multi": "Plus gros multikill",
   "rec.length": "Partie la plus longue",
+  "draft.teamTitle": "Dégâts de ton équipe",
+  "draft.teamLead": "Ajoute les choix de ton équipe au fil des verrouillages pour voir si les dégâts penchent vers le physique ou le magique, afin que les derniers choix équilibrent.",
+  "draft.teamAdd": "Ajouter le choix d’un coéquipier",
+  "draft.teamAd": "Physique",
+  "draft.teamAp": "Magique",
+  "draft.teamMixed": "Mixte",
+  "draft.teamLeanAd": "Surtout physique : l’adversaire peut empiler l’armure. Un choix à dégâts magiques équilibrerait.",
+  "draft.teamLeanAp": "Surtout magique : l’adversaire peut empiler la résistance magique. Un choix à dégâts physiques équilibrerait.",
+  "draft.teamBalanced": "Un bon mélange pour l’instant.",
+  "draft.teamRemove": "Retirer {champion} de l’équipe",
 };
 export default dict;

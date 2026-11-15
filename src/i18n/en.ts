@@ -1122,5 +1122,15 @@ const en = {
   "rec.vision": "Best vision per minute",
   "rec.multi": "Biggest multi-kill",
   "rec.length": "Longest game",
+  "draft.teamTitle": "Your team’s damage",
+  "draft.teamLead": "Add your team’s picks as they lock in to see whether the damage leans physical or magic, so the last picks can balance it.",
+  "draft.teamAdd": "Add a teammate’s pick",
+  "draft.teamAd": "Physical",
+  "draft.teamAp": "Magic",
+  "draft.teamMixed": "Mixed",
+  "draft.teamLeanAd": "Mostly physical: the enemy can stack armor. A magic-damage pick would balance it.",
+  "draft.teamLeanAp": "Mostly magic: the enemy can stack magic resist. A physical-damage pick would balance it.",
+  "draft.teamBalanced": "A fair mix so far.",
+  "draft.teamRemove": "Remove {champion} from your team",
 };
 export default en;

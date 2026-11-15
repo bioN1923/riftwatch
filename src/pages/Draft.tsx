@@ -8,6 +8,7 @@ import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api } from '../lib/api';
 import { assets, champSlug, useStaticData } from '../lib/ddragon';
 import { pct } from '../lib/format';
+import { damageMix, damageType } from '../lib/damageMix';
 import { banSuggestions, cautiousRate, winRange } from '../lib/draft';
 import { champHit } from '../lib/champSearch';
 import { readPool, savePool } from '../lib/pool';
@@ -27,6 +28,7 @@ import { t } from '../i18n';
 const ROLES = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'] as const;
 type Role = (typeof ROLES)[number];
 const MAX_POOL = 8;
+const TEAM_SIZE = 5;
 
 export function DraftPage() {
   const [params, setParams] = useSearchParams();
@@ -42,6 +44,12 @@ export function DraftPage() {
         .filter((x): x is number => x != null)
         .slice(0, MAX_POOL),
     [params, bySlug, role],
+  );
+
+  const team = useMemo(
+    () =>
+      [...new Set((params.get('team') ?? '').split(',').map((s) => bySlug.get(s.toLowerCase())).filter((x): x is number => x != null))].slice(0, TEAM_SIZE),
+    [params, bySlug],
   );
 
   useEffect(() => {
@@ -106,6 +114,16 @@ export function DraftPage() {
 
       {enemy != null ? <Results enemy={enemy} role={role} pool={pool} /> : <BlindPanel role={role} pool={pool} />}
       {pool.length > 0 && <BanPanel role={role} pool={pool} onPick={(id) => set({ enemy: id })} />}
+      <TeamDamage
+        team={team}
+        onChange={(next) => {
+          const p = new URLSearchParams(params);
+          const slugs = next.map((id) => champSlug(sd!.champions.get(id)!.id)).join(',');
+          if (slugs) p.set('team', slugs);
+          else p.delete('team');
+          setParams(p, { replace: true });
+        }}
+      />
     </div>
   );
 }
@@ -527,5 +545,71 @@ function AnswerList({ list, enemy, role, min }: { list: Answer[]; enemy: number;
         );
       })}
     </ol>
+  );
+}
+
+/* ----------------------------------------------------------- team damage */
+
+/**
+ * Your team's damage mix while picks come in: lock-ins so far and whether they lean physical or
+ * magic, so the last picks can balance it. Lives in the URL only (shareable, nothing saved).
+ */
+function TeamDamage({ team, onChange }: { team: number[]; onChange: (next: number[]) => void }) {
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  const [opened, setOpen] = useState(false);
+  const open = opened || team.length > 0;
+  const ratings = team.map((id) => sd?.champions.get(id)?.dmg);
+  const mix = team.length ? damageMix(ratings) : null;
+  const label = (id: number) => {
+    const k = damageType(sd?.champions.get(id)?.dmg);
+    return k === 'ad' ? t('draft.teamAd') : k === 'ap' ? t('draft.teamAp') : k === 'mixed' ? t('draft.teamMixed') : '';
+  };
+  return (
+    <section className="panel mt-6 p-4" aria-labelledby="team-h">
+      <h2 id="team-h" className="panel-title flex items-center gap-1.5">
+        <Shield className="size-4 text-gold" aria-hidden /> {t('draft.teamTitle')}
+      </h2>
+      <p className="mt-0.5 text-xs text-muted">{t('draft.teamLead')}</p>
+      {team.length > 0 && (
+        <ul className="mt-3 flex flex-wrap gap-2">
+          {team.map((id) => (
+            <li key={id} className="flex items-center gap-2 rounded border border-line bg-surface py-1 pl-1 pr-1.5">
+              <GameImg src={a.champion(id).url} alt="" size={32} rounded="sm" />
+              <span className="text-sm">
+                {a.champion(id).name}
+                <span className="block text-[11px] text-muted">{label(id)}</span>
+              </span>
+              <button
+                onClick={() => onChange(team.filter((x) => x !== id))}
+                aria-label={t('draft.teamRemove', { champion: a.champion(id).name })}
+                className="ml-1 grid size-6 place-items-center rounded text-muted hover:bg-raised hover:text-text"
+              >
+                <X className="size-3.5" aria-hidden />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      {mix && (
+        <p className="mt-3 text-sm" role="status">
+          <span className="num font-semibold">
+            {[mix.ad && t('live.dmgAd', { n: mix.ad }), mix.ap && t('live.dmgAp', { n: mix.ap }), mix.mixed && t('live.dmgMixed', { n: mix.mixed })].filter(Boolean).join(' · ')}
+          </span>{' '}
+          <span className={clsx('ml-1', mix.lean ? 'text-kda-great' : 'text-muted')}>
+            {mix.lean === 'ad' ? t('draft.teamLeanAd') : mix.lean === 'ap' ? t('draft.teamLeanAp') : t('draft.teamBalanced')}
+          </span>
+        </p>
+      )}
+      {team.length < TEAM_SIZE &&
+        (open ? (
+          <ChampionGrid onPick={(id) => onChange([...team, id].slice(0, TEAM_SIZE))} exclude={team} />
+        ) : (
+          <button onClick={() => setOpen(true)} className="mt-3 inline-flex items-center gap-1.5 rounded border border-line px-3 py-1.5 text-sm font-medium text-muted hover:border-gold/60 hover:text-text">
+            <Plus className="size-4" aria-hidden /> {t('draft.teamAdd')}
+          </button>
+        ))}
+      {team.length > 0 && <p className="mt-2 text-[11px] text-faint">{t('live.dmgNote')}</p>}
+    </section>
   );
 }
