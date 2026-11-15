@@ -9,7 +9,7 @@ import { getLang, t } from '../i18n';
 const CACHE: [string, string, string][] = [
   ['account-v1 (Riot ID → account)', '30 minutes', 'Names rarely change. Ladder names by PUUID: 24 hours.'],
   ['summoner-v4 (icon, level)', '5 minutes', ''],
-  ['league-v4 (rank)', '2 minutes', 'Ladder pages (Challenger, Grandmaster, Master): 10 minutes. One page of a lower tier, read now and then by the collector to find Arena players: 30 minutes.'],
+  ['league-v4 (rank)', '2 minutes', 'Ladder pages (Challenger, Grandmaster, Master): 10 minutes. One page of a lower tier, read now and then by the collector to find Arena players: 30 minutes. Challenger and Grandmaster LP are kept hourly for two days (from reads that happen anyway) to show LP changes.'],
   ['champion-mastery-v4', '30 minutes', ''],
   ['lol-challenges-v1 (player challenges)', '30 minutes', 'Only the overall level, points and percentile are shown, on profiles.'],
   ['match-v5 match IDs', '2 minutes', ''],

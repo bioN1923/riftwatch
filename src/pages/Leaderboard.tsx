@@ -6,7 +6,7 @@ import { ChevronDown, ChevronLeft, ChevronRight, ChevronsUp, Flame, Search } fro
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api } from '../lib/api';
 import { rankEmblem } from '../lib/ddragon';
-import { pct, thousands, regionName, tierName } from '../lib/format';
+import { pct, thousands, regionName, tierName, timeAgo } from '../lib/format';
 import { profilePath } from '../lib/riotId';
 import { useRegion } from '../lib/storage';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
@@ -212,6 +212,7 @@ export function LeaderboardPage() {
               })}
             </p>
           )}
+          {q.data.since != null && <p className="mt-1 text-xs text-muted">{t('lb.changeSince', { when: timeAgo(q.data.since) })}</p>}
           {upperMin != null && (
             <p className="mt-1 text-xs text-muted" title={t('lb.cutoffTip')}>
               {t.rich('lb.upperCut', {
@@ -277,7 +278,17 @@ export function LeaderboardPage() {
                           </span>
                         )}
                       </td>
-                      <td className="num px-3 py-2.5 text-right font-semibold">{thousands(e.lp)}</td>
+                      <td className="num whitespace-nowrap px-3 py-2.5 text-right font-semibold">
+                        {thousands(e.lp)}
+                        {e.lpChange != null && (
+                          <span
+                            className={clsx('ml-1.5 block text-[11px] font-medium sm:inline', e.lpChange > 0 ? 'text-win' : e.lpChange < 0 ? 'text-loss' : 'text-faint')}
+                            title={t('lb.changeTip', { lp: e.lpChange > 0 ? `+${e.lpChange}` : String(e.lpChange) })}
+                          >
+                            {e.lpChange > 0 ? `+${e.lpChange}` : e.lpChange < 0 ? `−${Math.abs(e.lpChange)}` : '±0'}
+                          </span>
+                        )}
+                      </td>
                       <td className="px-3 py-2.5 text-right">
                         <span className="inline-flex items-center gap-2.5">
                           <span className="hidden sm:inline">

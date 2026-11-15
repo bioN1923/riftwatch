@@ -1152,5 +1152,7 @@ const en = {
   "profile.challenges": "Challenges: {level}",
   "profile.challengesTop": "top {pct}%",
   "profile.challengesTip": "{points} challenge points",
+  "lb.changeSince": "Green and red numbers by the LP: change since {when}.",
+  "lb.changeTip": "{lp} LP since the earlier snapshot",
 };
 export default en;

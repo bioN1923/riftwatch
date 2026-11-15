@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.103',
+    date: '2026-11-15',
+    items: ['Ladder: Challenger and Grandmaster show how much LP each player gained or lost since about a day ago (green and red numbers next to their LP).'],
+  },
+  {
     version: '3.102',
     date: '2026-11-15',
     items: ['Profiles show the player’s overall Challenges level and how far up they are (for example “Challenges: Diamond · top 4.2%”), with their challenge points on hover.'],

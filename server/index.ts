@@ -15,6 +15,7 @@ import { ChampionStatsStore, matchupMin } from './champStats';
 import { loadItemKinds } from './items';
 import { startCrawler } from './crawler';
 import { ArenaSeeds } from './arenaSeeds';
+import { LadderHistory } from './ladderHistory';
 import { probeStatus } from './arenaProbe';
 import { TtlCache } from './cache';
 import { getPlatform, type Platform } from '../shared/regions';
@@ -45,6 +46,8 @@ const riot = new RiotClient(
 const players = new PlayerIndex(path.resolve(here, 'data', DEMO ? 'players.demo.json' : 'players.json'));
 if (DEMO) DEMO_SEED.forEach((p) => players.add(p));
 
+// Earlier ladder LP, for the LP-change column (see ladderHistory.ts).
+const ladderHistory = new LadderHistory(DEMO ? null : path.resolve(here, 'data', 'ladder-history.json'));
 const champStats = new ChampionStatsStore(DEMO ? null : path.resolve(here, 'data', 'champions.json'));
 // Players from Arena games already read, for the collector to look up next (see arenaSeeds.ts).
 const arenaSeeds = new ArenaSeeds((getPlatform(process.env.CRAWL_REGION ?? 'euw1') ?? getPlatform('euw1')!).id, 300, 20_000, DEMO ? null : path.resolve(here, 'data', 'arena-seeds.json'));
@@ -603,6 +606,15 @@ app.get(
     const page = Math.max(1, Number(req.query.page ?? 1) || 1);
 
     const all = await ladderAll(p, tier, queue);
+    const histKey = `${p.id}:${queue}:${tier}`;
+    const base =
+      tier === 'master'
+        ? null
+        : DEMO
+          ? // Demo: a made-up day-old snapshot, so the LP-change column can be seen.
+            { at: Date.now() - 24 * 3600_000, lp: Object.fromEntries(all.map((e, i) => [e.puuid, e.lp - (((i * 37) % 141) - 50)] as const).reverse()) } // first entry wins for repeated demo names
+          : ladderHistory.baseline(histKey);
+    if (tier !== 'master') ladderHistory.record(histKey, all);
     const slice = all.slice((page - 1) * LADDER_PAGE, page * LADDER_PAGE);
     // Names: from the player index when known. Each request looks up at most a few unknown
     // names directly; the rest are queued for the background name filler, so one ladder page
@@ -623,12 +635,13 @@ app.get(
           }
         }
         if (name && privacy.isHiddenPlayer({ puuid: e.puuid, ...name })) name = undefined;
-        return { ...e, rank: (page - 1) * LADDER_PAGE + i + 1, gameName: name?.gameName ?? null, tagLine: name?.tagLine ?? null };
+        const before = base?.lp[e.puuid];
+        return { ...e, rank: (page - 1) * LADDER_PAGE + i + 1, gameName: name?.gameName ?? null, tagLine: name?.tagLine ?? null, ...(before != null ? { lpChange: e.lp - before } : {}) };
       }),
     );
     const missing = entries.some((e) => !e.gameName && !privacy.isHidden(e.puuid));
     res.setHeader('Cache-Control', missing ? 'no-store' : 'public, max-age=120');
-    res.json({ platform: p.id, queue, tier, total: all.length, minLp: all.length ? all[all.length - 1].lp : null, page, pageSize: LADDER_PAGE, entries, namesPending: missing } satisfies Ladder);
+    res.json({ platform: p.id, queue, tier, total: all.length, minLp: all.length ? all[all.length - 1].lp : null, page, pageSize: LADDER_PAGE, entries, namesPending: missing, ...(base ? { since: base.at } : {}) } satisfies Ladder);
   }),
 );
 
@@ -1209,6 +1222,7 @@ const shutdown = () => {
   players.flush();
   champStats.flush();
   arenaSeeds.flush();
+  ladderHistory.flush();
   process.exit(0);
 };
 process.on('SIGINT', shutdown);

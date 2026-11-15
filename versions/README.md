@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.103](v3.103/CHANGES.md) | 2026-11-15 | Ladder: LP change since about a day ago |
 | [v3.102](v3.102/CHANGES.md) | 2026-11-15 | Profile: Challenges level and percentile |
 | [v3.101](v3.101/CHANGES.md) | 2026-11-15 | Champion page: across patches |
 | [v3.100](v3.100/CHANGES.md) | 2026-11-15 | Ladder place on Compare and Multi-search |

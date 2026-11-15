@@ -1152,5 +1152,7 @@ const dict: Record<string, string> = {
   "profile.challenges": "Défis : {level}",
   "profile.challengesTop": "top {pct} %",
   "profile.challengesTip": "{points} points de défis",
+  "lb.changeSince": "Chiffres verts et rouges à côté des LP : évolution depuis {when}.",
+  "lb.changeTip": "{lp} LP depuis le relevé précédent",
 };
 export default dict;

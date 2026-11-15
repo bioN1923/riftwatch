@@ -428,6 +428,8 @@ export interface LadderEntry {
   losses: number;
   hotStreak: boolean;
   veteran: boolean;
+  /** LP gained (or lost) since `Ladder.since`; absent when the player wasn't in this tier then. */
+  lpChange?: number;
 }
 
 export interface Ladder {
@@ -442,6 +444,8 @@ export interface Ladder {
   page: number;
   pageSize: number;
   entries: LadderEntry[];
+  /** When the LP changes are measured from (an earlier snapshot of this ladder), if there is one. */
+  since?: number;
 }
 
 export interface ServerStatus {
