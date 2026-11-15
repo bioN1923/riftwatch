@@ -17,3 +17,8 @@
 - Playwright with seeded `rw:recent-champs` (in its own browser, not the user's): 4 champion links render, and the section is absent without the stored list. No page errors at 1440 px or 390 px.
 
 Screens: `demo/home-recent.png`, `demo/home-fresh.png`, `demo/home-phone.png`.
+
+## Live check (2026-11-16 00:38 local)
+- The live index serves `index-Bp_i0Vdu.js`, which contains the home section, and `i18n-B-AZTOH_.js` with the new string (200).
+- Checked by API only, so the user's browser storage was left alone.
+- Arena: 288 games.
