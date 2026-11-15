@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.100',
+    date: '2026-11-15',
+    items: ['Compare and Multi-search show the ladder place of Master, Grandmaster and Challenger players too (“#357 on the EUW ladder”), linking to that page of the ladder.'],
+  },
+  {
     version: '3.99',
     date: '2026-11-15',
     items: ['Arena collection keeps its list of Arena players to follow across server restarts, so the Arena tier list keeps growing after each update instead of starting over.'],

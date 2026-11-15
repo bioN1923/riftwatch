@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLadderPosition } from '../../lib/useLadderPosition';
+import { LadderPlace, type LadderRef } from '../ui/LadderPlace';
 import { Link } from 'react-router';
 import clsx from 'clsx';
 import { RefreshCw, Star, Flame, Link2, Check, Scale, HeartHandshake } from 'lucide-react';
@@ -194,28 +194,6 @@ function CopyLink() {
         {done ? t('profile.copied') : t('profile.copyLink')}
       </span>
     </button>
-  );
-}
-
-type LadderRef = { platform: string; puuid: string; queue: 'solo' | 'flex' };
-
-/** "#57 on the EUW ladder" for Master and above, linking to that page of the ladder. */
-function LadderPlace({ entry, ladder }: { entry: LeagueEntry; ladder: LadderRef }) {
-  const tier = entry.tier.toLowerCase();
-  const q = useLadderPosition(ladder.platform, ladder.puuid, entry.tier, ladder.queue);
-  const pos = q.data;
-  if (!pos) return null;
-  const qs = new URLSearchParams({ region: ladder.platform, tier });
-  if (ladder.queue === 'flex') qs.set('queue', 'flex');
-  if (pos.page > 1) qs.set('page', String(pos.page));
-  return (
-    <Link
-      to={`/leaderboard?${qs}`}
-      className="num block text-xs font-medium text-gold hover:underline"
-      title={t('profile.ladderTip', { rank: pos.rank, tier: tierName(entry.tier), total: pos.tierTotal })}
-    >
-      {t('profile.ladderPlace', { n: pos.overall.toLocaleString(), region: getPlatform(ladder.platform)?.label ?? ladder.platform })}
-    </Link>
   );
 }
 

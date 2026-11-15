@@ -17,6 +17,7 @@ import { ROLE_LABEL, RoleIcon } from '../components/ui/RoleIcon';
 import { ErrorState, Skeleton } from '../components/ui/States';
 import { fadeIn } from '../lib/motion';
 import { t } from '../i18n';
+import { LadderPlace } from '../components/ui/LadderPlace';
 
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
 type Queue = 'solo' | 'all';
@@ -301,6 +302,7 @@ function Header({ p, side }: { p: Profile; side: 'a' | 'b' }) {
               <p className="num text-xs text-muted">
                 {t('common.lp', { lp: solo.leaguePoints })} · <span className={clsx('font-semibold', wr >= 0.5 ? 'text-win' : 'text-loss')}>{pct(wr)}</span> · {t('common.games', { count: games })}
               </p>
+              <LadderPlace entry={solo} ladder={{ platform: p.platform, puuid: p.account.puuid, queue: 'solo' }} />
             </div>
           </>
         ) : (

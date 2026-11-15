@@ -23,6 +23,7 @@ import { TagList } from '../components/ui/TagList';
 import { Skeleton } from '../components/ui/States';
 import { fadeIn } from '../lib/motion';
 import { t } from '../i18n';
+import { LadderPlace } from '../components/ui/LadderPlace';
 
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
 
@@ -246,6 +247,7 @@ function PlayerCard({ platform, id, duos }: { platform: string; id: RiotId; duos
               <p className="num text-xs text-muted">
                 {t.rich('ms.lpOf', { lp: solo.leaguePoints, rate: <span className={clsx('font-semibold', wr >= 0.5 ? 'text-win' : 'text-loss')}>{pct(wr)}</span>, games })}
               </p>
+              <LadderPlace entry={solo} ladder={{ platform: p.platform, puuid: p.account.puuid, queue: 'solo' }} />
             </div>
           </>
         ) : (
