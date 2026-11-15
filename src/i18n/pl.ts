@@ -1227,5 +1227,7 @@ const dict: Record<string, string> = {
   "cmp.bestTitle": "Najlepsze gry",
   "cmp.bestLead": "Najlepsza gra każdego gracza w każdej kategorii spośród wczytanych; lepsza jest złota. Każda otwiera tę grę.",
   "cmp.bestRecord": "Rekord",
+  "lb.fallers": "Najszybciej spadający (w porównaniu z: {when})",
+  "lb.movers": "Największe zmiany LP",
 };
 export default dict;

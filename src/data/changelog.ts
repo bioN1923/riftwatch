@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.114',
+    date: '2026-11-15',
+    items: ['Ladder: next to “Climbing fastest”, a “Dropping fastest” line lists the five biggest LP losses in the tier, so the strip shows both directions.'],
+  },
+  {
     version: '3.113',
     date: '2026-11-15',
     items: ['Win rates on a handful of games (fewer than five) are no longer coloured green or red on Multi-search, Compare, the live game and champion pages: 1–0 isn’t winning, 0–2 isn’t losing.'],

@@ -647,22 +647,23 @@ app.get(
         return { ...e, rank: (page - 1) * LADDER_PAGE + i + 1, gameName: name?.gameName ?? null, tagLine: name?.tagLine ?? null, ...(before != null ? { lpChange: e.lp - before } : {}) };
       }),
     );
-    // Biggest gains in the whole tier, from names already known (no lookups for this strip).
-    const climbers: LadderEntry[] = base
+    // Biggest gains and losses in the whole tier, from names already known (no lookups for these strips).
+    const moved = base
       ? all
           .map((e, i) => ({ e, i, d: base.lp[e.puuid] != null ? e.lp - base.lp[e.puuid] : null }))
-          .filter((x): x is { e: (typeof all)[number]; i: number; d: number } => x.d != null && x.d > 0 && !privacy.isHidden(x.e.puuid))
-          .sort((a, b) => b.d - a.d)
+          .filter((x, k, xs) => xs.findIndex((y) => y.e.puuid === x.e.puuid) === k) // one row per player (demo names can repeat)
+          .filter((x): x is { e: (typeof all)[number]; i: number; d: number } => x.d != null && x.d !== 0 && !privacy.isHidden(x.e.puuid))
           .flatMap(({ e, i, d }) => {
             const name = e.gameName ? { gameName: e.gameName, tagLine: e.tagLine! } : players.nameOf(e.puuid);
             if (!name || privacy.isHiddenPlayer({ puuid: e.puuid, ...name })) return [];
             return [{ ...e, rank: i + 1, gameName: name.gameName, tagLine: name.tagLine, lpChange: d }];
           })
-          .slice(0, 5)
       : [];
+    const climbers: LadderEntry[] = moved.filter((x) => x.lpChange > 0).sort((a, b) => b.lpChange - a.lpChange).slice(0, 5);
+    const fallers: LadderEntry[] = moved.filter((x) => x.lpChange < 0).sort((a, b) => a.lpChange - b.lpChange).slice(0, 5);
     const missing = entries.some((e) => !e.gameName && !privacy.isHidden(e.puuid));
     res.setHeader('Cache-Control', missing ? 'no-store' : 'public, max-age=120');
-    res.json({ platform: p.id, queue, tier, total: all.length, minLp: all.length ? all[all.length - 1].lp : null, page, pageSize: LADDER_PAGE, entries, namesPending: missing, ...(base ? { since: base.at, climbers } : {}) } satisfies Ladder);
+    res.json({ platform: p.id, queue, tier, total: all.length, minLp: all.length ? all[all.length - 1].lp : null, page, pageSize: LADDER_PAGE, entries, namesPending: missing, ...(base ? { since: base.at, climbers, fallers } : {}) } satisfies Ladder);
   }),
 );
 

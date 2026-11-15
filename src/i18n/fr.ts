@@ -1167,5 +1167,7 @@ const dict: Record<string, string> = {
   "cmp.bestTitle": "Meilleures parties",
   "cmp.bestLead": "La meilleure partie de chaque joueur dans chaque catégorie, parmi celles chargées ; la meilleure est en or. Chacune ouvre la partie.",
   "cmp.bestRecord": "Record",
+  "lb.fallers": "Plus fortes baisses (par rapport à {when})",
+  "lb.movers": "Plus grands changements de LP",
 };
 export default dict;

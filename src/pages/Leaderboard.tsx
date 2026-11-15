@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronsUp, Flame, Search, TrendingUp } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronsUp, Flame, Search, TrendingDown, TrendingUp } from 'lucide-react';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api } from '../lib/api';
 import { rankEmblem } from '../lib/ddragon';
@@ -213,22 +213,36 @@ export function LeaderboardPage() {
             </p>
           )}
           {q.data.since != null && <p className="mt-1 text-xs text-muted">{t('lb.changeSince', { when: timeAgo(q.data.since) })}</p>}
-          {q.data.since != null && (q.data.climbers?.length ?? 0) > 0 && (
-            <section className="mt-3 rounded border border-line bg-surface px-3 py-2" aria-labelledby="climb-h">
-              <h2 id="climb-h" className="flex items-center gap-1.5 text-xs font-semibold text-muted">
-                <TrendingUp className="size-3.5 text-win" aria-hidden /> {t('lb.climbers', { when: timeAgo(q.data.since) })}
-              </h2>
-              <ol className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                {q.data.climbers!.map((c) => (
-                  <li key={c.puuid} className="flex items-baseline gap-1.5">
-                    <Link to={profilePath(region, { gameName: c.gameName!, tagLine: c.tagLine ?? '' })} className="font-medium hover:text-gold">
-                      {c.gameName}
-                    </Link>
-                    <span className="num text-xs font-semibold text-win">+{c.lpChange}</span>
-                    <span className="num text-xs text-faint">#{c.rank}</span>
-                  </li>
+          {q.data.since != null && ((q.data.climbers?.length ?? 0) > 0 || (q.data.fallers?.length ?? 0) > 0) && (
+            <section className="mt-3 space-y-2 rounded border border-line bg-surface px-3 py-2" aria-labelledby="climb-h">
+              <h2 id="climb-h" className="sr-only">{t('lb.movers')}</h2>
+              {(
+                [
+                  ['up', q.data.climbers ?? [], t('lb.climbers', { when: timeAgo(q.data.since) })],
+                  ['down', q.data.fallers ?? [], t('lb.fallers', { when: timeAgo(q.data.since) })],
+                ] as const
+              )
+                .filter(([, list]) => list.length > 0)
+                .map(([dir, list, label]) => (
+                  <div key={dir}>
+                    <h3 className="flex items-center gap-1.5 text-xs font-semibold text-muted">
+                      {dir === 'up' ? <TrendingUp className="size-3.5 text-win" aria-hidden /> : <TrendingDown className="size-3.5 text-loss" aria-hidden />} {label}
+                    </h3>
+                    <ol className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                      {list.map((c) => (
+                        <li key={c.puuid} className="flex items-baseline gap-1.5">
+                          <Link to={profilePath(region, { gameName: c.gameName!, tagLine: c.tagLine ?? '' })} className="font-medium hover:text-gold">
+                            {c.gameName}
+                          </Link>
+                          <span className={clsx('num text-xs font-semibold', dir === 'up' ? 'text-win' : 'text-loss')}>
+                            {dir === 'up' ? `+${c.lpChange}` : `−${Math.abs(c.lpChange!)}`}
+                          </span>
+                          <span className="num text-xs text-faint">#{c.rank}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
                 ))}
-              </ol>
             </section>
           )}
           {upperMin != null && (

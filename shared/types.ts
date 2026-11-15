@@ -450,6 +450,8 @@ export interface Ladder {
   since?: number;
   /** The biggest LP gains in the whole tier since `since` (named players only), best first. */
   climbers?: LadderEntry[];
+  /** The biggest LP losses in the tier since `since` (named players only), worst first. */
+  fallers?: LadderEntry[];
 }
 
 export interface ServerStatus {

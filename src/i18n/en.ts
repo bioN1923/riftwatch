@@ -1167,5 +1167,7 @@ const en = {
   "cmp.bestTitle": "Best games",
   "cmp.bestLead": "Each player’s best single game for each, among the loaded ones; the better one is in gold. Each opens that game.",
   "cmp.bestRecord": "Record",
+  "lb.fallers": "Dropping fastest (compared with {when})",
+  "lb.movers": "Biggest LP changes",
 };
 export default en;
