@@ -25,3 +25,11 @@ This follows the same honest-data rules as the tier list, which shows leaning di
 Screens: `demo/live-lane.png`, `demo/matchup.png`.
 
 **Arena line.** Full at 1000 players, but Arena games keep growing (~2.6 a minute) and the cap only stops memory growing; extra seeds found while it's full are simply not queued. No change needed.
+
+## Live check (2026-11-16 00:19 local)
+- The live build serves `i18n-DA2WjbhK.js` with the new string.
+- Live matchup data, run through the same rule:
+  - Ahri vs Zed mid: 106 games, 60.4% → **Ahri is favoured** (sure);
+  - Lee Sin vs Sylas jungle: 41 games, 39.0% → **Leaning Sylas** (not sure);
+  - Ashe vs Caitlyn bot: 39 games, 51.3% → **An even matchup**.
+- Arena: 244 games.
