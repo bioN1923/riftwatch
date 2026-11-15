@@ -257,7 +257,8 @@ function mockMatch(p: Persona, index: number): MatchSummary {
     participants.filter((x) => x.teamId === teamId).forEach((x) => (x.killParticipation = sum ? Math.min(1, (x.kills + x.assists) / sum) : 0));
   }
 
-  const startedAt = Date.now() - (index * 3.2 + r() * 2 + 0.4) * 3600_000;
+  // Games come in sittings of four, about 45 minutes apart, with sittings half a day apart — like real players.
+  const startedAt = Date.now() - (Math.floor(index / 4) * 14 + (index % 4) * 0.75 + r() * 0.05 + 0.4) * 3600_000;
   const m: MatchSummary = {
     id: `DEMO_${p.puuid.slice(5)}_${index}`,
     queueId,

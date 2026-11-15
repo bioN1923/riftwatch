@@ -9,6 +9,7 @@ import { decimal, formatKda, kdaRatio, kdaTone, pct, winRateTone } from '../../l
 import { me } from '../../lib/stats';
 import { winConditions, type WinCondition } from '../../lib/winConditions';
 import { laneOpponents } from '../../lib/laneOpponents';
+import { sessions, type Split } from '../../lib/sessions';
 import { GameImg, Tooltip } from '../ui/GameImg';
 import { RoleIcon, ROLE_LABEL } from '../ui/RoleIcon';
 import { EmptyState, Skeleton } from '../ui/States';
@@ -128,6 +129,7 @@ export function StatsTab({
       </div>
       <Benchmarks matches={matches} puuid={puuid} />
       <WinConditions matches={matches} puuid={puuid} />
+      <Sittings matches={matches} puuid={puuid} />
       <ChampionTable matches={matches} puuid={puuid} onOpen={onOpenChampion} />
       <LaneOpponents matches={matches} puuid={puuid} />
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -513,6 +515,41 @@ function GoalButton({ c, goals, onAdd }: { c: WinCondition; goals: { metric: Met
       <Target className="size-3" aria-hidden />
       {has ? t('wc.goalHas') : t('wc.goalMake')}
     </button>
+  );
+}
+
+/** How results go within a sitting: right after a win or a loss, and early or late in a long sitting. */
+function Sittings({ matches, puuid }: { matches: MatchSummary[]; puuid: string }) {
+  const s = useMemo(() => sessions(matches, puuid), [matches, puuid]);
+  if (s.games < 10 || (!s.afterResult && !s.early)) return null;
+  const rec = (x: { w: number; l: number }) => `${x.w}–${x.l} · ${pct(x.w / Math.max(1, x.w + x.l))}`;
+  // `gap` is first side minus second; `worse` names the second side doing worse.
+  const verdict = (sp: Split, key: 'after' | 'late') => {
+    if (sp.verdict === 'same') return t(`ses.${key}Same`);
+    const second = sp.gap > 0 ? 'Worse' : 'Better';
+    return t(`ses.${key}${second}${sp.verdict === 'sure' ? '' : 'Lean'}` as 'ses.afterWorse');
+  };
+  const row = (sp: Split, key: 'after' | 'late', la: string, lb: string) => (
+    <li className="grid gap-x-4 gap-y-1 sm:grid-cols-[minmax(0,1fr)_auto]">
+      <span className={clsx('text-sm font-medium', sp.verdict !== 'sure' && 'text-muted')}>{verdict(sp, key)}</span>
+      <span className="num flex flex-wrap items-center gap-x-1 text-xs text-muted sm:justify-end">
+        <span>{la}</span> <span className={winRateTone(sp.a.w / (sp.a.w + sp.a.l), sp.a.w + sp.a.l)}>{rec(sp.a)}</span>
+        <span className="text-faint"> · </span>
+        <span>{lb}</span> <span className={winRateTone(sp.b.w / (sp.b.w + sp.b.l), sp.b.w + sp.b.l)}>{rec(sp.b)}</span>
+      </span>
+    </li>
+  );
+  return (
+    <section className="panel p-4" aria-labelledby="ses-h">
+      <h2 id="ses-h" className="panel-title">
+        {t('ses.title')}
+      </h2>
+      <p className="mt-0.5 text-xs text-muted">{t('ses.lead', { count: s.sessions, games: s.games })}</p>
+      <ul className="mt-3 space-y-2.5">
+        {s.afterResult && row(s.afterResult, 'after', t('ses.afterWin'), t('ses.afterLoss'))}
+        {s.early && row(s.early, 'late', t('ses.early'), t('ses.late'))}
+      </ul>
+    </section>
   );
 }
 

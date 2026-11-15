@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.90',
+    date: '2026-11-15',
+    items: ['Profile Stats tab: “Within a sitting” compares how you do right after a win and right after a loss, and in games 1–3 of a sitting against later ones. It only calls a difference clear with enough games on both sides.'],
+  },
+  {
     version: '3.89',
     date: '2026-11-15',
     items: ['When Riot’s rate limit is hit, the error panel now counts down and tries again by itself once the wait is over (up to twice), instead of leaving you to keep pressing Try again.'],
