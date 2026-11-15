@@ -1152,12 +1152,12 @@ const en = {
   "profile.challenges": "Challenges: {level}",
   "profile.challengesTop": "top {pct}%",
   "profile.challengesTip": "{points} challenge points",
-  "lb.changeSince": "Green and red numbers by the LP: change since {when}.",
+  "lb.changeSince": "Green and red numbers by the LP: change compared with {when}.",
   "lb.changeTip": "{lp} LP since the earlier snapshot",
   "ph.captionGames": "Win rate and games on each recent patch",
-  "lb.climbers": "Climbing fastest since {when}",
+  "lb.climbers": "Climbing fastest (compared with {when})",
   "home.climbers": "Climbing fastest in {region} Challenger",
   "home.climbersAll": "Full ladder",
-  "home.climbersLead": "Biggest LP gains since {when}.",
+  "home.climbersLead": "Biggest LP gains compared with {when}.",
 };
 export default en;

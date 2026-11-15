@@ -1182,12 +1182,12 @@ const dict: Record<string, string> = {
   "profile.challenges": "Provocări: {level}",
   "profile.challengesTop": "top {pct}%",
   "profile.challengesTip": "{points} puncte de provocări",
-  "lb.changeSince": "Numerele verzi și roșii de lângă LP: schimbarea de {when} încoace.",
+  "lb.changeSince": "Numerele verzi și roșii de lângă LP: schimbarea față de {when}.",
   "lb.changeTip": "{lp} LP față de instantaneul anterior",
   "ph.captionGames": "Win rate și meciuri pe fiecare patch recent",
-  "lb.climbers": "Urcă cel mai repede de {when} încoace",
+  "lb.climbers": "Urcă cel mai repede (față de {when})",
   "home.climbers": "Urcă cel mai repede în Challenger {region}",
   "home.climbersAll": "Tot clasamentul",
-  "home.climbersLead": "Cele mai mari câștiguri de LP de {when} încoace.",
+  "home.climbersLead": "Cele mai mari câștiguri de LP față de {when}.",
 };
 export default dict;

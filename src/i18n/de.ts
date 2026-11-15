@@ -1152,12 +1152,12 @@ const dict: Record<string, string> = {
   "profile.challenges": "Herausforderungen: {level}",
   "profile.challengesTop": "Top {pct} %",
   "profile.challengesTip": "{points} Herausforderungspunkte",
-  "lb.changeSince": "Grüne und rote Zahlen neben den LP: Veränderung seit {when}.",
+  "lb.changeSince": "Grüne und rote Zahlen neben den LP: Veränderung im Vergleich zu {when}.",
   "lb.changeTip": "{lp} LP seit dem früheren Stand",
   "ph.captionGames": "Siegquote und Spiele auf jedem der letzten Patches",
-  "lb.climbers": "Am schnellsten aufgestiegen seit {when}",
+  "lb.climbers": "Am schnellsten aufgestiegen (im Vergleich zu {when})",
   "home.climbers": "Am schnellsten im Challenger {region}",
   "home.climbersAll": "Ganze Rangliste",
-  "home.climbersLead": "Größte LP-Gewinne seit {when}.",
+  "home.climbersLead": "Größte LP-Gewinne im Vergleich zu {when}.",
 };
 export default dict;
