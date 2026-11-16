@@ -87,6 +87,9 @@ function ChampionView({ championId }: { championId: number }) {
   });
   const switching = q.isPlaceholderData;
   const s = q.data;
+  // A role is "rare" for this champion when it's both a tiny share and too few games to read.
+  const rareRole = (r: { share: number; games: number }) => r.share < 0.02 && r.games < LOW_SAMPLE;
+  const [allRoles, setAllRoles] = useState(false);
 
   useEffect(() => {
     if (info) document.title = t('cp.title', { champion: info.name });
@@ -157,14 +160,22 @@ function ChampionView({ championId }: { championId: number }) {
           {detail && <Abilities detail={detail} />}
 
           {group === 'ranked' && s && s.roles.length > 0 && (
-            <div role="tablist" aria-label={t('tl.role')} className="relative mt-6 flex gap-5 overflow-x-auto overflow-y-hidden">
+            <div className="mt-6 flex items-center gap-5">
+            <div role="tablist" aria-label={t('tl.role')} className="relative flex min-w-0 gap-5 overflow-x-auto overflow-y-hidden">
               <SlidingIndicator />
-              {s.roles.map((r) => (
+              {s.roles.filter((r) => allRoles || r.role === (switching && role ? role : s.role) || !rareRole(r)).map((r) => (
                 <RoleTab key={r.role} role={r.role} active={(switching && role ? role : s.role) === r.role} onClick={() => set('role', r.role)}>
                   {ROLE_LABEL[r.role] ?? r.role}
                   <span className="num text-xs text-faint">{pct(r.share)}</span>
                 </RoleTab>
               ))}
+            </div>
+              {/* Off-roles with a sliver of games (Ahri bot 0%) are tucked behind one small button instead of a full tab each. */}
+              {!allRoles && s.roles.some((r) => rareRole(r) && r.role !== (switching && role ? role : s.role)) && (
+                <button type="button" onClick={() => setAllRoles(true)} className="shrink-0 self-center whitespace-nowrap py-2 text-xs text-muted hover:text-text">
+                  {t('cp.moreRoles', { count: s.roles.filter((r) => rareRole(r) && r.role !== (switching && role ? role : s.role)).length })}
+                </button>
+              )}
             </div>
           )}
           {!(group === 'ranked' && s && s.roles.length > 0) && <div className="h-6" />}

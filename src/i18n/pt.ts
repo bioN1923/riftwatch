@@ -1258,5 +1258,7 @@ const dict: Record<string, string> = {
   "ib.keyDone": "Item completo",
   "ib.keySold": "Vendido",
   "notFound.elsewhere": "Ou vá direto para",
+  "cp.moreRoles_one": "+{count} rota",
+  "cp.moreRoles_other": "+{count} rotas",
 };
 export default dict;

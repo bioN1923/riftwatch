@@ -1258,5 +1258,7 @@ const en = {
   "ib.keyDone": "Finished item",
   "ib.keySold": "Sold",
   "notFound.elsewhere": "Or go straight to",
+  "cp.moreRoles_one": "+{count} more role",
+  "cp.moreRoles_other": "+{count} more roles",
 };
 export default en;

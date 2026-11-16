@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.158',
+    date: '2026-11-16',
+    items: ['Champion pages: roles a champion almost never plays (under 2% and too few games to read, like Ahri bot at 0%) are folded into one small "+N more roles" button instead of a full tab each.'],
+  },
+  {
     version: '3.157',
     date: '2026-11-16',
     items: ['Page not found: besides the player search, the page now links straight to the tier list, ladder, multi-search, compare, draft, duo finder and items, so a broken link isn\'t a dead end.'],
