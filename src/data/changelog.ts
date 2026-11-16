@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.186',
+    date: '2026-11-16',
+    items: ['Light theme: the "Magic damage" and "Physical damage" tags on champion pages use darker colours, so they\'re readable instead of pale blue or orange on white.'],
+  },
+  {
     version: '3.185',
     date: '2026-11-16',
     items: [

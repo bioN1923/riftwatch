@@ -141,7 +141,7 @@ function ChampionView({ championId }: { championId: number }) {
                     const k = damageType(info?.dmg);
                     if (!k) return null;
                     return (
-                      <span className={clsx('rounded-sm border px-1.5 py-px text-xs', k === 'ad' ? 'border-orange-400/40 text-orange-300' : k === 'ap' ? 'border-sky-400/40 text-sky-300' : 'border-line-strong text-muted')} title={t('champ.dmgTip')}>
+                      <span className={clsx('rounded-sm border px-1.5 py-px text-xs', k === 'ad' ? 'border-(--dmg-ad)/45 text-(--dmg-ad)' : k === 'ap' ? 'border-(--dmg-ap)/45 text-(--dmg-ap)' : 'border-line-strong text-muted')} title={t('champ.dmgTip')}>
                         {k === 'ad' ? t('champ.dmgAd') : k === 'ap' ? t('champ.dmgAp') : t('champ.dmgMixed')}
                       </span>
                     );
