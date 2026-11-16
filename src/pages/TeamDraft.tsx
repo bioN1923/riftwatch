@@ -140,15 +140,16 @@ function TeamPanel(props: {
         {icon} {title}
       </h2>
       <p className="mt-0.5 text-xs text-muted">{lead}</p>
-      <ul className="mt-3 flex min-h-12 flex-wrap gap-2">
+      {/* Phones: five slots in one row, like champion select. Wider screens: name chips that wrap. */}
+      <ul className="mt-3 grid min-h-12 grid-cols-5 gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
         {picks.map((c) => (
-          <li key={c} className="flex items-center gap-2 rounded border border-line bg-surface py-1 pl-1 pr-1.5">
+          <li key={c} className="relative flex min-w-0 flex-col items-center gap-0.5 rounded border border-line bg-surface px-0.5 pb-1 pt-1.5 sm:flex-row sm:gap-2 sm:py-1 sm:pl-1 sm:pr-1.5">
             <GameImg src={a.champion(c).url} alt="" size={36} rounded="sm" className={clsx('ring-1', tone === 'win' ? 'ring-win/60' : 'ring-loss/60')} />
-            <span className="text-sm">{a.champion(c).name}</span>
+            <span className="w-full truncate text-center text-[11px] sm:w-auto sm:text-sm">{a.champion(c).name}</span>
             <button
               onClick={() => onChange(picks.filter((x) => x !== c))}
               aria-label={t('td.remove', { champion: a.champion(c).name })}
-              className="ml-1 grid size-6 place-items-center rounded text-muted hover:bg-raised hover:text-text"
+              className="absolute -right-1 -top-1.5 grid size-6 place-items-center rounded-full border border-line bg-surface text-muted hover:bg-raised hover:text-text sm:static sm:ml-1 sm:rounded sm:border-0 sm:bg-transparent"
             >
               <X className="size-3.5" aria-hidden />
             </button>
@@ -158,9 +159,9 @@ function TeamPanel(props: {
           <li>
             <button
               onClick={() => setAdding(true)}
-              className="inline-flex h-11 items-center gap-1.5 rounded border border-dashed border-line-strong px-3 text-sm text-muted hover:border-gold/60 hover:text-text"
+              className="inline-flex h-full min-h-[60px] w-full items-center justify-center gap-1.5 rounded border border-dashed border-line-strong text-sm text-muted hover:border-gold/60 hover:text-text sm:h-11 sm:min-h-0 sm:w-auto sm:px-3"
             >
-              <Plus className="size-4" aria-hidden /> {t('td.add')}
+              <Plus className="size-4" aria-hidden /> <span className="max-sm:sr-only">{t('td.add')}</span>
             </button>
           </li>
         )}

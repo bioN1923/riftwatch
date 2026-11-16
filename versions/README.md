@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.179](v3.179/CHANGES.md) | 2026-11-16 | Team draft: one-row teams on phones |
 | [v3.178](v3.178/CHANGES.md) | 2026-11-16 | Lane charts: small leads drawn neutral |
 | [v3.177](v3.177/CHANGES.md) | 2026-11-16 | Draft helpers: Copy link |
 | [v3.176](v3.176/CHANGES.md) | 2026-11-16 | Items: "Clear filter" on an empty result |
