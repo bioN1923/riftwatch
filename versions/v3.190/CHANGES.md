@@ -16,3 +16,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/pc-compare-phone.png` and `demo/`.
+
+## Live
+- Deployed 18:59 local. The live bundle has v3.190 and the `pc.fewGames` key.
