@@ -12,3 +12,6 @@
   - after "Done" the grid is gone and the add button is back;
   - the lane draft keeps `?pool=ahri,syndra`.
 - Screenshots: `demo/` and `demo/team-draft-phone-done.png`.
+
+## Live check (2026-11-16 14:56 local)
+- The live index serves `index-DXcZFosc.js`, and its TeamDraft chunk contains `td.done`.
