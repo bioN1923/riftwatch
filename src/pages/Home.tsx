@@ -12,7 +12,7 @@ import { SearchBox } from '../components/SearchBox';
 import { GameImg } from '../components/ui/GameImg';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
 import { profilePath } from '../lib/riotId';
-import { isFavorite, useFavorites, useRecent, useRecentChamps, useRegion, type SavedPlayer } from '../lib/storage';
+import { clearRecentChamps, isFavorite, useFavorites, useRecent, useRecentChamps, useRegion, type SavedPlayer } from '../lib/storage';
 import { RecentChampList } from '../components/champions/RecentChamps';
 import { getPlatform } from '../../shared/regions';
 import { tierName } from '../lib/format';
@@ -101,9 +101,15 @@ export function HomePage() {
           )}
           {champs.length > 0 && (
             <section aria-labelledby="recent-champs-h">
-              <h2 id="recent-champs-h" className="mb-2 flex items-center gap-2 font-display text-lg font-bold text-muted">
-                <LayoutGrid className="size-4" aria-hidden /> {t('home.recentChamps')}
-              </h2>
+              {/* Same "Clear" as on the tier list: this row lives in the browser, so the visitor can empty it from here too. */}
+              <div className="mb-2 flex items-baseline gap-3">
+                <h2 id="recent-champs-h" className="flex items-center gap-2 font-display text-lg font-bold text-muted">
+                  <LayoutGrid className="size-4" aria-hidden /> {t('home.recentChamps')}
+                </h2>
+                <button onClick={clearRecentChamps} aria-describedby="recent-champs-h" className="-my-1 py-1 text-xs text-faint underline-offset-2 hover:text-text hover:underline">
+                  {t('tl.recentClear')}
+                </button>
+              </div>
               <RecentChampList list={champs} />
             </section>
           )}

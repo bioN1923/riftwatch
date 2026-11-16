@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.183',
+    date: '2026-11-16',
+    items: ['Home: "Champions you looked at" has a Clear link, like the one on the tier list, so you can empty the row without going to the champions page.'],
+  },
+  {
     version: '3.182',
     date: '2026-11-16',
     items: ['Arena tab: a line under "Best partners" explains the order. Pairs with fewer games count for less, so 3.40 can rank above 3.27 when it has more games behind it.'],

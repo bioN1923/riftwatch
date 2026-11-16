@@ -365,7 +365,7 @@ function RecentChamps({ group }: { group: StatsGroup }) {
         <h2 id="recent-champs-h" className="text-xs font-medium text-muted">
           {t('tl.recent')}
         </h2>
-        <button onClick={clearRecentChamps} className="-my-1 py-1 text-xs text-faint underline-offset-2 hover:text-text hover:underline">
+        <button onClick={clearRecentChamps} aria-describedby="recent-champs-h" className="-my-1 py-1 text-xs text-faint underline-offset-2 hover:text-text hover:underline">
           {t('tl.recentClear')}
         </button>
       </div>
