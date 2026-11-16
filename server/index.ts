@@ -849,7 +849,10 @@ app.get('/api/benchmarks', (req, res) => {
 
 app.get('/api/champions/:id', (req, res) => {
   res.setHeader('Cache-Control', 'public, max-age=60');
-  const id = Number(req.params.id);
+  // A numeric key ("103") or the page's slug ("ahri"): with the slug, a champion page opened cold can ask
+  // for its stats at the same time as the static data, instead of waiting for it to map the name to a key.
+  const raw = String(req.params.id);
+  const id = /^\d+$/.test(raw) ? Number(raw) : (championBySlug(raw)?.key ?? NaN);
   if (!Number.isFinite(id)) throw new ApiError(400, 'BAD_REQUEST', 'Unknown champion.');
   res.json(
     champStats.champion(id, groupParam(req.query.group), req.query.role ? String(req.query.role) : undefined, req.query.patch ? String(req.query.patch) : undefined),

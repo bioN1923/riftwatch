@@ -31,6 +31,15 @@ export function ChampionPage() {
   const { data: sd, isPending } = useStaticData();
   const champ = championBySlug(sd, slug);
   const { search } = useLocation();
+  // Opened cold (static data not in yet): start the stats request by slug now, in parallel, instead of
+  // waiting for the static data to turn "ahri" into 103. ChampionView picks the promise up once.
+  useState(() => {
+    if (sd || !/^[a-z0-9]+$/.test(slug)) return;
+    const q = new URLSearchParams(search);
+    const k = earlyKey(slug, groupOf(q.get('queue')), q.get('role') ?? undefined, q.get('patch') ?? undefined);
+    early.set(k, api.champion(slug, { group: groupOf(q.get('queue')), role: q.get('role') ?? undefined, patch: q.get('patch') ?? undefined }).catch(() => undefined));
+    setTimeout(() => early.delete(k), 30_000); // unused (e.g. "/champions/mf" redirects): drop it
+  });
 
   if (isPending) return <HeroSkeleton />;
   if (!champ) {
@@ -63,6 +72,11 @@ export function ChampionPage() {
   return <ChampionView key={champ.key} championId={champ.key} />;
 }
 
+/** Stats requests started by slug before the static data arrived (see ChampionPage), keyed by slug and filters. */
+const early = new Map<string, Promise<ChampionStats | undefined>>();
+const earlyKey = (slug: string, group: StatsGroup, role?: string, patch?: string) => `${slug}|${group}|${role ?? ''}|${patch ?? ''}`;
+const groupOf = (queue: string | null): StatsGroup => (queue === 'aram' || queue === 'arena' ? queue : 'ranked');
+
 function ChampionView({ championId }: { championId: number }) {
   const side = useStickyTop<HTMLElement>();
   const [params, setParams] = useSearchParams();
@@ -79,7 +93,17 @@ function ChampionView({ championId }: { championId: number }) {
 
   const q = useQuery({
     queryKey: ['champion', championId, group, role, patch],
-    queryFn: ({ signal }) => api.champion(championId, { group, role, patch }, signal),
+    queryFn: async ({ signal }) => {
+      const slug = info ? champSlug(info.id) : '';
+      const k = earlyKey(slug, group, role, patch);
+      const started = early.get(k);
+      if (started) {
+        early.delete(k);
+        const got = await started;
+        if (got) return got;
+      }
+      return api.champion(championId, { group, role, patch }, signal);
+    },
     staleTime: 60_000,
     // Switching role or patch keeps the current page on screen (dimmed) until the new numbers
     // arrive, instead of collapsing to skeletons and back. A different champion or mode starts fresh.
@@ -129,7 +153,7 @@ function ChampionView({ championId }: { championId: number }) {
             <div className="flex items-center gap-5">
               <GameImg src={a.champion(championId).url} alt="" size={84} rounded="md" className="ring-1 ring-line-strong" />
               <div>
-                <h1 className="font-display text-5xl font-extrabold leading-none tracking-tight sm:text-6xl">{info?.name}</h1>
+                <h1 translate="no" className="font-display text-5xl font-extrabold leading-none tracking-tight sm:text-6xl">{info?.name}</h1>
                 <p className="mt-1 text-muted first-letter:uppercase">{info?.title}</p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {(detail?.tags ?? info?.tags ?? []).map((tag) => (

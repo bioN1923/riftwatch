@@ -61,8 +61,9 @@ export const api = {
     request<PlayerHit[]>(`/search?platform=${platform}&q=${enc(q)}${resolve ? '&resolve=1' : ''}`, signal),
   benchmarks: (role: string, champion?: number, signal?: AbortSignal) => request<Benchmark>(`/benchmarks?role=${role}${champion ? `&champion=${champion}` : ''}`, signal),
   tierList: (group: StatsGroup, patch?: string, signal?: AbortSignal) => request<TierList>(`/champions?group=${group}${patch ? `&patch=${patch}` : ''}`, signal),
-  champion: (id: number, p: { group: StatsGroup; role?: string; patch?: string }, signal?: AbortSignal) =>
-    request<ChampionStats>(`/champions/${id}?group=${p.group}${p.role ? `&role=${p.role}` : ''}${p.patch ? `&patch=${p.patch}` : ''}`, signal),
+  /** `id` is the numeric key, or the page slug ("ahri") when the static data isn't loaded yet. */
+  champion: (id: number | string, p: { group: StatsGroup; role?: string; patch?: string }, signal?: AbortSignal) =>
+    request<ChampionStats>(`/champions/${enc(String(id))}?group=${p.group}${p.role ? `&role=${p.role}` : ''}${p.patch ? `&patch=${p.patch}` : ''}`, signal),
   blind: (role: string, signal?: AbortSignal) => request<BlindPicks>(`/blind?role=${role}`, signal),
   teamPicks: (role: string, allies: number[], enemies: number[], signal?: AbortSignal) =>
     request<TeamPicks>(`/draft/team?role=${role}&allies=${allies.join(',')}&enemies=${enemies.join(',')}`, signal),

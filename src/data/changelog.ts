@@ -12,6 +12,14 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.204',
+    date: '2026-11-16',
+    items: [
+      'Champion pages opened from a link load faster: the stats are requested at the same time as the champion list instead of after it, saving a full round trip.',
+      'Player and champion names in page headers are marked not to be auto-translated by the browser.',
+    ],
+  },
+  {
     version: '3.203',
     date: '2026-11-16',
     items: [
