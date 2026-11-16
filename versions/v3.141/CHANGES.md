@@ -11,3 +11,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}` on 19 pages × 2 themes.
 - Screenshots: `demo/`, plus a crop of the panel in `demo/compare-roles.png`. Demo: Caps Jungle 94% (17 games, 47%), Rekkles Support 79% (15 games, 53%).
+
+## Live check (2026-11-16 07:24 local)
+- The live index serves `index-BiDPgqc4.js`, and its Compare chunk contains `cmp.roleNote`, so the new role panel is deployed.
