@@ -38,3 +38,9 @@
   - Checked at 1280 px dark and 390 px light, with no page errors.
 
 Screens: `demo/build-*-page1.png`, `demo/build-*-page2.png`.
+
+## Live check (2026-11-16 06:01 local)
+- The live build serves `i18n-Bynnuvwu.js` (200).
+- Live Ahri mid, Ashe bot and Lee Sin jungle each show 3 named pages. Per-page builds are starting from zero, as expected, since older games can't be split by page. Ahri's third page had its first game within a minute.
+- The crawler reads about 8 ranked games a minute (23,240 → 23,244 in 30 s), roughly 480 an hour. Ahri mid is about 5.6% of games, so her most played page should reach the 20 games it needs in about 1½–2 hours. Rarer pages and champions will take longer, up to a day or more. Until then each page shows the grey "showing builds from every rune page" line.
+- Not backfilled: the crawler doesn't keep raw matches on disk (`riot.match(…, store=false)`), so there is nothing to rebuild per-page tallies from.
