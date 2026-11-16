@@ -10,3 +10,7 @@
 - a11y: `{}`.
 - Click test: `?kind=crit` plus "zzqq" gives the empty row; the button brings back all 41 items, with no query string left.
 - Screenshots: `demo/items-clear.png` and `demo/`.
+
+## Live check (2026-11-16 16:27 local)
+- The live index serves `index-dKTJ93I3.js`, and its Items chunk contains `tl.clearFilter`.
+- A late second copy of the v3.176 reminder arrived during the work; it was done once.
