@@ -15,3 +15,6 @@ The v3.195 cut-off scan (elements with `text-overflow: ellipsis` whose text is a
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/live-de-phone.png`, `demo/other-matchups-phone.png` and `demo/`.
+
+## Live
+- Deployed 21:25 local. The live bundle has v3.196 and the new changelog line.
