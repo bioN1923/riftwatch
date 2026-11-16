@@ -41,7 +41,7 @@ export class MatchStore {
     if (existed && !replace) return;
     fs.writeFile(f, zlib.gzipSync(JSON.stringify(data)), (err) => {
       if (err) return console.warn('Could not store match', id, err.message);
-      if (!existed && ++this.count > this.max) this.prune();
+      if (!existed && ++this.count > this.max) void this.prune();
     });
   }
 
@@ -49,19 +49,27 @@ export class MatchStore {
     return this.count;
   }
 
-  /** Drop the least recently used 10%. */
-  private prune() {
+  /**
+   * Drop the least recently used 10%. Asynchronous: with 20,000 files, stat-ing and deleting them
+   * in one blocking pass held up every request for seconds.
+   */
+  private async prune() {
     if (this.pruning) return;
     this.pruning = true;
     try {
-      const files = fs
-        .readdirSync(this.dir)
-        .filter((f) => f.endsWith('.json.gz'))
-        .map((f) => ({ f, t: fs.statSync(path.join(this.dir, f)).mtimeMs }))
-        .sort((a, b) => a.t - b.t);
+      const names = (await fs.promises.readdir(this.dir)).filter((f) => f.endsWith('.json.gz'));
+      const files: { f: string; t: number }[] = [];
+      for (let i = 0; i < names.length; i += 200) {
+        const batch = names.slice(i, i + 200);
+        const stats = await Promise.all(batch.map((f) => fs.promises.stat(path.join(this.dir, f)).then((st) => st.mtimeMs, () => null)));
+        batch.forEach((f, k) => stats[k] != null && files.push({ f, t: stats[k]! }));
+      }
+      files.sort((a, b) => a.t - b.t);
       const drop = files.slice(0, Math.max(1, files.length - Math.floor(this.max * 0.9)));
-      for (const { f } of drop) fs.rmSync(path.join(this.dir, f), { force: true });
+      for (let i = 0; i < drop.length; i += 200) await Promise.all(drop.slice(i, i + 200).map(({ f }) => fs.promises.rm(path.join(this.dir, f), { force: true })));
       this.count = files.length - drop.length;
+    } catch (e) {
+      console.warn('Could not prune the match cache:', (e as Error).message);
     } finally {
       this.pruning = false;
     }

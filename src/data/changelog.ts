@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.130',
+    date: '2026-11-16',
+    items: ['Server housekeeping. Clearing out old cached matches no longer freezes the server while it runs. The server now keeps timing figures, so the remaining short pauses can be tracked down.'],
+  },
+  {
     version: '3.129',
     date: '2026-11-16',
     items: ['Faster responses. The server used to save its champion statistics and player index in one go, freezing every page load for a second or two about twice a minute. It now saves in small slices between requests.'],

@@ -20,6 +20,7 @@ import { probeStatus } from './arenaProbe';
 import { TtlCache } from './cache';
 import { getPlatform, type Platform } from '../shared/regions';
 import { MatchStore } from './matchStore';
+import { instrument, perfSnapshot } from './perf';
 import { CHALLENGE_MS, PrivacyStore } from './privacy';
 import { ErrorLog, errorsPage } from './errorLog';
 import { timingSafeEqual } from 'node:crypto';
@@ -36,13 +37,14 @@ const API_KEY = process.env.RIOT_API_KEY?.trim() ?? '';
 const DEMO = process.env.DEMO_MODE === 'true' || !API_KEY || API_KEY.startsWith('RGAPI-xxxx');
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+const matchStore = DEMO ? undefined : new MatchStore(path.resolve(here, 'data', 'matches'));
 const riot = new RiotClient(
   API_KEY,
   {
     perSecond: Number(process.env.RIOT_RATE_PER_SECOND ?? 20),
     perTwoMinutes: Number(process.env.RIOT_RATE_PER_2MIN ?? 100),
   },
-  DEMO ? undefined : new MatchStore(path.resolve(here, 'data', 'matches')),
+  matchStore,
 );
 const players = new PlayerIndex(path.resolve(here, 'data', DEMO ? 'players.demo.json' : 'players.json'));
 if (DEMO) DEMO_SEED.forEach((p) => players.add(p));
@@ -66,6 +68,19 @@ function scrubMatch(m: MatchSummary): MatchSummary {
 }
 const errorLog = new ErrorLog(DEMO ? null : path.resolve(here, 'data', 'errors.json'));
 const lp = new LpStore(path.resolve(here, 'data', DEMO ? 'lp.demo.json' : 'lp.json'));
+
+// Timings for /api/health (see perf.ts): every save, the crawler's ingest and the match cache.
+for (const [obj, methods, label] of [
+  [champStats, ['flushAsync', 'flush', 'addMatch', 'addTimeline', 'addLane'], 'champStats'],
+  [players, ['flushAsync', 'flush'], 'players'],
+  [lp, ['flush'], 'lp'],
+  [errorLog, ['flush'], 'errorLog'],
+  [arenaSeeds, ['flush'], 'arenaSeeds'],
+  [ladderHistory, ['flush'], 'ladderHistory'],
+  [privacy, ['flush'], 'privacy'],
+  ...(matchStore ? [[matchStore, ['get', 'set', 'prune'], 'matchStore'] as const] : []),
+] as const)
+  for (const m of methods) instrument(obj as object, m as never, `${label}.${m}`);
 let lastUserRequest = 0;
 
 if (DEMO) {
@@ -237,6 +252,7 @@ app.get('/api/health', (_req, res) => {
     contact: process.env.CONTACT_EMAIL || undefined,
     // Counts only, so the Arena collection can be checked from outside.
     arena: { probes: probeStatus.runs, found: probeStatus.found, lastProbeAt: probeStatus.lastAt, queued: arenaSeeds.size, queue: arenaQueue() },
+    perf: perfSnapshot(),
   } satisfies HealthResponse);
 });
 

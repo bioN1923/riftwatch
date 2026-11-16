@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.130](v3.130/CHANGES.md) | 2026-11-16 | Server timings in /api/health; match-cache pruning no longer blocks |
 | [v3.129](v3.129/CHANGES.md) | 2026-11-16 | Server: saves no longer stall requests (chunked async writes) |
 | [v3.128](v3.128/CHANGES.md) | 2026-11-16 | Profile: one-trick / wide-pool note on the last 20 |
 | [v3.127](v3.127/CHANGES.md) | 2026-11-16 | Search: "ahri mid", "jinx aram" open that role or mode |
