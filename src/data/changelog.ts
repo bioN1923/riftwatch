@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.131',
+    date: '2026-11-16',
+    items: ['New Items page, linked from Champions: every completed item with how often it’s built in ranked. Open one to see the champions who build it most, their win rate with it, and how that compares with their usual. That gap is coloured only when it’s too large to be chance.'],
+  },
+  {
     version: '3.130',
     date: '2026-11-16',
     items: ['Server housekeeping. Clearing out old cached matches no longer freezes the server, and statistics are now written to disk bit by bit instead of all at once, which removes the last regular pause of about half a second.'],

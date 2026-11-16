@@ -45,6 +45,7 @@ const router = createBrowserRouter([
           { path: '/champions', lazy: async () => ({ Component: (await import('./pages/Champions')).ChampionsPage }) },
           { path: '/champions/:slug', lazy: async () => ({ Component: (await import('./pages/Champion')).ChampionPage }) },
           { path: '/champions/:slug/vs/:opp', lazy: async () => ({ Component: (await import('./pages/Matchup')).MatchupPage }) },
+          { path: '/items', lazy: async () => ({ Component: (await import('./pages/Items')).ItemsPage }) },
           { path: '/leaderboard', lazy: async () => ({ Component: (await import('./pages/Leaderboard')).LeaderboardPage }) },
           { path: '/privacy', lazy: async () => ({ Component: (await import('./pages/Privacy')).PrivacyPage }) },
           { path: '/api-usage', lazy: async () => ({ Component: (await import('./pages/ApiUsage')).ApiUsagePage }) },

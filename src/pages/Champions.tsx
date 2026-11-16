@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { PatchMovers } from '../components/champions/PatchMovers';
 import { PatchDelta } from '../components/ui/PatchDelta';
-import { ArrowDown, ArrowUp, Search, Star, Swords } from 'lucide-react';
+import { ArrowDown, ArrowUp, Search, Star, Swords, Package } from 'lucide-react';
 import type { StatsGroup, TierRow } from '../../shared/types';
 import { api } from '../lib/api';
 import { assets, champSlug, useStaticData, matchupPath } from '../lib/ddragon';
@@ -121,6 +121,9 @@ export function ChampionsPage() {
         <div className="flex flex-wrap items-center gap-3">
           <Link to="/draft" className="inline-flex h-9 items-center gap-1.5 rounded border border-line px-3 text-sm font-medium text-muted transition-colors hover:border-gold/60 hover:text-text">
             <Swords className="size-3.5" aria-hidden /> {t('nav.draft')}
+          </Link>
+          <Link to="/items" className="inline-flex h-9 items-center gap-1.5 rounded border border-line px-3 text-sm font-medium text-muted transition-colors hover:border-gold/60 hover:text-text">
+            <Package className="size-3.5" aria-hidden /> {t('it.heading')}
           </Link>
           <PatchSelect patches={q.data?.patches ?? []} value={q.data?.patch ?? null} onChange={(p) => set('patch', p)} />
           <GroupToggle value={group} onChange={(g) => set('queue', g === 'ranked' ? null : g)} />

@@ -809,6 +809,11 @@ app.get('/api/champions', (req, res) => {
   res.json(champStats.tierList(groupParam(req.query.group), req.query.patch ? String(req.query.patch) : undefined));
 });
 
+app.get('/api/items', (req, res) => {
+  res.setHeader('Cache-Control', 'public, max-age=300');
+  res.json(champStats.itemStats(req.query.patch ? String(req.query.patch) : undefined));
+});
+
 app.get('/api/blind', (req, res) => {
   const role = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'].find((r) => r === req.query.role);
   if (!role) throw new ApiError(400, 'BAD_REQUEST', 'Unknown role.');

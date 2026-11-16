@@ -240,6 +240,22 @@ export interface TierRow {
   avgPlacement?: number;
 }
 
+/** Completed items across every champion (Summoner's Rift only: Riot's policy rules out Arena item stats). */
+export interface ItemStats {
+  patch: string | null;
+  patches: string[];
+  /** Games with at least three completed items: what the shares are out of. */
+  builds: number;
+  items: {
+    id: number;
+    /** Games where it was one of the completed items. */
+    games: number;
+    share: number;
+    /** Champions who build it most: their win rate with it, and their usual win rate in that role. */
+    champions: { championId: number; role: string; games: number; winRate: number; usual: number; usualGames: number }[];
+  }[];
+}
+
 export interface TierList {
   group: StatsGroup;
   patch: string | null;

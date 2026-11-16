@@ -1,0 +1,161 @@
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router';
+import { useQuery } from '@tanstack/react-query';
+import clsx from 'clsx';
+import { ChevronDown, Search } from 'lucide-react';
+import type { ItemStats } from '../../shared/types';
+import { api } from '../lib/api';
+import { assets, champSlug, useStaticData } from '../lib/ddragon';
+import { pct, thousands } from '../lib/format';
+import { GameImg } from '../components/ui/GameImg';
+import { RoleIcon, ROLE_LABEL } from '../components/ui/RoleIcon';
+import { ItemTip } from '../components/ui/ItemTip';
+import { ErrorState, Skeleton } from '../components/ui/States';
+import { t } from '../i18n';
+
+type Row = ItemStats['items'][number];
+type ChampRow = Row['champions'][number];
+
+/**
+ * A champion's win rate with an item against its usual win rate in that role. Green or red only
+ * when the gap is past two standard errors; otherwise plain, since most gaps are noise.
+ */
+function vsUsual(c: ChampRow) {
+  const diff = c.winRate - c.usual;
+  const se = Math.sqrt(Math.max(c.winRate * (1 - c.winRate), 0.01) / c.games);
+  const sure = Math.abs(diff) > 2 * se;
+  return { diff, tone: !sure ? 'text-muted' : diff > 0 ? 'text-win' : 'text-loss' };
+}
+
+export function ItemsPage() {
+  const [params, setParams] = useSearchParams();
+  const patch = params.get('patch') ?? undefined;
+  const open = Number(params.get('item')) || null;
+  const [query, setQuery] = useState('');
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  const q = useQuery({ queryKey: ['items', patch], queryFn: ({ signal }) => api.items(patch, signal), staleTime: 5 * 60_000 });
+
+  useEffect(() => {
+    document.title = t('it.title');
+  }, []);
+
+  const rows = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    return (q.data?.items ?? []).filter((r) => {
+      const name = a.item(r.id).name;
+      return name && (!needle || name.toLowerCase().includes(needle));
+    });
+  }, [q.data, query, a]);
+
+  const toggle = (id: number) => {
+    const next = new URLSearchParams(params);
+    if (open === id) next.delete('item');
+    else next.set('item', String(id));
+    setParams(next, { replace: true });
+  };
+
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="font-display text-5xl font-extrabold leading-none tracking-tight">{t('it.heading')}</h1>
+          <p className="mt-2 max-w-2xl text-sm text-muted">
+            {q.data && q.data.builds > 0
+              ? t.rich('it.lead', { count: <span className="num font-semibold text-text">{thousands(q.data.builds)}</span>, patch: q.data.patch ?? '' })
+              : t('it.noData')}
+          </p>
+        </div>
+        <label className="relative flex items-center">
+          <span className="sr-only">{t('it.filter')}</span>
+          <Search className="pointer-events-none absolute left-2.5 size-4 text-faint" aria-hidden />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t('it.filter')}
+            className="h-9 w-56 rounded border border-line bg-surface pl-8 pr-3 text-sm outline-none placeholder:text-faint focus:border-gold focus:ring-2 focus:ring-gold/50"
+          />
+        </label>
+      </div>
+
+      {q.isError ? (
+        <div className="panel mt-6">
+          <ErrorState error={q.error} onRetry={() => q.refetch()} />
+        </div>
+      ) : !q.data ? (
+        <Skeleton className="mt-6 h-96" />
+      ) : (
+        <ul className="mt-6 divide-y divide-line rounded border border-line bg-surface">
+          {rows.map((r) => {
+            const it = a.item(r.id);
+            const expanded = open === r.id;
+            return (
+              <li key={r.id}>
+                <button
+                  type="button"
+                  aria-expanded={expanded}
+                  onClick={() => toggle(r.id)}
+                  className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-raised"
+                >
+                  <GameImg src={it.url} alt="" size={36} rounded="md" tip={<ItemTip id={r.id} />} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-medium">{it.name}</span>
+                    <span className="block text-xs text-muted">{t('it.share', { pct: pct(r.share, 1), count: thousands(r.games) })}</span>
+                  </span>
+                  <span className="hidden items-center gap-1 sm:flex" aria-hidden>
+                    {r.champions.slice(0, 5).map((c) => (
+                      <GameImg key={`${c.championId}-${c.role}`} src={a.champion(c.championId).url} alt="" size={26} rounded="sm" />
+                    ))}
+                  </span>
+                  <ChevronDown className={clsx('size-4 shrink-0 text-faint transition-transform', expanded && 'rotate-180')} aria-hidden />
+                </button>
+                {expanded && (
+                  <div className="border-t border-line bg-sunken/40 px-3 py-3">
+                    <h2 className="mb-2 text-xs font-semibold text-muted">{t('it.whoBuilds', { item: it.name })}</h2>
+                    <table className="w-full text-sm">
+                      <thead className="text-xs text-faint">
+                        <tr>
+                          <th scope="col" className="py-1 text-left font-medium">{t('it.col.champion')}</th>
+                          <th scope="col" className="py-1 text-right font-medium">{t('it.col.games')}</th>
+                          <th scope="col" className="py-1 text-right font-medium">{t('it.col.wr')}</th>
+                          <th scope="col" className="hidden py-1 text-right font-medium sm:table-cell">{t('it.col.vsUsual')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {r.champions.map((c) => {
+                          const ch = sd?.champions.get(c.championId);
+                          const v = vsUsual(c);
+                          return (
+                            <tr key={`${c.championId}-${c.role}`} className="border-t border-line/60">
+                              <td className="py-1.5">
+                                <Link to={ch ? `/champions/${champSlug(ch.id)}?role=${c.role}` : '#'} className="flex items-center gap-2 hover:text-gold">
+                                  <GameImg src={a.champion(c.championId).url} alt="" size={24} rounded="sm" />
+                                  <span className="truncate">{a.champion(c.championId).name}</span>
+                                  <span className="flex items-center gap-1 text-xs text-muted">
+                                    <RoleIcon role={c.role} size={12} />
+                                    <span className="hidden sm:inline">{ROLE_LABEL[c.role]}</span>
+                                  </span>
+                                </Link>
+                              </td>
+                              <td className="num py-1.5 text-right text-muted">{thousands(c.games)}</td>
+                              <td className="num py-1.5 text-right">{pct(c.winRate, 1)}</td>
+                              <td className={clsx('num hidden py-1.5 text-right sm:table-cell', v.tone)} title={t('it.vsUsualTip', { rate: pct(c.usual, 1) })}>
+                                {`${v.diff >= 0 ? '+' : '−'}${pct(Math.abs(v.diff), 1)}`}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                    <p className="mt-2 text-[11px] text-faint">{t('it.note')}</p>
+                  </div>
+                )}
+              </li>
+            );
+          })}
+          {rows.length === 0 && <li className="px-3 py-6 text-center text-sm text-muted">{t('it.none')}</li>}
+        </ul>
+      )}
+    </div>
+  );
+}

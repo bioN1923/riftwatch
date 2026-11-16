@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import { writeJsonChunked } from './chunkedJson';
 import path from 'node:path';
-import type { BlindPicks, Benchmark, ChampionStats, MatchSummary, MatchTimeline, MatchupStats, PatchMover, Rated, StatsGroup, TierList, TierRow } from '../shared/types';
+import type { BlindPicks, Benchmark, ChampionStats, ItemStats, MatchSummary, MatchTimeline, MatchupStats, PatchMover, Rated, StatsGroup, TierList, TierRow } from '../shared/types';
 import { itemKind } from './items';
 import { getPlatform } from '../shared/regions';
 import { isArena } from '../shared/queues';
@@ -716,6 +716,56 @@ export class ChampionStatsStore {
       });
     }
     return rows;
+  }
+
+  /**
+   * Item popularity across champions, from the build tallies: the three core items of each game,
+   * plus its 4th–6th. Tallies keep their 40 most common builds per champion and role, so very rare
+   * builds are missing (a small undercount, never a wrong number). Ranked games only.
+   */
+  itemStats(patch?: string): ItemStats {
+    const patches = this.patches('ranked');
+    const pt = patch && patches.includes(patch) ? patch : (patches[0] ?? null);
+    const g = pt ? this.s.patches[pt].ranked : undefined;
+    let builds = 0;
+    const items = new Map<number, { g: number; champs: Map<string, { championId: number; role: string; g: number; w: number; usual: number; usualGames: number }> }>();
+    const add = (id: number, championId: number, role: string, r: RoleAgg, x: C) => {
+      const it = items.get(id) ?? { g: 0, champs: new Map() };
+      it.g += x.g;
+      const key = `${championId}:${role}`;
+      const c = it.champs.get(key) ?? { championId, role, g: 0, w: 0, usual: r.w / Math.max(1, r.g), usualGames: r.g };
+      c.g += x.g;
+      c.w += x.w;
+      it.champs.set(key, c);
+      items.set(id, it);
+    };
+    for (const [cid, champ] of Object.entries(g?.champs ?? {})) {
+      for (const [role, r] of Object.entries(champ.roles)) {
+        for (const [k, x] of Object.entries(r.core)) {
+          builds += x.g;
+          for (const id of k.split(',').map(Number)) add(id, Number(cid), role, r, x);
+        }
+        for (const slot of [r.s4, r.s5, r.s6]) for (const [k, x] of Object.entries(slot)) add(Number(k), Number(cid), role, r, x);
+      }
+    }
+    return {
+      patch: pt,
+      patches,
+      builds,
+      items: [...items]
+        .map(([id, it]) => ({
+          id,
+          games: it.g,
+          share: it.g / Math.max(1, builds),
+          champions: [...it.champs.values()]
+            .filter((c) => c.g >= 10)
+            .sort((a, b) => b.g - a.g)
+            .slice(0, 12)
+            .map((c) => ({ championId: c.championId, role: c.role, games: c.g, winRate: c.w / c.g, usual: c.usual, usualGames: c.usualGames })),
+        }))
+        .filter((it) => it.games >= 20)
+        .sort((a, b) => b.games - a.games),
+    };
   }
 
   matchup(championId: number, opponentId: number, group: StatsGroup, role?: string, patch?: string): MatchupStats {
