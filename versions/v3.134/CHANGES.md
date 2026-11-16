@@ -25,3 +25,7 @@
 - Glance strip checked at 1280 px dark and 390 px light, on both rune pages.
 
 Screens: `demo/role-switch-loading.png`, `demo/glance-*.png`.
+
+## Live check (2026-11-16 06:13 local)
+- The live build serves `Champion--himY-k1.js`, which uses the placeholder data, and `i18n-BoHn-1ED.js` with the glance strings.
+- Per-page builds for live Ahri mid are filling up: [3, 0, 1] games, 12 minutes after v3.133 went live. 20 are needed per page.
