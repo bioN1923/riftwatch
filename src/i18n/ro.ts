@@ -1246,7 +1246,7 @@ const dict: Record<string, string> = {
   "it.vsUsualTip": "Comparat cu rata obișnuită de {rate} a campionului pe acel rol. Colorat doar când diferența e prea mare ca să fie întâmplare.",
   "it.note": "Jucătorii care construiesc un obiect sunt adesea deja în avantaj, așa că o rată mai mare arată un tipar, nu o dovadă că obiectul aduce victorii.",
   "it.none": "Niciun obiect nu se potrivește.",
-  "it.openHint": "Clic ca să vezi cine îl mai construiește",
+  "it.openHint": "Deschide pagina obiectului: cine îl mai construiește",
   "it.missing": "{item} nu e construit destul de des în ranked ca să apară încă.",
   "cp.pageName": "{keystone} · {tree}",
   "cp.buildFirst": "Întâi {item}",

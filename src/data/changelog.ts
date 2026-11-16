@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.185',
+    date: '2026-11-16',
+    items: [
+      'Item tooltips on builds say what opening the item does ("Opens the item\'s page: who else builds it") instead of "Click to…", which didn\'t fit phones.',
+      'Compare, best games: results like "Penta kill" stay on one line on phones.',
+    ],
+  },
+  {
     version: '3.184',
     date: '2026-11-16',
     items: ['Charts work on touch screens: tap the gold-lead chart (or the metrics and LP charts) to read a minute, drag sideways to move along it, and the reading stays after you lift your finger. The hints say "tap" instead of only "hover" and "click".'],

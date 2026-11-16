@@ -1280,7 +1280,7 @@ const dict: Record<string, string> = {
   "it.vsUsualTip": "W porównaniu ze zwykłym {rate} tego bohatera na tej roli. Kolor tylko wtedy, gdy różnica jest zbyt duża, by była przypadkiem.",
   "it.note": "Gracze budujący dany przedmiot często już wygrywają, więc wyższy wynik z nim pokazuje wzorzec, a nie dowód, że przedmiot daje wygrane.",
   "it.none": "Brak pasujących przedmiotów.",
-  "it.openHint": "Kliknij, by zobaczyć, kto jeszcze go buduje",
+  "it.openHint": "Otwiera stronę przedmiotu: kto jeszcze go buduje",
   "it.missing": "{item} nie jest jeszcze budowany w rankingu na tyle często, by się tu pojawić.",
   "cp.pageName": "{keystone} · {tree}",
   "cp.buildFirst": "Najpierw {item}",

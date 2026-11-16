@@ -1212,7 +1212,7 @@ const dict: Record<string, string> = {
   "it.vsUsualTip": "Comparado com os {rate} habituais deste campeão nessa rota. Só fica colorido quando a diferença é grande demais para ser acaso.",
   "it.note": "Quem constrói um item muitas vezes já está à frente; uma taxa maior com ele mostra um padrão, não prova que o item faz vencer.",
   "it.none": "Nenhum item corresponde.",
-  "it.openHint": "Clique para ver quem mais o constrói",
+  "it.openHint": "Abre a página do item: quem mais o constrói",
   "it.missing": "{item} ainda não é construído o bastante nas ranqueadas para aparecer.",
   "cp.pageName": "{keystone} · {tree}",
   "cp.buildFirst": "{item} primeiro",

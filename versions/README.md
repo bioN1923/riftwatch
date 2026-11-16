@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.185](v3.185/CHANGES.md) | 2026-11-16 | Device-neutral item hint; compare best games on phones |
 | [v3.184](v3.184/CHANGES.md) | 2026-11-16 | Charts: tap to read on touch screens |
 | [v3.183](v3.183/CHANGES.md) | 2026-11-16 | Home: clear recent champions |
 | [v3.182](v3.182/CHANGES.md) | 2026-11-16 | Arena partners: order explained |

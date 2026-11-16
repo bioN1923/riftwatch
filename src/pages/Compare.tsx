@@ -588,7 +588,7 @@ function BestGames({ a, b, pa, pb }: { a: MatchSummary[]; b: MatchSummary[]; pa:
     return (
       <td className="px-2 py-1.5 text-right">
         {r ? (
-          <Link to={`${path}#m-${r.match.id}`} className={clsx('num inline-flex items-center gap-1.5 hover:underline', best ? 'font-semibold text-gold' : 'text-text')}>
+          <Link to={`${path}#m-${r.match.id}`} className={clsx('num inline-flex items-center gap-1.5 whitespace-nowrap hover:underline', best ? 'font-semibold text-gold' : 'text-text')}>
             <GameImg src={assets(sd).champion(r.p.championId).url} alt="" size={18} rounded="sm" />
             {show(r)}
           </Link>

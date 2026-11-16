@@ -1212,7 +1212,7 @@ const dict: Record<string, string> = {
   "it.vsUsualTip": "Comparado con el {rate} habitual de este campeón en ese rol. Solo con color cuando la diferencia es demasiado grande para ser casualidad.",
   "it.note": "Quien construye un objeto suele ir ya por delante; una tasa mayor con él muestra un patrón, no prueba que el objeto haga ganar.",
   "it.none": "Ningún objeto coincide.",
-  "it.openHint": "Haz clic para ver quién más lo construye",
+  "it.openHint": "Abre la página del objeto: quién más lo construye",
   "it.missing": "{item} aún no se construye lo bastante en clasificatoria para aparecer.",
   "cp.pageName": "{keystone} · {tree}",
   "cp.buildFirst": "{item} primero",
