@@ -10,3 +10,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`, `demo/ladder-search-phone.png` and `demo/ladder-search-desk.png`.
+
+## Live check (2026-11-16 11:56 local)
+- The live index serves `index-CYlizaXr.js`, and its Leaderboard chunk contains `sm:w-72`.
