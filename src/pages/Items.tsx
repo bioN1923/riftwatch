@@ -208,7 +208,26 @@ export function ItemsPage() {
               </li>
             );
           })}
-          {rows.length === 0 && <li className="px-3 py-6 text-center text-sm text-muted">{t('it.none')}</li>}
+          {rows.length === 0 && (
+            <li className="px-3 py-6 text-center text-sm text-muted">
+              {t('it.none')}
+              {/* Filtered to nothing: clear both the text and the kind chip in one go. */}
+              {(query.trim() || kind !== 'all') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuery('');
+                    const next = new URLSearchParams(params);
+                    next.delete('kind');
+                    setParams(next, { replace: true });
+                  }}
+                  className="ml-3 inline-flex min-h-[24px] items-center rounded border border-line px-3 py-1 text-sm font-medium text-text hover:border-gold/60"
+                >
+                  {t('tl.clearFilter')}
+                </button>
+              )}
+            </li>
+          )}
         </ul>
         </>
       )}

@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.176',
+    date: '2026-11-16',
+    items: ['Items: when your search or item type filter leaves nothing, a "Clear filter" button resets both.'],
+  },
+  {
     version: '3.175',
     date: '2026-11-16',
     items: ['Tier list: when your filter matches no champion, a "Clear filter" button brings the whole list back in one click.'],
