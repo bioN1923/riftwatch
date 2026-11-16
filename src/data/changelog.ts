@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.154',
+    date: '2026-11-16',
+    items: ['Game details, Item build: finished items in the item path now have a gold ring, so you can spot when each big item came online. A small key explains the ring and the crossed-out sold items.'],
+  },
+  {
     version: '3.153',
     date: '2026-11-16',
     items: ['Game details: the Damage column now has a small key (red = dealt, grey = taken), so you no longer have to hover to tell the two bars apart.'],

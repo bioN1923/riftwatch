@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.154](v3.154/CHANGES.md) | 2026-11-16 | Item path: finished items ringed, with key |
 | [v3.153](v3.153/CHANGES.md) | 2026-11-16 | Game details: damage dealt/taken key |
 | [v3.152](v3.152/CHANGES.md) | 2026-11-16 | Items: share bars and gold cost |
 | [v3.151](v3.151/CHANGES.md) | 2026-11-16 | One honest win-rate colour rule in 7 more places |

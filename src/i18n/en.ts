@@ -1255,5 +1255,7 @@ const en = {
   "it.cost": "{gold} gold",
   "pg.dealtShort": "dealt",
   "pg.takenShort": "taken",
+  "ib.keyDone": "Finished item",
+  "ib.keySold": "Sold",
 };
 export default en;

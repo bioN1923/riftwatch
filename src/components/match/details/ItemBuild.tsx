@@ -63,8 +63,10 @@ function PurchasePath({ items }: { items: MatchTimeline['items'][number] }) {
               <div className="flex gap-0.5">
                 {g.list.map((it, k) => {
                   const info = a.item(it.itemId);
+                  // Finished items get a gold ring, so the path's milestones stand out from components and potions.
+                  const done = !it.sold && !!data && isLegendary(it.itemId, data.items);
                   return (
-                    <span key={k} className={clsx('relative', it.sold && 'opacity-45')}>
+                    <span key={k} className={clsx('relative rounded-sm', it.sold && 'opacity-45', done && 'ring-2 ring-gold')}>
                       <GameImg
                         src={info.url}
                         alt={it.sold ? t('ib.soldItem', { item: info.name || String(it.itemId) }) : info.name || t('item.fallback', { id: String(it.itemId) })}
@@ -83,6 +85,18 @@ function PurchasePath({ items }: { items: MatchTimeline['items'][number] }) {
           </li>
         ))}
       </ol>
+      <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
+        <span className="inline-flex items-center gap-1.5">
+          <span className="size-3 rounded-sm ring-2 ring-gold" aria-hidden />
+          {t('ib.keyDone')}
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="relative size-3 rounded-sm bg-line-strong" aria-hidden>
+            <span className="absolute inset-x-0 top-1/2 h-[2px] -rotate-45 bg-loss" />
+          </span>
+          {t('ib.keySold')}
+        </span>
+      </p>
     </section>
   );
 }

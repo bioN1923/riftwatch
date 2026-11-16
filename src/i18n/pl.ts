@@ -1331,5 +1331,7 @@ const dict: Record<string, string> = {
   "it.cost": "{gold} złota",
   "pg.dealtShort": "zadane",
   "pg.takenShort": "otrzymane",
+  "ib.keyDone": "Ukończony przedmiot",
+  "ib.keySold": "Sprzedany",
 };
 export default dict;
