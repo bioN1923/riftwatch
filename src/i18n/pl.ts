@@ -1391,5 +1391,11 @@ const dict: Record<string, string> = {
   "cmp.see.rolesBody": "Jakie role gra każdy, z grami i odsetkiem wygranych na rolę, oraz najczęściej grani bohaterowie.",
   "cmp.see.best": "Najlepsze gry",
   "cmp.see.bestBody": "Najlepsza pojedyncza gra każdego pod względem zabójstw, KDA, obrażeń, multi-killi, CS i wizji, obok siebie.",
+  "ms.see.lobby": "Podsumowanie lobby",
+  "ms.see.lobbyBody": "Średnia ranga solo lobby i kto na jakiej roli gra głównie, z uwagą, gdy dwóch gra tę samą główną rolę lub nikt nie pokrywa jakiejś roli.",
+  "ms.see.player": "Każdy gracz",
+  "ms.see.playerBody": "Ranga i LP, ostatnie 10 gier rankingowych jako wygrane i przegrane oraz trzej najczęściej grani bohaterowie z grami, odsetkiem wygranych i KDA.",
+  "ms.see.tags": "Tagi",
+  "ms.see.tagsBody": "Krótkie fakty jak główna rola, one-trick, seria wygranych czy wysokie KDA, plus „Premade z”, gdy dwóch z nich często pojawia się w tej samej publicznej historii gier.",
 };
 export default dict;

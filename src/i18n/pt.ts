@@ -1313,5 +1313,11 @@ const dict: Record<string, string> = {
   "cmp.see.rolesBody": "Quais rotas cada um joga, com partidas e taxa de vitória por rota, e seus campeões mais jogados.",
   "cmp.see.best": "Melhores partidas",
   "cmp.see.bestBody": "A melhor partida de cada um em abates, KDA, dano, multiabates, CS e visão, lado a lado.",
+  "ms.see.lobby": "Resumo do lobby",
+  "ms.see.lobbyBody": "O elo solo médio do lobby e quem joga principalmente cada rota, com um aviso quando dois têm a mesma rota principal ou ninguém cobre uma.",
+  "ms.see.player": "Cada jogador",
+  "ms.see.playerBody": "Elo e PdL, as últimas 10 partidas ranqueadas como vitórias e derrotas, e os três campeões mais jogados com partidas, taxa de vitória e KDA.",
+  "ms.see.tags": "Etiquetas",
+  "ms.see.tagsBody": "Fatos curtos como rota principal, one-trick, sequência de vitórias ou KDA alto, mais “Premade com” quando dois deles aparecem com frequência no mesmo histórico público.",
 };
 export default dict;

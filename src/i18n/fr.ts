@@ -1313,5 +1313,11 @@ const dict: Record<string, string> = {
   "cmp.see.rolesBody": "Les rôles joués par chacun, avec parties et taux de victoire par rôle, et leurs champions les plus joués.",
   "cmp.see.best": "Meilleures parties",
   "cmp.see.bestBody": "La meilleure partie de chacun en kills, KDA, dégâts, multi-kills, CS et vision, côte à côte.",
+  "ms.see.lobby": "Résumé du salon",
+  "ms.see.lobbyBody": "Le rang solo moyen du salon et qui joue principalement quel rôle, avec une note quand deux joueurs ont le même rôle principal ou qu’un rôle n’est couvert par personne.",
+  "ms.see.player": "Chaque joueur",
+  "ms.see.playerBody": "Rang et LP, les 10 dernières parties classées en victoires et défaites, et les trois champions les plus joués avec parties, taux de victoire et KDA.",
+  "ms.see.tags": "Étiquettes",
+  "ms.see.tagsBody": "Des faits courts comme le rôle principal, one-trick, série de victoires ou KDA élevé, plus « Premade avec » quand deux d’entre eux apparaissent souvent dans le même historique public.",
 };
 export default dict;

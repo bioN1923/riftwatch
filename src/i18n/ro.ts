@@ -1352,5 +1352,11 @@ const dict: Record<string, string> = {
   "cmp.see.rolesBody": "Ce roluri joacă fiecare, cu meciuri și rată de victorie pe rol, și campionii cei mai jucați.",
   "cmp.see.best": "Cele mai bune meciuri",
   "cmp.see.bestBody": "Cel mai bun meci al fiecăruia la kill-uri, KDA, daune, multi-kill-uri, CS și viziune, alăturate.",
+  "ms.see.lobby": "Rezumatul lobby-ului",
+  "ms.see.lobbyBody": "Rangul solo mediu al lobby-ului și cine pe ce rol joacă, cu o notă când doi jucători au același rol principal sau niciunul nu acoperă un rol.",
+  "ms.see.player": "Fiecare jucător",
+  "ms.see.playerBody": "Rangul și LP, ultimele 10 meciuri ranked ca victorii și înfrângeri și cei trei campioni cei mai jucați, cu meciuri, rată de victorie și KDA.",
+  "ms.see.tags": "Etichete",
+  "ms.see.tagsBody": "Fapte scurte ca rol principal, one-trick, serie de victorii sau KDA mare, plus „Premade cu” când doi dintre ei apar des în același istoric public de meciuri.",
 };
 export default dict;

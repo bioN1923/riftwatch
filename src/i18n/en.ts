@@ -1313,5 +1313,11 @@ const en = {
   "cmp.see.rolesBody": "Which roles each one plays, with games and win rate per role, and their most played champions.",
   "cmp.see.best": "Best games",
   "cmp.see.bestBody": "Each player’s best single game for kills, KDA, damage, multi-kills, CS and vision, side by side.",
+  "ms.see.lobby": "Lobby summary",
+  "ms.see.lobbyBody": "The lobby’s average solo rank and who mains which role, with a note when two players main the same role or nobody covers one.",
+  "ms.see.player": "Each player",
+  "ms.see.playerBody": "Rank and LP, the last 10 ranked games as wins and losses, and the three champions they play most, with games, win rate and KDA.",
+  "ms.see.tags": "Tags",
+  "ms.see.tagsBody": "Short facts like a role main, one-trick, win streak or high KDA, plus “Premade with” when two of them often appear in the same public match history.",
 };
 export default en;

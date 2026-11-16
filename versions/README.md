@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.174](v3.174/CHANGES.md) | 2026-11-16 | Multi-search: "What you’ll see" on the empty page |
 | [v3.173](v3.173/CHANGES.md) | 2026-11-16 | Compare: "What you’ll see" on the empty page |
 | [v3.172](v3.172/CHANGES.md) | 2026-11-16 | Search suggests site pages; g t → Team draft |
 | [v3.171](v3.171/CHANGES.md) | 2026-11-16 | Privacy page lists everything stored in the browser |

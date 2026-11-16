@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import type { Profile, MatchPage } from '../../shared/types';
 import clsx from 'clsx';
-import { ChevronDown, History, Users } from 'lucide-react';
+import { ChevronDown, History, LayoutList, Tags, UserRound, Users } from 'lucide-react';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api, ApiClientError } from '../lib/api';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
@@ -178,6 +178,8 @@ export function MultiSearchPage() {
         </section>
       )}
 
+      {fromUrl.length === 0 && <WhatYouSee />}
+
       {fromUrl.length > 1 && <LobbySummary profiles={profiles} matches={lobbyMatches} />}
       {fromUrl.length > 0 && (
         <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
@@ -189,6 +191,33 @@ export function MultiSearchPage() {
         </ul>
       )}
     </div>
+  );
+}
+
+/** Before a lobby is scouted: what the page will show, so it isn't a lone text box. */
+function WhatYouSee() {
+  const parts = [
+    { icon: LayoutList, title: t('ms.see.lobby'), body: t('ms.see.lobbyBody') },
+    { icon: UserRound, title: t('ms.see.player'), body: t('ms.see.playerBody') },
+    { icon: Tags, title: t('ms.see.tags'), body: t('ms.see.tagsBody') },
+  ];
+  return (
+    <section className="mt-10" aria-labelledby="ms-see-h">
+      <h2 id="ms-see-h" className="panel-title">
+        {t('cmp.see.title')}
+      </h2>
+      <ul className="mt-3 grid gap-3 md:grid-cols-3">
+        {parts.map(({ icon: Icon, title, body }) => (
+          <li key={title} className="panel p-4">
+            <p className="flex items-center gap-2 font-display text-lg font-bold">
+              <Icon className="size-4 text-gold" aria-hidden />
+              {title}
+            </p>
+            <p className="mt-1.5 text-sm text-muted">{body}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
