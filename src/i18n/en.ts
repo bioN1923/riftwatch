@@ -1257,5 +1257,6 @@ const en = {
   "pg.takenShort": "taken",
   "ib.keyDone": "Finished item",
   "ib.keySold": "Sold",
+  "notFound.elsewhere": "Or go straight to",
 };
 export default en;

@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.157',
+    date: '2026-11-16',
+    items: ['Page not found: besides the player search, the page now links straight to the tier list, ladder, multi-search, compare, draft, duo finder and items, so a broken link isn\'t a dead end.'],
+  },
+  {
     version: '3.156',
     date: '2026-11-16',
     items: ['Champion page "Who plays it most", Compare\'s top champions and Multi-search champion rows now colour win rates only when they are clearly off 50%. A 2–3 record over five games is no longer painted red.'],

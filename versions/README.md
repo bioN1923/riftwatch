@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.157](v3.157/CHANGES.md) | 2026-11-16 | 404 page links to every section |
 | [v3.156](v3.156/CHANGES.md) | 2026-11-16 | wlTone uses the significance test (top players, compare, multi-search) |
 | [v3.155](v3.155/CHANGES.md) | 2026-11-16 | Ladder: wider player search, full width on phones |
 | [v3.154](v3.154/CHANGES.md) | 2026-11-16 | Item path: finished items ringed, with key |

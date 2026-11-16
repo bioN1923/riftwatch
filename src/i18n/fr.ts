@@ -1257,5 +1257,6 @@ const dict: Record<string, string> = {
   "pg.takenShort": "subis",
   "ib.keyDone": "Objet terminé",
   "ib.keySold": "Vendu",
+  "notFound.elsewhere": "Ou allez directement à",
 };
 export default dict;
