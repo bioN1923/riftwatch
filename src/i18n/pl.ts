@@ -1404,5 +1404,6 @@ const dict: Record<string, string> = {
   "pc.fewGames_many": "Na razie tylko {count} gier tym bohaterem, więc te różnice mogą być przypadkiem. Kolory pojawią się przy większej liczbie gier.",
   "pc.fewGames_other": "Na razie tylko {count} gry tym bohaterem, więc te różnice mogą być przypadkiem. Kolory pojawią się przy większej liczbie gier.",
   "bench.grey": "Szare: różnica poniżej 10% lub mniej niż 10 twoich gier. Za mało, by wyciągać wnioski.",
+  "profile.jumpSummary": "Przejdź do podsumowania: historia rangi, cele, bohaterowie",
 };
 export default dict;

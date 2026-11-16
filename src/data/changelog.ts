@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.193',
+    date: '2026-11-16',
+    items: [
+      'Profiles on phones: scrolling down no longer keeps loading more games, which used to push the summary (rank history, goals, champion pool) further away each time. "Show more games" is still there as a button.',
+      'Profiles on phones: a "Jump to the summary" link above the match list takes you straight to it.',
+    ],
+  },
+  {
     version: '3.192',
     date: '2026-11-16',
     items: ['Line charts (Trends, match metrics, LP): on phones the cut-off line names at the right edge are gone (the legend above already names each line), so the plot gets the full width. On wider screens the names have room to show in full.'],

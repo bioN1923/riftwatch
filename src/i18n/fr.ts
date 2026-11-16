@@ -1324,5 +1324,6 @@ const dict: Record<string, string> = {
   "pc.fewGames_one": "Seulement {count} partie sur ce champion pour l’instant : ces écarts peuvent encore être dus au hasard. Les couleurs apparaissent avec assez de parties.",
   "pc.fewGames_other": "Seulement {count} parties sur ce champion pour l’instant : ces écarts peuvent encore être dus au hasard. Les couleurs apparaissent avec assez de parties.",
   "bench.grey": "Gris : un écart de moins de 10 % ou moins de 10 de tes parties. Trop peu pour en tirer grand-chose.",
+  "profile.jumpSummary": "Aller au résumé : historique de rang, objectifs, champions",
 };
 export default dict;

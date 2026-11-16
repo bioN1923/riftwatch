@@ -24,6 +24,8 @@ import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { useSlideDirection } from '../components/ui/Motion';
 import { langInfo, t } from '../i18n';
 import { useStickyTop } from '../lib/useStickyTop';
+import { useMedia } from '../lib/useMedia';
+import { ArrowDown } from 'lucide-react';
 
 const FIRST_PAGE = 20;
 const NEXT_PAGE = 10;
@@ -114,6 +116,11 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
     const solo = profile.ranked.find((r) => r.queueType === 'RANKED_SOLO_5x5');
     addRecent({ platform, gameName: profile.account.gameName, tagLine: profile.account.tagLine, profileIconId: profile.summoner.profileIconId, tier: solo?.tier, rank: solo?.rank });
   }, [profile, platform]);
+
+  // Below lg the summary sits under the match list. There, scrolling down shouldn't keep loading games
+  // (each page pushes the summary further away and costs API calls); "Show more games" stays a button.
+  const wide = useMedia('(min-width: 1024px)');
+  const summaryRef = useRef<HTMLElement | null>(null);
 
   // "#m-<id>" (e.g. from Personal records): bring that game into view once it's in the list, and mark it briefly.
   const { hash } = useLocation();
@@ -236,6 +243,20 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
           <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_310px]">
             <section aria-label={t('profile.matchHistory')} className="min-w-0 space-y-4">
               {queueBar}
+              {!wide && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const el = summaryRef.current;
+                    if (!el) return;
+                    el.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+                    el.focus({ preventScroll: true });
+                  }}
+                  className="inline-flex items-center gap-1 text-sm font-medium text-gold hover:underline"
+                >
+                  {t('profile.jumpSummary')} <ArrowDown className="size-3.5" aria-hidden />
+                </button>
+              )}
 
               {matchesQ.isError ? (
                 <ErrorState
@@ -287,13 +308,22 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
                     )}
                   </div>
                   {matchesQ.hasNextPage && (
-                    <AutoLoad onLoad={loadMore} loading={matchesQ.isFetchingNextPage} loadedPages={matchesQ.data?.pages.length ?? 0} />
+                    <AutoLoad onLoad={loadMore} loading={matchesQ.isFetchingNextPage} loadedPages={matchesQ.data?.pages.length ?? 0} maxAuto={wide ? 4 : 0} />
                   )}
                 </>
               )}
             </section>
 
-            <aside ref={side.ref} style={side.style} aria-label={t('profile.summary')} className="space-y-4 lg:sticky lg:self-start">
+            <aside
+              ref={(el) => {
+                side.ref(el);
+                summaryRef.current = el;
+              }}
+              tabIndex={-1}
+              style={side.style}
+              aria-label={t('profile.summary')}
+              className="scroll-mt-20 space-y-4 outline-none lg:sticky lg:self-start"
+            >
               <ScoutingReport ov={ov} matches={matches} puuid={profile.account.puuid} name={profile.account.gameName} />
               <Today matches={matches} puuid={profile.account.puuid} lp={lpQ.data?.points} />
               <LpPanel profile={profile} />

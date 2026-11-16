@@ -1364,5 +1364,6 @@ const dict: Record<string, string> = {
   "pc.fewGames_few": "Doar {count} meciuri cu acest campion până acum, deci diferențele pot fi întâmplătoare. Culorile apar când sunt destule meciuri.",
   "pc.fewGames_other": "Doar {count} de meciuri cu acest campion până acum, deci diferențele pot fi întâmplătoare. Culorile apar când sunt destule meciuri.",
   "bench.grey": "Gri: o diferență sub 10% sau mai puțin de 10 meciuri ale tale. Prea puțin ca să tragi concluzii.",
+  "profile.jumpSummary": "Sari la rezumat: istoricul rangului, obiective, campioni",
 };
 export default dict;

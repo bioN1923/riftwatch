@@ -1324,5 +1324,6 @@ const en = {
   "pc.fewGames_one": "Only {count} game on this champion so far, so these gaps could still be chance. Colours appear once there are enough games.",
   "pc.fewGames_other": "Only {count} games on this champion so far, so these gaps could still be chance. Colours appear once there are enough games.",
   "bench.grey": "Grey: a gap under 10%, or fewer than 10 of your games. Too small to read much into.",
+  "profile.jumpSummary": "Jump to the summary: rank history, goals, champion pool",
 };
 export default en;

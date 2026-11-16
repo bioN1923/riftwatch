@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.193](v3.193/CHANGES.md) | 2026-11-16 | Profile on phones: summary reachable, no runaway auto-load |
 | [v3.192](v3.192/CHANGES.md) | 2026-11-16 | Line charts: no clipped end labels on phones |
 | [v3.191](v3.191/CHANGES.md) | 2026-11-16 | High-elo compare & trends: colour only clear gaps |
 | [v3.190](v3.190/CHANGES.md) | 2026-11-16 | Player champion compare: colour only sure gaps |
