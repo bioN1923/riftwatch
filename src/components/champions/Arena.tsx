@@ -135,6 +135,8 @@ function Partners({ ar }: { ar: Arena }) {
           );
         })}
       </ul>
+      {/* The list is ranked by a shrunk average (small samples pulled toward 4.5), so 3.40 can sit above 3.27. */}
+      <p className="mt-2 text-xs text-faint">{t('arena.partnersOrder')}</p>
     </div>
   );
 }

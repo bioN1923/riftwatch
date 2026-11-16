@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.182',
+    date: '2026-11-16',
+    items: ['Arena tab: a line under "Best partners" explains the order. Pairs with fewer games count for less, so 3.40 can rank above 3.27 when it has more games behind it.'],
+  },
+  {
     version: '3.181',
     date: '2026-11-16',
     items: ['Match history: remakes no longer show a gold "Perfect KDA" or an MVP/ACE badge. The game didn\'t count, so its KDA is shown in plain grey.'],

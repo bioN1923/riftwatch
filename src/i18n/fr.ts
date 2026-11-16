@@ -1320,5 +1320,6 @@ const dict: Record<string, string> = {
   "ms.see.tags": "Étiquettes",
   "ms.see.tagsBody": "Des faits courts comme le rôle principal, one-trick, série de victoires ou KDA élevé, plus « Premade avec » quand deux d’entre eux apparaissent souvent dans le même historique public.",
   "tl.clearFilter": "Effacer le filtre",
+  "arena.partnersOrder": "Dans ce classement, peu de parties comptent moins : un duo chanceux sur quelques parties ne peut pas finir en tête.",
 };
 export default dict;

@@ -1398,5 +1398,6 @@ const dict: Record<string, string> = {
   "ms.see.tags": "Tagi",
   "ms.see.tagsBody": "Krótkie fakty jak główna rola, one-trick, seria wygranych czy wysokie KDA, plus „Premade z”, gdy dwóch z nich często pojawia się w tej samej publicznej historii gier.",
   "tl.clearFilter": "Wyczyść filtr",
+  "arena.partnersOrder": "W tej kolejności mało gier liczy się mniej, więc para z kilkoma szczęśliwymi grami nie trafi na szczyt listy.",
 };
 export default dict;

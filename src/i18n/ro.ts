@@ -1359,5 +1359,6 @@ const dict: Record<string, string> = {
   "ms.see.tags": "Etichete",
   "ms.see.tagsBody": "Fapte scurte ca rol principal, one-trick, serie de victorii sau KDA mare, plus „Premade cu” când doi dintre ei apar des în același istoric public de meciuri.",
   "tl.clearFilter": "Șterge filtrul",
+  "arena.partnersOrder": "Ordinea ține cont de numărul de meciuri, așa că o pereche cu câteva meciuri norocoase nu poate urca în frunte.",
 };
 export default dict;

@@ -1320,5 +1320,6 @@ const en = {
   "ms.see.tags": "Tags",
   "ms.see.tagsBody": "Short facts like a role main, one-trick, win streak or high KDA, plus “Premade with” when two of them often appear in the same public match history.",
   "tl.clearFilter": "Clear filter",
+  "arena.partnersOrder": "Fewer games count for less in this order, so a pair with a few lucky games can’t top the list.",
 };
 export default en;
