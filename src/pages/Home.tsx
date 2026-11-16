@@ -5,7 +5,7 @@ import { RoleIcon, ROLE_LABEL } from '../components/ui/RoleIcon';
 import { TierBadge } from '../components/champions/common';
 import { pct, thousands, timeAgo } from '../lib/format';
 import { Link } from 'react-router';
-import { Star, Clock, LayoutGrid, Swords, Scale, Users, Trophy, HeartHandshake, TrendingUp, TrendingDown } from 'lucide-react';
+import { Star, Clock, LayoutGrid, Swords, Scale, Users, Trophy, HeartHandshake, TrendingUp, TrendingDown, Package } from 'lucide-react';
 import clsx from 'clsx';
 import type { PatchMover } from '../../shared/types';
 import { SearchBox } from '../components/SearchBox';
@@ -175,13 +175,14 @@ function Tools() {
     { to: '/multisearch', icon: Users, title: t('nav.multisearch'), body: t('home.tool.multi') },
     { to: '/duo', icon: HeartHandshake, title: t('nav.duo'), body: t('home.tool.duo') },
     { to: '/leaderboard', icon: Trophy, title: t('nav.ladder'), body: t('home.tool.ladder') },
+    { to: '/items', icon: Package, title: t('it.heading'), body: t('home.tool.items') },
   ];
   return (
     <section aria-labelledby="tools-h" className="pb-20">
       <h2 id="tools-h" className="mb-4 font-display text-2xl font-bold">
         {t('home.tools')}
       </h2>
-      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {items.map(({ to, icon: Icon, title, body }) => (
           <li key={to}>
             <Link to={to} className="panel group flex h-full gap-3 p-4 transition-colors hover:border-gold/50">

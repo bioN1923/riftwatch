@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.140',
+    date: '2026-11-16',
+    items: [
+      'The search box finds items too. Type “infinity” or “black cle” to open that item on the Items page.',
+      'Items is now listed with the other tools on the home page and in the phone menu.',
+    ],
+  },
+  {
     version: '3.139',
     date: '2026-11-16',
     items: ['Live game: under the lane matchup, the usual build into that opponent (keystone, core items and boots), straight from ranked games of that exact matchup.'],

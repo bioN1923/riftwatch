@@ -2,7 +2,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { Search, Clock, Star, X, ChevronDown, BadgeCheck, LoaderCircle, Swords } from 'lucide-react';
+import { Search, Clock, Star, X, ChevronDown, BadgeCheck, LoaderCircle, Swords, Package } from 'lucide-react';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import type { PlayerHit } from '../../shared/types';
 import { parseRiotId, profilePath } from '../lib/riotId';
@@ -19,6 +19,7 @@ import { RoleIcon, ROLE_LABEL } from './ui/RoleIcon';
 type Option =
   | { kind: 'player'; player: PlayerHit; source: 'favorite' | 'recent' | 'match' }
   | { kind: 'champion'; championId: number; slug: string; name: string; title: string; tags: string[]; scope?: { role?: string; queue?: 'aram' | 'arena' } }
+  | { kind: 'item'; id: number; name: string }
   | { kind: 'matchup'; a: { id: number; slug: string; name: string }; b: { id: number; slug: string; name: string } }
   | { kind: 'go'; label: string };
 
@@ -157,7 +158,25 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
       const b = best(vs[2]);
       if (a && b && a.id !== b.id) matchup = { kind: 'matchup', a, b };
     }
-    const list = [...(matchup ? [matchup] : []), ...champs.slice(0, 4), ...out.slice(0, champs.length ? 6 : 8)];
+    // Completed items by name ("infinity", "black cleaver"): their row on the Items page.
+    const items: Option[] = [];
+    if (cq.length >= 3 && !q.includes('#') && sd && !matchup) {
+      for (const [id, it] of sd.items) {
+        // Summoner's Rift items only: Riot gives Arena and other-mode copies ids from 10000 up.
+        if (id >= 10000 || it.into.length || it.gold < 2000 || !it.name) continue;
+        const n = squash(it.name);
+        if (n.startsWith(cq) || (cq.length >= 4 && n.includes(cq))) items.push({ kind: 'item', id, name: it.name });
+      }
+      items.sort((a, b) => (a as { name: string }).name.localeCompare((b as { name: string }).name));
+      // Riot lists some items twice (map variants share a name): keep one of each.
+      const seenNames = new Set<string>();
+      for (let i = items.length - 1; i >= 0; i--) {
+        const nm = (items[i] as { name: string }).name;
+        if (seenNames.has(nm)) items.splice(i, 1);
+        else seenNames.add(nm);
+      }
+    }
+    const list = [...(matchup ? [matchup] : []), ...champs.slice(0, 4), ...items.slice(0, 3), ...out.slice(0, champs.length || items.length ? 6 : 8)];
     const id = parseRiotId(q, platform.defaultTag);
     if (id && !seen.has(keyOf({ platform: platform.id, ...id }))) list.push({ kind: 'go', label: `${id.gameName}#${id.tagLine}` });
     return list;
@@ -193,6 +212,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
     }
     if (o.kind === 'champion') navigate(`/champions/${o.slug}${o.scope?.queue ? `?queue=${o.scope.queue}` : o.scope?.role ? `?role=${o.scope.role}` : ''}`);
     else if (o.kind === 'matchup') navigate(`/champions/${o.a.slug}/vs/${o.b.slug}`);
+    else if (o.kind === 'item') navigate(`/items?item=${o.id}`);
     else if (o.kind === 'go') navigate(profilePath(platform.id, parseRiotId(q, platform.defaultTag)!));
     else navigate(profilePath(o.player.platform, o.player));
     setQuery('');
@@ -219,7 +239,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
 
   const searching = (indexQ.isFetching && fast.length >= 2) || resolveQ.isFetching;
   const showList = open && (options.length > 0 || searching);
-  const missingTag = q && !q.includes('#') && !options.some((o) => o.kind === 'champion' || o.kind === 'matchup');
+  const missingTag = q && !q.includes('#') && !options.some((o) => o.kind === 'champion' || o.kind === 'matchup' || o.kind === 'item');
 
   return (
     <div ref={rootRef} className={clsx('relative w-full', hero ? 'max-w-2xl' : 'max-w-md')}>
@@ -334,6 +354,21 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
                     <span className="sr-only sm:not-sr-only">
                       {o.scope?.role ? ROLE_LABEL[o.scope.role] : o.scope?.queue === 'aram' ? 'ARAM' : o.scope?.queue === 'arena' ? 'Arena' : t('search.champion')}
                     </span>
+                  </span>
+                </li>
+              );
+            }
+            if (o.kind === 'item') {
+              const prev = options[i - 1];
+              return (
+                <li key={`i${o.id}`} {...common} className={clsx(common.className, i > 0 && prev?.kind !== 'item' && 'border-t border-line')}>
+                  <GameImg src={a.item(o.id).url} alt="" size={32} rounded="md" />
+                  <span className="min-w-0 flex-1 truncate text-text/90">
+                    <Highlight text={o.name} query={q} />
+                  </span>
+                  <span className="flex shrink-0 items-center gap-1 rounded bg-sunken px-1.5 py-0.5 font-display text-sm font-bold text-gold">
+                    <Package className="size-3.5" aria-hidden />
+                    <span className="sr-only sm:not-sr-only">{t('search.item')}</span>
                   </span>
                 </li>
               );

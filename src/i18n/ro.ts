@@ -1271,5 +1271,7 @@ const dict: Record<string, string> = {
   "it.kind.crit": "Lovitură critică",
   "it.kind.defence": "Apărare",
   "live.buildInto": "Build obișnuit contra {champion}:",
+  "home.tool.items": "Fiecare obiect complet, cât de des e construit și cine îl construiește cel mai des.",
+  "search.item": "Obiect",
 };
 export default dict;

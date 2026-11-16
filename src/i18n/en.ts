@@ -1235,5 +1235,7 @@ const en = {
   "it.kind.crit": "Critical strike",
   "it.kind.defence": "Defence",
   "live.buildInto": "Usual build into {champion}:",
+  "home.tool.items": "Every completed item, how often it’s built and who builds it most.",
+  "search.item": "Item",
 };
 export default en;
