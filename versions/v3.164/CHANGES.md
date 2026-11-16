@@ -10,3 +10,7 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/` and `demo/aram-strip.png`.
+
+## Live check (2026-11-16 13:40 local)
+- The live index serves `index-DHl3yhuk.js`, and the 3.164 changelog entry is present.
+- Baseline for watching the team-draft tallies fill: ranked patch 16.22 has 25,021 games read, with `collecting` true.
