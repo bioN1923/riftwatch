@@ -1291,5 +1291,7 @@ const dict: Record<string, string> = {
   "cl.older_few": "Arată actualizările mai vechi (încă {count})",
   "cl.older_other": "Arată actualizările mai vechi (încă {count})",
   "it.cost": "{gold} aur",
+  "pg.dealtShort": "dat",
+  "pg.takenShort": "primit",
 };
 export default dict;

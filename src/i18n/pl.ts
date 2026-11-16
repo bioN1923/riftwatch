@@ -1329,5 +1329,7 @@ const dict: Record<string, string> = {
   "cl.older_many": "Pokaż starsze aktualizacje (jeszcze {count})",
   "cl.older_other": "Pokaż starsze aktualizacje (jeszcze {count})",
   "it.cost": "{gold} złota",
+  "pg.dealtShort": "zadane",
+  "pg.takenShort": "otrzymane",
 };
 export default dict;

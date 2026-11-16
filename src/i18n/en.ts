@@ -1253,5 +1253,7 @@ const en = {
   "cl.older_one": "Show older updates ({count} more)",
   "cl.older_other": "Show older updates ({count} more)",
   "it.cost": "{gold} gold",
+  "pg.dealtShort": "dealt",
+  "pg.takenShort": "taken",
 };
 export default en;

@@ -68,6 +68,17 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
                 </th>
                 <th scope="col" className="w-[112px] px-2 font-medium">
                   {t('pg.damage')}
+                  {/* Each cell has two bars (dealt on top, taken under); the key says which is which without hovering. */}
+                  <span className="mt-0.5 flex items-center gap-2 text-[10px] font-normal text-muted">
+                    <span className="inline-flex items-center gap-1">
+                      <span className="h-1.5 w-2.5 rounded-full bg-loss" aria-hidden />
+                      {t('pg.dealtShort')}
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <span className="h-1.5 w-2.5 rounded-full bg-faint" aria-hidden />
+                      {t('pg.takenShort')}
+                    </span>
+                  </span>
                 </th>
                 <th scope="col" className="hidden w-[52px] px-2 text-right font-medium @[680px]:table-cell">
                   {t('pg.gold')}
