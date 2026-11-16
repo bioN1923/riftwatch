@@ -8,3 +8,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/` and `demo/tier-bands.png`, which shows the S+→S and S→A breaks.
+
+## Live check (2026-11-16 10:04 local)
+- The live index serves `index-D3WzjWx1.js`, and its Champions chunk contains the tier-break class.
