@@ -1300,5 +1300,7 @@ const dict: Record<string, string> = {
   "td.markLead": "Classement de {champion} pour ce draft : n°{rank} sur {count}.",
   "td.markMissing": "{champion} n’a pas assez de parties {role} sur ce patch pour être classé.",
   "home.tool.teamDraft": "Entrez les choix des deux équipes et obtenez le meilleur champion pour votre rôle, avec les raisons : adversaire de voie, autres adversaires et coéquipiers.",
+  "mv.noneUp": "En hausse : aucun grand changement depuis le dernier patch.",
+  "mv.noneDown": "En baisse : aucun grand changement depuis le dernier patch.",
 };
 export default dict;

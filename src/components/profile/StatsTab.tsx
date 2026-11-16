@@ -468,12 +468,13 @@ function Trends({ matches, puuid }: { matches: MatchSummary[]; puuid: string }) 
 
 /** "What your wins have in common": the stats whose usual value splits wins from losses best. */
 function WinConditions({ matches, puuid }: { matches: MatchSummary[]; puuid: string }) {
-  const games = matches.filter((m) => !m.remake && me(m, puuid)).length;
-  if (games < 10) return null;
-  const list = winConditions(matches, puuid).slice(0, 3);
+  // Hooks before the early return: switching queue can move the game count across 10, and React needs the same hooks every render.
   const [goals, setGoals] = useGoals(puuid);
   const [added, setAdded] = useState<string | null>(null);
   const overview = useLocation().pathname.replace(/\/stats$/, '');
+  const games = matches.filter((m) => !m.remake && me(m, puuid)).length;
+  if (games < 10) return null;
+  const list = winConditions(matches, puuid).slice(0, 3);
   // Phrased for the side the wins are on: "5 deaths or fewer", or "under 1.3 vision score a minute".
   const cond = (c: WinCondition) => {
     const n = c.metric === 'cs' || c.metric === 'vision' ? decimal(c.at, 1) : c.metric === 'kp' || c.metric === 'share' ? pct(c.at) : c.at;

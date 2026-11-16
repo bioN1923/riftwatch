@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.166',
+    date: '2026-11-16',
+    items: [
+      'Tier list: when only one side of "Patch movers" has anything (e.g. nothing fell clearly), that side takes the whole row and the quiet side is a one-line note instead of an empty panel.',
+      'Fixed two places that could crash when their data changed size: the patch movers and the profile Stats tab\'s "What your wins have in common" (for example when switching queue filters across 10 games).',
+    ],
+  },
+  {
     version: '3.165',
     date: '2026-11-16',
     items: ['"How we use the Riot API" now covers the draft helpers: they work from the champion picks you enter (or those visible in a live game) plus win rates from games already read, show no player names and never infer premades.'],

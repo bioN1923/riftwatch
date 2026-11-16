@@ -11,9 +11,10 @@ import { t } from '../../i18n';
 
 /** Champions whose win rate rose or fell most since the previous patch. */
 export function PatchMovers({ data, role, group }: { data: TierList; role: string; group: string }) {
+  // Hooks first: the early returns below must not change how many hooks run.
+  const [all, setAll] = useState(false);
   const m = data.movers;
   if (!m || !data.patch) return null;
-  const [all, setAll] = useState(false);
   // Kept in the server's order: by the change we can be fairly sure of, so a big swing on few games
   // doesn't jump ahead of a smaller, solid one.
   const pick = (list: PatchMover[]) => list.filter((x) => role === 'ALL' || x.role === role).slice(0, 5);
@@ -26,10 +27,17 @@ export function PatchMovers({ data, role, group }: { data: TierList; role: strin
         {t('mv.title', { from: m.against, to: data.patch })}
       </h2>
       <p className="text-xs text-muted">{t('mv.sub')}</p>
-      <div className="mt-3 grid gap-3 md:grid-cols-2">
-        <Column title={t('mv.up')} icon={<TrendingUp className="size-4 text-win" aria-hidden />} list={up} group={group} all={all} />
-        <Column title={t('mv.down')} icon={<TrendingDown className="size-4 text-loss" aria-hidden />} list={down} group={group} all={all} />
+      {/* One side empty: no whole panel just to say "no big changes"; the other side takes the row and a line notes the quiet one. */}
+      <div className={clsx('mt-3 grid gap-3', up.length && down.length && 'md:grid-cols-2')}>
+        {up.length > 0 && <Column title={t('mv.up')} icon={<TrendingUp className="size-4 text-win" aria-hidden />} list={up} group={group} all={all} wide={!down.length} />}
+        {down.length > 0 && <Column title={t('mv.down')} icon={<TrendingDown className="size-4 text-loss" aria-hidden />} list={down} group={group} all={all} wide={!up.length} />}
       </div>
+      {(!up.length || !down.length) && (
+        <p className="mt-2 flex items-center gap-1.5 text-xs text-muted">
+          {up.length ? <TrendingDown className="size-3.5 text-loss" aria-hidden /> : <TrendingUp className="size-3.5 text-win" aria-hidden />}
+          {up.length ? t('mv.noneDown') : t('mv.noneUp')}
+        </p>
+      )}
       {(up.length > 3 || down.length > 3) && (
         <button onClick={() => setAll((v) => !v)} aria-expanded={all} className="mt-2 text-sm font-medium text-gold hover:underline sm:hidden">
           {all ? t('mv.fewer') : t('mv.all')}
@@ -39,7 +47,7 @@ export function PatchMovers({ data, role, group }: { data: TierList; role: strin
   );
 }
 
-function Column({ title, icon, list, group, all }: { title: string; icon: ReactNode; list: PatchMover[]; group: string; all: boolean }) {
+function Column({ title, icon, list, group, all, wide }: { title: string; icon: ReactNode; list: PatchMover[]; group: string; all: boolean; wide?: boolean }) {
   const { data: sd } = useStaticData();
   const a = assets(sd);
   return (
@@ -48,10 +56,8 @@ function Column({ title, icon, list, group, all }: { title: string; icon: ReactN
         {icon}
         {title}
       </h3>
-      {list.length === 0 ? (
-        <p className="px-1 py-2 text-sm text-faint">{t('mv.none')}</p>
-      ) : (
-        <ol className="space-y-0.5">
+      {(
+        <ol className={clsx(wide ? 'grid gap-x-6 gap-y-0.5 md:grid-cols-2' : 'space-y-0.5')}>
           {list.map((x, i) => {
             const c = a.champion(x.championId);
             const slug = sd?.champions.get(x.championId)?.id;
