@@ -29,3 +29,7 @@
 - The demo has no matchup played in two lanes, so the lane switch itself was checked through the same code path as the patch switch.
 
 Screen: `demo/matchup-switching.png` (dimmed while loading).
+
+## Live check (2026-11-16 06:25 local)
+- The live build serves `Matchup-CfXxxKkw.js` and `Profile-DG8nBvyh.js`, both using placeholder data (200).
+- Live Ahri mid per-page builds are filling up: [5, 0, 1] games.
