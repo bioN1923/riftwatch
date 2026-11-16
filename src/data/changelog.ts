@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.192',
+    date: '2026-11-16',
+    items: ['Line charts (Trends, match metrics, LP): on phones the cut-off line names at the right edge are gone (the legend above already names each line), so the plot gets the full width. On wider screens the names have room to show in full.'],
+  },
+  {
     version: '3.191',
     date: '2026-11-16',
     items: ['Stats tab: "Compared with high elo" and the Trends line colour a gap only when it\'s 10% or more over at least 10 games. Smaller gaps are grey, so a +3% gold difference no longer looks like a strength.'],

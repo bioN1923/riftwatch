@@ -10,7 +10,7 @@ export interface Series {
   dashed?: boolean;
 }
 
-const PAD_BASE = { left: 46, right: 92, top: 12, bottom: 26 };
+const PAD_BASE = { left: 46, right: 108, top: 12, bottom: 26 };
 
 /** Multi-series line chart over game minutes, with a crosshair tooltip and direct end labels. */
 export function LineChart({
@@ -38,8 +38,11 @@ export function LineChart({
   zeroBased?: boolean;
   yTicks?: number[];
 }) {
-  const PAD = { ...PAD_BASE, left: padLeft, right: endLabels ? PAD_BASE.right : 14 };
   const [ref, width] = useWidth<HTMLDivElement>();
+  // The legend above already names each line; on narrow charts (phones) the end labels only got
+  // cut off ("5-game avera…") and took 92 px from the plot, so they're left out there.
+  const showEnds = endLabels && width >= 520;
+  const PAD = { ...PAD_BASE, left: padLeft, right: showEnds ? PAD_BASE.right : 14 };
   const [hover, setHover] = useState<number | null>(null);
   const n = Math.max(...series.map((s) => s.values.length));
   const all = series.flatMap((s) => s.values);
@@ -106,9 +109,9 @@ export function LineChart({
                 strokeDasharray={s.dashed ? '5 4' : undefined}
               />
             ))}
-            {endLabels && ends.map(({ s, y: ly }) => (
+            {showEnds && ends.map(({ s, y: ly }) => (
               <text key={s.id} x={PAD.left + w + 8} y={ly} dy="0.32em" className="fill-[var(--muted)] text-[11px]">
-                {s.name.length > 13 ? `${s.name.slice(0, 12)}…` : s.name}
+                {s.name.length > 17 ? `${s.name.slice(0, 16)}…` : s.name}
               </text>
             ))}
             {hover != null && (
