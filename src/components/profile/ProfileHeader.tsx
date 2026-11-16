@@ -188,7 +188,7 @@ function Challenges({ platform, puuid }: { platform: string; puuid: string }) {
   const top = c.percentile != null && c.percentile > 0 && c.percentile <= 0.5 ? (c.percentile * 100).toFixed(c.percentile < 0.01 ? 2 : 1) : null;
   return (
     <span className="inline-flex items-center gap-1" title={t('profile.challengesTip', { points: c.points.toLocaleString() })}>
-      <span aria-hidden>·</span>
+      {/* No leading "·": the medal already separates it from the region, and on phones this wraps to a line of its own. */}
       <Medal className="size-3.5 text-gold" aria-hidden />
       {t('profile.challenges', { level: tierName(c.level) })}
       {top && <span className="num text-faint">· {t('profile.challengesTop', { pct: top })}</span>}
