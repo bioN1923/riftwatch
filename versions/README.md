@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.164](v3.164/CHANGES.md) | 2026-11-16 | ARAM champion header: no ban rate |
 | [v3.163](v3.163/CHANGES.md) | 2026-11-16 | Home: Team draft featured in Tools |
 | [v3.162](v3.162/CHANGES.md) | 2026-11-16 | Live game → Team draft with the pick marked |
 | [v3.161](v3.161/CHANGES.md) | 2026-11-16 | New Team draft page: best pick from both teams with synergy and counter reasons |

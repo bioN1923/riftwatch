@@ -155,7 +155,7 @@ function ChampionView({ championId }: { championId: number }) {
             </div>
           </div>
 
-          {group === 'arena' && s && !q.isPending ? <ArenaStrip s={s} /> : <StatStrip s={s} loading={q.isPending} />}
+          {group === 'arena' && s && !q.isPending ? <ArenaStrip s={s} /> : <StatStrip s={s} loading={q.isPending} bans={group === 'ranked'} />}
           <CountersStrip s={s} />
           {detail && <Abilities detail={detail} />}
 
@@ -227,14 +227,15 @@ function ChampionView({ championId }: { championId: number }) {
   );
 }
 
-function StatStrip({ s, loading }: { s?: ChampionStats; loading: boolean }) {
+function StatStrip({ s, loading, bans = true }: { s?: ChampionStats; loading: boolean; bans?: boolean }) {
   if (loading) return <Skeleton className="mt-6 h-14 w-full max-w-2xl" />;
   const sum = s?.summary;
   if (!sum) return <div className="mt-6" />;
   const items: [string, string, string?][] = [
     [t('cp.winRate'), pct(sum.winRate, 1), sureTone(sum.winRate, sum.games)],
     [t('cp.pickRate'), pct(sum.pickRate, 1)],
-    [t('cp.banRate'), pct(sum.banRate, 1)],
+    // ARAM has no bans: a "0.0%" there reads like nobody bans it.
+    ...(bans ? [[t('cp.banRate'), pct(sum.banRate, 1)] as [string, string]] : []),
     [t('cp.games'), thousands(sum.games)],
   ];
   return (

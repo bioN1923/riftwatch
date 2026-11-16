@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.164',
+    date: '2026-11-16',
+    items: ['Champion pages: the ARAM tab no longer shows a "Ban rate 0.0%" (ARAM has no bans, so the number only suggested nobody bans the champion).'],
+  },
+  {
     version: '3.163',
     date: '2026-11-16',
     items: ['Home: Team draft now leads the Tools section as a wide "New" card. The section has four columns on large screens, so the seven tools fill two even rows.'],
