@@ -10,3 +10,6 @@
 - a11y: `{}`.
 - Demo: 6 rows, then 10 after the click.
 - Screenshots: `demo/` and `demo/champs-collapsed.png`.
+
+## Live check (2026-11-16 09:34 local)
+- The live index serves `index-i6wxMGUx.js`, and its Profile chunk contains `stats.champsAll`, so the collapsing table is deployed.
