@@ -21,3 +21,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/bench-phone.png`, `demo/trend-phone.png` and `demo/`.
+
+## Live
+- Deployed 20:28 local. The live bundle has v3.191 and the `bench.grey` key.
