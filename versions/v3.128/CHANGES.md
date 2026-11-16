@@ -19,3 +19,8 @@
 - No page errors.
 
 Screen: `demo/form-pool.png`.
+
+## Live check (2026-11-16 04:47 local)
+- The live build serves `i18n-DxEc-UXJ.js` with the new strings.
+- A real profile through the API: koga40#EUNE has 20 counted games, 3 champions, with one of them in 17. That meets the one-trick rule, so the profile will read "One-trick: … in 17 of 20". The data was checked by API; the page itself wasn't opened.
+- Arena: 809 games.
