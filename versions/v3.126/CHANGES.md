@@ -20,3 +20,8 @@
   - Enter opens `/champions/ahri/vs/zed`. No page errors.
 
 Screen: `demo/search-matchup.png`.
+
+## Live check (2026-11-16 04:27 local)
+- The live index serves `index-BFV-gDfv.js`, which contains the matchup navigation.
+- The live matchup the search leads to, Ahri vs Zed, resolves to mid with 113 games.
+- Arena: 751 games (382 three hours earlier). The player line is still full at 1000.
