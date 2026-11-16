@@ -1323,5 +1323,6 @@ const dict: Record<string, string> = {
   "arena.partnersOrder": "Dans ce classement, peu de parties comptent moins : un duo chanceux sur quelques parties ne peut pas finir en tête.",
   "pc.fewGames_one": "Seulement {count} partie sur ce champion pour l’instant : ces écarts peuvent encore être dus au hasard. Les couleurs apparaissent avec assez de parties.",
   "pc.fewGames_other": "Seulement {count} parties sur ce champion pour l’instant : ces écarts peuvent encore être dus au hasard. Les couleurs apparaissent avec assez de parties.",
+  "bench.grey": "Gris : un écart de moins de 10 % ou moins de 10 de tes parties. Trop peu pour en tirer grand-chose.",
 };
 export default dict;

@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.191',
+    date: '2026-11-16',
+    items: ['Stats tab: "Compared with high elo" and the Trends line colour a gap only when it\'s 10% or more over at least 10 games. Smaller gaps are grey, so a +3% gold difference no longer looks like a strength.'],
+  },
+  {
     version: '3.190',
     date: '2026-11-16',
     items: ['A player\'s record on one champion: "Compared with the average" only colours a gap once there are enough games. With a handful of games the arrows stay grey, and a note says the gaps could still be chance.'],

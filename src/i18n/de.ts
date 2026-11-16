@@ -1323,5 +1323,6 @@ const dict: Record<string, string> = {
   "arena.partnersOrder": "Bei der Reihenfolge zählen wenige Spiele weniger, ein Duo mit ein paar Glücksspielen landet also nicht ganz oben.",
   "pc.fewGames_one": "Erst {count} Spiel mit diesem Champion, die Unterschiede können also noch Zufall sein. Farben erscheinen ab genug Spielen.",
   "pc.fewGames_other": "Erst {count} Spiele mit diesem Champion, die Unterschiede können also noch Zufall sein. Farben erscheinen ab genug Spielen.",
+  "bench.grey": "Grau: ein Unterschied unter 10 % oder weniger als 10 deiner Spiele. Zu wenig, um viel hineinzulesen.",
 };
 export default dict;

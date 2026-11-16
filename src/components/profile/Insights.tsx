@@ -627,6 +627,8 @@ export function Benchmarks({
             {rows.map((r) => {
               const diff = r.them ? (r.me - r.them) / r.them : 0;
               const good = r.lower ? diff <= 0 : diff >= 0;
+              // Per-game averages swing a lot over a few games: only colour a gap of 10% or more from 10 games up.
+              const sure = mine.g >= 10 && Math.abs(diff) >= 0.1;
               const width = Math.min(50, Math.abs(diff) * 100);
               return (
                 <tr key={r.label} className="border-t border-line">
@@ -652,7 +654,7 @@ export function Benchmarks({
                         <span
                           className={clsx(
                             "absolute inset-y-0 rounded-full",
-                            good ? "bg-win" : "bg-loss",
+                            !sure ? "bg-line-strong" : good ? "bg-win" : "bg-loss",
                           )}
                           style={
                             diff >= 0
@@ -664,7 +666,7 @@ export function Benchmarks({
                       <span
                         className={clsx(
                           "num w-11 text-right text-xs font-medium",
-                          good ? "text-win" : "text-loss",
+                          !sure ? "text-muted" : good ? "text-win" : "text-loss",
                         )}
                       >
                         {diff >= 0 ? "+" : "−"}
@@ -679,7 +681,7 @@ export function Benchmarks({
         </table>
       )}
       <p className="mt-3 text-[11px] text-faint">
-        {t("bench.note", { count: bench.data?.games ?? 0 })}
+        {t("bench.note", { count: bench.data?.games ?? 0 })} {t("bench.grey")}
       </p>
     </section>
   );

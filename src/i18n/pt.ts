@@ -1323,5 +1323,6 @@ const dict: Record<string, string> = {
   "arena.partnersOrder": "Nesta ordem, poucas partidas contam menos, então uma dupla com algumas partidas de sorte não chega ao topo da lista.",
   "pc.fewGames_one": "Só {count} partida com este campeão até agora, então essas diferenças ainda podem ser acaso. As cores aparecem com partidas suficientes.",
   "pc.fewGames_other": "Só {count} partidas com este campeão até agora, então essas diferenças ainda podem ser acaso. As cores aparecem com partidas suficientes.",
+  "bench.grey": "Cinza: uma diferença abaixo de 10% ou menos de 10 partidas suas. Pouco demais para tirar conclusões.",
 };
 export default dict;

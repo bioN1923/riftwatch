@@ -418,6 +418,9 @@ function Trends({ matches, puuid }: { matches: MatchSummary[]; puuid: string }) 
   const avg = (xs: number[]) => xs.reduce((s, v) => s + v, 0) / Math.max(1, xs.length);
   const change = avg(values.slice(half)) - avg(values.slice(0, half));
   const better = metric === 'deaths' ? change < 0 : change > 0;
+  // Same rule as "Compared with high elo": colour only a change of 10% or more, from 10 games up.
+  const base = Math.abs(avg(values));
+  const sure = values.length >= 10 && base > 0 && Math.abs(change) / base >= 0.1;
 
   return (
     <section className="panel p-4" aria-labelledby="trend-h">
@@ -428,7 +431,7 @@ function Trends({ matches, puuid }: { matches: MatchSummary[]; puuid: string }) 
           </h2>
           <p className="text-xs text-muted">
             {t('stats.trendCompare')}{' '}
-            <span className={clsx('font-semibold', Math.abs(change) < 1e-6 ? 'text-muted' : better ? 'text-win' : 'text-loss')}>
+            <span className={clsx('font-semibold', !sure ? 'text-muted' : better ? 'text-win' : 'text-loss')}>
               {change >= 0 ? '+' : '−'}
               {def.fmt(Math.abs(change))}
             </span>

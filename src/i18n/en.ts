@@ -1323,5 +1323,6 @@ const en = {
   "arena.partnersOrder": "Fewer games count for less in this order, so a pair with a few lucky games can’t top the list.",
   "pc.fewGames_one": "Only {count} game on this champion so far, so these gaps could still be chance. Colours appear once there are enough games.",
   "pc.fewGames_other": "Only {count} games on this champion so far, so these gaps could still be chance. Colours appear once there are enough games.",
+  "bench.grey": "Grey: a gap under 10%, or fewer than 10 of your games. Too small to read much into.",
 };
 export default en;
