@@ -147,7 +147,7 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
                       <li key={x.puuid + x.championId} className="flex items-center gap-1.5 text-xs">
                         <GameImg src={c.url} alt={c.name} size={16} rounded="sm" className={ti === 0 ? 'ring-1 ring-side-blue/50' : 'ring-1 ring-side-red/50'} />
                         {self ? (
-                          <span className="w-[70px] truncate font-semibold text-text">{x.gameName}</span>
+                          <span className="w-[70px] truncate font-semibold text-text" title={`${x.gameName}#${x.tagLine}`}>{x.gameName}</span>
                         ) : x.hidden ? (
                           <span className="w-[70px] truncate italic text-faint">{t('live.hidden')}</span>
                         ) : (

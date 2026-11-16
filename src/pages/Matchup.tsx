@@ -9,7 +9,7 @@ import { ArrowLeftRight } from 'lucide-react';
 import type { MatchupStats } from '../../shared/types';
 import { api, ApiClientError } from '../lib/api';
 import { assets, championBySlug, champSlug, matchupPath, useStaticData } from '../lib/ddragon';
-import { formatKda, pct, sureTone, thousands } from '../lib/format';
+import { formatKda, pct, sureTone, thousands, TONE_MIN_GAMES } from '../lib/format';
 import { fadeIn } from '../lib/motion';
 import { GameImg } from '../components/ui/GameImg';
 import { ROLE_LABEL } from '../components/ui/RoleIcon';
@@ -223,7 +223,8 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
                     >
                       <GameImg src={c.url} alt="" size={28} rounded="sm" />
                       <span className="text-sm font-medium group-hover:text-gold">{c.name}</span>
-                      <span className={clsx('num text-xs font-semibold', low ? 'text-faint' : sureTone(o.winRate, o.games))}>{pct(o.winRate)}</span>
+                      {/* Under 5 games a rate is just 0% or 100% from a game or two: show only the count. */}
+                      {o.games >= TONE_MIN_GAMES && <span className={clsx('num text-xs font-semibold', low ? 'text-faint' : sureTone(o.winRate, o.games))}>{pct(o.winRate)}</span>}
                       <span className="num text-xs text-faint">{t('common.games', { count: o.games })}</span>
                     </Link>
                   </li>

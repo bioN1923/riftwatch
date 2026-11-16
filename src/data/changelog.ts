@@ -22,6 +22,15 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.196',
+    date: '2026-11-16',
+    items: [
+      'Live game on phones: the champion and mastery line wraps instead of being cut off. This mattered most in German, where "303.634 Meisterschaft" didn\'t fit.',
+      'Matchup page, "Other matchups": pairs with fewer than 5 games show just the game count, not a 0% or 100% from a single game.',
+      'Match history: your own name in a game\'s team list shows your full Riot ID on hover, like the other players\' names.',
+    ],
+  },
+  {
     version: '3.195',
     date: '2026-11-16',
     items: ['Compare on phones: each player card shows the tag and the region on separate lines instead of cutting off "Europe West", and "269 games" no longer breaks across two lines.'],

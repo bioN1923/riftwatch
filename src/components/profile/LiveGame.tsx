@@ -266,9 +266,15 @@ function PlayerRow({ p, s, loading, self, platform, queueId }: { p: LiveParticip
             <span className="text-faint">#{p.tagLine}</span>
           </Link>
         )}
-        <p className="truncate text-xs text-muted">
+        {/* Wraps (mastery as one unit) instead of truncating: German has no short form for thousands, so "303.634 Meisterschaft" got cut. */}
+        <p className="text-xs leading-snug text-muted">
           {c.name}
-          {s?.mastery && s.mastery.points > 0 && <span className="num"> · {t('live.mastery', { points: compact(s.mastery.points) })}</span>}
+          {s?.mastery && s.mastery.points > 0 && (
+            <>
+              {' · '}
+              <span className="num whitespace-nowrap">{t('live.mastery', { points: compact(s.mastery.points) })}</span>
+            </>
+          )}
         </p>
         {tags.length > 0 && (
           <ul className="mt-1 flex flex-wrap gap-1">
