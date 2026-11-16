@@ -41,3 +41,12 @@ So the last pause was a full garbage collection, set off by building the whole ~
 - 179 tests pass; a new test writes a 5,000-key object through the stream and compares it to `JSON.stringify`.
 - Local benchmark (12,000 Rift and 1,500 Arena games, a 5.2 MB file): the async save took 209 ms in all, with the longest pause 15 ms and the **longest GC 2 ms**.
 - a11y `{}`.
+
+## Live check after the second fix (2026-11-16 05:18–05:20 local)
+- Probe of 38 one-per-second requests, timed so a champion-stats save (2.9 s in all) ran in the middle of it: **median 37 ms, max 212 ms, none over 300 ms**.
+- `/api/health.perf` over the 150 s since start:
+  - event loop: **max 61 ms**, p99 12 ms;
+  - GC: **longest 61 ms** (274 ms before);
+  - stalls: none apart from the 4.3 s at startup, when the stats file is loaded.
+- Every other save takes 0–4 ms. The periodic pause is gone.
+- Still open: the 4.3 s startup load (`JSON.parse` of `champions.json`), seen only while a deploy or restart is starting.
