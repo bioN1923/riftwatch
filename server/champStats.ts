@@ -102,6 +102,7 @@ interface RoleAgg {
   len: C[];
   duo?: Record<string, C>; // same-team champion in the partner role
   bv?: Record<string, BuildVar>; // per core build (first three items): its boots and 4th–6th items
+  rp?: Record<string, BuildTally>; // per rune page (primary|secondary, no shards): the builds played with it
   mu?: Record<string, MatchupAgg>; // per lane opponent: what was played into them
   pl?: Record<string, { n: string; t: string; pf: string; g: number; w: number; k: number; d: number; a: number }>;
   ar?: ArenaAgg;
@@ -145,6 +146,8 @@ interface MatchupAgg {
 const newMatchup = (): MatchupAgg => ({ runes: {}, spells: {}, start: {}, core: {}, boots: {}, s4: {}, s5: {}, s6: {}, k: 0, d: 0, a: 0 });
 /** Anything that tallies builds: a whole champion-role, or one of its matchups. */
 type BuildTally = Pick<RoleAgg, 'core' | 's4' | 's5' | 's6' | 'bv'>;
+const sumG = (m: Record<string, C>) => Object.values(m).reduce((n, x) => n + x.g, 0);
+const newTally = (): BuildTally => ({ core: {}, s4: {}, s5: {}, s6: {} });
 
 /** The teammate role whose champion matters most for each role. */
 const PARTNER: Record<string, string> = { TOP: 'JUNGLE', JUNGLE: 'MIDDLE', MIDDLE: 'JUNGLE', BOTTOM: 'UTILITY', UTILITY: 'BOTTOM' };
@@ -250,7 +253,14 @@ function pickVariations<T extends C>(entries: [string, T][]) {
 }
 
 /** Rune pages grouped without their stat shards; each page keeps its most played shard set. */
-export function runeVariations(runes: Record<string, C>): ChampionStats['runes'] {
+/** The rune-page key shared by rune tallies and per-page builds: primary and secondary trees and runes, no shards. */
+const pageKey = (p: { primaryStyle?: number; secondaryStyle?: number; runes?: { primary: number[]; secondary: number[] } }) =>
+  p.runes?.primary?.length ? `${p.primaryStyle}:${p.runes.primary.join(',')}|${p.secondaryStyle}:${p.runes.secondary.join(',')}` : null;
+
+/** Games with three completed items needed before a rune page gets its own builds. */
+export const PAGE_BUILD_MIN = 20;
+
+export function runeVariations(runes: Record<string, C>, perPage?: Record<string, BuildTally>): ChampionStats['runes'] {
   const pages = new Map<string, C & { shards: Record<string, number> }>();
   for (const [k, v] of Object.entries(runes)) {
     const [pri, sec, shards] = k.split('|');
@@ -265,7 +275,20 @@ export function runeVariations(runes: Record<string, C>): ChampionStats['runes']
     const [ps, pl] = pri.split(':');
     const [ss, sl] = sec.split(':');
     const shards = Object.entries(v.shards).sort((a, b) => b[1] - a[1])[0]?.[0] ?? '';
-    return { games: v.g, winRate: v.w / v.g, share, tags, primaryStyle: Number(ps), primary: ids(pl), secondaryStyle: Number(ss), secondary: ids(sl), shards: ids(shards) };
+    const tally = perPage?.[key];
+    const buildGames = tally ? Object.values(tally.core).reduce((n, x) => n + x.g, 0) : 0;
+    return {
+      games: v.g,
+      winRate: v.w / v.g,
+      share,
+      tags,
+      primaryStyle: Number(ps),
+      primary: ids(pl),
+      secondaryStyle: Number(ss),
+      secondary: ids(sl),
+      shards: ids(shards),
+      ...(tally && buildGames >= PAGE_BUILD_MIN ? { builds: buildVariations(tally), buildGames } : buildGames ? { buildGames } : {}),
+    };
   });
 }
 
@@ -482,6 +505,8 @@ export class ChampionStatsStore {
       const { legendaries, boots } = slotBuild(p.items);
       if (boots) bump(r.boots, String(boots), p.win);
       countBuild(r, legendaries, boots, p.win, 1);
+      const pk = pageKey(p);
+      if (pk && legendaries.length >= 3) countBuild(((r.rp ??= {})[pk] ??= newTally()), legendaries, boots, p.win, 1);
 
       // Who plays this champion most (and best): a per-champion leaderboard.
       if (p.puuid && !p.puuid.startsWith('demo-rand') && p.gameName && !this.isHidden(p.puuid)) {
@@ -543,7 +568,9 @@ export class ChampionStatsStore {
       const { legendaries: bySlot, boots } = slotBuild(p.items);
       const byPurchase = purchaseBuild(p.items, tl.items[i] ?? []);
       if (byPurchase.length === bySlot.length && byPurchase.join() !== bySlot.join()) {
-        for (const t of mu ? [r, mu] : [r]) {
+        const pk = pageKey(p);
+        const page = pk ? r.rp?.[pk] : undefined;
+        for (const t of [r, ...(mu ? [mu] : []), ...(page ? [page] : [])]) {
           countBuild(t, bySlot, boots, p.win, -1);
           countBuild(t, byPurchase, boots, p.win, 1);
         }
@@ -911,7 +938,7 @@ export class ChampionStatsStore {
         goldPerMin: r.gold / r.min,
         minutes: r.min / r.g,
       },
-      runes: runeVariations(r.runes),
+      runes: runeVariations(r.runes, r.rp),
       spells: top(r.spells, 2).map(([k, v]) => ({ ...rated(v), ids: ids(k) })),
       starting: top(r.start, 3).map(([k, v]) => ({ ...rated(v), ids: ids(k) })),
       core: top(r.core, 5).map(([k, v]) => ({ ...rated(v), ids: ids(k) })),
@@ -980,6 +1007,18 @@ export class ChampionStatsStore {
       if (entries.length > 60) r[key] = Object.fromEntries(entries.sort((a, b) => b[1].g - a[1].g).slice(0, 40));
     }
     if (r.bv) for (const k of Object.keys(r.bv)) if (!r.core[k]) delete r.bv[k];
+    if (r.rp) {
+      // Per-page builds: the 8 rune pages with the most builds, each keeping its 20 most common.
+      const pages = Object.entries(r.rp).sort((a, b) => sumG(b[1].core) - sumG(a[1].core));
+      for (const [k] of pages.slice(8)) delete r.rp[k];
+      for (const t of Object.values(r.rp)) {
+        for (const key of ['core', 's4', 's5', 's6'] as const) {
+          const entries = Object.entries(t[key]);
+          if (entries.length > 30) t[key] = Object.fromEntries(entries.sort((a, b) => b[1].g - a[1].g).slice(0, 20));
+        }
+        if (t.bv) for (const k of Object.keys(t.bv)) if (!t.core[k]) delete t.bv[k];
+      }
+    }
     if (r.ar) {
       delete r.ar.aug;
       if (r.ar.it && Object.keys(r.ar.it).length > 60) r.ar.it = Object.fromEntries(Object.entries(r.ar.it).sort((a, b) => b[1] - a[1]).slice(0, 40));

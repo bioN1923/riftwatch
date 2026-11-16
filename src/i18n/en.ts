@@ -1214,5 +1214,14 @@ const en = {
   "it.none": "No items match.",
   "it.openHint": "Click to see who else builds it",
   "it.missing": "{item} isn’t built often enough in ranked to list yet.",
+  "cp.pageName": "{keystone} · {tree}",
+  "cp.buildFirst": "{item} first",
+  "cp.buildTwo": "{a} → {b}",
+  "cp.buildThree": "{a} → {b} → {c}",
+  "cp.itemsForPage_one": "Items built with {page} · {count} game",
+  "cp.itemsForPage_other": "Items built with {page} · {count} games",
+  "cp.itemsForPageFew_one": "Only {count} game with {page} so far — showing builds from every rune page",
+  "cp.itemsForPageFew_other": "Only {count} games with {page} so far — showing builds from every rune page",
+  "cp.coreNamed": "{name} — first three completed items, in buying order",
 };
 export default en;

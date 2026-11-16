@@ -1214,5 +1214,14 @@ const dict: Record<string, string> = {
   "it.none": "Nenhum item corresponde.",
   "it.openHint": "Clique para ver quem mais o constrói",
   "it.missing": "{item} ainda não é construído o bastante nas ranqueadas para aparecer.",
+  "cp.pageName": "{keystone} · {tree}",
+  "cp.buildFirst": "{item} primeiro",
+  "cp.buildTwo": "{a} → {b}",
+  "cp.buildThree": "{a} → {b} → {c}",
+  "cp.itemsForPage_one": "Itens com {page} · {count} partida",
+  "cp.itemsForPage_other": "Itens com {page} · {count} partidas",
+  "cp.itemsForPageFew_one": "Só {count} partida com {page} até agora — mostrando builds de todas as páginas de runas",
+  "cp.itemsForPageFew_other": "Só {count} partidas com {page} até agora — mostrando builds de todas as páginas de runas",
+  "cp.coreNamed": "{name} — os três primeiros itens completos, na ordem de compra",
 };
 export default dict;

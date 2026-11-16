@@ -322,7 +322,18 @@ export interface ChampionStats {
   summary: TierRow | null;
   avg: { kills: number; deaths: number; assists: number; csPerMin: number; damagePerMin: number; goldPerMin: number; minutes: number } | null;
   /** Rune page variations (most played first, plus the best performer), each with its most played stat shards. */
-  runes: (Rated & { share: number; tags: ('popular' | 'best')[]; primaryStyle: number; primary: number[]; secondaryStyle: number; secondary: number[]; shards: number[] })[];
+  runes: (Rated & {
+    share: number;
+    tags: ('popular' | 'best')[];
+    primaryStyle: number;
+    primary: number[];
+    secondaryStyle: number;
+    secondary: number[];
+    shards: number[];
+    /** Core builds of games played with this rune page (when enough were read since v3.133); `buildGames` counts them. */
+    builds?: ChampionStats['builds'];
+    buildGames?: number;
+  })[];
   spells: (Rated & { ids: number[] })[];
   starting: (Rated & { ids: number[] })[];
   core: (Rated & { ids: number[] })[];

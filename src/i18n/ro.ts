@@ -1248,5 +1248,16 @@ const dict: Record<string, string> = {
   "it.none": "Niciun obiect nu se potrivește.",
   "it.openHint": "Clic ca să vezi cine îl mai construiește",
   "it.missing": "{item} nu e construit destul de des în ranked ca să apară încă.",
+  "cp.pageName": "{keystone} · {tree}",
+  "cp.buildFirst": "Întâi {item}",
+  "cp.buildTwo": "{a} → {b}",
+  "cp.buildThree": "{a} → {b} → {c}",
+  "cp.itemsForPage_one": "Obiecte construite cu {page} · {count} joc",
+  "cp.itemsForPage_few": "Obiecte construite cu {page} · {count} jocuri",
+  "cp.itemsForPage_other": "Obiecte construite cu {page} · {count} de jocuri",
+  "cp.itemsForPageFew_one": "Doar {count} joc cu {page} până acum — arătăm build-uri de pe toate paginile de rune",
+  "cp.itemsForPageFew_few": "Doar {count} jocuri cu {page} până acum — arătăm build-uri de pe toate paginile de rune",
+  "cp.itemsForPageFew_other": "Doar {count} de jocuri cu {page} până acum — arătăm build-uri de pe toate paginile de rune",
+  "cp.coreNamed": "{name} — primele trei obiecte complete, în ordinea cumpărării",
 };
 export default dict;

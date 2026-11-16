@@ -214,12 +214,14 @@ function mockRiftMatch(p: Persona, index: number): MatchSummary {
       const deaths = Math.max(0, Math.round((teamKills[1 - t] / 5) * (0.5 + r()) * (isMe ? 1.3 - p.skill : 1)));
       const csPerMin = aram ? 2 + r() * 2.5 : role === 'UTILITY' ? 0.8 + r() * 1.2 : role === 'JUNGLE' ? 5 + r() * 2.5 : 5.5 + r() * 3 + (isMe ? p.skill * 1.5 : 0);
       const itemCount = Math.min(6, Math.floor(minutes / 6) + int(r, 0, 1));
-      // Most players of a champion follow the same build, with some variety.
-      const cr = r() < 0.72 ? rng(championId * 7919 + 13) : r;
+      // Most players of a champion use one of two or three rune pages, and each page has its own
+      // usual build (so picking a rune page on the champion page shows different items).
+      const rv = r();
+      const rr = rng(championId * 104729 + 7 + (rv < 0.6 ? 0 : rv < 0.85 ? 31 : 62));
+      const [keystone, primaryStyle, secondaryStyle] = pick(rr, KEYSTONES[role]);
+      const cr = r() < 0.72 ? rng(championId * 7919 + 13 + keystone) : r;
       const items = [...ITEMS[role]].sort(() => cr() - 0.5).slice(0, itemCount);
       while (items.length < 6) items.push(0);
-      const rr = r() < 0.75 ? rng(championId * 104729 + 7) : r;
-      const [keystone, primaryStyle, secondaryStyle] = pick(rr, KEYSTONES[role]);
       participants.push({
         puuid: who.puuid,
         gameName: who.gameName,

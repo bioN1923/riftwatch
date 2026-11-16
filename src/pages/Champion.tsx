@@ -306,9 +306,43 @@ export function Block({ title, aside, children, className }: { title: string; as
 /** What the build sections need: a whole champion-role, or one matchup. */
 export type BuildData = Pick<ChampionStats, 'championId' | 'role' | 'patch' | 'group' | 'runes' | 'spells' | 'starting' | 'builds' | 'core' | 'coreTotal' | 'boots' | 'bootsTotal' | 'later'>;
 
-export function RunesBlock({ s }: { s: BuildData }) {
-  const [page, setPage] = useState(0);
-  useEffect(() => setPage(0), [s.championId, s.role, s.patch, s.group]);
+/** Rune page names: keystone and secondary tree, plus the first rune that tells two alike pages apart. */
+function useRuneNames(runes: BuildData['runes']) {
+  const { data } = useStaticData();
+  const a = assets(data);
+  const tree = (id: number) => data?.trees.find((x) => x.id === id)?.name ?? '';
+  return runes.map((r, i) => {
+    const base = t('cp.pageName', { keystone: a.rune(r.primary[0]).name || '?', tree: tree(r.secondaryStyle) });
+    const twin = runes.find((o, j) => j !== i && o.primary[0] === r.primary[0] && o.secondaryStyle === r.secondaryStyle);
+    if (!twin) return base;
+    const all = [...r.primary.slice(1), ...r.secondary];
+    const other = new Set([...twin.primary.slice(1), ...twin.secondary]);
+    const diff = all.find((id) => !other.has(id));
+    return diff ? `${base} (${a.rune(diff).name})` : base;
+  });
+}
+
+/** Build names: the first item, or the first two when another build starts the same way. */
+function useBuildNames(builds: { ids: number[] }[]) {
+  const { data } = useStaticData();
+  const a = assets(data);
+  const name = (id: number) => a.item(id).name || t('item.fallback', { id: String(id) });
+  return builds.map((b, i) => {
+    const sameStart = builds.some((o, j) => j !== i && o.ids[0] === b.ids[0]);
+    if (!sameStart) return t('cp.buildFirst', { item: name(b.ids[0]) });
+    const sameTwo = builds.some((o, j) => j !== i && o.ids[0] === b.ids[0] && o.ids[1] === b.ids[1]);
+    return t(sameTwo ? 'cp.buildThree' : 'cp.buildTwo', { a: name(b.ids[0]), b: name(b.ids[1]), c: name(b.ids[2]) });
+  });
+}
+
+export function RunesBlock({ s, page: controlled, onPage }: { s: BuildData; page?: number; onPage?: (i: number) => void }) {
+  const [own, setOwn] = useState(0);
+  const page = controlled ?? own;
+  const setPage = onPage ?? setOwn;
+  useEffect(() => {
+    if (controlled == null) setOwn(0);
+  }, [s.championId, s.role, s.patch, s.group]); // eslint-disable-line react-hooks/exhaustive-deps
+  const names = useRuneNames(s.runes);
   const rune = s.runes[page] ?? s.runes[0];
   const runeDir = useSlideDirection(page);
   if (!rune) return null;
@@ -317,11 +351,11 @@ export function RunesBlock({ s }: { s: BuildData }) {
       {s.runes.length > 1 && (
         <VariationCards
           label={t('cp.runePages')}
-          name={t('cp.page')}
           pick={page}
           onPick={setPage}
-          items={s.runes.map((r) => ({
+          items={s.runes.map((r, i) => ({
             key: `${r.primary.join()}|${r.secondary.join()}`,
+            title: names[i],
             r: r.share != null ? r : { ...r, share: 0, tags: [] },
             content: <RunePageSummary r={r} />,
           }))}
@@ -375,6 +409,9 @@ export function SpellsAndStart({ s }: { s: BuildData }) {
 }
 
 function BuildPanel({ s, abilityIcons }: { s: ChampionStats; abilityIcons?: string[] }) {
+  // One choice drives both blocks: picking a rune page shows the items built with it.
+  const [page, setPage] = useState(0);
+  useEffect(() => setPage(0), [s.championId, s.role, s.patch, s.group]);
   return (
     <section className="panel panel-tick p-5" aria-labelledby="build-h">
       <h2 id="build-h" className="panel-title text-2xl">
@@ -388,11 +425,11 @@ function BuildPanel({ s, abilityIcons }: { s: ChampionStats; abilityIcons?: stri
       )}
 
       <div className="mt-5 space-y-7">
-        <RunesBlock s={s} />
+        <RunesBlock s={s} page={page} onPage={setPage} />
 
         <SpellsAndStart s={s} />
 
-        <ItemsBlock s={s} />
+        <ItemsBlock s={s} runePage={page} />
 
         {s.skills.path.length > 0 && (
           <Block
@@ -430,6 +467,13 @@ function ItemName({ id }: { id: number }) {
 }
 
 /** Core build, boots and late-game options, laid out the way a game actually goes. */
+/** Just the keystone, small, for labels that name a rune page. */
+function RunePageIcon({ r }: { r: ChampionStats['runes'][number] }) {
+  const { data } = useStaticData();
+  const ks = assets(data).rune(r.primary[0]);
+  return <GameImg src={ks.url} alt="" size={20} rounded="full" className="shrink-0 bg-[#0e1b1d]!" />;
+}
+
 /** Compact rune page for a card: keystone, the three other primary runes, and the secondary tree. */
 export function RunePageSummary({ r }: { r: ChampionStats['runes'][number] }) {
   const { data } = useStaticData();
@@ -454,14 +498,14 @@ export function RunePageSummary({ r }: { r: ChampionStats['runes'][number] }) {
 type Variation = Rated & { share: number; tags: ('popular' | 'best')[] };
 
 /** A row of cards to choose between variations (builds, rune pages). Swipeable on phones. */
-export function VariationCards({ label, name, items, pick, onPick }: { label: string; name: string; items: { key: string; r: Variation; content: React.ReactNode }[]; pick: number; onPick: (i: number) => void }) {
+export function VariationCards({ label, items, pick, onPick }: { label: string; items: { key: string; title: string; r: Variation; content: React.ReactNode }[]; pick: number; onPick: (i: number) => void }) {
   return (
     <div
       role="tablist"
       aria-label={label}
       className="-mx-4 mb-4 flex snap-x gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:grid sm:grid-cols-[repeat(auto-fill,minmax(168px,1fr))] sm:overflow-visible sm:px-0 sm:pb-0"
     >
-      {items.map(({ key, r: v, content }, i) => {
+      {items.map(({ key, title, r: v, content }, i) => {
         const active = i === pick;
         const low = v.games < LOW_SAMPLE;
         return (
@@ -475,18 +519,18 @@ export function VariationCards({ label, name, items, pick, onPick }: { label: st
               active ? 'border-gold bg-gold/[0.07] shadow-[0_0_0_1px_var(--gold)]' : 'border-line bg-raised/40 hover:border-line-strong',
             )}
           >
-            <span className="flex items-center justify-between gap-2">
-              <span className={clsx('font-display text-sm font-bold', active ? 'text-gold' : 'text-muted')}>
-                {name} {i + 1}
+            <span className="flex flex-col gap-1">
+              <span className={clsx('line-clamp-2 min-w-0 font-display text-sm font-bold leading-tight', active ? 'text-gold' : 'text-text/80')} title={title}>
+                {title}
               </span>
-              <span className="flex gap-1">
+              <span className="flex flex-wrap gap-1 empty:hidden">
                 {v.tags.includes('popular') && <span className="rounded-sm bg-sunken px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-muted">{t('cp.mostPlayed')}</span>}
-                {v.tags.includes('best') && <span className="rounded-sm bg-win/15 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-win">{t('cp.bestWr')}</span>}
+                {v.tags.includes('best') && <span className="rounded-sm border border-win/40 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-win">{t('cp.bestWr')}</span>}
               </span>
             </span>
             {content}
             <span className="num flex flex-wrap items-baseline justify-between gap-x-2 whitespace-nowrap text-xs">
-              <span className={clsx('text-sm font-semibold', low ? 'text-faint' : v.winRate >= 0.5 ? 'text-win' : 'text-loss')}>
+              <span className={clsx('text-sm font-semibold', low ? 'text-faint' : sureTone(v.winRate, v.games))}>
                 {pct(v.winRate, 1)}
                 {low && <span aria-hidden>*</span>}
               </span>
@@ -514,37 +558,53 @@ function variationsOf(s: BuildData): ChampionStats['builds'] {
   }));
 }
 
-export function ItemsBlock({ s }: { s: BuildData }) {
-  const builds = variationsOf(s);
+export function ItemsBlock({ s, runePage }: { s: BuildData; runePage?: number }) {
+  // With a rune page picked (champion page), its own builds when enough games used it; else every page's.
+  const page = runePage != null && s.runes.length > 1 ? s.runes[runePage] : undefined;
+  const runeNames = useRuneNames(s.runes);
+  const pageBuilds = page?.builds?.length ? page.builds : null;
+  // Variations seen in only a handful of games are noise, not a choice: keep the main one and those with enough games.
+  const builds = (pageBuilds ?? variationsOf(s)).filter((v, i) => i === 0 || v.games >= LOW_SAMPLE);
+  const buildNames = useBuildNames(builds);
   const [pick, setPick] = useState(0);
-  useEffect(() => setPick(0), [s.championId, s.role, s.patch, s.group]);
+  useEffect(() => setPick(0), [s.championId, s.role, s.patch, s.group, runePage]);
   const b = builds[Math.min(pick, builds.length - 1)];
   const dir = useSlideDirection(pick);
   // Per-build follow-ups when we have them; otherwise the champion-wide numbers.
-  const boots = b?.bootsTotal ? { list: b.boots, total: b.bootsTotal, own: true } : { list: s.boots, total: s.bootsTotal, own: false };
+  // A handful of games after one build says little: below LOW_SAMPLE, fall back to the champion-wide picks.
+  const boots = (b?.bootsTotal ?? 0) >= LOW_SAMPLE ? { list: b!.boots, total: b!.bootsTotal, own: true } : { list: s.boots, total: s.bootsTotal, own: false };
   const later = (slot: number) => {
     const own = b?.later.find((x) => x.slot === slot);
-    return own?.total ? { ...own, own: true } : { ...(s.later.find((x) => x.slot === slot) ?? { slot, total: 0, options: [] }), own: false };
+    return own && own.total >= LOW_SAMPLE ? { ...own, own: true } : { ...(s.later.find((x) => x.slot === slot) ?? { slot, total: 0, options: [] }), own: false };
   };
 
   return (
-    <Block title={t('cp.items')} aside={s.coreTotal ? t('cp.itemsAside', { count: s.coreTotal }) : undefined}>
+    <Block title={t('cp.items')} aside={s.coreTotal ? t('cp.itemsAside', { count: pageBuilds ? (page?.buildGames ?? 0) : s.coreTotal }) : undefined}>
+      {page && runePage != null && (
+        <p className={clsx('mb-3 flex items-center gap-2 rounded border px-3 py-2 text-xs', pageBuilds ? 'border-gold/40 bg-gold/[0.06] text-text' : 'border-line bg-raised/40 text-muted')} aria-live="polite">
+          <RunePageIcon r={page} />
+          <span className="min-w-0">
+            {pageBuilds
+              ? t.rich('cp.itemsForPage', { page: <span className="font-semibold">{runeNames[runePage]}</span>, count: page.buildGames ?? 0 })
+              : t('cp.itemsForPageFew', { page: runeNames[runePage], count: page.buildGames ?? 0 })}
+          </span>
+        </p>
+      )}
       {builds.length > 1 && (
         <VariationCards
           label={t('cp.buildVariations')}
-          name={t('cp.build')}
           pick={pick}
           onPick={setPick}
-          items={builds.map((v) => ({ key: v.ids.join(), r: v, content: <ItemRow ids={v.ids} size={30} arrows /> }))}
+          items={builds.map((v, i) => ({ key: v.ids.join(), title: buildNames[i], r: v, content: <ItemRow ids={v.ids} size={30} arrows /> }))}
         />
       )}
 
       {b ? (
-        <div key={b.ids.join()} className="tab-in" style={{ '--dir': dir } as React.CSSProperties}>
+        <div key={`${runePage ?? ''}:${b.ids.join()}`} className="tab-in" style={{ '--dir': dir } as React.CSSProperties}>
           <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_240px]">
             <div className="rounded border border-line bg-raised/40 p-4">
               <p className="mb-3 text-xs font-medium text-muted">
-                {builds.length > 1 ? t('cp.coreN', { n: String(pick + 1) }) : t('cp.core')}
+                {builds.length > 1 ? t('cp.coreNamed', { name: buildNames[Math.min(pick, builds.length - 1)] }) : t('cp.core')}
               </p>
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <ol className="flex items-start gap-2">

@@ -22,6 +22,15 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.133',
+    date: '2026-11-16',
+    items: [
+      'Rune pages and builds have real names instead of “Page 1, 2, 3”, for example “Electrocute · Sorcery” or “Luden’s Echo first”.',
+      'Picking a rune page now switches the Items section to the builds played with those runes, with a line saying how many games that is. Until a page has enough games of its own, the builds from every page are shown, and the page says so.',
+      'Cleaner build cards: build variations seen in only a few games are left out, and boots and 4th–6th items after a build fall back to the champion’s usual picks when that build has too few games. Win rates on the cards are coloured only when the gap is too large to be chance.',
+    ],
+  },
+  {
     version: '3.132',
     date: '2026-11-16',
     items: [

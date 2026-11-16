@@ -1282,5 +1282,18 @@ const dict: Record<string, string> = {
   "it.none": "Brak pasujących przedmiotów.",
   "it.openHint": "Kliknij, by zobaczyć, kto jeszcze go buduje",
   "it.missing": "{item} nie jest jeszcze budowany w rankingu na tyle często, by się tu pojawić.",
+  "cp.pageName": "{keystone} · {tree}",
+  "cp.buildFirst": "Najpierw {item}",
+  "cp.buildTwo": "{a} → {b}",
+  "cp.buildThree": "{a} → {b} → {c}",
+  "cp.itemsForPage_one": "Przedmioty z {page} · {count} gra",
+  "cp.itemsForPage_few": "Przedmioty z {page} · {count} gry",
+  "cp.itemsForPage_many": "Przedmioty z {page} · {count} gier",
+  "cp.itemsForPage_other": "Przedmioty z {page} · {count} gry",
+  "cp.itemsForPageFew_one": "Na razie tylko {count} gra z {page} — pokazujemy buildy ze wszystkich stron run",
+  "cp.itemsForPageFew_few": "Na razie tylko {count} gry z {page} — pokazujemy buildy ze wszystkich stron run",
+  "cp.itemsForPageFew_many": "Na razie tylko {count} gier z {page} — pokazujemy buildy ze wszystkich stron run",
+  "cp.itemsForPageFew_other": "Na razie tylko {count} gry z {page} — pokazujemy buildy ze wszystkich stron run",
+  "cp.coreNamed": "{name} — pierwsze trzy ukończone przedmioty, w kolejności zakupu",
 };
 export default dict;

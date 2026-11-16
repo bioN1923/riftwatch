@@ -1214,5 +1214,14 @@ const dict: Record<string, string> = {
   "it.none": "Aucun objet ne correspond.",
   "it.openHint": "Clique pour voir qui le construit aussi",
   "it.missing": "{item} n’est pas encore assez construit en classé pour figurer ici.",
+  "cp.pageName": "{keystone} · {tree}",
+  "cp.buildFirst": "{item} en premier",
+  "cp.buildTwo": "{a} → {b}",
+  "cp.buildThree": "{a} → {b} → {c}",
+  "cp.itemsForPage_one": "Objets construits avec {page} · {count} partie",
+  "cp.itemsForPage_other": "Objets construits avec {page} · {count} parties",
+  "cp.itemsForPageFew_one": "Seulement {count} partie avec {page} pour l’instant — builds de toutes les pages de runes",
+  "cp.itemsForPageFew_other": "Seulement {count} parties avec {page} pour l’instant — builds de toutes les pages de runes",
+  "cp.coreNamed": "{name} — trois premiers objets complets, dans l’ordre d’achat",
 };
 export default dict;

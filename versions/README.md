@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.133](v3.133/CHANGES.md) | 2026-11-16 | Named rune pages and builds; items follow the picked rune page |
 | [v3.132](v3.132/CHANGES.md) | 2026-11-16 | Champion build items link to the Items page; g i shortcut |
 | [v3.131](v3.131/CHANGES.md) | 2026-11-16 | Items page: popularity and who builds each item |
 | [v3.130](v3.130/CHANGES.md) | 2026-11-16 | Server timings in /api/health; match-cache pruning no longer blocks |
