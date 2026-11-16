@@ -22,3 +22,12 @@
 - Demo: 21,911 builds and 41 items. Death's Dance comes first (19.3%, 4,220 games), and its table shows Sylas jungle 564 games at 50.5% (+0.1%). Checked at 1280 px dark and 390 px light, with no page errors.
 
 Screens: `demo/items-dark-1280.png`, `demo/items-light-390.png`.
+
+## Live check (2026-11-16 05:31 local)
+- `/api/items` on live data:
+  - patch 16.22, **108,502 builds, 102 items**;
+  - the top three are Infinity Edge (3031) at 21.0% (22,732 games), Lord Dominik's Regards (3036) at 19.0% and Zhonya's Hourglass (3157) at 13.9%;
+  - 12 champions each.
+- `Items-BFNyYc49.js` is served (200).
+- 514 of the 1,170 champion rows have a "vs usual" gap past two standard errors. With thousands of games, the steady edge of players who reach a full build shows up. The page's note explains this; it isn't the item causing wins.
+- The response took **352 ms**, all of it computed while the server could do nothing else. Follow-up in the same version: `/api/items` is now kept for 5 minutes per patch (`itemsMemo`, at most 8 entries), so only the first request in each window pays for it.

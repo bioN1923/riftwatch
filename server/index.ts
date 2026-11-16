@@ -809,9 +809,18 @@ app.get('/api/champions', (req, res) => {
   res.json(champStats.tierList(groupParam(req.query.group), req.query.patch ? String(req.query.patch) : undefined));
 });
 
+// Summing every build tally takes a few hundred ms on live data: computed at most every 5 minutes per patch.
+const itemsMemo = new Map<string, { at: number; body: string }>();
 app.get('/api/items', (req, res) => {
+  const patch = req.query.patch ? String(req.query.patch) : '';
+  let hit = itemsMemo.get(patch);
+  if (!hit || Date.now() - hit.at > 5 * 60_000) {
+    hit = { at: Date.now(), body: JSON.stringify(champStats.itemStats(patch || undefined)) };
+    itemsMemo.set(patch, hit);
+    if (itemsMemo.size > 8) itemsMemo.delete(itemsMemo.keys().next().value!);
+  }
   res.setHeader('Cache-Control', 'public, max-age=300');
-  res.json(champStats.itemStats(req.query.patch ? String(req.query.patch) : undefined));
+  res.type('application/json').send(hit.body);
 });
 
 app.get('/api/blind', (req, res) => {
