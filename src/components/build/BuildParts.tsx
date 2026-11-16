@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import clsx from 'clsx';
 import { ChevronRight } from 'lucide-react';
 import { assets, SHARD_INFO, SHARD_ROWS, shardIcon, useStaticData, type StaticData } from '../../lib/ddragon';
@@ -164,7 +165,7 @@ function Tree({ tree, picked, a, withKeystone }: { tree: StaticData['trees'][num
 }
 
 /** Item icon row with optional arrows, used for builds. */
-export function ItemRow({ ids, size = 32, arrows }: { ids: number[]; size?: number; arrows?: boolean }) {
+export function ItemRow({ ids, size = 32, arrows, linked }: { ids: number[]; size?: number; arrows?: boolean; linked?: boolean }) {
   const { data } = useStaticData();
   const a = assets(data);
   return (
@@ -173,7 +174,14 @@ export function ItemRow({ ids, size = 32, arrows }: { ids: number[]; size?: numb
         const it = a.item(id);
         return (
           <span key={`${id}-${i}`} className="flex items-center gap-1">
-            <GameImg src={it.url} alt={it.name || `Item ${id}`} size={size} rounded="sm" tip={it.name ? <ItemTip id={id} /> : undefined} />
+            {linked ? (
+              // Completed items open their page on the Items list: who else builds it, and how it does.
+              <Link to={`/items?item=${id}`} className="rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold">
+                <GameImg src={it.url} alt={it.name || `Item ${id}`} size={size} rounded="sm" tip={it.name ? <ItemTip id={id} note={t('it.openHint')} /> : undefined} />
+              </Link>
+            ) : (
+              <GameImg src={it.url} alt={it.name || `Item ${id}`} size={size} rounded="sm" tip={it.name ? <ItemTip id={id} /> : undefined} />
+            )}
             {arrows && i < ids.length - 1 && <ChevronRight className="size-3.5 text-faint" aria-hidden />}
           </span>
         );

@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.132',
+    date: '2026-11-16',
+    items: [
+      'On champion pages, the core items and the 4th–6th item choices link to the Items page. It opens with that item expanded, showing who else builds it.',
+      'Keyboard: g then i opens Items.',
+    ],
+  },
+  {
     version: '3.131',
     date: '2026-11-16',
     items: ['New Items page, linked from Champions: every completed item with how often it’s built in ranked. Open one to see the champions who build it most, their win rate with it, and how that compares with their usual. That gap is coloured only when it’s too large to be chance.'],

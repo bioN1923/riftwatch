@@ -48,6 +48,13 @@ export function ItemsPage() {
     });
   }, [q.data, query, a]);
 
+  // Arriving from a champion page (?item=…): bring that item into view once the list is in.
+  const missing = !!open && !!q.data && !q.data.items.some((r) => r.id === open);
+  useEffect(() => {
+    if (!open || !q.data) return;
+    document.getElementById(`item-${open}`)?.scrollIntoView({ block: 'start' });
+  }, [q.data]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const toggle = (id: number) => {
     const next = new URLSearchParams(params);
     if (open === id) next.delete('item');
@@ -85,12 +92,14 @@ export function ItemsPage() {
       ) : !q.data ? (
         <Skeleton className="mt-6 h-96" />
       ) : (
+        <>
+        {missing && <p className="mt-6 rounded border border-line bg-surface px-3 py-2 text-sm text-muted">{t('it.missing', { item: a.item(open!).name || String(open) })}</p>}
         <ul className="mt-6 divide-y divide-line rounded border border-line bg-surface">
           {rows.map((r) => {
             const it = a.item(r.id);
             const expanded = open === r.id;
             return (
-              <li key={r.id}>
+              <li key={r.id} id={`item-${r.id}`} className="scroll-mt-20">
                 <button
                   type="button"
                   aria-expanded={expanded}
@@ -155,6 +164,7 @@ export function ItemsPage() {
           })}
           {rows.length === 0 && <li className="px-3 py-6 text-center text-sm text-muted">{t('it.none')}</li>}
         </ul>
+        </>
       )}
     </div>
   );

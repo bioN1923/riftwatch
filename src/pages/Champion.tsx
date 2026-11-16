@@ -551,7 +551,7 @@ export function ItemsBlock({ s }: { s: BuildData }) {
                   {b.ids.map((id, i) => (
                     <li key={`${id}-${i}`} className="flex items-start gap-2">
                       <span className="flex w-[76px] flex-col items-center gap-1.5 text-center">
-                        <ItemRow ids={[id]} size={48} />
+                        <ItemRow ids={[id]} size={48} linked />
                         <span className="line-clamp-2 text-[11px] leading-tight text-muted">
                           <ItemName id={id} />
                         </span>
@@ -595,7 +595,7 @@ export function ItemsBlock({ s }: { s: BuildData }) {
                   {l.options.length ? (
                     <ul className="space-y-2.5">
                       {l.options.map((o) => (
-                        <OptionRow key={o.id} o={o} share={l.total ? o.games / l.total : undefined} />
+                        <OptionRow key={o.id} o={o} share={l.total ? o.games / l.total : undefined} linked />
                       ))}
                     </ul>
                   ) : (
@@ -613,11 +613,11 @@ export function ItemsBlock({ s }: { s: BuildData }) {
   );
 }
 
-export function OptionRow({ o, share }: { o: Rated & { id: number }; share?: number }) {
+export function OptionRow({ o, share, linked }: { o: Rated & { id: number }; share?: number; linked?: boolean }) {
   const low = o.games < LOW_SAMPLE;
   return (
     <li className="flex items-start gap-2.5">
-      <ItemRow ids={[o.id]} size={32} />
+      <ItemRow ids={[o.id]} size={32} linked={linked} />
       <span className="min-w-0 flex-1">
         <span className="line-clamp-2 break-words text-[13px] leading-tight">
           <ItemName id={o.id} />

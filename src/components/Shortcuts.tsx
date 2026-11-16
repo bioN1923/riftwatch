@@ -11,6 +11,7 @@ export const GO_KEYS: Record<string, { to: string; label: () => string }> = {
   m: { to: '/multisearch', label: () => t('nav.multisearch') },
   p: { to: '/compare', label: () => t('nav.compare') },
   d: { to: '/draft', label: () => t('nav.draft') },
+  i: { to: '/items', label: () => t('it.heading') },
   u: { to: '/duo', label: () => t('nav.duo') },
 };
 

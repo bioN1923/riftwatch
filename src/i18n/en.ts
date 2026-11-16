@@ -1212,5 +1212,7 @@ const en = {
   "it.vsUsualTip": "Compared with this champion’s usual {rate} in that role. Coloured only when the gap is too large to be chance.",
   "it.note": "Players who build an item are often already winning, so a higher win rate with it shows a pattern, not proof the item causes wins.",
   "it.none": "No items match.",
+  "it.openHint": "Click to see who else builds it",
+  "it.missing": "{item} isn’t built often enough in ranked to list yet.",
 };
 export default en;

@@ -1212,5 +1212,7 @@ const dict: Record<string, string> = {
   "it.vsUsualTip": "Comparé au taux habituel de {rate} de ce champion à ce poste. Coloré seulement si l’écart est trop grand pour être dû au hasard.",
   "it.note": "Ceux qui construisent un objet mènent souvent déjà ; un meilleur taux avec lui montre une tendance, pas la preuve que l’objet fait gagner.",
   "it.none": "Aucun objet ne correspond.",
+  "it.openHint": "Clique pour voir qui le construit aussi",
+  "it.missing": "{item} n’est pas encore assez construit en classé pour figurer ici.",
 };
 export default dict;

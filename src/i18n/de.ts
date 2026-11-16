@@ -1212,5 +1212,7 @@ const dict: Record<string, string> = {
   "it.vsUsualTip": "Verglichen mit der üblichen Quote von {rate} dieses Champions auf der Rolle. Nur farbig, wenn der Abstand zu groß für Zufall ist.",
   "it.note": "Wer ein Item baut, liegt oft schon vorn – eine höhere Quote damit zeigt ein Muster, keinen Beweis, dass das Item Siege bringt.",
   "it.none": "Keine passenden Items.",
+  "it.openHint": "Klicken, um zu sehen, wer es noch baut",
+  "it.missing": "{item} wird in Ranked noch nicht oft genug gebaut, um aufzutauchen.",
 };
 export default dict;
