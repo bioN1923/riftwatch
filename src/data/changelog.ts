@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.159',
+    date: '2026-11-16',
+    items: ['Draft: in "Best answers", champions that are already in your pool get an "In your pool" tag, so you can see at a glance whether one of the top counters is something you play.'],
+  },
+  {
     version: '3.158',
     date: '2026-11-16',
     items: ['Champion pages: roles a champion almost never plays (under 2% and too few games to read, like Ahri bot at 0%) are folded into one small "+N more roles" button instead of a full tab each.'],

@@ -368,7 +368,7 @@ function Results({ enemy, role, pool }: { enemy: number; role: Role; pool: numbe
           <Swords className="size-4 text-gold" aria-hidden /> {t('draft.best', { enemy: enemyName })}
         </h2>
         <p className="mt-0.5 text-xs text-muted">{t('draft.bestLead', { patch: s?.patch ?? '' })}</p>
-        {best.length ? <AnswerList list={best} enemy={enemy} role={role} min={min} /> : <p className="mt-3 text-sm text-faint">{t('draft.fewGames')}</p>}
+        {best.length ? <AnswerList list={best} enemy={enemy} role={role} min={min} inPool={new Set(pool)} /> : <p className="mt-3 text-sm text-faint">{t('draft.fewGames')}</p>}
       </section>
       <section className="panel p-4" aria-labelledby="mine-h">
         <h2 id="mine-h" className="panel-title">
@@ -513,7 +513,7 @@ function RateWithRange({ rate, games }: { rate: number; games: number }) {
   );
 }
 
-function AnswerList({ list, enemy, role, min }: { list: Answer[]; enemy: number; role: Role; min: number }) {
+function AnswerList({ list, enemy, role, min, inPool }: { list: Answer[]; enemy: number; role: Role; min: number; inPool?: Set<number> }) {
   const { data: sd } = useStaticData();
   const a = assets(sd);
   const enemySlug = sd?.champions.get(enemy)?.id;
@@ -531,7 +531,10 @@ function AnswerList({ list, enemy, role, min }: { list: Answer[]; enemy: number;
             >
               <GameImg src={c.url} alt="" size={36} rounded="md" />
               <span className="min-w-0">
-                <span className="block truncate text-sm font-medium">{c.name}</span>
+                <span className="block truncate text-sm font-medium">
+                  {c.name}
+                  {inPool?.has(x.championId) && <span className="ml-1.5 rounded-sm bg-gold/15 px-1 text-[10px] font-semibold text-gold">{t('draft.inPool')}</span>}
+                </span>
                 <span className="num block text-[11px] text-muted">
                   {enough ? t('common.games', { count: x.games }) : t('draft.notEnough', { count: x.games })}
                   {enough && x.games < 30 && <span className="text-kda-great"> · {t('draft.small')}</span>}
