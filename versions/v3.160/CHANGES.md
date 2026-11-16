@@ -18,3 +18,7 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/` and `demo/arena-page.png`.
+
+## Live check (2026-11-16 12:52 local)
+- The live index serves `index-BwcO9vO7.js`, and its Champion chunks contain `arena.avgPlaceLower` and `len.titleArena`.
+- The device copy was checked for `placeTone` before deploying.
