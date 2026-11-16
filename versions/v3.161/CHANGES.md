@@ -52,3 +52,8 @@
 - **Live data:** the endpoint returned 59 mid candidates for allies Lee Sin/Jinx/Leona and enemies Zed/Vi/Kai'Sa/Thresh. Reasons were lane (37) and duo (52) only, since `al`/`en` start empty.
 - **The problem:** Ahri ranked #1 on a real effect (into Zed 62% over 127 games), but #2 was carried by a 16-game lane matchup at 81% (+7.2).
 - **The change:** shrink weights were raised to K=100 for lane and partner and K=150 for other pairs. The 127-game edge still counts about +6, while a 16-game one drops to about +4, so small samples can't leapfrog well-sampled ones.
+
+## Live check (2026-11-16 13:11 local)
+- `/draft/team` serves the app shell.
+- `/api/draft/team` for the test draft returns 59 mid candidates. After tuning, #1 is 103 (+9.1: lane +6.1 on 127 games, duo +1.8 on 202), then 105 (+6.6; its 16-game lane edge is now +4.1) and 157 (+6.3).
+- Both device copies were checked (`TeamDraft.tsx` present; `LANE_K = 100`) before each deploy.
