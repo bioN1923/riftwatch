@@ -15,3 +15,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`.
+
+## Live check (2026-11-16 15:24 local)
+- The live index serves `index-B7gU7-Rh.js`, and its Privacy chunk has the full list.
