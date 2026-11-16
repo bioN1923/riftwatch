@@ -1321,5 +1321,7 @@ const dict: Record<string, string> = {
   "ms.see.tagsBody": "Kurze Fakten wie Hauptrolle, One-Trick, Siegesserie oder hohe KDA, dazu „Premade mit“, wenn zwei von ihnen oft im selben öffentlichen Spielverlauf auftauchen.",
   "tl.clearFilter": "Filter zurücksetzen",
   "arena.partnersOrder": "Bei der Reihenfolge zählen wenige Spiele weniger, ein Duo mit ein paar Glücksspielen landet also nicht ganz oben.",
+  "pc.fewGames_one": "Erst {count} Spiel mit diesem Champion, die Unterschiede können also noch Zufall sein. Farben erscheinen ab genug Spielen.",
+  "pc.fewGames_other": "Erst {count} Spiele mit diesem Champion, die Unterschiede können also noch Zufall sein. Farben erscheinen ab genug Spielen.",
 };
 export default dict;

@@ -6,7 +6,7 @@ import { ArrowDown, ArrowUp, X } from 'lucide-react';
 import type { MatchSummary } from '../../../shared/types';
 import { api } from '../../lib/api';
 import { assets, champSlug, isCompletedItem, matchupPath, useStaticData } from '../../lib/ddragon';
-import { formatKda, kdaRatio, kdaTone, pct, timeAgo, winRateTone } from '../../lib/format';
+import { formatKda, kdaRatio, kdaTone, pct, timeAgo, winRateTone, TONE_MIN_GAMES } from '../../lib/format';
 import { playerChampion } from '../../lib/playerChampion';
 import { GameImg } from '../ui/GameImg';
 import { ItemTip } from '../ui/ItemTip';
@@ -112,6 +112,7 @@ export function PlayerChampionDialog({
                   {t('pc.compare', { champion: champ?.name ?? '' })}
                 </h3>
                 {avg?.avg && avg.summary ? (
+                  <>
                   <table className="w-full text-sm">
                     <thead className="text-xs text-muted">
                       <tr>
@@ -130,15 +131,17 @@ export function PlayerChampionDialog({
                       </tr>
                     </thead>
                     <tbody className="num">
-                      <Cmp label={t('pc.row.wr')} mine={wr} avg={avg.summary.winRate} fmt={(v) => pct(v, 1)} />
-                      <Cmp label={t('pc.row.kills')} mine={pc.kills / pc.games} avg={avg.avg.kills} fmt={(v) => v.toFixed(1)} />
-                      <Cmp label={t('pc.row.deaths')} mine={pc.deaths / pc.games} avg={avg.avg.deaths} fmt={(v) => v.toFixed(1)} lowerIsBetter />
-                      <Cmp label={t('pc.row.assists')} mine={pc.assists / pc.games} avg={avg.avg.assists} fmt={(v) => v.toFixed(1)} />
-                      <Cmp label={t('pc.row.cs')} mine={pc.csPerMin} avg={avg.avg.csPerMin} fmt={(v) => v.toFixed(1)} />
-                      <Cmp label={t('pc.row.dmg')} mine={pc.damagePerMin} avg={avg.avg.damagePerMin} fmt={(v) => v.toFixed(0)} />
-                      <Cmp label={t('pc.row.gold')} mine={pc.goldPerMin} avg={avg.avg.goldPerMin} fmt={(v) => v.toFixed(0)} />
+                      <Cmp games={pc.games} rate label={t('pc.row.wr')} mine={wr} avg={avg.summary.winRate} fmt={(v) => pct(v, 1)} />
+                      <Cmp games={pc.games} label={t('pc.row.kills')} mine={pc.kills / pc.games} avg={avg.avg.kills} fmt={(v) => v.toFixed(1)} />
+                      <Cmp games={pc.games} label={t('pc.row.deaths')} mine={pc.deaths / pc.games} avg={avg.avg.deaths} fmt={(v) => v.toFixed(1)} lowerIsBetter />
+                      <Cmp games={pc.games} label={t('pc.row.assists')} mine={pc.assists / pc.games} avg={avg.avg.assists} fmt={(v) => v.toFixed(1)} />
+                      <Cmp games={pc.games} label={t('pc.row.cs')} mine={pc.csPerMin} avg={avg.avg.csPerMin} fmt={(v) => v.toFixed(1)} />
+                      <Cmp games={pc.games} label={t('pc.row.dmg')} mine={pc.damagePerMin} avg={avg.avg.damagePerMin} fmt={(v) => v.toFixed(0)} />
+                      <Cmp games={pc.games} label={t('pc.row.gold')} mine={pc.goldPerMin} avg={avg.avg.goldPerMin} fmt={(v) => v.toFixed(0)} />
                     </tbody>
                   </table>
+                  {pc.games < CMP_SURE_GAMES && <p className="mt-2 text-xs text-faint">{t('pc.fewGames', { count: pc.games })}</p>}
+                  </>
                 ) : (
                   <p className="text-sm text-muted">{avgQ.isPending ? t('pc.loadingAvg') : t('pc.noAvg')}</p>
                 )}
@@ -293,10 +296,19 @@ function Record({ games, wins }: { games: number; wins: number }) {
   );
 }
 
-function Cmp({ label, mine, avg, fmt, lowerIsBetter }: { label: string; mine: number; avg: number; fmt: (v: number) => string; lowerIsBetter?: boolean }) {
+/** Below this many games on the champion, per-game gaps (kills, CS…) aren't coloured: a few games swing them a lot. */
+const CMP_SURE_GAMES = 10;
+
+function Cmp(props: { label: string; mine: number; avg: number; fmt: (v: number) => string; lowerIsBetter?: boolean; games: number; rate?: boolean }) {
+  const { label, mine, avg, fmt, lowerIsBetter, games, rate } = props;
   const diff = avg ? (mine - avg) / avg : 0;
-  const better = lowerIsBetter ? diff < -0.03 : diff > 0.03;
-  const worse = lowerIsBetter ? diff > 0.03 : diff < -0.03;
+  const up = lowerIsBetter ? diff < -0.03 : diff > 0.03;
+  const down = lowerIsBetter ? diff > 0.03 : diff < -0.03;
+  // Colour only gaps we can be fairly sure of: the win rate by a two-standard-error test against the
+  // champion's average, the per-game stats once there are enough games. Otherwise the arrow stays grey.
+  const sure = rate ? games >= TONE_MIN_GAMES && Math.abs(mine - avg) > 2 * Math.sqrt(Math.max(avg * (1 - avg), 0.01) / games) : games >= CMP_SURE_GAMES;
+  const better = up && sure;
+  const worse = down && sure;
   return (
     <tr className="border-t border-line">
       <th scope="row" className="py-1.5 text-left font-normal text-muted">
@@ -305,8 +317,8 @@ function Cmp({ label, mine, avg, fmt, lowerIsBetter }: { label: string; mine: nu
       <td className={clsx('py-1.5 text-right font-semibold', better ? 'text-win' : worse ? 'text-loss' : 'text-text')}>{fmt(mine)}</td>
       <td className="py-1.5 text-right text-muted">{fmt(avg)}</td>
       <td className="py-1.5 pl-2 text-right text-xs">
-        {better || worse ? (
-          <span className={clsx('inline-flex items-center gap-0.5', better ? 'text-win' : 'text-loss')} aria-label={better ? t('pc.better') : t('pc.worse')}>
+        {up || down ? (
+          <span className={clsx('inline-flex items-center gap-0.5', better ? 'text-win' : worse ? 'text-loss' : 'text-muted')} aria-label={up ? t('pc.better') : t('pc.worse')}>
             {mine > avg ? <ArrowUp className="size-3" aria-hidden /> : <ArrowDown className="size-3" aria-hidden />}
             {Math.round(Math.abs(diff) * 100)}%
           </span>

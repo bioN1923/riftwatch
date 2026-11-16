@@ -1360,5 +1360,8 @@ const dict: Record<string, string> = {
   "ms.see.tagsBody": "Fapte scurte ca rol principal, one-trick, serie de victorii sau KDA mare, plus „Premade cu” când doi dintre ei apar des în același istoric public de meciuri.",
   "tl.clearFilter": "Șterge filtrul",
   "arena.partnersOrder": "Ordinea ține cont de numărul de meciuri, așa că o pereche cu câteva meciuri norocoase nu poate urca în frunte.",
+  "pc.fewGames_one": "Doar {count} meci cu acest campion până acum, deci diferențele pot fi întâmplătoare. Culorile apar când sunt destule meciuri.",
+  "pc.fewGames_few": "Doar {count} meciuri cu acest campion până acum, deci diferențele pot fi întâmplătoare. Culorile apar când sunt destule meciuri.",
+  "pc.fewGames_other": "Doar {count} de meciuri cu acest campion până acum, deci diferențele pot fi întâmplătoare. Culorile apar când sunt destule meciuri.",
 };
 export default dict;

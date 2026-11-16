@@ -1399,5 +1399,9 @@ const dict: Record<string, string> = {
   "ms.see.tagsBody": "Krótkie fakty jak główna rola, one-trick, seria wygranych czy wysokie KDA, plus „Premade z”, gdy dwóch z nich często pojawia się w tej samej publicznej historii gier.",
   "tl.clearFilter": "Wyczyść filtr",
   "arena.partnersOrder": "W tej kolejności mało gier liczy się mniej, więc para z kilkoma szczęśliwymi grami nie trafi na szczyt listy.",
+  "pc.fewGames_one": "Na razie tylko {count} gra tym bohaterem, więc te różnice mogą być przypadkiem. Kolory pojawią się przy większej liczbie gier.",
+  "pc.fewGames_few": "Na razie tylko {count} gry tym bohaterem, więc te różnice mogą być przypadkiem. Kolory pojawią się przy większej liczbie gier.",
+  "pc.fewGames_many": "Na razie tylko {count} gier tym bohaterem, więc te różnice mogą być przypadkiem. Kolory pojawią się przy większej liczbie gier.",
+  "pc.fewGames_other": "Na razie tylko {count} gry tym bohaterem, więc te różnice mogą być przypadkiem. Kolory pojawią się przy większej liczbie gier.",
 };
 export default dict;
