@@ -9,3 +9,6 @@
 - a11y: `{}`.
 - Screenshots: `demo/` (`12-phone-champion.jpg` shows the aligned labels).
 - The terminal check failed for about 12 minutes mid-version, so this shipped a little later than usual.
+
+## Live check (2026-11-16 09:56 local)
+- The live index serves `index-C1AQq_7I.js`, and its Champion chunk has the new grid classes (`sm:items-end sm:gap-x-8`).
