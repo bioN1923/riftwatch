@@ -16,3 +16,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/partners-phone.png` and `demo/`.
+
+## Live
+- Deployed 17:32 local. The live bundle has v3.182 and the new key.
