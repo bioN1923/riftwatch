@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.136',
+    date: '2026-11-16',
+    items: [
+      'Champion builds read more calmly: spells, starting items, boots, 4th–6th items and the game-length bars are green or red only when the gap from 50% is too large to be chance.',
+      'Item choices bought in only a game or two are no longer listed as options.',
+    ],
+  },
+  {
     version: '3.135',
     date: '2026-11-16',
     items: ['No more flashing grey boxes when you change a filter elsewhere either. On the matchup page (lane or patch), the tier list (patch), a profile’s queue filter and the Draft helper, the current results stay on screen, dimmed, until the new ones arrive.'],

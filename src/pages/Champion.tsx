@@ -283,7 +283,7 @@ export function Rate({ r, className, share }: { r: Rated; className?: string; sh
   const low = r.games < LOW_SAMPLE;
   return (
     <span className={clsx('num shrink-0 text-right text-xs', className)} title={low ? t('cp.only', { count: r.games }) : undefined}>
-      <span className={clsx('block text-sm font-semibold', low ? 'text-faint' : r.winRate >= 0.5 ? 'text-win' : 'text-loss')}>
+      <span className={clsx('block text-sm font-semibold', low ? 'text-faint' : sureTone(r.winRate, r.games))}>
         {pct(r.winRate, 1)}
         {low && <span aria-hidden>*</span>}
       </span>
@@ -692,7 +692,7 @@ export function ItemsBlock({ s, runePage }: { s: BuildData; runePage?: number })
               </p>
               {boots.list.length ? (
                 <ul className="space-y-2.5">
-                  {boots.list.map((o) => (
+                  {boots.list.filter((o, i) => i === 0 || o.games >= LOW_SAMPLE).map((o) => (
                     <OptionRow key={o.id} o={o} share={boots.total ? o.games / boots.total : undefined} />
                   ))}
                 </ul>
@@ -715,7 +715,8 @@ export function ItemsBlock({ s, runePage }: { s: BuildData; runePage?: number })
                   </p>
                   {l.options.length ? (
                     <ul className="space-y-2.5">
-                      {l.options.map((o) => (
+                      {/* One-off picks (under LOW_SAMPLE) aren't options; the most common stays even if small. */}
+                      {l.options.filter((o, i) => i === 0 || o.games >= LOW_SAMPLE).map((o) => (
                         <OptionRow key={o.id} o={o} share={l.total ? o.games / l.total : undefined} linked />
                       ))}
                     </ul>
@@ -744,7 +745,7 @@ export function OptionRow({ o, share, linked }: { o: Rated & { id: number }; sha
           <ItemName id={o.id} />
         </span>
         <span className="num mt-0.5 block text-xs text-faint" title={low ? t('cp.only', { count: o.games }) : undefined}>
-          <span className={clsx('font-semibold', low ? 'text-faint' : o.winRate >= 0.5 ? 'text-win' : 'text-loss')}>
+          <span className={clsx('font-semibold', low ? 'text-faint' : sureTone(o.winRate, o.games))}>
             {pct(o.winRate, 1)}
             {low && '*'}
           </span>
@@ -1022,7 +1023,7 @@ function LengthChart({ rows }: { rows: (Rated & { label: string })[] }) {
                 </span>
               </Tooltip>
               <span
-                className={clsx('grow-y w-full max-w-16 rounded-t-[4px]', r.winRate >= 0.5 ? 'bg-win/80' : 'bg-loss/70')}
+                className={clsx('grow-y w-full max-w-16 rounded-t-[4px]', (({ 'text-win': 'bg-win/80', 'text-loss': 'bg-loss/70' }) as Record<string, string>)[sureTone(r.winRate, r.games)] ?? 'bg-line-strong')}
                 style={{ height: `${Math.max(4, y(r.winRate) * 100)}%`, animationDelay: `${i * 60}ms` }}
                 role="img"
                 aria-label={`${lenLabel(r.label)}: ${pct(r.winRate, 1)}`}
