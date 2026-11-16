@@ -107,7 +107,7 @@ export function TeamDraftPage() {
         />
       </div>
 
-      <Suggestions role={role} allies={allies} enemies={enemies} pool={pool} />
+      <Suggestions role={role} allies={allies} enemies={enemies} pool={pool} mark={bySlug.get((params.get('mark') ?? '').toLowerCase())} />
     </div>
   );
 }
@@ -176,7 +176,8 @@ function TeamPanel(props: {
 
 type Pick = TeamPicks['picks'][number];
 
-function Suggestions({ role, allies, enemies, pool }: { role: Role; allies: number[]; enemies: number[]; pool: number[] }) {
+function Suggestions({ role, allies, enemies, pool, mark }: { role: Role; allies: number[]; enemies: number[]; pool: number[]; mark?: number }) {
+  const { data: sd } = useStaticData();
   const q = useQuery({
     queryKey: ['team-draft', role, allies.join(','), enemies.join(',')],
     queryFn: ({ signal }) => api.teamPicks(role, allies, enemies, signal),
@@ -191,8 +192,27 @@ function Suggestions({ role, allies, enemies, pool }: { role: Role; allies: numb
   const best = picks.slice(0, SHOWN);
   const poolSet = new Set(pool);
   const fromPool = picks.filter((p) => poolSet.has(p.championId)).slice(0, 5);
+  // Opened from a live game: the pick that was actually made, wherever it ranks.
+  const marked = mark != null ? picks.find((p) => p.championId === mark) : undefined;
+  const markName = mark != null ? assets(sd).champion(mark).name : '';
   return (
     <div className={clsx('mt-6 space-y-6 transition-opacity duration-200', q.isPlaceholderData && 'pointer-events-none opacity-60')} aria-busy={q.isPlaceholderData}>
+      {mark != null && (
+        <section aria-labelledby="td-mark-h">
+          <h2 id="td-mark-h" className="panel-title">
+            {t('td.mark')}
+          </h2>
+          <p className="mt-0.5 text-xs text-muted">
+            {marked ? t('td.markLead', { champion: markName, rank: picks.indexOf(marked) + 1, count: picks.length }) : t('td.markMissing', { champion: markName, role: ROLE_LABEL[role] })}
+          </p>
+          {marked && (
+            <ol className="mt-3 grid gap-3 md:grid-cols-2">
+              <PickCard p={marked} rank={picks.indexOf(marked) + 1} allies={allies} inPool={poolSet.has(marked.championId)} />
+            </ol>
+          )}
+        </section>
+      )}
+
       <section aria-labelledby="td-best-h">
         <h2 id="td-best-h" className="panel-title flex items-center gap-1.5">
           <Sparkles className="size-4 text-gold" aria-hidden /> {t('td.best', { role: ROLE_LABEL[role] })}

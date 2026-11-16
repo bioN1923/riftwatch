@@ -1295,5 +1295,9 @@ const en = {
   "td.note": "Pairs need at least 10 games to count. Lane matchups and the usual jungle/support partner have the most data; other teammates and enemies are tracked from now on and fill in as more games are read. Win rates only: Riftwatch doesn’t guess at team compositions it hasn’t seen.",
   "td.keySure": "clear effect, more than chance would explain",
   "td.keyChance": "grey: leaning that way, could still be chance",
+  "live.draftOpen": "How {champion} fits this draft",
+  "td.mark": "Your pick",
+  "td.markLead": "Where {champion} ranks for this draft: #{rank} of {count}.",
+  "td.markMissing": "{champion} doesn’t have enough {role} games on this patch to rank.",
 };
 export default en;

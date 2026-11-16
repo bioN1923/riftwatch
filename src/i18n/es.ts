@@ -1295,5 +1295,9 @@ const dict: Record<string, string> = {
   "td.note": "Las parejas necesitan al menos 10 partidas para contar. Los rivales de línea y el compañero habitual (jungla/apoyo) tienen más datos; los demás compañeros y rivales se registran desde ahora y se completan a medida que se leen más partidas. Solo porcentajes de victoria: Riftwatch no adivina composiciones que no ha visto.",
   "td.keySure": "efecto claro, más de lo que explicaría el azar",
   "td.keyChance": "gris: tendencia, aún puede ser casualidad",
+  "live.draftOpen": "Cómo encaja {champion} en este draft",
+  "td.mark": "Tu elección",
+  "td.markLead": "Dónde queda {champion} para este draft: #{rank} de {count}.",
+  "td.markMissing": "{champion} no tiene suficientes partidas de {role} en este parche para clasificarlo.",
 };
 export default dict;

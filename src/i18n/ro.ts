@@ -1334,5 +1334,9 @@ const dict: Record<string, string> = {
   "td.note": "Perechile au nevoie de cel puțin 10 meciuri ca să conteze. Adversarii de pe linie și partenerul obișnuit (jungla/suport) au cele mai multe date; ceilalți colegi și adversari sunt urmăriți de acum și se completează pe măsură ce sunt citite mai multe meciuri. Doar rate de victorie: Riftwatch nu ghicește compoziții pe care nu le-a văzut.",
   "td.keySure": "efect clar, mai mare decât ar explica hazardul",
   "td.keyChance": "gri: înclină într-acolo, poate fi încă întâmplare",
+  "live.draftOpen": "Cum se potrivește {champion} în acest draft",
+  "td.mark": "Alegerea ta",
+  "td.markLead": "Unde se clasează {champion} pentru acest draft: #{rank} din {count}.",
+  "td.markMissing": "{champion} nu are destule meciuri pe {role} în acest patch ca să fie clasat.",
 };
 export default dict;

@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.162](v3.162/CHANGES.md) | 2026-11-16 | Live game → Team draft with the pick marked |
 | [v3.161](v3.161/CHANGES.md) | 2026-11-16 | New Team draft page: best pick from both teams with synergy and counter reasons |
 | [v3.160](v3.160/CHANGES.md) | 2026-11-16 | Arena: labelled partners, honest place colours, "Top 4" labels |
 | [v3.159](v3.159/CHANGES.md) | 2026-11-16 | Draft: "In your pool" tag on best answers |

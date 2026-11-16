@@ -1373,5 +1373,9 @@ const dict: Record<string, string> = {
   "td.note": "Para musi mieć co najmniej 10 gier, by się liczyć. Rywale z linii i zwykły partner (dżungla/wsparcie) mają najwięcej danych; pozostali sojusznicy i przeciwnicy są śledzeni od teraz i uzupełniają się wraz z kolejnymi grami. Tylko odsetki wygranych: Riftwatch nie zgaduje składów, których nie widział.",
   "td.keySure": "wyraźny efekt, większy niż przypadek",
   "td.keyChance": "szare: tendencja, wciąż może być przypadek",
+  "live.draftOpen": "Jak {champion} pasuje do tego draftu",
+  "td.mark": "Twój wybór",
+  "td.markLead": "Miejsce {champion} w tym drafcie: #{rank} z {count}.",
+  "td.markMissing": "{champion} ma za mało gier na {role} w tym patchu, by go sklasyfikować.",
 };
 export default dict;

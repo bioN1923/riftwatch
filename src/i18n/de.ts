@@ -1295,5 +1295,9 @@ const dict: Record<string, string> = {
   "td.note": "Paare brauchen mindestens 10 Spiele, um zu zählen. Lane-Matchups und der übliche Jungle-/Support-Partner haben die meisten Daten; andere Mitspieler und Gegner werden ab jetzt erfasst und füllen sich mit mehr gelesenen Spielen. Nur Siegquoten: Riftwatch rät keine Teamzusammenstellungen, die es nicht gesehen hat.",
   "td.keySure": "klarer Effekt, größer als Zufall erklärt",
   "td.keyChance": "grau: Tendenz, kann noch Zufall sein",
+  "live.draftOpen": "Wie {champion} in diesen Draft passt",
+  "td.mark": "Dein Pick",
+  "td.markLead": "Wo {champion} für diesen Draft steht: #{rank} von {count}.",
+  "td.markMissing": "{champion} hat in diesem Patch nicht genug {role}-Spiele für eine Einordnung.",
 };
 export default dict;

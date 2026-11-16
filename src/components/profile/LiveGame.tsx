@@ -7,7 +7,7 @@ import { useQueries, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import type { LiveGame as Live, LiveParticipant, ScoutInfo } from '../../../shared/types';
 import { api } from '../../lib/api';
-import { assets, matchupPath, rankEmblem, useStaticData } from '../../lib/ddragon';
+import { assets, champSlug, matchupPath, rankEmblem, useStaticData } from '../../lib/ddragon';
 import { guessRoles, roleGames, SR_QUEUES } from '../../lib/lanes';
 import { ROLE_LABEL } from '../ui/RoleIcon';
 import { compact, duration, pct, tierName, sureTone } from '../../lib/format';
@@ -124,6 +124,14 @@ export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string;
  * The profiled player's lane opponent, guessed (spectator data has no roles), with how that
  * matchup goes in ranked: the pre-game read a player wants during the loading screen.
  */
+/** The team draft helper for this game: the player's role, their four teammates and the five enemies, their own pick marked. */
+function teamDraftPath(sd: ReturnType<typeof useStaticData>['data'], role: string, self: Live['participants'][number], game: Live) {
+  const slug = (id: number) => (sd?.champions.get(id) ? champSlug(sd.champions.get(id)!.id) : '');
+  const allies = game.participants.filter((p) => p.teamId === self.teamId && p !== self).map((p) => slug(p.championId)).filter(Boolean);
+  const enemies = game.participants.filter((p) => p.teamId !== self.teamId).map((p) => slug(p.championId)).filter(Boolean);
+  return `/draft/team?role=${role}&allies=${allies.join(',')}&enemies=${enemies.join(',')}&mark=${slug(self.championId)}`;
+}
+
 function LaneMatchup({ game, puuid }: { game: Live; puuid: string }) {
   const { data: sd } = useStaticData();
   const a = assets(sd);
@@ -179,9 +187,15 @@ function LaneMatchup({ game, puuid }: { game: Live; puuid: string }) {
         </p>
         <p className="mt-0.5 text-[11px] text-faint">{t('live.laneGuess')}</p>
       </div>
-      <Link to={matchupPath(sd, self.championId, lane.opp.championId, lane.role)} className="text-sm font-medium text-gold underline underline-offset-2 hover:text-text">
-        {t('live.laneOpen')}
-      </Link>
+      <div className="flex flex-col items-end gap-1">
+        <Link to={matchupPath(sd, self.championId, lane.opp.championId, lane.role)} className="text-sm font-medium text-gold underline underline-offset-2 hover:text-text">
+          {t('live.laneOpen')}
+        </Link>
+        {/* Champion picks only (no names, no premade info): the whole draft in the team draft helper, with this pick marked. */}
+        <Link to={teamDraftPath(sd, lane.role, self, game)} className="text-xs text-muted underline underline-offset-2 hover:text-text">
+          {t('live.draftOpen', { champion: me.name })}
+        </Link>
+      </div>
       {enough && (m.builds?.[0]?.games ?? 0) >= 10 && (
         // What players usually take into this opponent: keystone, core items and boots, from the matchup's own games.
         <div className="flex w-full flex-wrap items-center gap-x-3 gap-y-2 border-t border-line pt-3 text-xs text-muted">
