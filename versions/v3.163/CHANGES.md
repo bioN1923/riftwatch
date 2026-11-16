@@ -10,3 +10,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/` and `demo/home-tools.png`.
+
+## Live check (2026-11-16 13:31 local)
+- The live index serves `index-iOyv-AX4.js`, which contains the `home.tool.teamDraft` card.
