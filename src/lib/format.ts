@@ -45,10 +45,13 @@ export function kdaTone(ratio: number) {
 /** Fewer games than this and a win rate isn't coloured: 3/4 is a coin flip, not a strength. */
 export const TONE_MIN_GAMES = 5;
 
-/** Colour for a win rate; pass the game count so small samples stay neutral. */
-/** Win (green) or loss (red) colour for a win rate, plain under TONE_MIN_GAMES games: 1–0 isn't "winning". */
+/**
+ * Win (green) or loss (red) colour for a win rate. With a game count it uses the same test as
+ * sureTone (green or red only when clearly off 50%), so 3–2 or 12–8 stays plain; without one it
+ * falls back to a plain above/below-50% split.
+ */
 export function wlTone(wr: number, games?: number) {
-  if (games != null && games < TONE_MIN_GAMES) return 'text-text';
+  if (games != null) return sureTone(wr, games);
   return wr >= 0.5 ? 'text-win' : 'text-loss';
 }
 

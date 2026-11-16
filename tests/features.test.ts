@@ -947,8 +947,10 @@ describe('wlTone', () => {
     const { wlTone } = await import('../src/lib/format');
     expect(wlTone(1, 1)).toBe('text-text');
     expect(wlTone(0, 3)).toBe('text-text');
-    expect(wlTone(0.6, 20)).toBe('text-win');
-    expect(wlTone(0.4, 20)).toBe('text-loss');
+    // 12–8 is within chance; 30–10 and 12–28 are not.
+    expect(wlTone(0.6, 20)).toBe('text-text');
+    expect(wlTone(0.75, 40)).toBe('text-win');
+    expect(wlTone(0.3, 40)).toBe('text-loss');
   });
 });
 

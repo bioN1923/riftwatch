@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.156',
+    date: '2026-11-16',
+    items: ['Champion page "Who plays it most", Compare\'s top champions and Multi-search champion rows now colour win rates only when they are clearly off 50%. A 2–3 record over five games is no longer painted red.'],
+  },
+  {
     version: '3.155',
     date: '2026-11-16',
     items: ['Ladder: the "Find a player" box is wider on desktop and spans the full width on phones, so its hint ("Name#TAG") is no longer cut off in any language.'],
