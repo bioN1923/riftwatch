@@ -26,3 +26,7 @@
 - No page errors.
 
 Screen: `demo/search-scope.png`.
+
+## Live check (2026-11-16 04:36 local)
+- The live index serves `index-B14oiB7D.js`, and `champSearch-Di4iyeU-.js` contains the scope words (200).
+- Arena: 782 games.
