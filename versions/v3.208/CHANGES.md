@@ -24,3 +24,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/hash-row45.png` and `demo/`.
+
+## Live
+- Deployed 23:53 local. The live entry carries `3.208`.
