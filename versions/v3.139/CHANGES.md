@@ -12,7 +12,7 @@
 **Checks.**
 - tsc passes; 182 tests pass; a11y `{}`.
 - Demo:
-  - Rekkles (Thresh support vs Nautilus): Aery, Celestial Opposition → Mobility Boots-tier core, 44 games;
+  - Rekkles (Thresh support vs Nautilus): the row shows the keystone, a three-item core (item ids 3222 → 3504 → 3853) and boots, from 44 games;
   - Caps (Kha'Zix vs Viego jungle) shows his row too.
   - Checked at 1280 px dark and 390 px light, with no page errors.
 
