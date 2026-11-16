@@ -68,8 +68,8 @@ export const api = {
   teamPicks: (role: string, allies: number[], enemies: number[], signal?: AbortSignal) =>
     request<TeamPicks>(`/draft/team?role=${role}&allies=${allies.join(',')}&enemies=${enemies.join(',')}`, signal),
   items: (patch?: string, signal?: AbortSignal) => request<ItemStats>(`/items${patch ? `?patch=${encodeURIComponent(patch)}` : ''}`, signal),
-  matchup: (id: number, opp: number, p: { role?: string; patch?: string }, signal?: AbortSignal) =>
-    request<MatchupStats>(`/champions/${id}/vs/${opp}?group=ranked${p.role ? `&role=${p.role}` : ''}${p.patch ? `&patch=${p.patch}` : ''}`, signal),
+  matchup: (id: number | string, opp: number | string, p: { role?: string; patch?: string }, signal?: AbortSignal) =>
+    request<MatchupStats>(`/champions/${enc(String(id))}/vs/${enc(String(opp))}?group=ranked${p.role ? `&role=${p.role}` : ''}${p.patch ? `&patch=${p.patch}` : ''}`, signal),
   lp: (platform: string, puuid: string, signal?: AbortSignal) => request<LpHistory>(`/lp/${platform}/${enc(puuid)}`, signal),
   track: (p: { platform: string; puuid: string; gameName: string; tagLine: string }) =>
     request<{ tracked: boolean }>('/track', undefined, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) }),

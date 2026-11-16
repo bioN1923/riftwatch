@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useParams, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
+import { plainSlug, startEarly, takeEarly } from '../lib/early';
 import { keepWhile } from '../lib/keepWhile';
 import clsx from 'clsx';
 import { callText } from '../lib/matchupText';
@@ -28,6 +29,13 @@ export function MatchupPage() {
   const a = championBySlug(sd, slug);
   const b = championBySlug(sd, opp);
   const { search } = useLocation();
+  // Opened cold: ask for the matchup by slugs in parallel with the static data (see lib/early).
+  useState(() => {
+    if (sd || !plainSlug(slug) || !plainSlug(opp) || slug === opp) return;
+    const q = new URLSearchParams(search);
+    const f = { role: q.get('role') ?? undefined, patch: q.get('patch') ?? undefined };
+    startEarly(muEarlyKey(slug, opp, f.role, f.patch), () => api.matchup(slug, opp, f));
+  });
 
   if (isPending) return <Skeleton className="m-4 h-72" />;
   if (!a || !b || a.key === b.key) {
@@ -64,6 +72,8 @@ export function MatchupPage() {
   return <MatchupView key={`${a.key}-${b.key}`} championId={a.key} opponentId={b.key} />;
 }
 
+const muEarlyKey = (a: string, b: string, role?: string, patch?: string) => `matchup|${a}|${b}|${role ?? ''}|${patch ?? ''}`;
+
 function MatchupView({ championId, opponentId }: { championId: number; opponentId: number }) {
   const [params, setParams] = useSearchParams();
   const role = params.get('role') ?? undefined;
@@ -76,7 +86,8 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
   const muKey = ['matchup', championId, opponentId, role, patch] as const;
   const q = useQuery({
     queryKey: muKey,
-    queryFn: ({ signal }) => api.matchup(championId, opponentId, { role, patch }, signal),
+    queryFn: ({ signal }) =>
+      takeEarly(muEarlyKey(me ? champSlug(me.id) : '', them ? champSlug(them.id) : '', role, patch), () => api.matchup(championId, opponentId, { role, patch }, signal)),
     staleTime: 60_000,
     // Changing lane or patch keeps this matchup on screen (dimmed) instead of flashing skeletons.
     placeholderData: keepWhile(muKey, 1, 2),

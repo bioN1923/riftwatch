@@ -12,6 +12,14 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.205',
+    date: '2026-11-16',
+    items: [
+      'Matchup pages and the lane draft helper, opened from a link, load faster: their stats are requested at the same time as the champion list, like champion pages since 3.204.',
+      'Team draft no longer sends an empty request before reading the teams from the link.',
+    ],
+  },
+  {
     version: '3.204',
     date: '2026-11-16',
     items: [

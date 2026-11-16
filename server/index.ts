@@ -861,8 +861,9 @@ app.get('/api/champions/:id', (req, res) => {
 
 app.get('/api/champions/:id/vs/:opp', (req, res) => {
   res.setHeader('Cache-Control', 'public, max-age=60');
-  const id = Number(req.params.id);
-  const opp = Number(req.params.opp);
+  const key = (raw: string) => (/^\d+$/.test(raw) ? Number(raw) : (championBySlug(raw)?.key ?? NaN)); // key or slug, as above
+  const id = key(String(req.params.id));
+  const opp = key(String(req.params.opp));
   if (!Number.isFinite(id) || !Number.isFinite(opp) || id === opp) throw new ApiError(400, 'BAD_REQUEST', 'Unknown matchup.');
   res.json(
     champStats.matchup(id, opp, groupParam(req.query.group), req.query.role ? String(req.query.role) : undefined, req.query.patch ? String(req.query.patch) : undefined),

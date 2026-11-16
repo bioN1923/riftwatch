@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { championEarlyKey, plainSlug, startEarly, takeEarly } from '../lib/early';
 import { Link, useSearchParams, useNavigate } from 'react-router';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { keepWhile } from '../lib/keepWhile';
@@ -39,6 +40,13 @@ export function DraftPage() {
   const { data: sd } = useStaticData();
   // Whether the last enemy pick or "Change" came from the keyboard: then focus follows into the grid's search or back to "Change".
   const [enemyKey, setEnemyKey] = useState(false);
+  // Opened cold with an enemy in the link: ask for its stats by slug in parallel with the static data (see lib/early).
+  useState(() => {
+    const e = (params.get('enemy') ?? '').toLowerCase();
+    if (sd || !plainSlug(e)) return;
+    const r = (ROLES as readonly string[]).includes(params.get('role') ?? '') ? (params.get('role') as Role) : 'MIDDLE';
+    startEarly(championEarlyKey(e, 'ranked', r), () => api.champion(e, { group: 'ranked', role: r }));
+  });
   const role: Role = (ROLES as readonly string[]).includes(params.get('role') ?? '') ? (params.get('role') as Role) : 'MIDDLE';
   const bySlug = useMemo(() => new Map([...(sd?.champions ?? new Map()).entries()].map(([key, c]) => [champSlug(c.id), key])), [sd]);
   const enemy = bySlug.get((params.get('enemy') ?? '').toLowerCase());
@@ -381,7 +389,10 @@ function Results({ enemy, role, pool }: { enemy: number; role: Role; pool: numbe
   const a = assets(sd);
   const q = useQuery({
     queryKey: ['champion', enemy, 'ranked', role, undefined],
-    queryFn: ({ signal }) => api.champion(enemy, { group: 'ranked', role }, signal),
+    queryFn: ({ signal }) => {
+      const c = sd?.champions.get(enemy);
+      return takeEarly(championEarlyKey(c ? champSlug(c.id) : '', 'ranked', role), () => api.champion(enemy, { group: 'ranked', role }, signal));
+    },
     staleTime: 5 * 60_000,
     placeholderData: keepWhile(['champion', enemy], 1),
   });

@@ -223,6 +223,8 @@ function Suggestions({ role, allies, enemies, pool, mark }: { role: Role; allies
   const q = useQuery({
     queryKey: ['team-draft', role, allies.join(','), enemies.join(',')],
     queryFn: ({ signal }) => api.teamPicks(role, allies, enemies, signal),
+    // Until the static data maps the link's slugs to keys, allies/enemies are empty: don't ask for an empty draft.
+    enabled: !!sd,
     staleTime: 5 * 60_000,
     placeholderData: keepWhile(['team-draft']),
   });
