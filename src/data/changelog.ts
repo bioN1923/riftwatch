@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.184',
+    date: '2026-11-16',
+    items: ['Charts work on touch screens: tap the gold-lead chart (or the metrics and LP charts) to read a minute, drag sideways to move along it, and the reading stays after you lift your finger. The hints say "tap" instead of only "hover" and "click".'],
+  },
+  {
     version: '3.183',
     date: '2026-11-16',
     items: ['Home: "Champions you looked at" has a Clear link, like the one on the tier list, so you can empty the row without going to the champions page.'],

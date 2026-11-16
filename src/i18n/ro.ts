@@ -484,7 +484,7 @@ const dict: Record<string, string> = {
   "gold.isEven": "Aurul e egal",
   "gold.blueBy": "Echipa albastră conduce cu {amount}",
   "gold.redBy": "Echipa roșie conduce cu {amount}",
-  "tl.hover": "Treci peste grafic pentru avantajul de aur la fiecare minut",
+  "tl.hover": "Treci cu mouse-ul sau apasă pe grafic pentru avantajul de aur la fiecare minut",
   "tl.goldLead": "Avantaj de aur",
   "tl.events": "Kill-uri, morți și obiective",
   "tl.minions": "Minioni sau turn",

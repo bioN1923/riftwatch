@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.184](v3.184/CHANGES.md) | 2026-11-16 | Charts: tap to read on touch screens |
 | [v3.183](v3.183/CHANGES.md) | 2026-11-16 | Home: clear recent champions |
 | [v3.182](v3.182/CHANGES.md) | 2026-11-16 | Arena partners: order explained |
 | [v3.181](v3.181/CHANGES.md) | 2026-11-16 | Match rows: remakes not highlighted |

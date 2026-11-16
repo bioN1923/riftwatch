@@ -119,7 +119,13 @@ export function GoldChart({ diff, events, height = 230 }: { diff: number[]; even
                 <circle cx={x(hover)} cy={y(diff[hover])} r="4.5" fill={diff[hover] >= 0 ? 'var(--side-blue)' : 'var(--side-red)'} stroke="var(--surface)" strokeWidth="2" />
               </g>
             )}
-            <rect x={PAD.left} y={PAD.top} width={w} height={h + 30} fill="transparent" onPointerMove={onMove} onPointerLeave={() => setHover(null)} />
+            <rect x={PAD.left} y={PAD.top} width={w} height={h + 30} fill="transparent"
+              // Touch: a tap shows that minute and a sideways drag scrubs (vertical drags still scroll); the readout stays after lifting the finger.
+              style={{ touchAction: 'pan-y' }}
+              onPointerDown={onMove}
+              onPointerMove={onMove}
+              onPointerLeave={(e) => e.pointerType === 'mouse' && setHover(null)}
+            />
           </svg>
         )}
         {hover != null && (

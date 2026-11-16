@@ -125,8 +125,11 @@ export function LineChart({
               width={w}
               height={h}
               fill="transparent"
+              // Touch: tap or drag sideways to read a point; vertical drags still scroll the page.
+              style={{ touchAction: 'pan-y' }}
+              onPointerDown={onMove}
               onPointerMove={onMove}
-              onPointerLeave={() => setHover(null)}
+              onPointerLeave={(e) => e.pointerType === 'mouse' && setHover(null)}
             />
           </svg>
         )}
