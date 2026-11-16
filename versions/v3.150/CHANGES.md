@@ -10,3 +10,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/` and `demo/other-matchups.png`.
+
+## Live check (2026-11-16 11:04 local)
+- The live index serves `index-g2MVX-S1.js`, and its Matchup chunk has the other-matchups section with game counts.
