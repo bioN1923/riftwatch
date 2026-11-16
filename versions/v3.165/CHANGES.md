@@ -13,3 +13,6 @@
 - `tsc`, `vitest` (185) and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`.
+
+## Live check (2026-11-16 13:50 local)
+- The live index serves `index-DlDUV527.js`, and its ApiUsage chunk contains the draft-helpers bullet.
