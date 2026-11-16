@@ -1405,5 +1405,6 @@ const dict: Record<string, string> = {
   "pc.fewGames_other": "Na razie tylko {count} gry tym bohaterem, więc te różnice mogą być przypadkiem. Kolory pojawią się przy większej liczbie gier.",
   "bench.grey": "Szare: różnica poniżej 10% lub mniej niż 10 twoich gier. Za mało, by wyciągać wnioski.",
   "profile.jumpSummary": "Przejdź do podsumowania: historia rangi, cele, bohaterowie",
+  "error.offline.body": "Nie można połączyć się z Riftwatch. Sprawdź połączenie i spróbuj ponownie.",
 };
 export default dict;

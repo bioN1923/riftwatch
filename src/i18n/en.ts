@@ -1325,5 +1325,6 @@ const en = {
   "pc.fewGames_other": "Only {count} games on this champion so far, so these gaps could still be chance. Colours appear once there are enough games.",
   "bench.grey": "Grey: a gap under 10%, or fewer than 10 of your games. Too small to read much into.",
   "profile.jumpSummary": "Jump to the summary: rank history, goals, champion pool",
+  "error.offline.body": "Can’t reach Riftwatch. Check your connection and try again.",
 };
 export default en;

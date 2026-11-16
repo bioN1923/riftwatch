@@ -189,7 +189,7 @@ function ChampionView({ championId }: { championId: number }) {
             <Skeleton className="h-72" />
           </div>
         ) : q.isError ? (
-          <ErrorState error={q.error} />
+          <ErrorState error={q.error} onRetry={() => q.refetch()} />
         ) : !s?.summary ? (
           <div className="panel">
             <EmptyState title={t(group === 'aram' ? 'cp.noAram' : group === 'arena' ? 'cp.noArena' : 'cp.noRanked', { champion: info?.name ?? '' })}>

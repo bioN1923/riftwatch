@@ -65,7 +65,9 @@ export function ErrorState({ error, action, page, title: titleOverride, onRetry 
     (e?.code === 'PRIVATE' ? t('error.PRIVATE.title') : e?.code === 'NOT_FOUND' ? t('error.NOT_FOUND.title') : e?.code === 'KEY_INVALID' ? t('error.KEY_INVALID.title') : e?.code === 'RATE_LIMITED' ? t('error.RATE_LIMITED.title') : t('error.generic.title'));
   // The server explains errors in English; other languages get the translated explanation for the error type.
   const message = e
-    ? getLang() === 'en'
+    ? e.status === 0 && getLang() !== 'en'
+      ? t('error.offline.body')
+      : getLang() === 'en'
       ? e.message
       : t(`error.${e.code}.body` as 'error.NOT_FOUND.body')
     : error instanceof Error && getLang() === 'en'

@@ -12,6 +12,14 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.200',
+    date: '2026-11-16',
+    items: [
+      'Clearer error messages: when Riftwatch can\'t be reached, the page says to check your connection (in every language) instead of a developer note about "npm run dev".',
+      'Champion pages that fail to load now have a Try again button, and unexplained server errors read "Riftwatch couldn\'t load this (error 500). Try again in a moment." instead of a bare status code.',
+    ],
+  },
+  {
     version: '3.199',
     date: '2026-11-16',
     items: ['Lighter match history: each game card uses the champion\'s portrait loading-screen art instead of the wide splash. That\'s about half the size per image (roughly 1 MB less for 20 games), and it suits the tall card column better.'],

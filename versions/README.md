@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.200](v3.200/CHANGES.md) | 2026-11-16 | Friendly offline and server-error messages |
 | [v3.199](v3.199/CHANGES.md) | 2026-11-16 | Match cards: portrait art, half the bytes |
 | [v3.198](v3.198/CHANGES.md) | 2026-11-16 | Changelog no longer in every page load |
 | [v3.197](v3.197/CHANGES.md) | 2026-11-16 | Lane opponents: no % under 5 games |

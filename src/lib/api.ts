@@ -21,7 +21,12 @@ async function request<T>(path: string, signal?: AbortSignal, init?: RequestInit
     res = await fetch(`/api${path}`, { signal, ...init });
   } catch (e) {
     if ((e as Error).name === 'AbortError') throw e;
-    throw new ApiClientError(0, 'UPSTREAM', 'Can’t reach the Riftwatch server. Is it running? Start it with “npm run dev”.');
+    // Status 0 = no answer at all (offline, or the server is down). The "npm run dev" hint is only for local development.
+    throw new ApiClientError(
+      0,
+      'UPSTREAM',
+      import.meta.env.DEV ? 'Can’t reach the Riftwatch server. Is it running? Start it with “npm run dev”.' : 'Can’t reach Riftwatch. Check your connection and try again.',
+    );
   }
   if (!res.ok) {
     let body: ApiErrorBody | undefined;
@@ -33,7 +38,7 @@ async function request<T>(path: string, signal?: AbortSignal, init?: RequestInit
     throw new ApiClientError(
       res.status,
       body?.error.code ?? 'UPSTREAM',
-      body?.error.message ?? `The server responded with ${res.status}.`,
+      body?.error.message ?? `Riftwatch couldn’t load this (error ${res.status}). Try again in a moment.`,
       body?.error.retryAfter,
     );
   }
