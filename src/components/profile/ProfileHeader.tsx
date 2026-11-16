@@ -4,6 +4,7 @@ import { api } from '../../lib/api';
 import { LadderPlace, type LadderRef } from '../ui/LadderPlace';
 import { Link } from 'react-router';
 import clsx from 'clsx';
+import { poolRead } from '../../lib/playstyle';
 import { RefreshCw, Star, Flame, Link2, Check, Scale, HeartHandshake, Medal } from 'lucide-react';
 import type { LeagueEntry, MatchSummary, Profile } from '../../../shared/types';
 import { getPlatform } from '../../../shared/regions';
@@ -292,6 +293,7 @@ function FormRibbon({ matches, puuid }: { matches: MatchSummary[] | undefined; p
   const counted = recent.filter((x) => x.r !== 'remake');
   const wins = counted.filter((x) => x.r === 'win').length;
   const ordered = [...recent].reverse();
+  const pool = poolRead(counted.map((x) => x.p.championId));
 
   let streak = 0;
   const latest = counted[0]?.r;
@@ -326,6 +328,14 @@ function FormRibbon({ matches, puuid }: { matches: MatchSummary[] | undefined; p
         {t('form.inLast', { count: recent.length })}
         {/* Win streaks only: Riot's policy doesn't allow shaming players for losing runs. */}
         {streak >= 3 && latest === 'win' && <span className="ml-2 font-semibold text-win">· {t('form.winStreak', { count: streak })}</span>}
+        {pool && (
+          <span className="ml-2" title={pool.kind === 'oneTrick' ? t('form.oneTrickTip') : undefined}>
+            ·{' '}
+            {pool.kind === 'oneTrick'
+              ? t('form.oneTrick', { champion: a.champion(pool.championId).name, n: pool.games, total: pool.total })
+              : t('form.widePool', { count: pool.champions, total: pool.total })}
+          </span>
+        )}
       </p>
     </div>
   );

@@ -1260,5 +1260,11 @@ const dict: Record<string, string> = {
   "footer.install": "Zainstaluj aplikację",
   "search.matchup": "{a} vs {b}",
   "search.matchupTag": "Pojedynek",
+  "form.oneTrick": "One-trick: {champion} w {n} z {total}",
+  "form.oneTrickTip": "Grał jednym bohaterem w co najmniej 60% tych gier",
+  "form.widePool_one": "{count} bohater w {total} grach",
+  "form.widePool_few": "Szeroka pula: {count} bohaterów w {total} grach",
+  "form.widePool_many": "Szeroka pula: {count} bohaterów w {total} grach",
+  "form.widePool_other": "Szeroka pula: {count} bohatera w {total} grach",
 };
 export default dict;

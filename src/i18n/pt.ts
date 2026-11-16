@@ -1194,5 +1194,9 @@ const dict: Record<string, string> = {
   "footer.install": "Instalar app",
   "search.matchup": "{a} vs {b}",
   "search.matchupTag": "Confronto",
+  "form.oneTrick": "One-trick: {champion} em {n} de {total}",
+  "form.oneTrickTip": "Jogou um campeão em pelo menos 60% destas partidas",
+  "form.widePool_one": "{count} campeão em {total} partidas",
+  "form.widePool_other": "Repertório amplo: {count} campeões em {total} partidas",
 };
 export default dict;

@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.128',
+    date: '2026-11-16',
+    items: ['Profiles describe the recent champion pool next to the last-20 record. “One-trick: Yasuo in 14 of 20” appears when one champion takes 60% of the games, and “Wide pool: 11 champions in 18 games” when there are ten or more.'],
+  },
+  {
     version: '3.127',
     date: '2026-11-16',
     items: ['Search takes a role or mode after the champion. “ahri mid”, “lee sin jg”, “mf adc”, “jinx aram” or “kai arena” opens the champion page straight in that role or mode.'],

@@ -1194,5 +1194,9 @@ const en = {
   "footer.install": "Install app",
   "search.matchup": "{a} vs {b}",
   "search.matchupTag": "Matchup",
+  "form.oneTrick": "One-trick: {champion} in {n} of {total}",
+  "form.oneTrickTip": "Played one champion in at least 60% of these games",
+  "form.widePool_one": "{count} champion in {total} games",
+  "form.widePool_other": "Wide pool: {count} champions in {total} games",
 };
 export default en;

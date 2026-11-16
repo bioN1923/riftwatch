@@ -1227,5 +1227,10 @@ const dict: Record<string, string> = {
   "footer.install": "Instalează aplicația",
   "search.matchup": "{a} vs {b}",
   "search.matchupTag": "Confruntare",
+  "form.oneTrick": "Un singur campion: {champion} în {n} din {total}",
+  "form.oneTrickTip": "A jucat un campion în cel puțin 60% din aceste jocuri",
+  "form.widePool_one": "{count} campion în {total} jocuri",
+  "form.widePool_few": "Bazin larg: {count} campioni în {total} de jocuri",
+  "form.widePool_other": "Bazin larg: {count} de campioni în {total} de jocuri",
 };
 export default dict;
