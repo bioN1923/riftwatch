@@ -25,3 +25,8 @@
 - No page errors.
 
 Screen: `demo/items-ap.png`.
+
+## Live check (2026-11-16 06:46 local)
+- The live build serves `Items-B0xWb99n.js` (200), and live static data now carries item tags.
+- Live Items: 102 items. By type: Attack damage 44, Ability power 34, Critical strike 14, Defence 22. Four patches can be picked: 16.22, 16.21, 16.20, 16.19.
+- Live Ahri mid per-page builds: [7, 0, 1].
