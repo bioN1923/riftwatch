@@ -10,3 +10,6 @@
 - a11y: `{}`.
 - Click test: filtering "zzqq" gives the empty state; "Clear filter" brings back 44 rows and an empty input.
 - Screenshots: `demo/tierlist-clear.png` and `demo/`.
+
+## Live check (2026-11-16 16:12 local)
+- The live index serves `index-D3VBFzBP.js`, and its Champions chunk contains `tl.clearFilter`.
