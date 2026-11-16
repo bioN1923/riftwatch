@@ -86,7 +86,7 @@ export function TeamDraftPage() {
           </button>
         ))}
       </div>
-      {(allies.length > 0 || enemies.length > 0) && <CopyLink />}
+      {(allies.length > 0 || enemies.length > 0) && <CopyLink labelled />}
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">

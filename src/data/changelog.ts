@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.180',
+    date: '2026-11-16',
+    items: ['Draft helpers on phones: the share button says "Copy link" instead of showing a lone link icon on its own row.'],
+  },
+  {
     version: '3.179',
     date: '2026-11-16',
     items: ['Team draft on phones: each team is one row of five slots, like champion select, so the suggestions start on the first screen even with all nine picks filled in.'],

@@ -100,7 +100,7 @@ export function DraftPage() {
           </button>
         ))}
       </div>
-      {(enemy != null || team.length > 0) && <CopyLink />}
+      {(enemy != null || team.length > 0) && <CopyLink labelled />}
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
