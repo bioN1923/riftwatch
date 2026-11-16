@@ -81,7 +81,11 @@ function ChampionView({ championId }: { championId: number }) {
     queryKey: ['champion', championId, group, role, patch],
     queryFn: ({ signal }) => api.champion(championId, { group, role, patch }, signal),
     staleTime: 60_000,
+    // Switching role or patch keeps the current page on screen (dimmed) until the new numbers
+    // arrive, instead of collapsing to skeletons and back. A different champion or mode starts fresh.
+    placeholderData: (prev, prevQuery) => (prevQuery?.queryKey[1] === championId && prevQuery?.queryKey[2] === group ? prev : undefined),
   });
+  const switching = q.isPlaceholderData;
   const s = q.data;
 
   useEffect(() => {
@@ -156,7 +160,7 @@ function ChampionView({ championId }: { championId: number }) {
             <div role="tablist" aria-label={t('tl.role')} className="relative mt-6 flex gap-5 overflow-x-auto overflow-y-hidden">
               <SlidingIndicator />
               {s.roles.map((r) => (
-                <RoleTab key={r.role} role={r.role} active={s.role === r.role} onClick={() => set('role', r.role)}>
+                <RoleTab key={r.role} role={r.role} active={(switching && role ? role : s.role) === r.role} onClick={() => set('role', r.role)}>
                   {ROLE_LABEL[r.role] ?? r.role}
                   <span className="num text-xs text-faint">{pct(r.share)}</span>
                 </RoleTab>
@@ -182,7 +186,7 @@ function ChampionView({ championId }: { championId: number }) {
             </EmptyState>
           </div>
         ) : (
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
+          <div className={clsx('grid gap-5 transition-opacity duration-200 lg:grid-cols-[minmax(0,1fr)_300px]', switching && 'pointer-events-none opacity-60')} aria-busy={switching}>
             <div className="min-w-0 space-y-5">
               {/* Arena: no item, rune or augment win rates (Riot policy), so no build panel. */}
               {group === 'arena' ? <ArenaPanel s={s} /> : <BuildPanel s={s} abilityIcons={abilityIcons} />}
@@ -299,6 +303,61 @@ export function Block({ title, aside, children, className }: { title: string; as
         {aside && <span className="text-xs text-muted">{aside}</span>}
       </div>
       {children}
+    </div>
+  );
+}
+
+/**
+ * The whole build on one line, the way other sites open their build pages: runes, spells, start,
+ * core items, boots and skill max. It follows the rune page picked below (and that page's main
+ * build once it has enough games); every part links down to its full section.
+ */
+function BuildGlance({ s, page, abilityIcons }: { s: ChampionStats; page: number; abilityIcons?: string[] }) {
+  const { data: sd } = useStaticData();
+  const a = assets(sd);
+  const names = useRuneNames(s.runes);
+  const rune = s.runes[page] ?? s.runes[0];
+  const build = rune?.builds?.[0] ?? variationsOf(s)[0];
+  const boots = (build?.bootsTotal ?? 0) >= LOW_SAMPLE ? build!.boots[0] : s.boots[0];
+  const spells = s.spells[0];
+  const start = s.starting[0];
+  const tree = rune ? sd?.trees.find((x) => x.id === rune.secondaryStyle) : undefined;
+  if (!rune && !build) return null;
+  const part = (label: string, body: React.ReactNode) => (
+    <div className="flex min-w-0 flex-col gap-1.5">
+      <span className="text-[10px] font-semibold uppercase tracking-wider text-faint">{label}</span>
+      <div className="flex items-center gap-1">{body}</div>
+    </div>
+  );
+  return (
+    <div className="rounded border border-gold/30 bg-gradient-to-r from-gold/[0.06] to-transparent p-4" aria-label={t('cp.glance')}>
+      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+        <h3 className="font-display text-lg font-bold">{t('cp.glance')}</h3>
+        {rune && <span className="text-xs text-muted">{names[page] ?? names[0]}</span>}
+      </div>
+      <div className="flex flex-wrap items-start gap-x-5 gap-y-4">
+        {rune &&
+          part(
+            t('cp.runes'),
+            <>
+              <GameImg src={a.rune(rune.primary[0]).url} alt={a.rune(rune.primary[0]).name} size={36} rounded="full" className="bg-[#0e1b1d]!" />
+              {tree && <GameImg src={`https://ddragon.leagueoflegends.com/cdn/img/${tree.icon}`} alt={tree.name} size={22} rounded="full" className="opacity-80" />}
+            </>,
+          )}
+        {spells &&
+          part(
+            t('cp.glanceSpells'),
+            spells.ids.map((id) => <GameImg key={id} src={a.spell(id).url} alt={a.spell(id).name} size={30} rounded="sm" />),
+          )}
+        {start && part(t('cp.glanceStart'), <ItemRow ids={start.ids} size={30} />)}
+        {build && part(t('cp.coreShort'), <ItemRow ids={build.ids} size={36} arrows linked />)}
+        {boots && part(t('cp.boots'), <ItemRow ids={[boots.id]} size={30} />)}
+        {s.skills.order &&
+          part(
+            t('cp.glanceSkills'),
+            <MaxOrder order={s.skills.order.split('').map((k) => 'QWE'.indexOf(k) + 1)} icons={abilityIcons} />,
+          )}
+      </div>
     </div>
   );
 }
@@ -425,6 +484,8 @@ function BuildPanel({ s, abilityIcons }: { s: ChampionStats; abilityIcons?: stri
       )}
 
       <div className="mt-5 space-y-7">
+        <BuildGlance s={s} page={page} abilityIcons={abilityIcons} />
+
         <RunesBlock s={s} page={page} onPage={setPage} />
 
         <SpellsAndStart s={s} />

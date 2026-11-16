@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.134',
+    date: '2026-11-16',
+    items: [
+      'Champion pages no longer jump about when you switch role or patch. The current numbers stay on screen, dimmed, until the new ones arrive, and the role you picked is highlighted straight away.',
+      'A “Build at a glance” strip opens the build section: rune keystone, spells, starting items, core items, boots and skill order in one row. It follows the rune page you pick.',
+    ],
+  },
+  {
     version: '3.133',
     date: '2026-11-16',
     items: [

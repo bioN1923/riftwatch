@@ -1223,5 +1223,10 @@ const en = {
   "cp.itemsForPageFew_one": "Only {count} game with {page} so far — showing builds from every rune page",
   "cp.itemsForPageFew_other": "Only {count} games with {page} so far — showing builds from every rune page",
   "cp.coreNamed": "{name} — first three completed items, in buying order",
+  "cp.glance": "Build at a glance",
+  "cp.coreShort": "Core items",
+  "cp.glanceSpells": "Spells",
+  "cp.glanceStart": "Start",
+  "cp.glanceSkills": "Skill max",
 };
 export default en;

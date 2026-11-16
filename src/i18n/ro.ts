@@ -1259,5 +1259,10 @@ const dict: Record<string, string> = {
   "cp.itemsForPageFew_few": "Doar {count} jocuri cu {page} până acum — arătăm build-uri de pe toate paginile de rune",
   "cp.itemsForPageFew_other": "Doar {count} de jocuri cu {page} până acum — arătăm build-uri de pe toate paginile de rune",
   "cp.coreNamed": "{name} — primele trei obiecte complete, în ordinea cumpărării",
+  "cp.glance": "Build pe scurt",
+  "cp.coreShort": "Obiecte de bază",
+  "cp.glanceSpells": "Vrăji",
+  "cp.glanceStart": "Start",
+  "cp.glanceSkills": "Maxare abilități",
 };
 export default dict;

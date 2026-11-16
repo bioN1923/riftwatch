@@ -1223,5 +1223,10 @@ const dict: Record<string, string> = {
   "cp.itemsForPageFew_one": "Seulement {count} partie avec {page} pour l’instant — builds de toutes les pages de runes",
   "cp.itemsForPageFew_other": "Seulement {count} parties avec {page} pour l’instant — builds de toutes les pages de runes",
   "cp.coreNamed": "{name} — trois premiers objets complets, dans l’ordre d’achat",
+  "cp.glance": "Build en un coup d’œil",
+  "cp.coreShort": "Objets clés",
+  "cp.glanceSpells": "Sorts",
+  "cp.glanceStart": "Départ",
+  "cp.glanceSkills": "Compétences",
 };
 export default dict;

@@ -1295,5 +1295,10 @@ const dict: Record<string, string> = {
   "cp.itemsForPageFew_many": "Na razie tylko {count} gier z {page} — pokazujemy buildy ze wszystkich stron run",
   "cp.itemsForPageFew_other": "Na razie tylko {count} gry z {page} — pokazujemy buildy ze wszystkich stron run",
   "cp.coreNamed": "{name} — pierwsze trzy ukończone przedmioty, w kolejności zakupu",
+  "cp.glance": "Build w skrócie",
+  "cp.coreShort": "Kluczowe przedmioty",
+  "cp.glanceSpells": "Czary",
+  "cp.glanceStart": "Start",
+  "cp.glanceSkills": "Umiejętności",
 };
 export default dict;
