@@ -12,3 +12,7 @@
 - a11y: `{}`.
 - Click test (demo Caps live game): the link goes to `/draft/team?role=JUNGLE&allies=ksante,mel,xayah,leona&enemies=ambessa,viego,yone,caitlyn,lux&mark=khazix`, and "Your pick" shows Kha'Zix at #5 of 6.
 - Screenshots: `demo/live-link.png`, `demo/team-draft-mark.png` and `demo/`.
+
+## Live check (2026-11-16 13:22 local)
+- The live index serves `index-3_qajj-N.js`. The `live.draftOpen` string is in the i18n chunk, and `td.markLead` is in the TeamDraft chunk.
+- Team-draft data so far: the test draft has lane (38) and duo (52) reasons, and still no `ally`/`enemy` ones. That is expected: those tallies began at 13:08, and at about 4 ranked games a minute no pair has reached the 10-game minimum yet.
