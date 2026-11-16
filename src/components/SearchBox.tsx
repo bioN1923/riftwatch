@@ -18,6 +18,7 @@ import { champHit } from '../lib/champSearch';
 type Option =
   | { kind: 'player'; player: PlayerHit; source: 'favorite' | 'recent' | 'match' }
   | { kind: 'champion'; championId: number; slug: string; name: string; title: string; tags: string[] }
+  | { kind: 'matchup'; a: { id: number; slug: string; name: string }; b: { id: number; slug: string; name: string } }
   | { kind: 'go'; label: string };
 
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
@@ -133,7 +134,23 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
       const byName = (a: Option, b: Option) => (a as { name: string }).name.localeCompare((b as { name: string }).name);
       for (const b of buckets) champs.push(...b.sort(byName));
     }
-    const list = [...champs.slice(0, 4), ...out.slice(0, champs.length ? 6 : 8)];
+    // "ahri vs zed", "ahri v zed", "ahri - zed": straight to that matchup when both sides name a champion.
+    const vs = !q.includes('#') && sd ? /^(.+?)\s+(?:vs\.?|v|-|–)\s+(.+)$/i.exec(q.trim()) : null;
+    let matchup: Option | null = null;
+    if (vs && sd) {
+      const best = (text: string) => {
+        let top: { id: number; slug: string; name: string; rank: number } | null = null;
+        for (const [id, c] of sd.champions) {
+          const hit = champHit(text, c);
+          if (hit != null && (!top || hit < top.rank || (hit === top.rank && c.name.localeCompare(top.name) < 0))) top = { id, slug: champSlug(c.id), name: c.name, rank: hit };
+        }
+        return top;
+      };
+      const a = best(vs[1]);
+      const b = best(vs[2]);
+      if (a && b && a.id !== b.id) matchup = { kind: 'matchup', a, b };
+    }
+    const list = [...(matchup ? [matchup] : []), ...champs.slice(0, 4), ...out.slice(0, champs.length ? 6 : 8)];
     const id = parseRiotId(q, platform.defaultTag);
     if (id && !seen.has(keyOf({ platform: platform.id, ...id }))) list.push({ kind: 'go', label: `${id.gameName}#${id.tagLine}` });
     return list;
@@ -168,6 +185,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
       return;
     }
     if (o.kind === 'champion') navigate(`/champions/${o.slug}`);
+    else if (o.kind === 'matchup') navigate(`/champions/${o.a.slug}/vs/${o.b.slug}`);
     else if (o.kind === 'go') navigate(profilePath(platform.id, parseRiotId(q, platform.defaultTag)!));
     else navigate(profilePath(o.player.platform, o.player));
     setQuery('');
@@ -194,7 +212,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
 
   const searching = (indexQ.isFetching && fast.length >= 2) || resolveQ.isFetching;
   const showList = open && (options.length > 0 || searching);
-  const missingTag = q && !q.includes('#') && !options.some((o) => o.kind === 'champion');
+  const missingTag = q && !q.includes('#') && !options.some((o) => o.kind === 'champion' || o.kind === 'matchup');
 
   return (
     <div ref={rootRef} className={clsx('relative w-full', hero ? 'max-w-2xl' : 'max-w-md')}>
@@ -307,6 +325,21 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
                     <Swords className="size-3.5" aria-hidden />
                     {/* Phones: icon only, so the name isn't squeezed; the word stays for screen readers. */}
                     <span className="sr-only sm:not-sr-only">{t('search.champion')}</span>
+                  </span>
+                </li>
+              );
+            }
+            if (o.kind === 'matchup') {
+              return (
+                <li key={`m${o.a.id}-${o.b.id}`} {...common}>
+                  <span className="flex shrink-0 items-center">
+                    <GameImg src={a.champion(o.a.id).url} alt="" size={32} rounded="md" />
+                    <GameImg src={a.champion(o.b.id).url} alt="" size={32} rounded="md" className="-ml-2 ring-2 ring-surface" />
+                  </span>
+                  <span className="min-w-0 flex-1 truncate text-text/90">{t('search.matchup', { a: o.a.name, b: o.b.name })}</span>
+                  <span className="flex shrink-0 items-center gap-1 rounded bg-sunken px-1.5 py-0.5 font-display text-sm font-bold text-gold">
+                    <Swords className="size-3.5" aria-hidden />
+                    <span className="sr-only sm:not-sr-only">{t('search.matchupTag')}</span>
                   </span>
                 </li>
               );

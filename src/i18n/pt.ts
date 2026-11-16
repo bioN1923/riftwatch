@@ -1192,5 +1192,7 @@ const dict: Record<string, string> = {
   "ms.addTag": "Adicionar #{tag}, a tag padrão do servidor",
   "duo.compare": "Comparar com você",
   "footer.install": "Instalar app",
+  "search.matchup": "{a} vs {b}",
+  "search.matchupTag": "Confronto",
 };
 export default dict;

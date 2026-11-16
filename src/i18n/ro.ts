@@ -1225,5 +1225,7 @@ const dict: Record<string, string> = {
   "ms.addTag": "Adaugă #{tag}, tagul implicit al serverului",
   "duo.compare": "Compară cu tine",
   "footer.install": "Instalează aplicația",
+  "search.matchup": "{a} vs {b}",
+  "search.matchupTag": "Confruntare",
 };
 export default dict;

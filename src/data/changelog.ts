@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.126',
+    date: '2026-11-16',
+    items: ['The search box understands matchups. Type “ahri vs zed”, “mf v cait” or “lee sin - j4” and the first suggestion opens that matchup page. Nicknames work on both sides.'],
+  },
+  {
     version: '3.125',
     date: '2026-11-16',
     items: ['In browsers that can install web apps (Chrome, Edge, Android), an “Install app” button appears in the footer. It opens the browser’s own install dialog instead of a pop-up banner.'],

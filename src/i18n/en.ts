@@ -1192,5 +1192,7 @@ const en = {
   "ms.addTag": "Add #{tag}, the server’s default tag",
   "duo.compare": "Compare with you",
   "footer.install": "Install app",
+  "search.matchup": "{a} vs {b}",
+  "search.matchupTag": "Matchup",
 };
 export default en;
