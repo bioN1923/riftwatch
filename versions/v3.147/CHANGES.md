@@ -9,3 +9,6 @@
 - `tsc`, `vitest` (183) and `vite build` pass.
 - a11y: `{}`, now including `/duo`.
 - Screenshots: `demo/` and `demo/pool-bars.png`.
+
+## Live check (2026-11-16 10:35 local)
+- The live index serves `index-DEELmV2f.js`, and its Profile chunk contains the sized pool bar (`Math.max(8,`).
