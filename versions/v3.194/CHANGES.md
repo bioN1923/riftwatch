@@ -14,3 +14,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/bestwith-phone.png`, `demo/bestwith-desktop.png` and `demo/`.
+
+## Live
+- Deployed 20:59 local. The live bundle has v3.194 and the new changelog line.
