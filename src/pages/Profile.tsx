@@ -107,6 +107,25 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
   });
 
   const matches = useMemo(() => matchesQ.data?.pages.flatMap((p) => p.matches), [matchesQ.data]);
+  // Coming back to the overview with 60+ games loaded re-mounts every card (~1.4 s at 4× CPU). Paint the
+  // first 20 (several screens' worth) straight away and add the rest when the browser is idle.
+  const [rowCap, setRowCap] = useState(20);
+  // Each return to the overview starts capped again (derived state reset during render).
+  const [capTab, setCapTab] = useState(tab);
+  if (capTab !== tab) {
+    setCapTab(tab);
+    setRowCap(20);
+  }
+  useEffect(() => {
+    if (rowCap === Infinity || !matches || matches.length <= rowCap) return;
+    const lift = () => setRowCap(Infinity);
+    if ('requestIdleCallback' in window) {
+      const id = window.requestIdleCallback(lift, { timeout: 600 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = globalThis.setTimeout(lift, 60);
+    return () => globalThis.clearTimeout(id);
+  }, [matches, rowCap]);
   const { fetchNextPage } = matchesQ;
   const loadMore = useCallback(() => void fetchNextPage(), [fetchNextPage]);
   const ov = useMemo(() => (matches && puuid ? overview(matches, puuid) : undefined), [matches, puuid]);
@@ -132,11 +151,14 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
     if (!el) return;
     shownHash.current = hash;
     requestAnimationFrame(() => {
-      el.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      // Instant, then once more after the cards in between have rendered: off-screen cards are laid out
+      // from estimated heights (content-visibility), so a smooth scroll to a far card used to stop short.
+      el.scrollIntoView({ block: 'center' });
+      setTimeout(() => el.scrollIntoView({ block: 'center' }), 300);
       el.classList.add('ring-2', 'ring-gold');
       setTimeout(() => el.classList.remove('ring-2', 'ring-gold'), 2500);
     });
-  }, [hash, tab, matches]);
+  }, [hash, tab, matches, rowCap]); // rowCap: a game past the first 20 appears once the rest are added
 
   async function update() {
     setUpdating(true);
@@ -274,7 +296,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
                   <div className={clsx('space-y-5 transition-opacity duration-200', matchesQ.isPlaceholderData && 'pointer-events-none opacity-60')} aria-busy={matchesQ.isPending || matchesQ.isPlaceholderData}>
                     {matchesQ.isPending && Array.from({ length: 5 }, (_, i) => <Skeleton key={i} className="h-[124px] rounded" />)}
                     {matches &&
-                      groupByDay(matches).map((g) => {
+                      groupByDay(rowCap === Infinity ? matches : matches.slice(0, rowCap)).map((g) => {
                         const rec = dayRecord(g.matches, profile.account.puuid);
                         return (
                           <section key={g.key} aria-label={g.label} className="space-y-2">

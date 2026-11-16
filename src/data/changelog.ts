@@ -12,6 +12,14 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.208',
+    date: '2026-11-16',
+    items: [
+      'Switching back from Stats to the match list with many games loaded is about twice as fast: the first 20 games appear at once and the rest follow a moment later.',
+      'Links to a specific game far down the list (like those in Personal records) now land on that game instead of stopping short.',
+    ],
+  },
+  {
     version: '3.207',
     date: '2026-11-16',
     items: ['Snappier search boxes on the tier list and the items page: the box updates on every keystroke while the long list catches up in the background, so slower phones no longer lag while you type.'],

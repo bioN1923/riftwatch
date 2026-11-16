@@ -51,8 +51,9 @@ export const MatchRow = memo(function MatchRow({ match, puuid, platform }: { mat
       aria-label={t('match.aria', { result: resultLabel(r), champion: champ.name, queue: queueName(match.queueId, match.gameMode), ago: timeAgo(ended) })}
       className={clsx(
         // Off-screen rows skip layout and paint (content-visibility); 'auto' keeps each row's last real height.
+        // Estimates match the measured card heights (127 px; 165 px from lg with the player lists), so jumps land right.
         // With 60+ games this halves the work when something above re-lays out the page (closing a sheet).
-        'group/card scroll-mt-20 overflow-hidden rounded border bg-surface transition-colors duration-200 [contain-intrinsic-size:auto_124px] [content-visibility:auto]',
+        'group/card scroll-mt-20 overflow-hidden rounded border bg-surface transition-colors duration-200 [contain-intrinsic-size:auto_127px] [content-visibility:auto] lg:[contain-intrinsic-size:auto_165px]',
         open ? 'border-line-strong' : 'border-line hover:border-line-strong',
       )}
     >
