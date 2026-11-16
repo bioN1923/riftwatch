@@ -12,6 +12,14 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.201',
+    date: '2026-11-16',
+    items: [
+      'Lane draft helper: when loading fails, it says so and offers Try again, instead of wrongly saying there aren\'t enough games of that matchup.',
+      'Try again buttons on the matchup page, on each player in Compare (now named in the message) and on each player card in Multi-search.',
+    ],
+  },
+  {
     version: '3.200',
     date: '2026-11-16',
     items: [

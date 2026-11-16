@@ -257,7 +257,7 @@ function Comparison({ a, b, queue }: { a: Pick; b: Pick; queue: Queue }) {
   const sa = useMemo(() => (pa && ma ? summarize(ma, pa.account.puuid) : undefined), [pa, ma]);
   const sb = useMemo(() => (pb && mb ? summarize(mb, pb.account.puuid) : undefined), [pb, mb]);
 
-  const failed = [A, B].map((x, i) => (x.profileQ.isError ? { error: x.profileQ.error, pick: i === 0 ? a : b } : null)).filter(Boolean);
+  const failed = [A, B].map((x, i) => (x.profileQ.isError ? { error: x.profileQ.error, pick: i === 0 ? a : b, retry: () => x.profileQ.refetch() } : null)).filter(Boolean);
   if (failed.length) {
     return (
       <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -269,7 +269,7 @@ function Comparison({ a, b, queue }: { a: Pick; b: Pick; queue: Queue }) {
               <p className="mt-1 text-loss">{t('ms.notFound')}</p>
             </div>
           ) : (
-            <ErrorState key={label(f!.pick)} error={f!.error} />
+            <ErrorState key={label(f!.pick)} title={label(f!.pick)} error={f!.error} onRetry={f!.retry} />
           );
         })}
       </div>

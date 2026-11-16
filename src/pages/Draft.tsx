@@ -19,7 +19,7 @@ import { me } from '../lib/stats';
 import { useRegion } from '../lib/storage';
 import { GameImg } from '../components/ui/GameImg';
 import { RoleIcon, ROLE_LABEL } from '../components/ui/RoleIcon';
-import { Skeleton } from '../components/ui/States';
+import { ErrorState, Skeleton } from '../components/ui/States';
 import { CopyLink } from '../components/ui/CopyLink';
 import { t } from '../i18n';
 
@@ -376,6 +376,13 @@ function Results({ enemy, role, pool }: { enemy: number; role: Role; pool: numbe
     placeholderData: keepWhile(['champion', enemy], 1),
   });
   if (q.isPending) return <Skeleton className="mt-6 h-64" />;
+  // A failed load isn't "not enough games": say what happened and offer a retry.
+  if (q.isError && !q.data)
+    return (
+      <div className="mt-6">
+        <ErrorState error={q.error} onRetry={() => q.refetch()} />
+      </div>
+    );
   const s = q.data as ChampionStats | undefined;
   const enemyName = a.champion(enemy).name;
   // The enemy's matchups, seen from our side of the lane.
@@ -437,6 +444,12 @@ function BlindPanel({ role, pool }: { role: Role; pool: number[] }) {
   const a = assets(sd);
   const q = useQuery({ queryKey: ['blind', role], queryFn: ({ signal }) => api.blind(role, signal), staleTime: 5 * 60_000, placeholderData: keepWhile(['blind']) });
   if (q.isPending) return <Skeleton className="mt-6 h-48" />;
+  if (q.isError && !q.data)
+    return (
+      <div className="mt-6">
+        <ErrorState error={q.error} onRetry={() => q.refetch()} />
+      </div>
+    );
   const picks = q.data?.picks ?? [];
   const yours = new Set(pool);
   return (

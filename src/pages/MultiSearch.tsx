@@ -246,6 +246,12 @@ function PlayerCard({ platform, id, duos }: { platform: string; id: RiotId; duos
           <span className="text-faint">#{id.tagLine}</span>
         </p>
         <p className="mt-2 text-sm text-loss">{nf ? t('ms.notFound') : t('ms.failed')}</p>
+        {/* A failed load (not a missing player) can be retried right here, without scouting everyone again. */}
+        {!nf && (
+          <button onClick={() => profileQ.refetch()} className="mt-2 inline-flex min-h-[24px] items-center rounded border border-line-strong px-2.5 py-1 text-xs font-medium hover:bg-raised">
+            {t('common.tryAgain')}
+          </button>
+        )}
       </div>
     );
   }

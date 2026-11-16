@@ -167,7 +167,7 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
         {q.isPending ? (
           <Skeleton className="h-96" />
         ) : q.isError || !m ? (
-          <ErrorState error={q.error} />
+          <ErrorState error={q.error} onRetry={() => q.refetch()} />
         ) : m.games === 0 ? (
           <div className="panel">
             <EmptyState title={t('mp.noGames', { a: me?.name ?? '', b: them?.name ?? '' })}>
