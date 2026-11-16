@@ -19,3 +19,9 @@
   - `champStatsFlush.test.ts`: `flushAsync` and `flush` write the same data, no `.tmp` is left behind, and the store reloads.
 - Local benchmark (8,000 Rift and 1,500 Arena games, a 4.5 MB file): the blocking save took 101 ms; the async save took 170 ms in all, with the longest pause in request handling at 13 ms.
 - a11y `{}`; no UI changes.
+
+## Live check (2026-11-16 05:00–05:02 local)
+- Same probe as before: one matchup request per second, 74 requests across two windows.
+  - Median 37–38 ms (unchanged).
+  - One slow request per window: **561 ms and 552 ms**, against **1.7–2.2 s** before.
+- The stalls are about 3–4× shorter but not gone. The remaining ~0.5 s pause about every 35 s isn't explained yet. Likely causes are garbage collection after building the large save string, or another store's blocking save (`lpStore`, `errorLog`). Next step: measure event-loop delay on the server (`perf_hooks.monitorEventLoopDelay`) and report it in `/api/health`, to see which it is.
