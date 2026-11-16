@@ -10,3 +10,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/profile-header-{1280,1024,768,390}.png` and `demo/`.
+
+## Live check (2026-11-16 15:08 local)
+- The live index serves `index-CtLgMumt.js`, and the 3.170 changelog entry is present.
