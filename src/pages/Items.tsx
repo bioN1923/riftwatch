@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
@@ -45,6 +45,9 @@ export function ItemsPage() {
   const open = Number(params.get('item')) || null;
   const kind = (KINDS.find((k) => k.id === params.get('kind'))?.id ?? 'all') as Kind;
   const [query, setQuery] = useState('');
+  // The box updates on every keystroke; the long list re-filters from this deferred copy in the background,
+  // so typing never waits for 170 rows to re-render (react-perf-rules: rerender transitions).
+  const deferredQuery = useDeferredValue(query);
   const { data: sd } = useStaticData();
   const a = assets(sd);
   const q = useQuery({ queryKey: ['items', patch], queryFn: ({ signal }) => api.items(patch, signal), staleTime: 5 * 60_000, placeholderData: keepWhile(['items']) });
@@ -60,13 +63,13 @@ export function ItemsPage() {
   }, []);
 
   const rows = useMemo(() => {
-    const needle = query.trim().toLowerCase();
+    const needle = deferredQuery.trim().toLowerCase();
     const test: (tags: string[]) => boolean = KINDS.find((k) => k.id === kind)!.test;
     return (q.data?.items ?? []).filter((r) => {
       const name = a.item(r.id).name;
       return name && (!needle || name.toLowerCase().includes(needle)) && test(sd?.items.get(r.id)?.tags ?? []);
     });
-  }, [q.data, query, a, kind, sd]);
+  }, [q.data, deferredQuery, a, kind, sd]);
 
   // Arriving from a champion page (?item=…): bring that item into view once the list is in.
   const missing = !!open && !!q.data && !q.data.items.some((r) => r.id === open);

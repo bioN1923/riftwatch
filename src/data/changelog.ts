@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.207',
+    date: '2026-11-16',
+    items: ['Snappier search boxes on the tier list and the items page: the box updates on every keystroke while the long list catches up in the background, so slower phones no longer lag while you type.'],
+  },
+  {
     version: '3.206',
     date: '2026-11-16',
     items: ['Smoother long match histories: with 60+ games loaded, closing a champion\'s record now takes about half as long, because off-screen games are skipped when the page re-lays out.'],

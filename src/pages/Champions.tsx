@@ -1,5 +1,5 @@
 import { RecentChampList } from '../components/champions/RecentChamps';
-import { useEffect, useMemo, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { keepWhile } from '../lib/keepWhile';
@@ -32,6 +32,9 @@ export function ChampionsPage() {
   const role = group !== 'ranked' ? 'ALL' : (params.get('role') ?? 'ALL');
   const patch = params.get('patch') ?? undefined;
   const [query, setQuery] = useState('');
+  // The box updates on every keystroke; the long list re-filters from this deferred copy in the background,
+  // so typing never waits for 170 rows to re-render (react-perf-rules: rerender transitions).
+  const deferredQuery = useDeferredValue(query);
   // The champions the player saved in the draft helper, per role; only on ranked, where roles exist.
   const [pools] = useState(readPools);
   const [onlyPool, setOnlyPool] = useState(false);
@@ -64,7 +67,7 @@ export function ChampionsPage() {
 
   const rows = useMemo(() => {
     const list = (q.data?.rows ?? []).filter((r) => role === 'ALL' || r.role === role);
-    const needle = query.trim();
+    const needle = deferredQuery.trim();
     const named = list
       .map((r) => ({ ...r, name: a.champion(r.championId).name }))
       .filter((r) => !needle || champHit(needle, { id: sd?.champions.get(r.championId)?.id ?? r.name, name: r.name }) != null)
@@ -80,7 +83,7 @@ export function ChampionsPage() {
       const c = typeof vx === 'string' ? vx.localeCompare(vy as string) : (vx as number) - (vy as number);
       return c * sort.dir;
     });
-  }, [q.data, role, query, sort, a, onlyPool, showPool, sd]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [q.data, role, deferredQuery, sort, a, onlyPool, showPool, sd]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Arena: average place is the number players read first. Bans: a column of 0.0% only when a mode
   // (or the games read so far) records none, so it's left out then.

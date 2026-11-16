@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.207](v3.207/CHANGES.md) | 2026-11-16 | Tier list & items: deferred filtering |
 | [v3.206](v3.206/CHANGES.md) | 2026-11-16 | Long match lists: content-visibility + memo |
 | [v3.205](v3.205/CHANGES.md) | 2026-11-16 | Matchup & lane draft: no static-data waterfall |
 | [v3.204](v3.204/CHANGES.md) | 2026-11-16 | Champion page: stats in parallel with static data |
