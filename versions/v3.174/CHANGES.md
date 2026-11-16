@@ -15,3 +15,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/multisearch-empty.png` and `demo/`.
+
+## Live check (2026-11-16 16:02 local)
+- The live index serves `index-D__o0EIH.js`, and its MultiSearch chunk contains `ms.see.lobby`.
