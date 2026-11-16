@@ -228,7 +228,8 @@ function StatStrip({ s, loading }: { s?: ChampionStats; loading: boolean }) {
   ];
   return (
     // Phones: a tidy 3-column grid (dividers only make sense in a single row, so they start at sm).
-    <dl className="mt-7 grid grid-cols-3 items-end gap-x-4 gap-y-4 sm:flex sm:flex-wrap sm:gap-x-8 sm:gap-y-3">
+    // Labels line up across a row on phones (items-start); the tall tier badge would otherwise push its label above the others.
+    <dl className="mt-7 grid grid-cols-3 items-start gap-x-4 gap-y-4 sm:flex sm:flex-wrap sm:items-end sm:gap-x-8 sm:gap-y-3">
       <div>
         <dt className="text-xs text-muted">{t('cp.tier')}</dt>
         <dd className="mt-1">
