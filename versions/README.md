@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.155](v3.155/CHANGES.md) | 2026-11-16 | Ladder: wider player search, full width on phones |
 | [v3.154](v3.154/CHANGES.md) | 2026-11-16 | Item path: finished items ringed, with key |
 | [v3.153](v3.153/CHANGES.md) | 2026-11-16 | Game details: damage dealt/taken key |
 | [v3.152](v3.152/CHANGES.md) | 2026-11-16 | Items: share bars and gold cost |

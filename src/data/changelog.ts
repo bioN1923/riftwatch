@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.155',
+    date: '2026-11-16',
+    items: ['Ladder: the "Find a player" box is wider on desktop and spans the full width on phones, so its hint ("Name#TAG") is no longer cut off in any language.'],
+  },
+  {
     version: '3.154',
     date: '2026-11-16',
     items: ['Game details, Item build: finished items in the item path now have a gold ring, so you can spot when each big item came online. A small key explains the ring and the crossed-out sold items.'],

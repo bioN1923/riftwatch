@@ -115,7 +115,7 @@ export function LeaderboardPage() {
           <p className="mt-2 text-sm text-muted">{t('lb.sub', { region: regionName(region) })}</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <form role="search" onSubmit={onFind} className="relative flex items-center">
+          <form role="search" onSubmit={onFind} className="relative flex w-full items-center sm:w-auto">
             <label className="sr-only" htmlFor="lb-find">
               {t('lb.find')}
             </label>
@@ -129,7 +129,7 @@ export function LeaderboardPage() {
               }}
               placeholder={t('lb.find')}
               aria-describedby={missing ? 'lb-find-miss' : undefined}
-              className="h-9 w-52 rounded border border-line bg-surface pl-8 pr-3 text-sm outline-none placeholder:text-faint focus:border-gold focus:ring-2 focus:ring-gold/50"
+              className="h-9 w-full rounded border border-line bg-surface pl-8 pr-3 text-sm outline-none sm:w-72 placeholder:text-faint focus:border-gold focus:ring-2 focus:ring-gold/50"
             />
             {/* Enter submits; the button is only for screen readers, so it's not an invisible Tab stop. */}
             <button type="submit" disabled={finding} tabIndex={-1} className="sr-only">
