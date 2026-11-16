@@ -185,6 +185,18 @@
     min-height: 100dvh;
     background: var(--bg);
   }
+  /* Taps on controls act at once (no double-tap-zoom wait); pinch zoom still works. */
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  label,
+  summary,
+  [role='button'],
+  [role='tab'] {
+    touch-action: manipulation;
+  }
   /* Numbers line up in tables and lists */
   .num {
     font-variant-numeric: tabular-nums;

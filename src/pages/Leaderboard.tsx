@@ -121,6 +121,11 @@ export function LeaderboardPage() {
             </label>
             <Search className="pointer-events-none absolute left-2.5 size-4 text-faint" aria-hidden />
             <input
+              // Riot IDs and champion names: no autocorrect, capitalisation or spellcheck on phones.
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="none"
+              spellCheck={false}
               id="lb-find"
               value={find}
               onChange={(e) => {

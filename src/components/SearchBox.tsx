@@ -297,6 +297,11 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
           <ChevronDown className={clsx('pointer-events-none absolute text-muted', hero ? 'right-3 size-4' : 'right-2 size-3.5')} aria-hidden />
         </label>
         <input
+          // Riot IDs and champion names: no autocorrect, capitalisation or spellcheck on phones.
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="none"
+          spellCheck={false}
           ref={inputRef}
           autoFocus={autoFocus}
           role="combobox"
@@ -305,8 +310,6 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
           aria-autocomplete="list"
           aria-activedescendant={showList && options[active] ? `${listId}-${active}` : undefined}
           aria-label={t('search.aria')}
-          autoComplete="off"
-          spellCheck={false}
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);

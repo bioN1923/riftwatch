@@ -12,6 +12,14 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.203',
+    date: '2026-11-16',
+    items: [
+      'Typing Riot IDs on a phone: search boxes and Riot ID fields no longer autocorrect, capitalise or spell-check what you type, so "caps#euw" stays as typed.',
+      'Buttons and links respond to taps right away (no double-tap-zoom delay), and champion art starts loading a little sooner.',
+    ],
+  },
+  {
     version: '3.202',
     date: '2026-11-16',
     items: ['While a profile loads, its Riot ID and region show straight away, so on a slow connection you can see whose profile is coming. The placeholder layout now matches the real page (matches first, summary to the side).'],

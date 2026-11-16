@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.203](v3.203/CHANGES.md) | 2026-11-16 | Web Interface Guidelines pass: inputs, taps, preconnect |
 | [v3.202](v3.202/CHANGES.md) | 2026-11-16 | Profile loading shows the Riot ID |
 | [v3.201](v3.201/CHANGES.md) | 2026-11-16 | Error states: retry everywhere, no false "not enough games" |
 | [v3.200](v3.200/CHANGES.md) | 2026-11-16 | Friendly offline and server-error messages |

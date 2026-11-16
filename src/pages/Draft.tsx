@@ -181,6 +181,11 @@ export function ChampionGrid({ onPick, exclude, autoFocus = false }: { onPick: (
         <span className="sr-only">{t('draft.search')}</span>
         <Search className="pointer-events-none absolute left-2.5 top-2.5 size-4 text-faint" aria-hidden />
         <input
+          // Riot IDs and champion names: no autocorrect, capitalisation or spellcheck on phones.
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="none"
+          spellCheck={false}
           ref={inputRef}
           value={q}
           autoFocus={autoFocus}
@@ -334,6 +339,11 @@ function ImportPool({ role, onDone }: { role: Role; onDone: (ids: number[]) => v
       }}
     >
       <input
+        // Riot IDs and champion names: no autocorrect, capitalisation or spellcheck on phones.
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="none"
+        spellCheck={false}
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder={t('cmp.placeholder')}

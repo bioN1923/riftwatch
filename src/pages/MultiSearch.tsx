@@ -95,6 +95,10 @@ export function MultiSearchPage() {
         <label className="block">
           <span className="sr-only">{t('ms.input')}</span>
           <textarea
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck={false}
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={5}

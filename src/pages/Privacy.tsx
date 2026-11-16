@@ -106,11 +106,14 @@ function Visibility({ demo }: { demo: boolean }) {
               <label className="min-w-0 flex-1">
                 <span className="mb-1 block text-xs text-muted">{t('pv.riotId')}</span>
                 <input
+                  // Riot IDs and champion names: no autocorrect, capitalisation or spellcheck on phones.
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="none"
+                  spellCheck={false}
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder={t('cmp.placeholder')}
-                  spellCheck={false}
-                  autoComplete="off"
                   required
                   className="h-10 w-full rounded border border-line bg-surface px-3 text-sm outline-none placeholder:text-faint focus:border-gold focus:ring-2 focus:ring-gold/50"
                 />
