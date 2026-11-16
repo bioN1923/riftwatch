@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.188',
+    date: '2026-11-16',
+    items: [
+      'Draft helpers with a keyboard: "Add" takes you straight to the champion search, picking or removing a champion keeps your place instead of jumping back to the top of the page, and "Done" or "Change" lands where you\'d expect.',
+      'Tapping "Add" on a phone still doesn\'t open the on-screen keyboard over the grid.',
+    ],
+  },
+  {
     version: '3.187',
     date: '2026-11-16',
     items: ['Profile header: when the challenges line wraps under the region on phones, it starts with the medal instead of a stray "·".'],

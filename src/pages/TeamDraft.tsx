@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
@@ -133,7 +133,20 @@ function TeamPanel(props: {
   const { id, title, lead, icon, tone, picks, max, exclude, onChange } = props;
   const { data: sd } = useStaticData();
   const a = assets(sd);
-  const [adding, setAdding] = useState(false);
+  // `adding` is 'key' when the grid was opened from the keyboard (focus goes into its search), 'pointer' for a tap or click.
+  const [adding, setAdding] = useState<false | 'key' | 'pointer'>(false);
+  // Buttons that open or close the grid, or remove a pick, disappear when used; this says where focus goes next.
+  const listRef = useRef<HTMLUListElement>(null);
+  const addRef = useRef<HTMLButtonElement>(null);
+  const refocus = useRef<number | 'add' | null>(null);
+  useEffect(() => {
+    const want = refocus.current;
+    if (want == null) return;
+    refocus.current = null;
+    if (want === 'add') return addRef.current?.focus();
+    const removes = listRef.current?.querySelectorAll<HTMLButtonElement>('button[data-remove]') ?? [];
+    (removes[Math.min(want, removes.length - 1)] ?? addRef.current ?? undefined)?.focus();
+  });
   return (
     <section className="panel p-4" aria-labelledby={`${id}-h`}>
       <h2 id={`${id}-h`} className="panel-title flex items-center gap-1.5">
@@ -141,13 +154,17 @@ function TeamPanel(props: {
       </h2>
       <p className="mt-0.5 text-xs text-muted">{lead}</p>
       {/* Phones: five slots in one row, like champion select. Wider screens: name chips that wrap. */}
-      <ul className="mt-3 grid min-h-12 grid-cols-5 gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
-        {picks.map((c) => (
+      <ul ref={listRef} className="mt-3 grid min-h-12 grid-cols-5 gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
+        {picks.map((c, i) => (
           <li key={c} className="relative flex min-w-0 flex-col items-center gap-0.5 rounded border border-line bg-surface px-0.5 pb-1 pt-1.5 sm:flex-row sm:gap-2 sm:py-1 sm:pl-1 sm:pr-1.5">
             <GameImg src={a.champion(c).url} alt="" size={36} rounded="sm" className={clsx('ring-1', tone === 'win' ? 'ring-win/60' : 'ring-loss/60')} />
             <span className="w-full truncate text-center text-[11px] sm:w-auto sm:text-sm">{a.champion(c).name}</span>
             <button
-              onClick={() => onChange(picks.filter((x) => x !== c))}
+              data-remove
+              onClick={(e) => {
+                if (e.detail === 0) refocus.current = i; // keyboard: keep focus in the list
+                onChange(picks.filter((x) => x !== c));
+              }}
               aria-label={t('td.remove', { champion: a.champion(c).name })}
               className="absolute -right-1 -top-1.5 grid size-6 place-items-center rounded-full border border-line bg-surface text-muted hover:bg-raised hover:text-text sm:static sm:ml-1 sm:rounded sm:border-0 sm:bg-transparent"
             >
@@ -158,7 +175,8 @@ function TeamPanel(props: {
         {picks.length < max && !adding && (
           <li>
             <button
-              onClick={() => setAdding(true)}
+              ref={addRef}
+              onClick={(e) => setAdding(e.detail === 0 ? 'key' : 'pointer')}
               className="inline-flex h-full min-h-[60px] w-full items-center justify-center gap-1.5 rounded border border-dashed border-line-strong text-sm text-muted hover:border-gold/60 hover:text-text sm:h-11 sm:min-h-0 sm:w-auto sm:px-3"
             >
               <Plus className="size-4" aria-hidden /> <span className="max-sm:sr-only">{t('td.add')}</span>
@@ -168,7 +186,12 @@ function TeamPanel(props: {
       </ul>
       {adding && picks.length < max && (
         <div className="mt-2 flex justify-end">
-          <button onClick={() => setAdding(false)} className="inline-flex min-h-[24px] items-center gap-1 rounded border border-line px-2.5 py-1 text-xs font-medium text-muted hover:text-text">
+          <button
+            onClick={(e) => {
+              if (e.detail === 0) refocus.current = 'add';
+              setAdding(false);
+            }}
+            className="inline-flex min-h-[24px] items-center gap-1 rounded border border-line px-2.5 py-1 text-xs font-medium text-muted hover:text-text">
             {t('td.done')}
           </button>
         </div>
@@ -176,10 +199,14 @@ function TeamPanel(props: {
       {adding && picks.length < max && (
         <ChampionGrid
           exclude={exclude}
+          autoFocus={adding === 'key'}
           onPick={(c) => {
             const next = [...picks, c].slice(0, max);
             onChange(next);
-            if (next.length >= max) setAdding(false);
+            if (next.length >= max) {
+              refocus.current = next.length - 1; // the team is full: land on its last remove button
+              setAdding(false);
+            }
           }}
         />
       )}

@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.188](v3.188/CHANGES.md) | 2026-11-16 | Draft helpers: keyboard focus kept |
 | [v3.187](v3.187/CHANGES.md) | 2026-11-16 | Profile header: no stray dot on wrap |
 | [v3.186](v3.186/CHANGES.md) | 2026-11-16 | Light theme: readable damage tags |
 | [v3.185](v3.185/CHANGES.md) | 2026-11-16 | Device-neutral item hint; compare best games on phones |

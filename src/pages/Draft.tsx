@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { keepWhile } from '../lib/keepWhile';
@@ -37,6 +37,8 @@ export function DraftPage() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const { data: sd } = useStaticData();
+  // Whether the last enemy pick or "Change" came from the keyboard: then focus follows into the grid's search or back to "Change".
+  const [enemyKey, setEnemyKey] = useState(false);
   const role: Role = (ROLES as readonly string[]).includes(params.get('role') ?? '') ? (params.get('role') as Role) : 'MIDDLE';
   const bySlug = useMemo(() => new Map([...(sd?.champions ?? new Map()).entries()].map(([key, c]) => [champSlug(c.id), key])), [sd]);
   const enemy = bySlug.get((params.get('enemy') ?? '').toLowerCase());
@@ -109,9 +111,24 @@ export function DraftPage() {
             <Crosshair className="size-4 text-loss" aria-hidden /> {t('draft.enemy', { role: ROLE_LABEL[role] })}
           </h2>
           {enemy != null ? (
-            <Chosen id={enemy} onClear={() => set({ enemy: null })} tone="loss" />
+            <Chosen
+              id={enemy}
+              focus={enemyKey}
+              onClear={(viaKey) => {
+                setEnemyKey(viaKey);
+                set({ enemy: null });
+              }}
+              tone="loss"
+            />
           ) : (
-            <ChampionGrid onPick={(id) => set({ enemy: id })} exclude={[]} />
+            <ChampionGrid
+              autoFocus={enemyKey}
+              onPick={(id, viaKey) => {
+                setEnemyKey(viaKey);
+                set({ enemy: id });
+              }}
+              exclude={[]}
+            />
           )}
         </section>
 
@@ -143,7 +160,9 @@ export function DraftPage() {
 
 /* --------------------------------------------------------- champion grid */
 
-export function ChampionGrid({ onPick, exclude }: { onPick: (id: number) => void; exclude: number[] }) {
+/** `autoFocus`: put the cursor in the search box on open (callers pass it only when the grid was opened from the keyboard). */
+export function ChampionGrid({ onPick, exclude, autoFocus = false }: { onPick: (id: number, viaKey: boolean) => void; exclude: number[]; autoFocus?: boolean }) {
+  const inputRef = useRef<HTMLInputElement>(null);
   const { data: sd } = useStaticData();
   const a = assets(sd);
   const [q, setQ] = useState('');
@@ -162,11 +181,13 @@ export function ChampionGrid({ onPick, exclude }: { onPick: (id: number) => void
         <span className="sr-only">{t('draft.search')}</span>
         <Search className="pointer-events-none absolute left-2.5 top-2.5 size-4 text-faint" aria-hidden />
         <input
+          ref={inputRef}
           value={q}
+          autoFocus={autoFocus}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && list[0]) {
-              onPick(list[0][0]);
+              onPick(list[0][0], true);
               setQ('');
             }
           }}
@@ -178,9 +199,12 @@ export function ChampionGrid({ onPick, exclude }: { onPick: (id: number) => void
         {list.map(([id, c]) => (
           <li key={id}>
             <button
-              onClick={() => {
-                onPick(id);
+              onClick={(e) => {
+                const viaKey = e.detail === 0;
+                onPick(id, viaKey);
                 setQ('');
+                // The picked tile leaves the grid; from the keyboard, carry on from the search box.
+                if (viaKey) inputRef.current?.focus();
               }}
               title={c.name} className="group flex w-full flex-col items-center gap-1">
               <GameImg src={a.champion(id).url} alt="" size={48} rounded="md" className="transition-transform group-hover:scale-105 group-focus-visible:ring-2 group-focus-visible:ring-gold" />
@@ -193,7 +217,7 @@ export function ChampionGrid({ onPick, exclude }: { onPick: (id: number) => void
   );
 }
 
-function Chosen({ id, onClear, tone }: { id: number; onClear: () => void; tone: 'win' | 'loss' }) {
+function Chosen({ id, onClear, tone, focus = false }: { id: number; onClear: (viaKey: boolean) => void; tone: 'win' | 'loss'; focus?: boolean }) {
   const { data: sd } = useStaticData();
   const c = assets(sd).champion(id);
   return (
@@ -201,7 +225,7 @@ function Chosen({ id, onClear, tone }: { id: number; onClear: () => void; tone: 
       <GameImg src={c.url} alt="" size={64} rounded="md" className={clsx('ring-2', tone === 'loss' ? 'ring-loss/70' : 'ring-win/70')} />
       <div className="min-w-0 flex-1">
         <p className="font-display text-2xl font-bold">{c.name}</p>
-        <button onClick={onClear} className="-my-1 inline-block py-1 text-sm text-muted underline hover:text-text">
+        <button autoFocus={focus} onClick={(e) => onClear(e.detail === 0)} className="-my-1 inline-block py-1 text-sm text-muted underline hover:text-text">
           {t('draft.change')}
         </button>
       </div>
@@ -214,8 +238,9 @@ function Chosen({ id, onClear, tone }: { id: number; onClear: () => void; tone: 
 function PoolEditor({ pool, role, onChange }: { pool: number[]; role: Role; onChange: (next: number[]) => void }) {
   const { data: sd } = useStaticData();
   const a = assets(sd);
-  const [adding, setAdding] = useState(false);
+  const [adding, setAdding] = useState<false | 'key' | 'pointer'>(false);
   const [importing, setImporting] = useState(false);
+  const addRef = useRef<HTMLButtonElement>(null);
   return (
     <div className="mt-3">
       <ul className="flex flex-wrap gap-2">
@@ -223,7 +248,10 @@ function PoolEditor({ pool, role, onChange }: { pool: number[]; role: Role; onCh
           <li key={id} className="relative">
             <GameImg src={a.champion(id).url} alt={a.champion(id).name} size={44} rounded="md" />
             <button
-              onClick={() => onChange(pool.filter((x) => x !== id))}
+              onClick={(e) => {
+                onChange(pool.filter((x) => x !== id));
+                if (e.detail === 0) addRef.current?.focus(); // keyboard: the removed button is gone, so land on "Add"
+              }}
               aria-label={t('draft.removeFromPool', { champion: a.champion(id).name })}
               className="absolute -right-2 -top-2 grid size-[24px] place-items-center rounded-full bg-surface text-faint ring-1 ring-line hover:text-text"
             >
@@ -234,8 +262,9 @@ function PoolEditor({ pool, role, onChange }: { pool: number[]; role: Role; onCh
         {pool.length < MAX_POOL && (
           <li>
             <button
-              onClick={() => setAdding((v) => !v)}
-              aria-expanded={adding}
+              ref={addRef}
+              onClick={(e) => setAdding((v) => (v ? false : e.detail === 0 ? 'key' : 'pointer'))}
+              aria-expanded={!!adding}
               aria-label={t('draft.addToPool')}
               className="grid size-11 place-items-center rounded-md border border-dashed border-line-strong text-muted hover:border-gold/60 hover:text-text"
             >
@@ -247,6 +276,7 @@ function PoolEditor({ pool, role, onChange }: { pool: number[]; role: Role; onCh
       {adding && (
         <ChampionGrid
           exclude={pool}
+          autoFocus={adding === 'key'}
           onPick={(id) => {
             onChange([...pool, id].slice(0, MAX_POOL));
             if (pool.length + 1 >= MAX_POOL) setAdding(false);
