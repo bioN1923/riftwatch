@@ -18,3 +18,6 @@
   - `demo/tag-ahri-light.png`, `demo/tag-zed-light.png`
   - `demo/tag-ahri-dark.png`, `demo/tag-zed-dark.png`
   - `demo/`
+
+## Live
+- Deployed 18:13 local. The live bundle has v3.186, and the stylesheet has `--dmg-ap`.
