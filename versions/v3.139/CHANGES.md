@@ -17,3 +17,19 @@
   - Checked at 1280 px dark and 390 px light, with no page errors.
 
 Screens: `demo/live-lane-*.png`.
+
+## Live check (2026-11-16 07:03 local)
+- The live build serves `i18n-CyDEKjqR.js` with the new string.
+- Whether the row appears on live data (its top core build needs 10+ games):
+
+  | Matchup | Games | Top core build | Row |
+  |---|---|---|---|
+  | Lee Sin vs Sylas | 161 | 34 | shown |
+  | Yasuo vs Zed | 65 | 13 | shown |
+  | Ahri vs Zed | 117 | 12 | shown |
+  | Thresh vs Nautilus | 241 | 7 | hidden |
+  | Ashe vs Caitlyn | 41 | 6 | hidden |
+  | Garen vs Darius | 35 | 6 | hidden |
+
+- Support and low-sample matchups hide the row: their builds are spread thin or rarely reach three items. That's intended. Showing a 6-game build as "usual" would mislead.
+- Live Ahri mid per-page builds: [8, 0, 1].
