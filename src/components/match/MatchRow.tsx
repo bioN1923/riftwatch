@@ -39,7 +39,7 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
   const arena = isArenaMatch(match);
   const teams = arena ? [] : [100, 200].map((t) => match.participants.filter((x) => x.teamId === t));
   const ended = match.startedAt + match.duration * 1000;
-  const splash = a.splash(p.championId);
+  const splash = a.portrait(p.championId);
 
   return (
     <article
@@ -53,7 +53,7 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
       <div className="flex">
         {/* Splash column: who you played, and how it went */}
         <div className="relative w-[92px] shrink-0 overflow-hidden sm:w-[132px]">
-          {splash && <img src={splash} alt="" loading="lazy" {...fadeIn('splash')} className="absolute inset-0 h-full w-full object-cover object-[center_20%] group-hover/card:scale-105" onError={(e) => (e.currentTarget.style.display = 'none')} />}
+          {splash && <img src={splash} alt="" loading="lazy" {...fadeIn('splash')} className="absolute inset-0 h-full w-full object-cover object-[center_15%] group-hover/card:scale-105" onError={(e) => (e.currentTarget.style.display = 'none')} />}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-surface/30 to-surface" />
           <div className="absolute inset-0 bg-gradient-to-t from-surface/95 via-surface/10 to-transparent" />
           <div className={clsx('absolute inset-y-0 left-0 w-[3px]', r === 'win' ? 'bg-win' : r === 'loss' ? 'bg-loss' : 'bg-faint')} />

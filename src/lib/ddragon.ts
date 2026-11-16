@@ -89,6 +89,14 @@ export function assets(d: StaticData | undefined) {
       const c = d?.champions.get(id);
       return c ? `${CDN}/img/champion/centered/${c.id}_0.jpg` : undefined;
     },
+    /**
+     * Portrait loading-screen art (308×560, ~50 KB), for narrow tiles like the match-card column:
+     * less than half the bytes of the 1280×720 centered splash, and the right shape for a tall crop.
+     */
+    portrait(id: number) {
+      const c = d?.champions.get(id);
+      return c ? `${CDN}/img/champion/loading/${c.id}_0.jpg` : undefined;
+    },
     /** Full-width splash, for the champion page hero. */
     fullSplash(id: number) {
       const c = d?.champions.get(id);

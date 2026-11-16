@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.199',
+    date: '2026-11-16',
+    items: ['Lighter match history: each game card uses the champion\'s portrait loading-screen art instead of the wide splash. That\'s about half the size per image (roughly 1 MB less for 20 games), and it suits the tall card column better.'],
+  },
+  {
     version: '3.198',
     date: '2026-11-16',
     items: ['Faster first load: pages no longer download the whole "What\'s new" history (about 16 kB) just to know the current version. It now loads only when you open What\'s new.'],
