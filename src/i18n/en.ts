@@ -1228,5 +1228,11 @@ const en = {
   "cp.glanceSpells": "Spells",
   "cp.glanceStart": "Start",
   "cp.glanceSkills": "Skill max",
+  "it.kinds": "Item type",
+  "it.kind.all": "All",
+  "it.kind.ad": "Attack damage",
+  "it.kind.ap": "Ability power",
+  "it.kind.crit": "Critical strike",
+  "it.kind.defence": "Defence",
 };
 export default en;

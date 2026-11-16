@@ -9,7 +9,7 @@ export interface SlimStatic {
   /** `dmg`: Riot's 0–10 attack and magic ratings, a rough guide to a champion's damage type. */
   champions: [number, { id: string; name: string; title: string; tags: string[]; dmg?: [number, number] }][];
   spells: [number, { id: string; name: string; description: string }][];
-  items: [number, { name: string; plaintext: string; gold: number; sell: number; description: string; from: number[]; into: number[] }][];
+  items: [number, { name: string; plaintext: string; gold: number; sell: number; description: string; from: number[]; into: number[]; tags?: string[] }][];
   runes: [number, { icon: string; name: string; desc: string }][];
   trees: { id: number; name: string; icon: string; slots: number[][] }[];
 }
@@ -33,6 +33,7 @@ export function slimStatic(version: string, champ: any, spell: any, item: any, r
         description: it.description ?? '',
         from: (it.from ?? []).map(Number),
         into: (it.into ?? []).map(Number),
+        tags: it.tags ?? [],
       },
     ]),
     runes: runes.flatMap((style) => [

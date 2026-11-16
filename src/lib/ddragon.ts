@@ -29,6 +29,8 @@ export interface ItemData {
   description: string; // Riot's tagged markup; see lib/itemText.ts
   from: number[];
   into: number[];
+  /** Riot's item tags (Damage, SpellDamage, Health, Armor, SpellBlock, CriticalStrike…). */
+  tags?: string[];
 }
 
 const stripTags = (s: string) => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();

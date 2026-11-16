@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.137',
+    date: '2026-11-16',
+    items: ['Items page: filter by type (Attack damage, Ability power, Critical strike, Defence) and pick a patch. Your choice is kept in the address, so a filtered view can be shared.'],
+  },
+  {
     version: '3.136',
     date: '2026-11-16',
     items: [

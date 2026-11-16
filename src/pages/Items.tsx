@@ -5,6 +5,8 @@ import clsx from 'clsx';
 import { ChevronDown, Search } from 'lucide-react';
 import type { ItemStats } from '../../shared/types';
 import { api } from '../lib/api';
+import { keepWhile } from '../lib/keepWhile';
+import { PatchSelect } from '../components/champions/common';
 import { assets, champSlug, useStaticData } from '../lib/ddragon';
 import { pct, thousands } from '../lib/format';
 import { GameImg } from '../components/ui/GameImg';
@@ -14,6 +16,16 @@ import { ErrorState, Skeleton } from '../components/ui/States';
 import { t } from '../i18n';
 
 type Row = ItemStats['items'][number];
+
+/** Filters built from Riot's item tags. */
+const KINDS = [
+  { id: 'all', test: () => true },
+  { id: 'ad', test: (tags: string[]) => tags.includes('Damage') },
+  { id: 'ap', test: (tags: string[]) => tags.includes('SpellDamage') },
+  { id: 'crit', test: (tags: string[]) => tags.includes('CriticalStrike') },
+  { id: 'defence', test: (tags: string[]) => ['Health', 'Armor', 'SpellBlock'].some((x) => tags.includes(x)) && !tags.includes('Damage') && !tags.includes('SpellDamage') },
+] as const;
+type Kind = (typeof KINDS)[number]['id'];
 type ChampRow = Row['champions'][number];
 
 /**
@@ -31,10 +43,17 @@ export function ItemsPage() {
   const [params, setParams] = useSearchParams();
   const patch = params.get('patch') ?? undefined;
   const open = Number(params.get('item')) || null;
+  const kind = (KINDS.find((k) => k.id === params.get('kind'))?.id ?? 'all') as Kind;
   const [query, setQuery] = useState('');
   const { data: sd } = useStaticData();
   const a = assets(sd);
-  const q = useQuery({ queryKey: ['items', patch], queryFn: ({ signal }) => api.items(patch, signal), staleTime: 5 * 60_000 });
+  const q = useQuery({ queryKey: ['items', patch], queryFn: ({ signal }) => api.items(patch, signal), staleTime: 5 * 60_000, placeholderData: keepWhile(['items']) });
+  const setParam = (k: string, v: string | null) => {
+    const next = new URLSearchParams(params);
+    if (v === null) next.delete(k);
+    else next.set(k, v);
+    setParams(next, { replace: true });
+  };
 
   useEffect(() => {
     document.title = t('it.title');
@@ -42,11 +61,12 @@ export function ItemsPage() {
 
   const rows = useMemo(() => {
     const needle = query.trim().toLowerCase();
+    const test: (tags: string[]) => boolean = KINDS.find((k) => k.id === kind)!.test;
     return (q.data?.items ?? []).filter((r) => {
       const name = a.item(r.id).name;
-      return name && (!needle || name.toLowerCase().includes(needle));
+      return name && (!needle || name.toLowerCase().includes(needle)) && test(sd?.items.get(r.id)?.tags ?? []);
     });
-  }, [q.data, query, a]);
+  }, [q.data, query, a, kind, sd]);
 
   // Arriving from a champion page (?item=…): bring that item into view once the list is in.
   const missing = !!open && !!q.data && !q.data.items.some((r) => r.id === open);
@@ -73,6 +93,8 @@ export function ItemsPage() {
               : t('it.noData')}
           </p>
         </div>
+        <div className="flex flex-wrap items-center gap-3">
+        <PatchSelect patches={q.data?.patches ?? []} value={q.data?.patch ?? null} onChange={(p) => setParam('patch', p)} />
         <label className="relative flex items-center">
           <span className="sr-only">{t('it.filter')}</span>
           <Search className="pointer-events-none absolute left-2.5 size-4 text-faint" aria-hidden />
@@ -83,6 +105,24 @@ export function ItemsPage() {
             className="h-9 w-56 rounded border border-line bg-surface pl-8 pr-3 text-sm outline-none placeholder:text-faint focus:border-gold focus:ring-2 focus:ring-gold/50"
           />
         </label>
+        </div>
+      </div>
+
+      <div className="mt-5 flex flex-wrap gap-2" role="group" aria-label={t('it.kinds')}>
+        {KINDS.map((k) => (
+          <button
+            key={k.id}
+            type="button"
+            aria-pressed={kind === k.id}
+            onClick={() => setParam('kind', k.id === 'all' ? null : k.id)}
+            className={clsx(
+              'h-8 rounded-full border px-3 text-sm font-medium transition-colors',
+              kind === k.id ? 'border-gold bg-gold/10 text-text' : 'border-line text-muted hover:border-line-strong hover:text-text',
+            )}
+          >
+            {t(`it.kind.${k.id}` as 'it.kind.all')}
+          </button>
+        ))}
       </div>
 
       {q.isError ? (
@@ -94,7 +134,7 @@ export function ItemsPage() {
       ) : (
         <>
         {missing && <p className="mt-6 rounded border border-line bg-surface px-3 py-2 text-sm text-muted">{t('it.missing', { item: a.item(open!).name || String(open) })}</p>}
-        <ul className="mt-6 divide-y divide-line rounded border border-line bg-surface">
+        <ul className={clsx('mt-4 divide-y divide-line rounded border border-line bg-surface transition-opacity duration-200', q.isPlaceholderData && 'pointer-events-none opacity-60')} aria-busy={q.isPlaceholderData}>
           {rows.map((r) => {
             const it = a.item(r.id);
             const expanded = open === r.id;

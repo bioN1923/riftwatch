@@ -1264,5 +1264,11 @@ const dict: Record<string, string> = {
   "cp.glanceSpells": "Vrăji",
   "cp.glanceStart": "Start",
   "cp.glanceSkills": "Maxare abilități",
+  "it.kinds": "Tip de obiect",
+  "it.kind.all": "Toate",
+  "it.kind.ad": "Daune fizice",
+  "it.kind.ap": "Putere magică",
+  "it.kind.crit": "Lovitură critică",
+  "it.kind.defence": "Apărare",
 };
 export default dict;

@@ -1300,5 +1300,11 @@ const dict: Record<string, string> = {
   "cp.glanceSpells": "Czary",
   "cp.glanceStart": "Start",
   "cp.glanceSkills": "Umiejętności",
+  "it.kinds": "Typ przedmiotu",
+  "it.kind.all": "Wszystkie",
+  "it.kind.ad": "Obrażenia od ataku",
+  "it.kind.ap": "Moc umiejętności",
+  "it.kind.crit": "Trafienie krytyczne",
+  "it.kind.defence": "Obrona",
 };
 export default dict;
