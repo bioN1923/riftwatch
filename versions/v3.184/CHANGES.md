@@ -20,3 +20,6 @@
 - a11y: `{}`.
 - Touch test (Playwright `hasTouch`): tapping the gold chart shows "Minute 22 · Red side ahead by 11.2k · Baron", and it stays visible.
 - Screenshots: `demo/gold-tap.png` and `demo/`.
+
+## Live
+- Deployed 17:53 local. The live bundle has v3.184 and the new English hint.
