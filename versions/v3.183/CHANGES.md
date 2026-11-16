@@ -18,3 +18,6 @@
 - Screenshots:
   - `demo/home-recent.png`, `demo/home-cleared.png`
   - `demo/`
+
+## Live
+- Deployed 17:43 local. The live bundle has v3.183 and the new changelog line.
