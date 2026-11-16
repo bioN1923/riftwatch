@@ -2,7 +2,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { Search, Clock, Star, X, ChevronDown, BadgeCheck, LoaderCircle, Swords, Package } from 'lucide-react';
+import { Search, Clock, Star, X, ChevronDown, BadgeCheck, LoaderCircle, Swords, Package, Compass } from 'lucide-react';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import type { PlayerHit } from '../../shared/types';
 import { parseRiotId, profilePath } from '../lib/riotId';
@@ -21,9 +21,23 @@ type Option =
   | { kind: 'champion'; championId: number; slug: string; name: string; title: string; tags: string[]; scope?: { role?: string; queue?: 'aram' | 'arena' } }
   | { kind: 'item'; id: number; name: string }
   | { kind: 'matchup'; a: { id: number; slug: string; name: string }; b: { id: number; slug: string; name: string } }
+  | { kind: 'page'; to: string; label: string }
   | { kind: 'go'; label: string };
 
 const APEX = new Set(['MASTER', 'GRANDMASTER', 'CHALLENGER']);
+/** Site pages the search box can jump to: the shortcut list's pages plus a few everyday names (English and the page title in the current language). */
+const PAGES: { to: string; label: () => string; also: string[] }[] = [
+  { to: '/draft/team', label: () => t('td.heading'), also: ['team draft', 'team comp', 'counter pick', 'best pick'] },
+  { to: '/draft', label: () => t('nav.draft'), also: ['draft', 'lane draft', 'counter'] },
+  { to: '/champions', label: () => t('tl.heading'), also: ['tier list', 'tierlist', 'meta'] },
+  { to: '/leaderboard', label: () => t('nav.ladder'), also: ['ladder', 'leaderboard', 'challenger', 'ranking'] },
+  { to: '/multisearch', label: () => t('nav.multisearch'), also: ['multi search', 'multisearch', 'lobby'] },
+  { to: '/compare', label: () => t('nav.compare'), also: ['compare', 'versus'] },
+  { to: '/duo', label: () => t('nav.duo'), also: ['duo', 'duo finder'] },
+  { to: '/items', label: () => t('it.heading'), also: ['items', 'item stats'] },
+  { to: '/changelog', label: () => t('cl.title'), also: ['whats new', 'changelog', 'updates'] },
+];
+
 const squash = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]/g, '');
 const keyOf = (p: { platform: string; gameName: string; tagLine: string }) => `${p.platform}:${p.gameName}#${p.tagLine}`.toLowerCase();
 
@@ -176,7 +190,16 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
         else seenNames.add(nm);
       }
     }
-    const list = [...(matchup ? [matchup] : []), ...champs.slice(0, 4), ...items.slice(0, 3), ...out.slice(0, champs.length || items.length ? 6 : 8)];
+    // Site pages by name ("team draft", "ladder"): only from three letters, never for a Riot ID, two at most.
+    const pages: Option[] = [];
+    if (cq.length >= 3 && !q.includes('#') && !matchup) {
+      for (const pg of PAGES) {
+        const names = [pg.label(), ...pg.also].map(squash);
+        if (names.some((n) => n.startsWith(cq) || (cq.length >= 4 && n.includes(cq)))) pages.push({ kind: 'page', to: pg.to, label: pg.label() });
+        if (pages.length >= 2) break;
+      }
+    }
+    const list = [...(matchup ? [matchup] : []), ...pages, ...champs.slice(0, 4), ...items.slice(0, 3), ...out.slice(0, champs.length || items.length ? 6 : 8)];
     const id = parseRiotId(q, platform.defaultTag);
     if (id && !seen.has(keyOf({ platform: platform.id, ...id }))) list.push({ kind: 'go', label: `${id.gameName}#${id.tagLine}` });
     return list;
@@ -213,6 +236,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
     if (o.kind === 'champion') navigate(`/champions/${o.slug}${o.scope?.queue ? `?queue=${o.scope.queue}` : o.scope?.role ? `?role=${o.scope.role}` : ''}`);
     else if (o.kind === 'matchup') navigate(`/champions/${o.a.slug}/vs/${o.b.slug}`);
     else if (o.kind === 'item') navigate(`/items?item=${o.id}`);
+    else if (o.kind === 'page') navigate(o.to);
     else if (o.kind === 'go') navigate(profilePath(platform.id, parseRiotId(q, platform.defaultTag)!));
     else navigate(profilePath(o.player.platform, o.player));
     setQuery('');
@@ -239,7 +263,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
 
   const searching = (indexQ.isFetching && fast.length >= 2) || resolveQ.isFetching;
   const showList = open && (options.length > 0 || searching);
-  const missingTag = q && !q.includes('#') && !options.some((o) => o.kind === 'champion' || o.kind === 'matchup' || o.kind === 'item');
+  const missingTag = q && !q.includes('#') && !options.some((o) => o.kind === 'champion' || o.kind === 'matchup' || o.kind === 'item' || o.kind === 'page');
 
   return (
     <div ref={rootRef} className={clsx('relative w-full', hero ? 'max-w-2xl' : 'max-w-md')}>
@@ -370,6 +394,19 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
                     <Package className="size-3.5" aria-hidden />
                     <span className="sr-only sm:not-sr-only">{t('search.item')}</span>
                   </span>
+                </li>
+              );
+            }
+            if (o.kind === 'page') {
+              return (
+                <li key={`p${o.to}`} {...common}>
+                  <span className="grid size-8 shrink-0 place-items-center rounded-md bg-sunken text-gold">
+                    <Compass className="size-4" aria-hidden />
+                  </span>
+                  <span className="min-w-0 flex-1 truncate text-text/90">
+                    <Highlight text={o.label} query={q} />
+                  </span>
+                  <span className="shrink-0 rounded bg-sunken px-1.5 py-0.5 font-display text-sm font-bold text-gold">{t('search.page')}</span>
                 </li>
               );
             }

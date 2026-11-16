@@ -13,6 +13,7 @@ export const GO_KEYS: Record<string, { to: string; label: () => string }> = {
   d: { to: '/draft', label: () => t('nav.draft') },
   i: { to: '/items', label: () => t('it.heading') },
   u: { to: '/duo', label: () => t('nav.duo') },
+  t: { to: '/draft/team', label: () => t('td.heading') },
 };
 
 const typing = (el: EventTarget | null) => {

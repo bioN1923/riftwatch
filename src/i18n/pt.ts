@@ -1303,5 +1303,6 @@ const dict: Record<string, string> = {
   "mv.noneUp": "Em alta: nenhuma grande mudança desde o último patch.",
   "mv.noneDown": "Em queda: nenhuma grande mudança desde o último patch.",
   "td.done": "Pronto",
+  "search.page": "Página",
 };
 export default dict;

@@ -1342,5 +1342,6 @@ const dict: Record<string, string> = {
   "mv.noneUp": "În creștere: nicio schimbare mare față de patch-ul trecut.",
   "mv.noneDown": "În scădere: nicio schimbare mare față de patch-ul trecut.",
   "td.done": "Gata",
+  "search.page": "Pagină",
 };
 export default dict;

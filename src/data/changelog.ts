@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.172',
+    date: '2026-11-16',
+    items: [
+      'Search: typing a page name ("team draft", "ladder", "tier list", "duo", "items", "what\'s new") now offers that page right in the search box.',
+      'Keyboard: g then t opens Team draft (press ? for every shortcut).',
+    ],
+  },
+  {
     version: '3.171',
     date: '2026-11-16',
     items: ['Privacy: "What stays in your browser" now lists everything the site saves on your device, adding recently viewed champions, saved lobbies, draft pools, profile goals and the "What\'s new" entries you\'ve seen; duo-finder checks last only for the tab.'],

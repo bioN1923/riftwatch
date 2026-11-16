@@ -1303,5 +1303,6 @@ const en = {
   "mv.noneUp": "Rising: no big changes since last patch.",
   "mv.noneDown": "Falling: no big changes since last patch.",
   "td.done": "Done",
+  "search.page": "Page",
 };
 export default en;

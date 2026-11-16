@@ -1381,5 +1381,6 @@ const dict: Record<string, string> = {
   "mv.noneUp": "Wzrosty: brak dużych zmian od poprzedniego patcha.",
   "mv.noneDown": "Spadki: brak dużych zmian od poprzedniego patcha.",
   "td.done": "Gotowe",
+  "search.page": "Strona",
 };
 export default dict;
