@@ -1184,14 +1184,17 @@ function Synergy({ s }: { s: ChampionStats }) {
             <li key={m.championId}>
               <Link
                 to={slug ? `/champions/${champSlug(slug)}?role=${s.synergy!.role}` : '#'}
-                className="group flex items-center gap-3 rounded border border-line px-3 py-2 transition-colors hover:border-gold/60 hover:bg-raised"
+                className="group flex items-center gap-2.5 rounded border border-line px-2.5 py-2 transition-colors hover:border-gold/60 hover:bg-raised"
               >
                 <GameImg src={c.url} alt="" size={36} rounded="md" />
+                {/* Win rate sits under the name, so on phones the name isn't cut to "Lee S…". */}
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium group-hover:text-gold">{c.name}</span>
-                  <span className="num text-xs text-muted">{t('common.games', { count: m.games })}</span>
+                  <span className="num block text-xs text-muted">
+                    <span className={clsx('font-semibold', sureTone(m.winRate, m.games))}>{pct(m.winRate, 1)}</span> ·{' '}
+                    {t('common.games', { count: m.games })}
+                  </span>
                 </span>
-                <span className={clsx('num text-sm font-semibold', sureTone(m.winRate, m.games))}>{pct(m.winRate, 1)}</span>
               </Link>
             </li>
           );
