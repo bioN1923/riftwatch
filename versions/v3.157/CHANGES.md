@@ -11,3 +11,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`, now including the 404 page.
 - Screenshots: `demo/` and `demo/not-found.png`.
+
+## Live check (2026-11-16 12:16 local)
+- The live index serves `index-CR0MA9r6.js`, and it contains `notFound.elsewhere`.
