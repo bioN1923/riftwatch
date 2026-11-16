@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { stringifyChunked } from './chunkedJson';
+import { writeJsonChunked } from './chunkedJson';
 import path from 'node:path';
 import type { BlindPicks, Benchmark, ChampionStats, MatchSummary, MatchTimeline, MatchupStats, PatchMover, Rated, StatsGroup, TierList, TierRow } from '../shared/types';
 import { itemKind } from './items';
@@ -377,7 +377,8 @@ export class ChampionStatsStore {
       } catch {
         /* first run */
       }
-      setInterval(() => void this.flushAsync(), 30_000).unref();
+      // Every two minutes: each save of this big store costs a garbage collection; shutdown saves too.
+      setInterval(() => void this.flushAsync(), 120_000).unref();
     }
   }
 
@@ -976,11 +977,8 @@ export class ChampionStatsStore {
             }
           }
       this.prepare();
-      const body = await stringifyChunked(this.s);
       await fs.promises.mkdir(path.dirname(this.file), { recursive: true });
-      const tmp = `${this.file}.tmp`;
-      await fs.promises.writeFile(tmp, body);
-      await fs.promises.rename(tmp, this.file);
+      await writeJsonChunked(this.file, this.s);
     } catch (e) {
       this.dirty = true;
       console.warn('Could not save champion stats:', (e as Error).message);

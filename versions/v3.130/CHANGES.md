@@ -22,3 +22,22 @@
   - `perf.test.ts`: sync and async spans are timed.
 - Demo: `/api/health.perf` reports the loop, GC (263 pauses, longest 13 ms), heap 235 MB and spans. It records the 5.4 s startup stall from seeding the demo, attributed to `champStats.addMatch`.
 - a11y `{}`.
+
+## Live findings and second fix (same version)
+After the first v3.130 deploy, a 36-request probe ran clean (median 37 ms, max 177 ms). The new `/api/health.perf` showed what the remaining stall was:
+- one stall of **378 ms**, with a **274 ms GC** at the same moment, plus a 242 ms neighbour;
+- both came as `champStats.flushAsync` finished (3.4 s total);
+- every other save (`players`, `lp`, `errorLog`) took 0 ms;
+- the 4.2 s stall in the list was startup (loading `champions.json`).
+
+So the last pause was a full garbage collection, set off by building the whole ~50 MB save as one string (pieces, then `join`).
+
+**Fix.**
+- `writeJsonChunked(file, value)` streams the same JSON straight into a `fs.WriteStream`. It sends 64 kB at a time, waits for `drain` when the stream is full, then closes and renames `file.tmp` to `file`. The full text never exists in memory, so a save no longer leaves a 50 MB string for the GC to sweep. `stringifyChunked` is kept and shares the same walker.
+- Both `ChampionStatsStore.flushAsync` and `PlayerIndex.flushAsync` use it.
+- The champion stats save now runs every 2 minutes instead of every 30 s. Each save still allocates a lot, and the shutdown save covers deploys and restarts.
+
+**Checks.**
+- 179 tests pass; a new test writes a 5,000-key object through the stream and compares it to `JSON.stringify`.
+- Local benchmark (12,000 Rift and 1,500 Arena games, a 5.2 MB file): the async save took 209 ms in all, with the longest pause 15 ms and the **longest GC 2 ms**.
+- a11y `{}`.

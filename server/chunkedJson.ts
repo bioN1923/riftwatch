@@ -5,12 +5,50 @@
  * native JSON.stringify, pausing (setImmediate) whenever the time budget is used up.
  * Output is identical to JSON.stringify for plain data (no toJSON, no replacer).
  */
+import fs from 'node:fs';
+
 const pause = () => new Promise<void>((r) => setImmediate(r));
 
 export async function stringifyChunked(value: unknown, opts: { depth?: number; budgetMs?: number } = {}): Promise<string> {
+  const parts: string[] = [];
+  await emitChunked(value, (s) => void parts.push(s), opts);
+  return parts.join('');
+}
+
+/**
+ * Write `value` as JSON to `file` piece by piece through a write stream, never holding the whole
+ * text in memory: building one 50 MB string per save set off a ~0.3 s full garbage collection.
+ * Writes to `file.tmp` and renames, so the previous file stays whole if anything fails.
+ */
+export async function writeJsonChunked(file: string, value: unknown, opts: { depth?: number; budgetMs?: number } = {}): Promise<void> {
+  const tmp = `${file}.tmp`;
+  const stream = fs.createWriteStream(tmp);
+  const failed = new Promise<never>((_, reject) => stream.once('error', reject));
+  failed.catch(() => {}); // seen through the races below; never an unhandled rejection
+  let buf = '';
+  const flushBuf = async () => {
+    if (!buf) return;
+    const ok = stream.write(buf);
+    buf = '';
+    if (!ok) await Promise.race([new Promise<void>((r) => stream.once('drain', () => r())), failed]);
+  };
+  await emitChunked(
+    value,
+    async (s) => {
+      buf += s;
+      if (buf.length >= 64 * 1024) await flushBuf();
+    },
+    opts,
+  );
+  await flushBuf();
+  await Promise.race([new Promise<void>((r) => stream.end(() => r())), failed]);
+  await fs.promises.rename(tmp, file);
+}
+
+async function emitChunked(value: unknown, sink: (s: string) => void | Promise<void>, opts: { depth?: number; budgetMs?: number }): Promise<void> {
   const depth = opts.depth ?? 5;
   const budget = opts.budgetMs ?? 8;
-  const out: string[] = [];
+  const out = { push: async (...xs: string[]) => { for (const x of xs) await sink(x); } };
   let started = performance.now();
 
   const tick = async () => {
@@ -22,39 +60,38 @@ export async function stringifyChunked(value: unknown, opts: { depth?: number; b
 
   const walk = async (v: unknown, level: number): Promise<void> => {
     if (level >= depth || v === null || typeof v !== 'object' || typeof (v as { toJSON?: unknown }).toJSON === 'function') {
-      out.push(JSON.stringify(v) ?? 'null');
+      await out.push(JSON.stringify(v) ?? 'null');
       await tick();
       return;
     }
     if (Array.isArray(v)) {
       // Long lists (the player index is one) go item by item; short ones in one piece.
       if (v.length < 64) {
-        out.push(JSON.stringify(v));
+        await out.push(JSON.stringify(v));
         await tick();
         return;
       }
-      out.push('[');
+      await out.push('[');
       for (let i = 0; i < v.length; i++) {
-        if (i) out.push(',');
+        if (i) await out.push(',');
         const item = v[i];
-        if (item === undefined || typeof item === 'function' || typeof item === 'symbol') out.push('null');
+        if (item === undefined || typeof item === 'function' || typeof item === 'symbol') await out.push('null');
         else await walk(item, depth); // each item whole
       }
-      out.push(']');
+      await out.push(']');
       return;
     }
-    out.push('{');
+    await out.push('{');
     let first = true;
     for (const [k, child] of Object.entries(v as Record<string, unknown>)) {
       // Same as JSON.stringify: properties holding undefined, functions or symbols are left out.
       if (child === undefined || typeof child === 'function' || typeof child === 'symbol') continue;
-      out.push(first ? '' : ',', JSON.stringify(k), ':');
+      await out.push(first ? '' : ',', JSON.stringify(k), ':');
       first = false;
       await walk(child, level + 1);
     }
-    out.push('}');
+    await out.push('}');
   };
 
   await walk(value, 0);
-  return out.join('');
 }

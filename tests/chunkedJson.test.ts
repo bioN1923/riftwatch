@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { stringifyChunked } from '../server/chunkedJson';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { stringifyChunked, writeJsonChunked } from '../server/chunkedJson';
 
 describe('stringifyChunked', () => {
   it('matches JSON.stringify on nested plain data', async () => {
@@ -22,5 +25,16 @@ describe('stringifyChunked', () => {
     clearInterval(timer);
     expect(JSON.parse(s).patches['15.20'].ranked.champs.k2999.roles.MID.g).toBe(2999);
     expect(ticks).toBeGreaterThanOrEqual(0);
+  });
+
+  it('streams to a file identical to JSON.stringify, via a temporary file', async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rw-cj-'));
+    const f = path.join(dir, 'x.json');
+    const big: Record<string, unknown> = {};
+    for (let i = 0; i < 5000; i++) big[`k${i}`] = { a: { b: { c: 'x'.repeat(40), n: i } }, list: Array.from({ length: 70 }, (_, j) => j) };
+    await writeJsonChunked(f, { big });
+    expect(fs.readFileSync(f, 'utf8')).toBe(JSON.stringify({ big }));
+    expect(fs.existsSync(`${f}.tmp`)).toBe(false);
+    fs.rmSync(dir, { recursive: true, force: true });
   });
 });

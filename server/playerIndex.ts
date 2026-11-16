@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { stringifyChunked } from './chunkedJson';
+import { writeJsonChunked } from './chunkedJson';
 import type { PlayerHit } from '../shared/types';
 
 /**
@@ -135,10 +135,8 @@ export class PlayerIndex {
     this.saving = true;
     this.dirty = false;
     try {
-      const body = await stringifyChunked([...this.entries.values()]);
       await fs.promises.mkdir(path.dirname(this.file), { recursive: true });
-      await fs.promises.writeFile(`${this.file}.tmp`, body);
-      await fs.promises.rename(`${this.file}.tmp`, this.file);
+      await writeJsonChunked(this.file, [...this.entries.values()]);
     } catch (e) {
       this.dirty = true;
       console.warn('Could not save the player index:', (e as Error).message);

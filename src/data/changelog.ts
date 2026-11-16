@@ -24,7 +24,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     version: '3.130',
     date: '2026-11-16',
-    items: ['Server housekeeping. Clearing out old cached matches no longer freezes the server while it runs. The server now keeps timing figures, so the remaining short pauses can be tracked down.'],
+    items: ['Server housekeeping. Clearing out old cached matches no longer freezes the server, and statistics are now written to disk bit by bit instead of all at once, which removes the last regular pause of about half a second.'],
   },
   {
     version: '3.129',
