@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.178',
+    date: '2026-11-16',
+    items: ['"How the lane goes" charts use the same small-lead rule as the matchup numbers: a −74 gold or −1.3 CS lane is drawn grey, while a real deficit like −499 gold stays red.'],
+  },
+  {
     version: '3.177',
     date: '2026-11-16',
     items: ['Draft helpers: a "Copy link" button next to the roles copies the current draft (picks included), so you can paste it to your team during champion select.'],

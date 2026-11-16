@@ -6,7 +6,7 @@ import { callTone, matchupCall } from '../lib/matchupVerdict';
 import type { ChampionStats, Rated, StatsGroup } from '../../shared/types';
 import { api, ApiClientError } from '../lib/api';
 import { assets, championBySlug, champSlug, matchupPath, useChampionDetail, useStaticData, type ChampionDetail } from '../lib/ddragon';
-import { formatKda, kdaTone, pct, thousands, champClass, wlTone, sureTone } from '../lib/format';
+import { formatKda, kdaTone, pct, thousands, champClass, wlTone, sureTone, GOLD_QUIET, CS_QUIET, XP_QUIET } from '../lib/format';
 import { profilePath } from '../lib/riotId';
 import { getPlatform } from '../../shared/regions';
 import { GameImg, Tooltip } from '../components/ui/GameImg';
@@ -853,9 +853,7 @@ type MuSort = 'winRate' | 'games' | 'goldDiff15' | 'csDiff15' | 'xpDiff15';
  * A signed lead. Coloured by sign, except: `tone` overrides the colour (e.g. a matchup verdict's), and
  * leads smaller than `quiet` stay plain, since a 1-CS or 40-gold edge isn't worth painting red or green.
  */
-export const GOLD_QUIET = 100;
-export const CS_QUIET = 3;
-export const XP_QUIET = 200;
+export { GOLD_QUIET, CS_QUIET, XP_QUIET } from '../lib/format';
 export function Lead({ v, unit, decimals = 0, tone, quiet = 0 }: { v: number | null; unit: string; decimals?: number; tone?: string; quiet?: number }) {
   if (v == null) return <span className="text-faint">–</span>;
   const f = 10 ** decimals;

@@ -110,3 +110,8 @@ export function titleCase(s: string) {
 }
 
 export const multikill = (n: number) => (n >= 5 ? t('multikill.5') : n === 4 ? t('multikill.4') : n === 3 ? t('multikill.3') : n === 2 ? t('multikill.2') : '');
+
+/** Lane leads too small to paint green or red (a 1-CS or 40-gold edge at 15 minutes). Used by Lead and the lane charts. */
+export const GOLD_QUIET = 100;
+export const CS_QUIET = 3;
+export const XP_QUIET = 200;
