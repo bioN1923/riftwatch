@@ -17,3 +17,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/jump-button.png`, `demo/after-jump.png` and `demo/`.
+
+## Live
+- Deployed 20:49 local. The live bundle has v3.193 and the `profile.jumpSummary` key.
