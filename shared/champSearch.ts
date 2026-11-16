@@ -110,3 +110,32 @@ export function champAddressFix(path: string, search: string, champs: { id: stri
   if (ids.length === 2 && ids[0] === ids[1]) return null;
   return `/champions/${ids.join('/vs/')}${search}`;
 }
+
+const SCOPE_WORDS: Record<string, { role?: string; queue?: 'aram' | 'arena' }> = {
+  top: { role: 'TOP' },
+  jungle: { role: 'JUNGLE' },
+  jg: { role: 'JUNGLE' },
+  jng: { role: 'JUNGLE' },
+  jgl: { role: 'JUNGLE' },
+  mid: { role: 'MIDDLE' },
+  middle: { role: 'MIDDLE' },
+  bot: { role: 'BOTTOM' },
+  bottom: { role: 'BOTTOM' },
+  adc: { role: 'BOTTOM' },
+  support: { role: 'UTILITY' },
+  supp: { role: 'UTILITY' },
+  sup: { role: 'UTILITY' },
+  aram: { queue: 'aram' },
+  arena: { queue: 'arena' },
+};
+
+/**
+ * A trailing role or mode word in a champion search: "ahri mid", "lee sin jg", "jinx aram".
+ * Returns the champion part and the scope, or null when the last word isn't one (or is all there is).
+ */
+export function searchScope(query: string): { rest: string; role?: string; queue?: 'aram' | 'arena' } | null {
+  const m = /^(.+?)\s+([a-z]+)$/i.exec(query.trim());
+  if (!m) return null;
+  const scope = SCOPE_WORDS[m[2].toLowerCase()];
+  return scope ? { rest: m[1], ...scope } : null;
+}

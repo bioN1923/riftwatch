@@ -13,11 +13,12 @@ import { api } from '../lib/api';
 import { champClass, regionName, tierName } from '../lib/format';
 import { fadeIn } from '../lib/motion';
 import { t } from '../i18n';
-import { champHit } from '../lib/champSearch';
+import { champHit, searchScope } from '../lib/champSearch';
+import { RoleIcon, ROLE_LABEL } from './ui/RoleIcon';
 
 type Option =
   | { kind: 'player'; player: PlayerHit; source: 'favorite' | 'recent' | 'match' }
-  | { kind: 'champion'; championId: number; slug: string; name: string; title: string; tags: string[] }
+  | { kind: 'champion'; championId: number; slug: string; name: string; title: string; tags: string[]; scope?: { role?: string; queue?: 'aram' | 'arena' } }
   | { kind: 'matchup'; a: { id: number; slug: string; name: string }; b: { id: number; slug: string; name: string } }
   | { kind: 'go'; label: string };
 
@@ -126,13 +127,19 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
     const cq = squash(q);
     if (cq.length >= 2 && !q.includes('#') && sd) {
       // Nicknames and exact names first ("tf", "j4"), then names starting with the query, then containing it.
-      const buckets: Option[][] = [[], [], []];
-      for (const [id, c] of sd.champions) {
-        const hit = champHit(q, c);
-        if (hit != null) buckets[hit].push({ kind: 'champion', championId: id, slug: champSlug(c.id), name: c.name, title: c.title, tags: c.tags });
-      }
-      const byName = (a: Option, b: Option) => (a as { name: string }).name.localeCompare((b as { name: string }).name);
-      for (const b of buckets) champs.push(...b.sort(byName));
+      const find = (text: string, scope?: { role?: string; queue?: 'aram' | 'arena' }) => {
+        const buckets: Option[][] = [[], [], []];
+        for (const [id, c] of sd.champions) {
+          const hit = champHit(text, c);
+          if (hit != null) buckets[hit].push({ kind: 'champion', championId: id, slug: champSlug(c.id), name: c.name, title: c.title, tags: c.tags, scope });
+        }
+        const byName = (a: Option, b: Option) => (a as { name: string }).name.localeCompare((b as { name: string }).name);
+        return buckets.flatMap((b) => b.sort(byName));
+      };
+      // "ahri mid", "lee sin jg", "jinx aram": the champion page in that role or mode.
+      const sc = searchScope(q);
+      const scoped = sc && squash(sc.rest).length >= 2 ? find(sc.rest, { role: sc.role, queue: sc.queue }) : [];
+      champs.push(...(scoped.length ? scoped : find(q)));
     }
     // "ahri vs zed", "ahri v zed", "ahri - zed": straight to that matchup when both sides name a champion.
     const vs = !q.includes('#') && sd ? /^(.+?)\s+(?:vs\.?|v|-|–)\s+(.+)$/i.exec(q.trim()) : null;
@@ -184,7 +191,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
       setHint(t('search.hintEmpty'));
       return;
     }
-    if (o.kind === 'champion') navigate(`/champions/${o.slug}`);
+    if (o.kind === 'champion') navigate(`/champions/${o.slug}${o.scope?.queue ? `?queue=${o.scope.queue}` : o.scope?.role ? `?role=${o.scope.role}` : ''}`);
     else if (o.kind === 'matchup') navigate(`/champions/${o.a.slug}/vs/${o.b.slug}`);
     else if (o.kind === 'go') navigate(profilePath(platform.id, parseRiotId(q, platform.defaultTag)!));
     else navigate(profilePath(o.player.platform, o.player));
@@ -322,9 +329,11 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
                     </span>
                   </span>
                   <span className="flex shrink-0 items-center gap-1 rounded bg-sunken px-1.5 py-0.5 font-display text-sm font-bold text-gold">
-                    <Swords className="size-3.5" aria-hidden />
+                    {o.scope?.role ? <RoleIcon role={o.scope.role} size={14} /> : <Swords className="size-3.5" aria-hidden />}
                     {/* Phones: icon only, so the name isn't squeezed; the word stays for screen readers. */}
-                    <span className="sr-only sm:not-sr-only">{t('search.champion')}</span>
+                    <span className="sr-only sm:not-sr-only">
+                      {o.scope?.role ? ROLE_LABEL[o.scope.role] : o.scope?.queue === 'aram' ? 'ARAM' : o.scope?.queue === 'arena' ? 'Arena' : t('search.champion')}
+                    </span>
                   </span>
                 </li>
               );

@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.127](v3.127/CHANGES.md) | 2026-11-16 | Search: "ahri mid", "jinx aram" open that role or mode |
 | [v3.126](v3.126/CHANGES.md) | 2026-11-16 | Search: "ahri vs zed" opens the matchup |
 | [v3.125](v3.125/CHANGES.md) | 2026-11-16 | Footer "Install app" button; demo remake timelines end with the game |
 | [v3.124](v3.124/CHANGES.md) | 2026-11-16 | Arena tier list: average place column; no empty ban column |

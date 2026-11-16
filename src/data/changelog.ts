@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.127',
+    date: '2026-11-16',
+    items: ['Search takes a role or mode after the champion. “ahri mid”, “lee sin jg”, “mf adc”, “jinx aram” or “kai arena” opens the champion page straight in that role or mode.'],
+  },
+  {
     version: '3.126',
     date: '2026-11-16',
     items: ['The search box understands matchups. Type “ahri vs zed”, “mf v cait” or “lee sin - j4” and the first suggestion opens that matchup page. Nicknames work on both sides.'],
