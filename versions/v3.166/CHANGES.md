@@ -15,3 +15,7 @@
 - a11y: `{}`.
 - Click test: the Stats tab clicked through ARAM → All → Arena → Ranked Solo → All with 0 page errors.
 - Screenshots: `demo/` and `demo/movers.png`.
+
+## Live check (2026-11-16 14:03 local)
+- The live index serves `index-Dbobm9QE.js`, and its Champions chunk contains `mv.noneDown`.
+- Ranked patch 16.22 is at 25,137 games, up from 25,054 at 13:44: still about 4–7 a minute.
