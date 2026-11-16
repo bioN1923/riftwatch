@@ -28,3 +28,6 @@ On a phone, images were most of each page's weight: about 1.5 MB on a profile an
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/match-rows-phone.png`, `demo/match-rows-desktop.png` and `demo/`.
+
+## Live
+- Deployed 22:02 local (the build took longer than usual). The live bundle has `3.199` and the `champion/loading/` URL.
