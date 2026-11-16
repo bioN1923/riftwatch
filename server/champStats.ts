@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { stringifyChunked } from './chunkedJson';
 import path from 'node:path';
 import type { BlindPicks, Benchmark, ChampionStats, MatchSummary, MatchTimeline, MatchupStats, PatchMover, Rated, StatsGroup, TierList, TierRow } from '../shared/types';
 import { itemKind } from './items';
@@ -354,6 +355,7 @@ export class ChampionStatsStore {
   private seenTl = new Set<string>();
   private laneDone = new Set<string>();
   private dirty = false;
+  private saving = false;
   collecting = false;
 
   constructor(private file: string | null) {
@@ -375,7 +377,7 @@ export class ChampionStatsStore {
       } catch {
         /* first run */
       }
-      setInterval(() => this.flush(), 30_000).unref();
+      setInterval(() => void this.flushAsync(), 30_000).unref();
     }
   }
 
@@ -919,43 +921,81 @@ export class ChampionStatsStore {
     this.dirty = true;
   }
 
-  flush() {
-    if (!this.dirty || !this.file) return;
-    this.dirty = false;
-    // Trim long tails so the file stays small.
-    for (const groups of Object.values(this.s.patches)) {
-      for (const g of Object.values(groups)) {
-        for (const c of Object.values(g!.champs)) {
-          for (const r of Object.values(c.roles)) {
-            if (r.pl && Object.keys(r.pl).length > 60) r.pl = Object.fromEntries(Object.entries(r.pl).sort((x, y) => y[1].g - x[1].g).slice(0, 50));
-            for (const key of ['runes', 'core', 's4', 's5', 's6', 'start', 'spells', 'boots'] as const) {
-              const entries = Object.entries(r[key]);
-              if (entries.length > 60) r[key] = Object.fromEntries(entries.sort((a, b) => b[1].g - a[1].g).slice(0, 40));
-            }
-            if (r.bv) for (const k of Object.keys(r.bv)) if (!r.core[k]) delete r.bv[k];
-            if (r.ar) {
-              delete r.ar.aug;
-              if (r.ar.it && Object.keys(r.ar.it).length > 60) r.ar.it = Object.fromEntries(Object.entries(r.ar.it).sort((a, b) => b[1] - a[1]).slice(0, 40));
-              const par = Object.entries(r.ar.par);
-              if (par.length > 80) r.ar.par = Object.fromEntries(par.sort((a, b) => b[1].g - a[1].g).slice(0, 60));
-            }
-            for (const mu of Object.values(r.mu ?? {})) {
-              for (const key of ['runes', 'spells', 'start', 'core', 'boots', 's4', 's5', 's6'] as const) {
-                const entries = Object.entries(mu[key]);
-                if (entries.length > 24) mu[key] = Object.fromEntries(entries.sort((a, b) => b[1].g - a[1].g).slice(0, 16));
-              }
-              if (mu.bv) for (const k of Object.keys(mu.bv)) if (!mu.core[k]) delete mu.bv[k];
-            }
-          }
-        }
-      }
+  /** Trim long tails so the file stays small. */
+  private trimRole(r: RoleAgg) {
+    if (r.pl && Object.keys(r.pl).length > 60) r.pl = Object.fromEntries(Object.entries(r.pl).sort((x, y) => y[1].g - x[1].g).slice(0, 50));
+    for (const key of ['runes', 'core', 's4', 's5', 's6', 'start', 'spells', 'boots'] as const) {
+      const entries = Object.entries(r[key]);
+      if (entries.length > 60) r[key] = Object.fromEntries(entries.sort((a, b) => b[1].g - a[1].g).slice(0, 40));
     }
+    if (r.bv) for (const k of Object.keys(r.bv)) if (!r.core[k]) delete r.bv[k];
+    if (r.ar) {
+      delete r.ar.aug;
+      if (r.ar.it && Object.keys(r.ar.it).length > 60) r.ar.it = Object.fromEntries(Object.entries(r.ar.it).sort((a, b) => b[1] - a[1]).slice(0, 40));
+      const par = Object.entries(r.ar.par);
+      if (par.length > 80) r.ar.par = Object.fromEntries(par.sort((a, b) => b[1].g - a[1].g).slice(0, 60));
+    }
+    for (const mu of Object.values(r.mu ?? {})) {
+      for (const key of ['runes', 'spells', 'start', 'core', 'boots', 's4', 's5', 's6'] as const) {
+        const entries = Object.entries(mu[key]);
+        if (entries.length > 24) mu[key] = Object.fromEntries(entries.sort((a, b) => b[1].g - a[1].g).slice(0, 16));
+      }
+      if (mu.bv) for (const k of Object.keys(mu.bv)) if (!mu.core[k]) delete mu.bv[k];
+    }
+  }
+
+  /** Everything before a save: trimmed tails, the four newest patches, capped seen-lists. */
+  private prepare() {
     // Keep the four most recent patches.
     const keep = Object.keys(this.s.patches).sort(patchCmp).slice(0, 4);
     for (const p of Object.keys(this.s.patches)) if (!keep.includes(p)) delete this.s.patches[p];
     this.s.seen = [...this.seen].slice(-150_000);
     this.s.seenTl = [...this.seenTl].slice(-150_000);
     this.s.laneDone = [...this.laneDone].slice(-150_000);
+  }
+
+  /**
+   * The regular save, every 30 seconds. Trimming and writing tens of megabytes in one go blocked
+   * every request for one to two seconds; this pauses between champions and serialises in slices
+   * (stringifyChunked), then writes to a temporary file and renames it, so a crash mid-write can't
+   * leave half a file behind.
+   */
+  async flushAsync() {
+    if (!this.dirty || !this.file || this.saving) return;
+    this.saving = true;
+    this.dirty = false;
+    try {
+      let t0 = performance.now();
+      for (const groups of Object.values(this.s.patches))
+        for (const g of Object.values(groups))
+          for (const c of Object.values(g!.champs)) {
+            for (const r of Object.values(c.roles)) this.trimRole(r);
+            if (performance.now() - t0 > 8) {
+              await new Promise<void>((r) => setImmediate(r));
+              t0 = performance.now();
+            }
+          }
+      this.prepare();
+      const body = await stringifyChunked(this.s);
+      await fs.promises.mkdir(path.dirname(this.file), { recursive: true });
+      const tmp = `${this.file}.tmp`;
+      await fs.promises.writeFile(tmp, body);
+      await fs.promises.rename(tmp, this.file);
+    } catch (e) {
+      this.dirty = true;
+      console.warn('Could not save champion stats:', (e as Error).message);
+    } finally {
+      this.saving = false;
+    }
+  }
+
+  /** Shutdown path: one blocking save. */
+  flush() {
+    // A save still in flight at shutdown never finishes (the process exits), so write anyway.
+    if ((!this.dirty && !this.saving) || !this.file) return;
+    this.dirty = false;
+    for (const groups of Object.values(this.s.patches)) for (const g of Object.values(groups)) for (const c of Object.values(g!.champs)) for (const r of Object.values(c.roles)) this.trimRole(r);
+    this.prepare();
     try {
       fs.mkdirSync(path.dirname(this.file), { recursive: true });
       fs.writeFileSync(this.file, JSON.stringify(this.s));

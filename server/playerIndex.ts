@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { stringifyChunked } from './chunkedJson';
 import type { PlayerHit } from '../shared/types';
 
 /**
@@ -33,7 +34,7 @@ export class PlayerIndex {
     } catch {
       /* first run */
     }
-    setInterval(() => this.flush(), 15_000).unref();
+    setInterval(() => void this.flushAsync(), 15_000).unref();
   }
 
   /** Players who hid their profile: never suggested, never stored. */
@@ -126,8 +127,30 @@ export class PlayerIndex {
       .map(({ e }) => ({ platform: e.platform, gameName: e.gameName, tagLine: e.tagLine, profileIconId: e.profileIconId, level: e.level, tier: e.tier, rank: e.rank, lp: e.lp }));
   }
 
+  private saving = false;
+
+  /** Regular save: serialised in slices and written to a temporary file, so requests don't stall. */
+  async flushAsync() {
+    if (!this.dirty || this.saving) return;
+    this.saving = true;
+    this.dirty = false;
+    try {
+      const body = await stringifyChunked([...this.entries.values()]);
+      await fs.promises.mkdir(path.dirname(this.file), { recursive: true });
+      await fs.promises.writeFile(`${this.file}.tmp`, body);
+      await fs.promises.rename(`${this.file}.tmp`, this.file);
+    } catch (e) {
+      this.dirty = true;
+      console.warn('Could not save the player index:', (e as Error).message);
+    } finally {
+      this.saving = false;
+    }
+  }
+
+  /** Shutdown path: one blocking save. */
   flush() {
-    if (!this.dirty) return;
+    // A save still in flight at shutdown never finishes (the process exits), so write anyway.
+    if (!this.dirty && !this.saving) return;
     this.dirty = false;
     try {
       fs.mkdirSync(path.dirname(this.file), { recursive: true });

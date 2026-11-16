@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.129',
+    date: '2026-11-16',
+    items: ['Faster responses. The server used to save its champion statistics and player index in one go, freezing every page load for a second or two about twice a minute. It now saves in small slices between requests.'],
+  },
+  {
     version: '3.128',
     date: '2026-11-16',
     items: ['Profiles describe the recent champion pool next to the last-20 record. “One-trick: Yasuo in 14 of 20” appears when one champion takes 60% of the games, and “Wide pool: 11 champions in 18 games” when there are ten or more.'],
