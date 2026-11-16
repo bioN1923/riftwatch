@@ -317,8 +317,13 @@ function Header({ p, side }: { p: Profile; side: 'a' | 'b' }) {
         <GameImg src={as.profileIcon(p.summoner.profileIconId)} alt="" size={44} rounded="md" />
         <span className="min-w-0">
           <span className="block truncate font-display text-xl font-bold leading-tight group-hover:text-gold sm:text-2xl">{p.account.gameName}</span>
-          <span className="block truncate text-xs text-muted">
-            #{p.account.tagLine} · {regionName(p.platform)}
+          {/* Phones: tag and region on two lines; one line ("#EUW · Europe West") had no room and got cut. */}
+          <span className="block text-xs leading-snug text-muted">
+            #{p.account.tagLine}
+            <span className="max-sm:block">
+              <span className="max-sm:hidden"> · </span>
+              {regionName(p.platform)}
+            </span>
           </span>
         </span>
       </Link>
@@ -331,7 +336,7 @@ function Header({ p, side }: { p: Profile; side: 'a' | 'b' }) {
                 {tierName(solo.tier)} {APEX.has(solo.tier) ? '' : solo.rank}
               </p>
               <p className="num text-xs text-muted">
-                {t('common.lp', { lp: solo.leaguePoints })} · <span className={clsx('font-semibold', sureTone(wr, games))}>{pct(wr)}</span> · {t('common.games', { count: games })}
+                {t('common.lp', { lp: solo.leaguePoints })} · <span className={clsx('font-semibold', sureTone(wr, games))}>{pct(wr)}</span> · <span className="whitespace-nowrap">{t('common.games', { count: games })}</span>
               </p>
               <LadderPlace entry={solo} ladder={{ platform: p.platform, puuid: p.account.puuid, queue: 'solo' }} />
             </div>

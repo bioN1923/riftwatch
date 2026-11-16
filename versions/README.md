@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.195](v3.195/CHANGES.md) | 2026-11-16 | Compare cards: no cut-off region on phones |
 | [v3.194](v3.194/CHANGES.md) | 2026-11-16 | Best with: full names on phones |
 | [v3.193](v3.193/CHANGES.md) | 2026-11-16 | Profile on phones: summary reachable, no runaway auto-load |
 | [v3.192](v3.192/CHANGES.md) | 2026-11-16 | Line charts: no clipped end labels on phones |
