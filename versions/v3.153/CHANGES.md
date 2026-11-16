@@ -10,3 +10,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/` and `demo/damage-key.png`.
+
+## Live check (2026-11-16 11:37 local)
+- The live index serves `index-Dy0cQqYm.js`, and its Profile chunk contains `pg.dealtShort`.
