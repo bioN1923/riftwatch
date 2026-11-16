@@ -17,3 +17,6 @@
 - `tsc`, `vitest` (183) and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/` (`07-live-game.jpg`, `05-profile.jpg`).
+
+## Live check (2026-11-16 11:13 local)
+- The live index serves `index-CDOU-Pa-.js`. Its Profile chunk no longer has the old `>=.55 → text-win` live-game rule; this is a check for absence, since `sureTone` is minified.
