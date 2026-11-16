@@ -9,7 +9,7 @@ import { ArrowLeftRight } from 'lucide-react';
 import type { MatchupStats } from '../../shared/types';
 import { api, ApiClientError } from '../lib/api';
 import { assets, championBySlug, champSlug, matchupPath, useStaticData } from '../lib/ddragon';
-import { formatKda, pct, thousands } from '../lib/format';
+import { formatKda, pct, sureTone, thousands } from '../lib/format';
 import { fadeIn } from '../lib/motion';
 import { GameImg } from '../components/ui/GameImg';
 import { ROLE_LABEL } from '../components/ui/RoleIcon';
@@ -211,7 +211,8 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
               {t('mp.others', { role: roleName.toLowerCase(), champion: me?.name ?? '' })}
             </h2>
             <ul className="mt-3 flex flex-wrap gap-2">
-              {m.others.map((o) => {
+              {/* Most-played first; colour only when the rate is clearly off 50% for its games (a 1-game 0% stays grey). */}
+              {[...m.others].sort((x, y) => y.games - x.games).map((o) => {
                 const c = a.champion(o.championId);
                 const low = o.games < LOW_SAMPLE;
                 return (
@@ -222,7 +223,8 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
                     >
                       <GameImg src={c.url} alt="" size={28} rounded="sm" />
                       <span className="text-sm font-medium group-hover:text-gold">{c.name}</span>
-                      <span className={clsx('num text-xs font-semibold', low ? 'text-faint' : o.winRate >= 0.5 ? 'text-win' : 'text-loss')}>{pct(o.winRate)}</span>
+                      <span className={clsx('num text-xs font-semibold', low ? 'text-faint' : sureTone(o.winRate, o.games))}>{pct(o.winRate)}</span>
+                      <span className="num text-xs text-faint">{t('common.games', { count: o.games })}</span>
                     </Link>
                   </li>
                 );

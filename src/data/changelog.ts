@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.150',
+    date: '2026-11-16',
+    items: ['Matchup page: "Other matchups" now shows how many games each one is based on, lists the most-played first, and only colours a win rate green or red when it is clearly off 50%. One-game 0% and 100% results no longer look like strong verdicts.'],
+  },
+  {
     version: '3.149',
     date: '2026-11-16',
     items: ['What\'s new: updates are grouped under one heading per day, and the page opens with the latest twelve (plus anything you haven\'t seen yet), with a button for older ones. It used to be one very long list.'],
