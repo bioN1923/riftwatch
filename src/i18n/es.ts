@@ -1240,5 +1240,13 @@ const dict: Record<string, string> = {
   "cmp.roleNote": "Barras: parte de las partidas cargadas en cada rol. Derecha: partidas y porcentaje de victorias en ese rol (con color solo si la diferencia con el 50% supera al azar).",
   "stats.champsAll": "Ver los {count} campeones ({hidden} más)",
   "stats.champsFewer": "Ver menos",
+  "duo.how.title": "Cómo funciona",
+  "duo.how.1t": "Tus partidas recientes",
+  "duo.how.1": "Riftwatch lee tus últimas partidas clasificatorias y reúne a los jugadores que encontraste en ellas, en tu equipo o en el rival.",
+  "duo.how.2t": "Cerca de tu rango",
+  "duo.how.2": "Se queda con los jugadores que suelen jugar un rol distinto al tuyo y están cerca de tu rango.",
+  "duo.how.3t": "Puntuados por afinidad",
+  "duo.how.3": "Cada uno recibe una puntuación por rango, cómo encajan vuestros roles, cuándo jugáis, estilo de campeones, peleas, visión y objetivos.",
+  "duo.how.note": "Solo se usan datos públicos de las partidas. Riftwatch no contacta a nadie; escribirles depende de ti.",
 };
 export default dict;

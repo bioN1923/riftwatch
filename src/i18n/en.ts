@@ -1240,5 +1240,13 @@ const en = {
   "cmp.roleNote": "Bars: share of their loaded games in each role. Right: games and win rate in that role (coloured only when the gap from 50% is bigger than chance).",
   "stats.champsAll": "Show all {count} champions ({hidden} more)",
   "stats.champsFewer": "Show fewer",
+  "duo.how.title": "How it works",
+  "duo.how.1t": "Your recent games",
+  "duo.how.1": "Riftwatch reads your latest ranked games and collects the players you met in them, on your team or the other one.",
+  "duo.how.2t": "Around your rank",
+  "duo.how.2": "It keeps players who mostly play a different role from yours and are close to your rank.",
+  "duo.how.3t": "Scored for fit",
+  "duo.how.3": "Each one gets a score for rank, how your roles pair, when you both play, champion styles, fights, vision and objectives.",
+  "duo.how.note": "Only public match data is used. Riftwatch doesn’t contact anyone; reaching out is up to you.",
 };
 export default en;

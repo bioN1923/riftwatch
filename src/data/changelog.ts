@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.146',
+    date: '2026-11-16',
+    items: ['Duo finder: before you enter a Riot ID, the page explains in three steps how it picks players, and notes that it only uses public match data and never contacts anyone.'],
+  },
+  {
     version: '3.145',
     date: '2026-11-16',
     items: ['Tier list: when sorted by tier, a stronger line marks where each tier ends (S+, S, A …), so the tiers are easier to see as you scroll.'],

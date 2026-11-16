@@ -1276,5 +1276,13 @@ const dict: Record<string, string> = {
   "cmp.roleNote": "Bare: cât din meciurile încărcate a jucat pe fiecare rol. Dreapta: meciuri și rata de victorie pe acel rol (colorată doar când diferența față de 50% e mai mare decât hazardul).",
   "stats.champsAll": "Arată toți cei {count} campioni (încă {hidden})",
   "stats.champsFewer": "Arată mai puțini",
+  "duo.how.title": "Cum funcționează",
+  "duo.how.1t": "Meciurile tale recente",
+  "duo.how.1": "Riftwatch citește ultimele tale meciuri ranked și adună jucătorii întâlniți în ele, din echipa ta sau din cealaltă.",
+  "duo.how.2t": "În jurul rangului tău",
+  "duo.how.2": "Păstrează jucătorii care joacă mai ales alt rol decât tine și au un rang apropiat.",
+  "duo.how.3t": "Punctați după potrivire",
+  "duo.how.3": "Fiecare primește un scor pentru rang, cum se potrivesc rolurile, când jucați amândoi, stilul campionilor, lupte, viziune și obiective.",
+  "duo.how.note": "Se folosesc doar date publice din meciuri. Riftwatch nu contactează pe nimeni; asta rămâne la tine.",
 };
 export default dict;

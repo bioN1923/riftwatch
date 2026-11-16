@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { ChevronDown, HeartHandshake, Scale, X } from 'lucide-react';
+import { ChevronDown, Filter, HeartHandshake, History, Scale, X } from 'lucide-react';
 import type { MatchPage, MatchSummary, ScoutInfo } from '../../shared/types';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api } from '../lib/api';
@@ -36,8 +36,39 @@ export function DuoPage() {
       <h1 className="font-display text-5xl font-extrabold leading-none tracking-tight">{t('duo.pageTitle')}</h1>
       <p className="mt-2 max-w-2xl text-sm text-muted">{t('duo.lead')}</p>
       <PlayerForm key={`${platform}/${id ? querySlug(id) : ''}`} platform={platform} id={id} onSubmit={(p, i) => setParams({ region: p, player: querySlug(i) })} />
-      {platform && id && <Results platform={platform} id={id} />}
+      {platform && id ? <Results platform={platform} id={id} /> : <HowItWorks />}
     </div>
+  );
+}
+
+/** Shown before a player is picked: what the finder does, in three steps, so the empty page isn't blank. */
+function HowItWorks() {
+  const steps = [
+    { icon: History, title: t('duo.how.1t'), body: t('duo.how.1') },
+    { icon: Filter, title: t('duo.how.2t'), body: t('duo.how.2') },
+    { icon: HeartHandshake, title: t('duo.how.3t'), body: t('duo.how.3') },
+  ];
+  return (
+    <section className="mt-10" aria-labelledby="duo-how-h">
+      <h2 id="duo-how-h" className="panel-title">
+        {t('duo.how.title')}
+      </h2>
+      <ol className="mt-3 grid gap-3 md:grid-cols-3">
+        {steps.map(({ icon: Icon, title, body }, i) => (
+          <li key={title} className="panel p-4">
+            <p className="flex items-center gap-2 font-display text-lg font-bold">
+              <span className="num grid size-6 place-items-center rounded-full border border-line-strong text-xs text-gold" aria-hidden>
+                {i + 1}
+              </span>
+              <Icon className="size-4 text-muted" aria-hidden />
+              {title}
+            </p>
+            <p className="mt-1.5 text-sm text-muted">{body}</p>
+          </li>
+        ))}
+      </ol>
+      <p className="mt-3 text-xs text-faint">{t('duo.how.note')}</p>
+    </section>
   );
 }
 
