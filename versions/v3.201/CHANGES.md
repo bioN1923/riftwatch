@@ -20,3 +20,6 @@ A Playwright run at 390 px on 10 pages. Every `/api/*` call returned a non-JSON 
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/*-error.png` and `demo/`.
+
+## Live
+- Deployed 22:24 local. The live entry carries `3.201`. Since v3.198 the changelog text lives in the lazy What's new chunk, so live checks now look for the version string.
