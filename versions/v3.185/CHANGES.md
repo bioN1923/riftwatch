@@ -16,3 +16,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/best-games-phone.png` and `demo/`.
+
+## Live
+- Deployed 18:02 local. The live bundle has v3.185 and the new English hint.
