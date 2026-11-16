@@ -26,3 +26,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`.
+
+## Live
+- Deployed 18:37 local. The live bundle has v3.188 and the new changelog line.
