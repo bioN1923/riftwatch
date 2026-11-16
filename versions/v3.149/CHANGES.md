@@ -12,3 +12,6 @@
 - a11y: `{}`.
 - Click test: 12 entries become 36 after one click.
 - Screenshots: `demo/` and `demo/changelog-days.png`.
+
+## Live check (2026-11-16 10:54 local)
+- The live index serves `index-DISKBjEy.js`, and its Changelog chunk contains `cl.older` (the paging).
