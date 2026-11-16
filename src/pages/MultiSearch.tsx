@@ -289,14 +289,18 @@ function PlayerCard({ platform, id, duos }: { platform: string; id: RiotId; duos
             const slug = sd?.champions.get(c.championId)?.id;
             const ratio = kdaRatio(c.kills, c.deaths, c.assists);
             return (
-              <li key={c.championId} className="flex items-center gap-2 text-sm">
-                <GameImg src={ch.url} alt="" size={22} rounded="sm" />
-                <Link to={slug ? `/champions/${champSlug(slug)}` : '#'} className="min-w-0 flex-1 truncate hover:text-gold">
-                  {ch.name}
-                </Link>
-                <span className="num text-xs text-muted">{c.games}</span>
-                <span className={clsx('num w-9 text-right text-xs font-semibold', wlTone(c.wins / c.games, c.games))}>{pct(c.wins / c.games)}</span>
-                <span className={clsx('num w-9 text-right text-xs', kdaTone(ratio))}>{formatKda(ratio)}</span>
+              // Name on its own line (narrow 5-up cards cut names like Kha'Zix or Miss Fortune); the numbers go underneath.
+              <li key={c.championId} className="flex items-center gap-2">
+                <GameImg src={ch.url} alt="" size={28} rounded="sm" />
+                <div className="min-w-0 flex-1 leading-tight">
+                  <Link to={slug ? `/champions/${champSlug(slug)}` : '#'} className="block truncate text-sm hover:text-gold" title={ch.name}>
+                    {ch.name}
+                  </Link>
+                  <span className="num block truncate text-xs text-muted">
+                    {t('common.games', { count: c.games })} · <span className={clsx('font-semibold', wlTone(c.wins / c.games, c.games))}>{pct(c.wins / c.games)}</span> ·{' '}
+                    <span className={kdaTone(ratio)}>{formatKda(ratio)}</span>
+                  </span>
+                </div>
               </li>
             );
           })}

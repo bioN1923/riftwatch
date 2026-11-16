@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.148](v3.148/CHANGES.md) | 2026-11-16 | Multi-search: full champion names on player cards |
 | [v3.147](v3.147/CHANGES.md) | 2026-11-16 | Profile champion pool: bar length by games played |
 | [v3.146](v3.146/CHANGES.md) | 2026-11-16 | Duo finder: "How it works" on the empty page |
 | [v3.145](v3.145/CHANGES.md) | 2026-11-16 | Tier list: stronger line between tiers |
