@@ -20,3 +20,6 @@ Only one hit remained: the compare player cards, "#EUW · Europe W…". The v3.1
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/compare-cards-phone.png` and `demo/`.
+
+## Live
+- Deployed 21:09 local. The live bundle has v3.195 and the new changelog line.
