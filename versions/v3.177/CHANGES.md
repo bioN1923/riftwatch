@@ -16,3 +16,6 @@
   - an empty team draft shows no button;
   - the profile header still has its button.
 - Screenshots: `demo/team-draft-copy.png` and `demo/`.
+
+## Live check (2026-11-16 16:38 local)
+- The live index serves `index-l6nFz0_P.js`, and its TeamDraft chunk has the role row with the copy button.
