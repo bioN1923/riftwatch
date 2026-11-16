@@ -12,3 +12,6 @@
 
 ## Note
 - The planned look at the expanded match view was set aside: the scripted click opened the wrong row, and the Items page had a clear gap. It's still on the list.
+
+## Live check (2026-11-16 11:26 local)
+- The live index serves `index-CcIzyv63.js`, and its Items chunk contains `it.cost`.
