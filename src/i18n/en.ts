@@ -1252,5 +1252,6 @@ const en = {
   "cl.updates_other": "{count} updates",
   "cl.older_one": "Show older updates ({count} more)",
   "cl.older_other": "Show older updates ({count} more)",
+  "it.cost": "{gold} gold",
 };
 export default en;

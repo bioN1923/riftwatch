@@ -1290,5 +1290,6 @@ const dict: Record<string, string> = {
   "cl.older_one": "Arată actualizările mai vechi (încă {count})",
   "cl.older_few": "Arată actualizările mai vechi (încă {count})",
   "cl.older_other": "Arată actualizările mai vechi (încă {count})",
+  "it.cost": "{gold} aur",
 };
 export default dict;

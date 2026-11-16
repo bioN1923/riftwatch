@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.152',
+    date: '2026-11-16',
+    items: ['Items: each row now has a small bar showing how often the item is built compared with the most-built one, and its full gold cost.'],
+  },
+  {
     version: '3.151',
     date: '2026-11-16',
     items: [

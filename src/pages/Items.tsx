@@ -135,8 +135,10 @@ export function ItemsPage() {
         <>
         {missing && <p className="mt-6 rounded border border-line bg-surface px-3 py-2 text-sm text-muted">{t('it.missing', { item: a.item(open!).name || String(open) })}</p>}
         <ul className={clsx('mt-4 divide-y divide-line rounded border border-line bg-surface transition-opacity duration-200', q.isPlaceholderData && 'pointer-events-none opacity-60')} aria-busy={q.isPlaceholderData}>
-          {rows.map((r) => {
+          {rows.map((r, _i, all) => {
             const it = a.item(r.id);
+            // Bar scaled to the most-built item in view, so the drop-off down the list is visible at a glance.
+            const top = Math.max(...all.map((x) => x.share));
             const expanded = open === r.id;
             return (
               <li key={r.id} id={`item-${r.id}`} className="scroll-mt-20">
@@ -150,7 +152,11 @@ export function ItemsPage() {
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-medium">{it.name}</span>
                     <span className="block text-xs text-muted">{t('it.share', { pct: pct(r.share, 1), count: thousands(r.games) })}</span>
+                    <span className="mt-1 block h-1 w-full max-w-56 overflow-hidden rounded-full bg-sunken" aria-hidden>
+                      <span className="block h-full rounded-full bg-gold/70" style={{ width: `${top ? (r.share / top) * 100 : 0}%` }} />
+                    </span>
                   </span>
+                  {it.gold > 0 && <span className="num hidden w-20 shrink-0 text-right text-xs text-muted md:block">{t('it.cost', { gold: thousands(it.gold) })}</span>}
                   <span className="hidden items-center gap-1 sm:flex" aria-hidden>
                     {r.champions.slice(0, 5).map((c) => (
                       <GameImg key={`${c.championId}-${c.role}`} src={a.champion(c.championId).url} alt="" size={26} rounded="sm" />
