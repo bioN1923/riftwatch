@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.141',
+    date: '2026-11-16',
+    items: [
+      'Compare: the "By role" panel now names each role, lists the most-played roles first and leaves out roles neither player plays.',
+      'Compare: each role also shows how many games that player has there and their win rate in it, coloured only when the sample is big enough to mean something.',
+    ],
+  },
+  {
     version: '3.140',
     date: '2026-11-16',
     items: [

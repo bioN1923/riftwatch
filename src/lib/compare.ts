@@ -167,3 +167,17 @@ export function roleGap(a: Pick<PlayerSummary, 'games' | 'ov'>, b: Pick<PlayerSu
 
 /** Rows that compare fairly across roles. */
 export const ROLE_NEUTRAL = new Set(['wr', 'kda']);
+
+/** Games and wins per role among the loaded (non-remake) games, for the role panel. */
+export function roleRecord(matches: MatchSummary[], puuid: string): Record<string, { games: number; wins: number }> {
+  const out: Record<string, { games: number; wins: number }> = {};
+  for (const m of matches) {
+    if (m.remake) continue;
+    const p = me(m, puuid);
+    if (!p || !p.position) continue;
+    const r = (out[p.position] ??= { games: 0, wins: 0 });
+    r.games++;
+    if (p.win) r.wins++;
+  }
+  return out;
+}

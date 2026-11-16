@@ -1237,5 +1237,6 @@ const dict: Record<string, string> = {
   "live.buildInto": "Build habituel contre {champion} :",
   "home.tool.items": "Chaque objet complet : sa fréquence et qui le construit le plus.",
   "search.item": "Objet",
+  "cmp.roleNote": "Barres : part des parties chargées à chaque rôle. À droite : parties et taux de victoire à ce rôle (coloré seulement si l’écart à 50% dépasse le hasard).",
 };
 export default dict;

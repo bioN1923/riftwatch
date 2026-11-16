@@ -951,3 +951,12 @@ describe('wlTone', () => {
     expect(wlTone(0.4, 20)).toBe('text-loss');
   });
 });
+
+import { roleRecord } from '../src/lib/compare';
+describe('roleRecord', () => {
+  it('counts games and wins per role, skipping remakes', () => {
+    const mk = (pos: string, win: boolean, remake = false) => ({ remake, participants: [{ puuid: 'x', position: pos, win }] }) as never;
+    const r = roleRecord([mk('MIDDLE', true), mk('MIDDLE', false), mk('TOP', true), mk('TOP', true, true), mk('', true)], 'x');
+    expect(r).toEqual({ MIDDLE: { games: 2, wins: 1 }, TOP: { games: 1, wins: 1 } });
+  });
+});

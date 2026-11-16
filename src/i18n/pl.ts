@@ -1309,5 +1309,6 @@ const dict: Record<string, string> = {
   "live.buildInto": "Zwykły build przeciw {champion}:",
   "home.tool.items": "Każdy ukończony przedmiot: jak często jest budowany i kto buduje go najczęściej.",
   "search.item": "Przedmiot",
+  "cmp.roleNote": "Paski: udział wczytanych gier na każdej roli. Po prawej: gry i odsetek wygranych na tej roli (kolor tylko, gdy różnica od 50% jest większa niż przypadek).",
 };
 export default dict;

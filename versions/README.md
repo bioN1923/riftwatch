@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.141](v3.141/CHANGES.md) | 2026-11-16 | Compare: labelled role panel with per-role games and win rate |
 | [v3.140](v3.140/CHANGES.md) | 2026-11-16 | Search finds items; Items in home tools and phone menu |
 | [v3.139](v3.139/CHANGES.md) | 2026-11-16 | Live game: usual build into the lane opponent |
 | [v3.138](v3.138/CHANGES.md) | 2026-11-16 | Matchup pages: Build at a glance |

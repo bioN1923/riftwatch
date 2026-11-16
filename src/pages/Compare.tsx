@@ -7,12 +7,12 @@ import type { MatchSummary, Profile } from '../../shared/types';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api, ApiClientError } from '../lib/api';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
-import { compact, decimal, formatKda, kdaRatio, kdaTone, multikill, pct, regionName, thousands, tierName, wlTone } from '../lib/format';
+import { compact, decimal, formatKda, kdaRatio, kdaTone, multikill, pct, regionName, sureTone, thousands, tierName, wlTone } from '../lib/format';
 import { fromSlug, parseRiotId, profilePath, querySlug, type RiotId } from '../lib/riotId';
 import { useFavorites, useRecent, useRegion, type SavedPlayer } from '../lib/storage';
 import { me, result } from '../lib/stats';
 import { personalRecords, type PersonalRecord } from '../lib/records';
-import { clearEdge, ROLE_NEUTRAL, roleGap, summarize, together, type PlayerSummary } from '../lib/compare';
+import { clearEdge, ROLE_NEUTRAL, roleGap, roleRecord, summarize, together, type PlayerSummary } from '../lib/compare';
 import { GameImg } from '../components/ui/GameImg';
 import { ROLE_LABEL, RoleIcon } from '../components/ui/RoleIcon';
 import { ErrorState, Skeleton } from '../components/ui/States';
@@ -263,7 +263,7 @@ function Comparison({ a, b, queue }: { a: Pick; b: Pick; queue: Queue }) {
             <Together a={ma} b={mb} pa={pa} pb={pb} />
             <Metrics a={sa} b={sb} nameA={pa.account.gameName} nameB={pb.account.gameName} />
             <div className="grid gap-4 md:grid-cols-2">
-              <Roles a={sa} b={sb} nameA={pa.account.gameName} nameB={pb.account.gameName} />
+              <Roles a={sa} b={sb} ma={ma} mb={mb} pa={pa} pb={pb} />
               <Champions a={sa} b={sb} nameA={pa.account.gameName} nameB={pb.account.gameName} />
             </div>
             <BestGames a={ma} b={mb} pa={pa} pb={pb} />
@@ -483,40 +483,57 @@ function Metrics({ a, b, nameA, nameB }: { a: PlayerSummary; b: PlayerSummary; n
 /** A perfect KDA is Infinity; treat it as a large number when comparing and drawing bars. */
 const finite = (v: number) => (Number.isFinite(v) ? v : 99);
 
-function Roles({ a, b, nameA, nameB }: { a: PlayerSummary; b: PlayerSummary; nameA: string; nameB: string }) {
-  const roles = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'];
+function Roles({ a, b, ma, mb, pa, pb }: { a: PlayerSummary; b: PlayerSummary; ma: MatchSummary[]; mb: MatchSummary[]; pa: Profile; pb: Profile }) {
+  const nameA = pa.account.gameName;
+  const nameB = pb.account.gameName;
+  const recA = useMemo(() => roleRecord(ma, pa.account.puuid), [ma, pa]);
+  const recB = useMemo(() => roleRecord(mb, pb.account.puuid), [mb, pb]);
   const share = (s: PlayerSummary, r: string) => (s.games ? (s.ov.roles[r] ?? 0) / s.games : 0);
+  // Only roles at least one of them played; most-played (combined share) first.
+  const roles = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY']
+    .filter((r) => share(a, r) > 0 || share(b, r) > 0)
+    .sort((x, y) => share(a, y) + share(b, y) - (share(a, x) + share(b, x)));
   return (
     <section className="panel p-4" aria-labelledby="cmp-r-h">
       <h2 id="cmp-r-h" className="panel-title">
         {t('stats.byRole')}
       </h2>
       <Legend nameA={nameA} nameB={nameB} />
-      <ul className="mt-3 space-y-2.5">
+      <ul className="mt-3 space-y-3">
         {roles.map((r) => (
-          <li key={r} className="grid grid-cols-[22px_minmax(0,1fr)] items-center gap-2">
-            <RoleIcon role={r} size={18} className="text-muted" />
+          <li key={r}>
+            <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold">
+              <span aria-hidden>
+                <RoleIcon role={r} size={14} className="text-muted" />
+              </span>
+              {ROLE_LABEL[r as keyof typeof ROLE_LABEL]}
+            </p>
             <div className="space-y-1">
-              {[share(a, r), share(b, r)].map((v, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-sunken">
+              {([
+                [share(a, r), recA[r]],
+                [share(b, r), recB[r]],
+              ] as const).map(([v, rec], i) => (
+                <div key={i} className="grid grid-cols-[minmax(0,1fr)_2.25rem_6.5rem] items-center gap-2">
+                  <span className="h-1.5 overflow-hidden rounded-full bg-sunken">
                     <span className="block h-full rounded-full transition-[width] duration-500" style={{ width: `${v * 100}%`, background: i === 0 ? 'var(--series-1)' : 'var(--series-2)' }} />
                   </span>
-                  <span className="num w-9 text-right text-xs text-muted">{pct(v, 0)}</span>
+                  <span className="num text-right text-xs text-muted">{pct(v, 0)}</span>
+                  <span className="num truncate text-right text-xs text-faint">
+                    {rec && rec.games > 0 ? (
+                      <>
+                        {t('common.games', { count: rec.games })} · <span className={sureTone(rec.wins / rec.games, rec.games)}>{pct(rec.wins / rec.games, 0)}</span>
+                      </>
+                    ) : (
+                      '–'
+                    )}
+                  </span>
                 </div>
               ))}
             </div>
           </li>
         ))}
       </ul>
-      <p className="sr-only">
-        {[
-          [nameA, a],
-          [nameB, b],
-        ]
-          .map(([n, s]) => `${n}: ${roles.map((r) => `${t(`role.${r}` as 'role.TOP')} ${pct(share(s as PlayerSummary, r), 0)}`).join(', ')}`)
-          .join('. ')}
-      </p>
+      <p className="mt-3 text-xs text-faint">{t('cmp.roleNote')}</p>
     </section>
   );
 }

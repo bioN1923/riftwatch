@@ -1273,5 +1273,6 @@ const dict: Record<string, string> = {
   "live.buildInto": "Build obișnuit contra {champion}:",
   "home.tool.items": "Fiecare obiect complet, cât de des e construit și cine îl construiește cel mai des.",
   "search.item": "Obiect",
+  "cmp.roleNote": "Bare: cât din meciurile încărcate a jucat pe fiecare rol. Dreapta: meciuri și rata de victorie pe acel rol (colorată doar când diferența față de 50% e mai mare decât hazardul).",
 };
 export default dict;
