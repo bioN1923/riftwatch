@@ -13,3 +13,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/trend-phone.png`, `demo/trend-desktop.png` and `demo/`.
+
+## Live
+- Deployed 20:38 local. The live bundle has v3.192 and the new changelog line.
