@@ -1304,5 +1304,14 @@ const en = {
   "mv.noneDown": "Falling: no big changes since last patch.",
   "td.done": "Done",
   "search.page": "Page",
+  "cmp.see.title": "What you’ll see",
+  "cmp.see.rank": "Rank and form",
+  "cmp.see.rankBody": "Both ranks side by side, each player’s last 20 games as wins and losses, and any games they played together.",
+  "cmp.see.stats": "Per-game stats",
+  "cmp.see.statsBody": "KDA, damage, CS, gold, vision and more. Gold marks only the edges bigger than normal game-to-game swings.",
+  "cmp.see.roles": "Roles and champions",
+  "cmp.see.rolesBody": "Which roles each one plays, with games and win rate per role, and their most played champions.",
+  "cmp.see.best": "Best games",
+  "cmp.see.bestBody": "Each player’s best single game for kills, KDA, damage, multi-kills, CS and vision, side by side.",
 };
 export default en;

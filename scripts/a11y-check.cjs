@@ -6,7 +6,7 @@ const fs=require('fs'); const src=fs.readFileSync(require.resolve('axe-core/axe.
   const out={};
   for (const scheme of ['dark','light']) {
   const ctx=await b.newContext({viewport:{width:1280,height:900}, colorScheme:scheme}); const page=await ctx.newPage();
-  for (const url of ['/','/champions','/champions/ahri','/lol/euw1/Caps-EUW','/lol/euw1/Caps-EUW/stats','/draft?role=MIDDLE&enemy=zed&pool=ahri&team=zed,draven,leesin,syndra','/champions?queue=arena','/champions/ahri/vs/zed','/multisearch?region=euw1&players=Caps-EUW,Rekkles-EUW','/duo?region=euw1&player=Caps-EUW','/duo','/lol/euw1/Caps-EUW/live','/changelog','/api-usage','/?shortcuts','/compare?a=euw1/Caps-EUW&b=euw1/Rekkles-EUW','/leaderboard','/privacy','/items?item=6333','/some/missing/page','/draft/team?role=MIDDLE&allies=leesin,jinx&enemies=zed,vi']) {
+  for (const url of ['/','/champions','/champions/ahri','/lol/euw1/Caps-EUW','/lol/euw1/Caps-EUW/stats','/draft?role=MIDDLE&enemy=zed&pool=ahri&team=zed,draven,leesin,syndra','/champions?queue=arena','/champions/ahri/vs/zed','/multisearch?region=euw1&players=Caps-EUW,Rekkles-EUW','/duo?region=euw1&player=Caps-EUW','/duo','/lol/euw1/Caps-EUW/live','/changelog','/api-usage','/?shortcuts','/compare?a=euw1/Caps-EUW&b=euw1/Rekkles-EUW','/compare','/leaderboard','/privacy','/items?item=6333','/some/missing/page','/draft/team?role=MIDDLE&allies=leesin,jinx&enemies=zed,vi']) {
     await page.goto('http://localhost:3001'+url.replace('?shortcuts',''),{waitUntil:'networkidle'}); await page.waitForTimeout(1200);
     if (url.endsWith('?shortcuts')) { await page.evaluate(()=>window.dispatchEvent(new Event('rw:shortcuts'))); await page.waitForTimeout(300); }
     await page.addScriptTag({content:src});

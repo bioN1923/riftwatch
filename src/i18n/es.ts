@@ -1304,5 +1304,14 @@ const dict: Record<string, string> = {
   "mv.noneDown": "A la baja: sin grandes cambios desde el último parche.",
   "td.done": "Listo",
   "search.page": "Página",
+  "cmp.see.title": "Lo que verás",
+  "cmp.see.rank": "Rango y forma",
+  "cmp.see.rankBody": "Ambos rangos lado a lado, las últimas 20 partidas de cada uno como victorias y derrotas, y las partidas que jugaron juntos.",
+  "cmp.see.stats": "Estadísticas por partida",
+  "cmp.see.statsBody": "KDA, daño, CS, oro, visión y más. El dorado marca solo las ventajas mayores que la variación normal de una partida a otra.",
+  "cmp.see.roles": "Roles y campeones",
+  "cmp.see.rolesBody": "Qué roles juega cada uno, con partidas y porcentaje de victorias por rol, y sus campeones más jugados.",
+  "cmp.see.best": "Mejores partidas",
+  "cmp.see.bestBody": "La mejor partida de cada uno en asesinatos, KDA, daño, multiasesinatos, CS y visión, lado a lado.",
 };
 export default dict;

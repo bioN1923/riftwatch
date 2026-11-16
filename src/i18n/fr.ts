@@ -1304,5 +1304,14 @@ const dict: Record<string, string> = {
   "mv.noneDown": "En baisse : aucun grand changement depuis le dernier patch.",
   "td.done": "Terminé",
   "search.page": "Page",
+  "cmp.see.title": "Ce que vous verrez",
+  "cmp.see.rank": "Rang et forme",
+  "cmp.see.rankBody": "Les deux rangs côte à côte, les 20 dernières parties de chacun en victoires et défaites, et les parties jouées ensemble.",
+  "cmp.see.stats": "Stats par partie",
+  "cmp.see.statsBody": "KDA, dégâts, CS, or, vision et plus. L’or ne marque que les écarts plus grands que les variations habituelles d’une partie à l’autre.",
+  "cmp.see.roles": "Rôles et champions",
+  "cmp.see.rolesBody": "Les rôles joués par chacun, avec parties et taux de victoire par rôle, et leurs champions les plus joués.",
+  "cmp.see.best": "Meilleures parties",
+  "cmp.see.bestBody": "La meilleure partie de chacun en kills, KDA, dégâts, multi-kills, CS et vision, côte à côte.",
 };
 export default dict;

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { ArrowLeftRight, ChevronDown, Scale, Star, Clock } from 'lucide-react';
+import { ArrowLeftRight, BarChart3, ChevronDown, Scale, Star, Clock, Trophy, Users } from 'lucide-react';
 import type { MatchSummary, Profile } from '../../shared/types';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api, ApiClientError } from '../lib/api';
@@ -94,7 +94,7 @@ export function ComparePage() {
           <Comparison a={a} b={b} queue={queue} />
         </>
       ) : (
-        <p className="mt-8 text-sm text-faint">{t('cmp.pickTwo')}</p>
+        <WhatYouSee />
       )}
     </div>
   );
@@ -198,6 +198,35 @@ function PickerForm({ a, b, onSubmit }: { a: Pick | null; b: Pick | null; onSubm
         </div>
       )}
     </form>
+  );
+}
+
+/** Before two players are picked: what a comparison shows, so the page isn't a lone form. */
+function WhatYouSee() {
+  const parts = [
+    { icon: Trophy, title: t('cmp.see.rank'), body: t('cmp.see.rankBody') },
+    { icon: BarChart3, title: t('cmp.see.stats'), body: t('cmp.see.statsBody') },
+    { icon: Users, title: t('cmp.see.roles'), body: t('cmp.see.rolesBody') },
+    { icon: Star, title: t('cmp.see.best'), body: t('cmp.see.bestBody') },
+  ];
+  return (
+    <section className="mt-10" aria-labelledby="cmp-see-h">
+      <h2 id="cmp-see-h" className="panel-title">
+        {t('cmp.see.title')}
+      </h2>
+      <p className="mt-0.5 text-xs text-muted">{t('cmp.pickTwo')}</p>
+      <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {parts.map(({ icon: Icon, title, body }) => (
+          <li key={title} className="panel p-4">
+            <p className="flex items-center gap-2 font-display text-lg font-bold">
+              <Icon className="size-4 text-gold" aria-hidden />
+              {title}
+            </p>
+            <p className="mt-1.5 text-sm text-muted">{body}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

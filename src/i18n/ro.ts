@@ -1343,5 +1343,14 @@ const dict: Record<string, string> = {
   "mv.noneDown": "În scădere: nicio schimbare mare față de patch-ul trecut.",
   "td.done": "Gata",
   "search.page": "Pagină",
+  "cmp.see.title": "Ce vei vedea",
+  "cmp.see.rank": "Rang și formă",
+  "cmp.see.rankBody": "Ambele ranguri alăturate, cu ultimele 20 de meciuri ale fiecăruia ca victorii și înfrângeri și meciurile jucate împreună.",
+  "cmp.see.stats": "Statistici pe meci",
+  "cmp.see.statsBody": "KDA, daune, CS, aur, viziune și altele. Auriul marchează doar avantajele mai mari decât variația obișnuită de la un meci la altul.",
+  "cmp.see.roles": "Roluri și campioni",
+  "cmp.see.rolesBody": "Ce roluri joacă fiecare, cu meciuri și rată de victorie pe rol, și campionii cei mai jucați.",
+  "cmp.see.best": "Cele mai bune meciuri",
+  "cmp.see.bestBody": "Cel mai bun meci al fiecăruia la kill-uri, KDA, daune, multi-kill-uri, CS și viziune, alăturate.",
 };
 export default dict;

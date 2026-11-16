@@ -1382,5 +1382,14 @@ const dict: Record<string, string> = {
   "mv.noneDown": "Spadki: brak dużych zmian od poprzedniego patcha.",
   "td.done": "Gotowe",
   "search.page": "Strona",
+  "cmp.see.title": "Co zobaczysz",
+  "cmp.see.rank": "Ranga i forma",
+  "cmp.see.rankBody": "Obie rangi obok siebie, ostatnie 20 gier każdego jako wygrane i przegrane oraz gry rozegrane razem.",
+  "cmp.see.stats": "Statystyki na grę",
+  "cmp.see.statsBody": "KDA, obrażenia, CS, złoto, wizja i więcej. Złoto oznacza tylko przewagi większe niż zwykłe wahania między grami.",
+  "cmp.see.roles": "Role i bohaterowie",
+  "cmp.see.rolesBody": "Jakie role gra każdy, z grami i odsetkiem wygranych na rolę, oraz najczęściej grani bohaterowie.",
+  "cmp.see.best": "Najlepsze gry",
+  "cmp.see.bestBody": "Najlepsza pojedyncza gra każdego pod względem zabójstw, KDA, obrażeń, multi-killi, CS i wizji, obok siebie.",
 };
 export default dict;

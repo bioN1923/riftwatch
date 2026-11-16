@@ -1304,5 +1304,14 @@ const dict: Record<string, string> = {
   "mv.noneDown": "Absteiger: keine großen Änderungen seit dem letzten Patch.",
   "td.done": "Fertig",
   "search.page": "Seite",
+  "cmp.see.title": "Was du siehst",
+  "cmp.see.rank": "Rang und Form",
+  "cmp.see.rankBody": "Beide Ränge nebeneinander, die letzten 20 Spiele jedes Spielers als Siege und Niederlagen und die gemeinsamen Spiele.",
+  "cmp.see.stats": "Werte pro Spiel",
+  "cmp.see.statsBody": "KDA, Schaden, CS, Gold, Sicht und mehr. Gold markiert nur Vorsprünge, die größer sind als die üblichen Schwankungen von Spiel zu Spiel.",
+  "cmp.see.roles": "Rollen und Champions",
+  "cmp.see.rolesBody": "Welche Rollen jeder spielt, mit Spielen und Siegquote pro Rolle, und die meistgespielten Champions.",
+  "cmp.see.best": "Beste Spiele",
+  "cmp.see.bestBody": "Das beste einzelne Spiel jedes Spielers bei Kills, KDA, Schaden, Multikills, CS und Sicht, nebeneinander.",
 };
 export default dict;
