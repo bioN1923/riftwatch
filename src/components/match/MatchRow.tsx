@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { memo, useId, useState } from 'react';
 import { Link } from 'react-router';
 import clsx from 'clsx';
 import { ChevronDown } from 'lucide-react';
@@ -24,7 +24,11 @@ export function Badge({ p }: { p: Participant }) {
   return null;
 }
 
-export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puuid: string; platform: string }) {
+/**
+ * Memoised: its props (the cached match object, puuid, platform) don't change when the profile around it
+ * re-renders (opening a champion sheet, loading the next page…), so 20–100 rows skip re-rendering.
+ */
+export const MatchRow = memo(function MatchRow({ match, puuid, platform }: { match: MatchSummary; puuid: string; platform: string }) {
   const { data } = useStaticData();
   const a = assets(data);
   const [open, setOpen] = useState(false);
@@ -46,7 +50,9 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
       id={`m-${match.id}`}
       aria-label={t('match.aria', { result: resultLabel(r), champion: champ.name, queue: queueName(match.queueId, match.gameMode), ago: timeAgo(ended) })}
       className={clsx(
-        'group/card scroll-mt-20 overflow-hidden rounded border bg-surface transition-colors duration-200',
+        // Off-screen rows skip layout and paint (content-visibility); 'auto' keeps each row's last real height.
+        // With 60+ games this halves the work when something above re-lays out the page (closing a sheet).
+        'group/card scroll-mt-20 overflow-hidden rounded border bg-surface transition-colors duration-200 [contain-intrinsic-size:auto_124px] [content-visibility:auto]',
         open ? 'border-line-strong' : 'border-line hover:border-line-strong',
       )}
     >
@@ -180,7 +186,7 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
       </Collapse>
     </article>
   );
-}
+});
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (

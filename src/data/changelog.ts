@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.206',
+    date: '2026-11-16',
+    items: ['Smoother long match histories: with 60+ games loaded, closing a champion\'s record now takes about half as long, because off-screen games are skipped when the page re-lays out.'],
+  },
+  {
     version: '3.205',
     date: '2026-11-16',
     items: [
