@@ -12,3 +12,6 @@
 - a11y: `{}`.
 - Screenshots: `demo/draft-phone.png`, `demo/team-phone.png` and `demo/`.
 - Also looked at the full lane draft helper on a phone (Mid vs Zed). Nothing else needed fixing.
+
+## Live
+- Deployed 17:08 local. The live bundle has v3.180 and the new changelog line.
