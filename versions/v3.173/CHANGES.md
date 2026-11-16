@@ -15,3 +15,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`, including the empty `/compare`.
 - Screenshots: `demo/compare-empty.png` and `demo/`.
+
+## Live check (2026-11-16 15:49 local)
+- The live index serves `index-zjDPMVyb.js`, and its Compare chunk contains `cmp.see.title`.
