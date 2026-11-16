@@ -24,3 +24,8 @@
 - No page errors.
 
 Screen: `demo/search-item.png`.
+
+## Live check (2026-11-16 07:15 local)
+- The live index serves `index-BNIzzM1I.js`, which contains the item search navigation. Its hash differs from the local build (`index-BT5yiUEV.js`); the deploy builds on its own, so the hash isn't expected to match.
+- With live static data, the same filter turns "infinity" into exactly one item, 3031 Infinity Edge.
+- Live Ahri mid per-page builds: [9, 0, 2].
