@@ -15,3 +15,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/header-phone.png`, `demo/header-desktop.png` and `demo/`.
+
+## Live
+- Deployed 18:27 local. The live bundle has v3.187 and the new changelog line.
