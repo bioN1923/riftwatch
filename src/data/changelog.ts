@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.167',
+    date: '2026-11-16',
+    items: [
+      'Matchup page: "Compared with usual" now takes its colour from the matchup verdict, so a "could still be chance" matchup no longer shows a red −2.8%.',
+      'Matchups (matchup page and champion matchup table): tiny lane leads (under 100 gold, 3 CS or 200 XP at 15 minutes) stay plain instead of green or red.',
+    ],
+  },
+  {
     version: '3.166',
     date: '2026-11-16',
     items: [

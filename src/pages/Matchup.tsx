@@ -17,7 +17,7 @@ import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { PatchSelect, RoleTab } from '../components/champions/common';
 import { SlidingIndicator } from '../components/ui/Motion';
 import { LaneCurve } from '../components/champions/LaneCurve';
-import { BuildGlance, ItemsBlock, Lead, LOW_SAMPLE, RunesBlock, SpellsAndStart } from './Champion';
+import { BuildGlance, CS_QUIET, GOLD_QUIET, ItemsBlock, Lead, LOW_SAMPLE, RunesBlock, SpellsAndStart, XP_QUIET } from './Champion';
 import { t } from '../i18n';
 import { guessChampion } from '../lib/champSearch';
 import { PatchHistory } from '../components/champions/PatchHistory';
@@ -276,12 +276,12 @@ function Verdict({ m, me, them }: { m: MatchupStats; me: string; them: string })
         )}
         {tile(
           t('mp.vsUsual'),
-          vsUsual == null ? '–' : <Lead v={vsUsual * 100} unit="%" decimals={1} />,
+          vsUsual == null ? '–' : <Lead v={vsUsual * 100} unit="%" decimals={1} tone={low ? 'text-faint' : callTone(call) || 'text-text'} />,
           m.baseline ? t('mp.averages', { champion: me, rate: pct(m.baseline.winRate, 1) }) : undefined,
         )}
-        {tile(t('mp.gold15'), <Lead v={m.goldDiff15} unit="" />, t('mp.leadInLane'))}
-        {tile(t('mp.cs15'), <Lead v={m.csDiff15} unit="" />)}
-        {tile(t('mp.xp15'), <Lead v={m.xpDiff15} unit="" />)}
+        {tile(t('mp.gold15'), <Lead v={m.goldDiff15} unit="" quiet={GOLD_QUIET} />, t('mp.leadInLane'))}
+        {tile(t('mp.cs15'), <Lead v={m.csDiff15} unit="" quiet={CS_QUIET} />)}
+        {tile(t('mp.xp15'), <Lead v={m.xpDiff15} unit="" quiet={XP_QUIET} />)}
         {tile(t('mp.avgKda'), m.kda ? formatKda((m.kda.kills + m.kda.assists) / Math.max(1, m.kda.deaths)) : '–', m.kda ? `${m.kda.kills.toFixed(1)} / ${m.kda.deaths.toFixed(1)} / ${m.kda.assists.toFixed(1)}` : undefined)}
       </div>
     </div>

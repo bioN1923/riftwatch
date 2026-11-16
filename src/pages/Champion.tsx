@@ -849,12 +849,19 @@ const MU_TABS = [
 ] as const;
 type MuSort = 'winRate' | 'games' | 'goldDiff15' | 'csDiff15' | 'xpDiff15';
 
-export function Lead({ v, unit, decimals = 0 }: { v: number | null; unit: string; decimals?: number }) {
+/**
+ * A signed lead. Coloured by sign, except: `tone` overrides the colour (e.g. a matchup verdict's), and
+ * leads smaller than `quiet` stay plain, since a 1-CS or 40-gold edge isn't worth painting red or green.
+ */
+export const GOLD_QUIET = 100;
+export const CS_QUIET = 3;
+export const XP_QUIET = 200;
+export function Lead({ v, unit, decimals = 0, tone, quiet = 0 }: { v: number | null; unit: string; decimals?: number; tone?: string; quiet?: number }) {
   if (v == null) return <span className="text-faint">–</span>;
   const f = 10 ** decimals;
   const r = Math.round(v * f) / f;
   return (
-    <span className={clsx(r > 0 ? 'text-win' : r < 0 ? 'text-loss' : 'text-muted')}>
+    <span className={clsx(tone ?? (Math.abs(r) < quiet ? 'text-text' : r > 0 ? 'text-win' : r < 0 ? 'text-loss' : 'text-muted'))}>
       {r > 0 ? '+' : r < 0 ? '−' : '±'}
       {Math.abs(r).toFixed(decimals)}
       {unit}
@@ -965,13 +972,13 @@ function Matchups({ s }: { s: ChampionStats }) {
                     </td>
                     <td className="num px-2 text-right text-muted">{thousands(m.games)}</td>
                     <td className="num px-2 text-right">
-                      <Lead v={m.goldDiff15} unit="g" />
+                      <Lead v={m.goldDiff15} unit="g" quiet={GOLD_QUIET} />
                     </td>
                     <td className="num px-2 text-right">
-                      <Lead v={m.csDiff15} unit="" />
+                      <Lead v={m.csDiff15} unit="" quiet={CS_QUIET} />
                     </td>
                     <td className="num pl-2 text-right">
-                      <Lead v={m.xpDiff15} unit="" />
+                      <Lead v={m.xpDiff15} unit="" quiet={XP_QUIET} />
                     </td>
                   </tr>
                 );
