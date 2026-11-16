@@ -13,3 +13,7 @@
 - `tsc`, `vitest` (183) and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/` and `demo/duo-empty.png`.
+
+## Live check (2026-11-16 10:26 local)
+- The live index serves `index-7EFod07E.js`, and its Duo chunk contains `duo.how.title`.
+- Deploy waited about 15 minutes on the command-check error before it went out.
