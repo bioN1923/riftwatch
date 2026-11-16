@@ -9,3 +9,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/` and `demo/live-phone-red.png` (the 390 px red side).
+
+## Live check (2026-11-16 14:45 local)
+- The live index serves `index-D-bN4drb.js`, and its Profile chunk has the phone rank line.
