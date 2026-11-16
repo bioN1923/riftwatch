@@ -1299,5 +1299,6 @@ const dict: Record<string, string> = {
   "td.mark": "Sua escolha",
   "td.markLead": "Onde {champion} fica neste draft: #{rank} de {count}.",
   "td.markMissing": "{champion} não tem partidas suficientes de {role} neste patch para ser classificado.",
+  "home.tool.teamDraft": "Coloque as escolhas dos dois times e veja o melhor campeão para a sua rota, com os motivos: adversário de rota, os demais inimigos e seus aliados.",
 };
 export default dict;

@@ -1299,5 +1299,6 @@ const en = {
   "td.mark": "Your pick",
   "td.markLead": "Where {champion} ranks for this draft: #{rank} of {count}.",
   "td.markMissing": "{champion} doesn’t have enough {role} games on this patch to rank.",
+  "home.tool.teamDraft": "Put in the picks from both teams and get the best champion for your role, with the reasons: lane matchup, the other enemies and your teammates.",
 };
 export default en;

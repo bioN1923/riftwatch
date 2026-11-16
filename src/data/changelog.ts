@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.163',
+    date: '2026-11-16',
+    items: ['Home: Team draft now leads the Tools section as a wide "New" card. The section has four columns on large screens, so the seven tools fill two even rows.'],
+  },
+  {
     version: '3.162',
     date: '2026-11-16',
     items: ['Live game: a new "How {champion} fits this draft" link opens Team draft with both teams filled in (champion picks only) and the player\'s pick marked, so you can see where it ranks for this exact draft and why.'],

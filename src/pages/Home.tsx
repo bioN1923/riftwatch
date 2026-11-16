@@ -5,7 +5,7 @@ import { RoleIcon, ROLE_LABEL } from '../components/ui/RoleIcon';
 import { TierBadge } from '../components/champions/common';
 import { pct, thousands, timeAgo } from '../lib/format';
 import { Link } from 'react-router';
-import { Star, Clock, LayoutGrid, Swords, Scale, Users, Trophy, HeartHandshake, TrendingUp, TrendingDown, Package } from 'lucide-react';
+import { Star, Clock, LayoutGrid, Swords, Scale, Users, Trophy, HeartHandshake, TrendingUp, TrendingDown, Package, UsersRound } from 'lucide-react';
 import clsx from 'clsx';
 import type { PatchMover } from '../../shared/types';
 import { SearchBox } from '../components/SearchBox';
@@ -169,7 +169,9 @@ function Climbers() {
 
 /** The site's tools, so they're one tap away on phones too (the bottom bar has room for four). */
 function Tools() {
+  // Team draft leads, two columns wide: with the six others that fills two rows of four (or four of two).
   const items = [
+    { to: '/draft/team', icon: UsersRound, title: t('td.heading'), body: t('home.tool.teamDraft'), wide: true },
     { to: '/draft', icon: Swords, title: t('nav.draft'), body: t('home.tool.draft') },
     { to: '/compare', icon: Scale, title: t('nav.compare'), body: t('home.tool.compare') },
     { to: '/multisearch', icon: Users, title: t('nav.multisearch'), body: t('home.tool.multi') },
@@ -182,13 +184,16 @@ function Tools() {
       <h2 id="tools-h" className="mb-4 font-display text-2xl font-bold">
         {t('home.tools')}
       </h2>
-      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map(({ to, icon: Icon, title, body }) => (
-          <li key={to}>
-            <Link to={to} className="panel group flex h-full gap-3 p-4 transition-colors hover:border-gold/50">
+      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {items.map(({ to, icon: Icon, title, body, wide }) => (
+          <li key={to} className={clsx(wide && 'sm:col-span-2')}>
+            <Link to={to} className={clsx('panel group flex h-full gap-3 p-4 transition-colors hover:border-gold/50', wide && 'panel-tick border-gold/30')}>
               <Icon className="mt-0.5 size-5 shrink-0 text-gold transition-transform group-hover:scale-110" aria-hidden />
               <span>
-                <span className="block font-display text-lg font-bold leading-tight">{title}</span>
+                <span className="flex items-center gap-2 font-display text-lg font-bold leading-tight">
+                  {title}
+                  {wide && <span className="rounded-full border border-gold px-2 py-0.5 font-sans text-[11px] font-semibold uppercase tracking-wide text-gold">{t('cl.new')}</span>}
+                </span>
                 <span className="mt-1 block text-sm text-muted">{body}</span>
               </span>
             </Link>
