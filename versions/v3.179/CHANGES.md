@@ -15,3 +15,6 @@
 - Screenshots:
   - `demo/td-phone-full.png`, `demo/td-phone-part.png`, `demo/td-desktop.png`
   - `demo/`
+
+## Live
+- Deployed 16:59 local. The live bundle has v3.179 and the new changelog line.
