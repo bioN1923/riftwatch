@@ -29,3 +29,6 @@ Event Timing API, 4× CPU throttling, 1280 px. The longest keyboard event while 
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`.
+
+## Live
+- Deployed 23:33 local. The live entry carries `3.207`.
