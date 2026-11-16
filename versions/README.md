@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.175](v3.175/CHANGES.md) | 2026-11-16 | Tier list: "Clear filter" on an empty result |
 | [v3.174](v3.174/CHANGES.md) | 2026-11-16 | Multi-search: "What you’ll see" on the empty page |
 | [v3.173](v3.173/CHANGES.md) | 2026-11-16 | Compare: "What you’ll see" on the empty page |
 | [v3.172](v3.172/CHANGES.md) | 2026-11-16 | Search suggests site pages; g t → Team draft |

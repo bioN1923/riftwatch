@@ -1319,5 +1319,6 @@ const dict: Record<string, string> = {
   "ms.see.playerBody": "Rang et LP, les 10 dernières parties classées en victoires et défaites, et les trois champions les plus joués avec parties, taux de victoire et KDA.",
   "ms.see.tags": "Étiquettes",
   "ms.see.tagsBody": "Des faits courts comme le rôle principal, one-trick, série de victoires ou KDA élevé, plus « Premade avec » quand deux d’entre eux apparaissent souvent dans le même historique public.",
+  "tl.clearFilter": "Effacer le filtre",
 };
 export default dict;

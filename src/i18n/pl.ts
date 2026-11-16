@@ -1397,5 +1397,6 @@ const dict: Record<string, string> = {
   "ms.see.playerBody": "Ranga i LP, ostatnie 10 gier rankingowych jako wygrane i przegrane oraz trzej najczęściej grani bohaterowie z grami, odsetkiem wygranych i KDA.",
   "ms.see.tags": "Tagi",
   "ms.see.tagsBody": "Krótkie fakty jak główna rola, one-trick, seria wygranych czy wysokie KDA, plus „Premade z”, gdy dwóch z nich często pojawia się w tej samej publicznej historii gier.",
+  "tl.clearFilter": "Wyczyść filtr",
 };
 export default dict;

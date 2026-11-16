@@ -194,6 +194,19 @@ export function ChampionsPage() {
         <div className="panel mt-6">
           <EmptyState title={q.data.matches ? t('tl.noMatch') : t('tl.noGames')}>
             {q.data.matches ? t('tl.noMatchBody') : group === 'arena' ? t('tl.collectingArena') : q.data.collecting ? t('tl.collectingBody') : t('tl.noGamesBody')}
+            {/* Filtered to nothing: one click back to the full list (search text and "my pool" both cleared). */}
+            {q.data.matches > 0 && (query.trim() || onlyPool) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery('');
+                  setOnlyPool(false);
+                }}
+                className="mt-3 inline-flex min-h-[24px] items-center rounded border border-line px-3 py-1.5 text-sm font-medium text-text hover:border-gold/60"
+              >
+                {t('tl.clearFilter')}
+              </button>
+            )}
           </EmptyState>
         </div>
       ) : (

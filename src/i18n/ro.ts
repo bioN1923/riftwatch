@@ -1358,5 +1358,6 @@ const dict: Record<string, string> = {
   "ms.see.playerBody": "Rangul și LP, ultimele 10 meciuri ranked ca victorii și înfrângeri și cei trei campioni cei mai jucați, cu meciuri, rată de victorie și KDA.",
   "ms.see.tags": "Etichete",
   "ms.see.tagsBody": "Fapte scurte ca rol principal, one-trick, serie de victorii sau KDA mare, plus „Premade cu” când doi dintre ei apar des în același istoric public de meciuri.",
+  "tl.clearFilter": "Șterge filtrul",
 };
 export default dict;

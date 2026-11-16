@@ -1319,5 +1319,6 @@ const en = {
   "ms.see.playerBody": "Rank and LP, the last 10 ranked games as wins and losses, and the three champions they play most, with games, win rate and KDA.",
   "ms.see.tags": "Tags",
   "ms.see.tagsBody": "Short facts like a role main, one-trick, win streak or high KDA, plus “Premade with” when two of them often appear in the same public match history.",
+  "tl.clearFilter": "Clear filter",
 };
 export default en;
