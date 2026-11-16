@@ -9,3 +9,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/` and `demo/multisearch-cards.png`, a 5-player lobby where every name shows in full.
+
+## Live check (2026-11-16 10:45 local)
+- The live index serves `index-B1GNX8R4.js`, and its MultiSearch chunk has the two-line champion rows.
