@@ -14,3 +14,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`.
+
+## Live
+- Deployed 21:50 local. The live entry and preloaded chunks carry `3.198` but none of the changelog text (it ships only in the lazy What's new chunk).
