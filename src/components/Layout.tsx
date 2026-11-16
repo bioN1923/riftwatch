@@ -1,7 +1,7 @@
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
-import { AlertTriangle, Check, Download, Globe, Package, LayoutGrid, Monitor, Moon, Scale, Sun, Swords, Trophy, User, Users, Wrench, X, HeartHandshake } from 'lucide-react';
+import { AlertTriangle, Check, Download, Globe, Package, LayoutGrid, Monitor, Moon, Scale, Sun, Swords, Trophy, User, Users, Wrench, X, HeartHandshake, UsersRound } from 'lucide-react';
 import clsx from 'clsx';
 import { getPlatform } from '../../shared/regions';
 import { pageRegion } from '../lib/pageRegion';
@@ -230,6 +230,7 @@ function MainNav() {
 const TOOLS = [
   { to: '/multisearch', label: () => t('nav.multisearch'), icon: Users },
   { to: '/draft', label: () => t('nav.draft'), icon: Swords },
+  { to: '/draft/team', label: () => t('td.heading'), icon: UsersRound },
   { to: '/compare', label: () => t('nav.compare'), icon: Scale },
   { to: '/duo', label: () => t('nav.duo'), icon: HeartHandshake },
   { to: '/items', label: () => t('it.heading'), icon: Package },
@@ -271,6 +272,7 @@ function MobileNav() {
             <li key={to}>
               <NavLink
                 to={to}
+                end={to === '/draft'}
                 className={({ isActive }) => clsx('flex items-center gap-3 px-4 py-3 text-sm font-medium', isActive ? 'bg-gold/10 text-gold' : 'hover:bg-line/40')}
               >
                 <Icon size={18} aria-hidden />

@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.161',
+    date: '2026-11-16',
+    items: [
+      'New: Team draft (Tools → Team draft, or /draft/team). Add the champions already picked on your team and the enemy team, pick your role, and get the best picks for it. Each suggestion lists its reasons: its own strength, how it does with each teammate, and how it does against each enemy (lane opponent included). Grey reasons are leanings that could still be chance.',
+      'Team draft scores are honest about small samples: pairs need 10+ games, and every effect is shrunk toward the champion\'s usual win rate, so a few lucky games can\'t carry a pick.',
+    ],
+  },
+  {
     version: '3.160',
     date: '2026-11-16',
     items: [

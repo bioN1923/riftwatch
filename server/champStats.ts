@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import { writeJsonChunked } from './chunkedJson';
 import path from 'node:path';
-import type { BlindPicks, Benchmark, ChampionStats, ItemStats, MatchSummary, MatchTimeline, MatchupStats, PatchMover, Rated, StatsGroup, TierList, TierRow } from '../shared/types';
+import type { BlindPicks, Benchmark, ChampionStats, ItemStats, MatchSummary, MatchTimeline, MatchupStats, PatchMover, Rated, StatsGroup, TierList, TierRow, TeamPicks, TeamPickReason } from '../shared/types';
 import { itemKind } from './items';
 import { getPlatform } from '../shared/regions';
 import { isArena } from '../shared/queues';
@@ -101,6 +101,8 @@ interface RoleAgg {
   vs: Record<string, Vs>;
   len: C[];
   duo?: Record<string, C>; // same-team champion in the partner role
+  al?: Record<string, C>; // any teammate's champion (team draft synergy)
+  en?: Record<string, C>; // any enemy champion (team draft counters)
   bv?: Record<string, BuildVar>; // per core build (first three items): its boots and 4th–6th items
   rp?: Record<string, BuildTally>; // per rune page (primary|secondary, no shards): the builds played with it
   mu?: Record<string, MatchupAgg>; // per lane opponent: what was played into them
@@ -525,6 +527,11 @@ export class ChampionStatsStore {
       if (!aram) {
         const partner = m.participants.find((x) => x.teamId === p.teamId && x.position === PARTNER[p.position]);
         if (partner) bump((r.duo ??= {}), String(partner.championId), p.win);
+        // Every teammate and every enemy, whatever their role: the team draft helper's synergy and counters.
+        for (const x of m.participants) {
+          if (x === p) continue;
+          bump(x.teamId === p.teamId ? (r.al ??= {}) : (r.en ??= {}), String(x.championId), p.win);
+        }
         const opp = m.participants.find((x) => x.teamId !== p.teamId && x.position === p.position);
         if (opp) {
           const v = (r.vs[opp.championId] ??= { g: 0, w: 0, gd: 0, gn: 0 });
@@ -700,6 +707,60 @@ export class ChampionStatsStore {
     }
     picks.sort((x, y) => y.floor - x.floor);
     return { patch, role, picks: picks.slice(0, limit) };
+  }
+
+  /**
+   * Team draft: score every champion in the role for these allies and enemies. Each pair counts only
+   * with enough games, and its effect is shrunk toward the champion's own win rate, so a 6–1 pairing
+   * moves the score a little and a 60–30 one a lot. The lane opponent and the usual partner use the
+   * richer lane/duo tallies; anyone else uses the any-role ally/enemy tallies.
+   */
+  teamPicks(role: string, allies: number[], enemies: number[]): TeamPicks {
+    const patch = this.patches('ranked')[0] ?? null;
+    const g = patch ? this.s.patches[patch].ranked : undefined;
+    if (!g) return { patch, role, picks: [] };
+    const minGames = Math.max(20, Math.round(g.matches * 0.005));
+    const taken = new Set([...allies, ...enemies]);
+    // Heavy shrinking: a draft score adds up to nine of these, so small-sample noise must not pile up.
+    const PAIR_MIN = 10;
+    const LANE_K = 50;
+    const PAIR_K = 100;
+    const reason = (kind: TeamPickReason['kind'], championId: number, v: C, base: number, k: number): TeamPickReason => {
+      const raw = v.w / v.g;
+      return {
+        kind,
+        championId,
+        games: v.g,
+        winRate: raw,
+        delta: (v.w - base * v.g) / (v.g + k),
+        sure: Math.abs(raw - base) > 2 * Math.sqrt(Math.max(base * (1 - base), 0.01) / v.g),
+      };
+    };
+    const picks: TeamPicks['picks'] = [];
+    for (const [id, c] of Object.entries(g.champs)) {
+      const cid = Number(id);
+      const r = c.roles[role];
+      if (taken.has(cid) || !r || r.g < minGames) continue;
+      const base = r.w / r.g;
+      const min = matchupMin(r.g);
+      const reasons: TeamPickReason[] = [];
+      for (const e of enemies) {
+        const v = r.vs[e];
+        const x = r.en?.[e];
+        if (v && v.g >= min) reasons.push(reason('lane', e, v, base, LANE_K));
+        else if (x && x.g >= PAIR_MIN) reasons.push(reason('enemy', e, x, base, PAIR_K));
+      }
+      for (const a of allies) {
+        const d = r.duo?.[a];
+        const x = r.al?.[a];
+        if (d && d.g >= min) reasons.push(reason('duo', a, d, base, LANE_K));
+        else if (x && x.g >= PAIR_MIN) reasons.push(reason('ally', a, x, base, PAIR_K));
+      }
+      const strength = shrunk(r.w, r.g, 150) - 0.5;
+      picks.push({ championId: cid, games: r.g, winRate: base, strength, score: strength + reasons.reduce((s2, x) => s2 + x.delta, 0), reasons });
+    }
+    picks.sort((x, y) => y.score - x.score);
+    return { patch, role, picks };
   }
 
   private rows(g: GroupAgg): TierRow[] {
@@ -1007,6 +1068,10 @@ export class ChampionStatsStore {
       if (entries.length > 60) r[key] = Object.fromEntries(entries.sort((a, b) => b[1].g - a[1].g).slice(0, 40));
     }
     if (r.bv) for (const k of Object.keys(r.bv)) if (!r.core[k]) delete r.bv[k];
+    for (const key of ['al', 'en'] as const) {
+      const m = r[key];
+      if (m && Object.keys(m).length > 120) r[key] = Object.fromEntries(Object.entries(m).sort((a, b) => b[1].g - a[1].g).slice(0, 100));
+    }
     if (r.rp) {
       // Per-page builds: the 8 rune pages with the most builds, each keeping its 20 most common.
       const pages = Object.entries(r.rp).sort((a, b) => sumG(b[1].core) - sumG(a[1].core));

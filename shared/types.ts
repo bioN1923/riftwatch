@@ -296,6 +296,31 @@ export interface LaneCurve {
   games: number;
 }
 
+/**
+ * Team draft helper: every champion that plays the role, scored for this draft. `strength` is the
+ * champion's own shrunk win rate minus 50%; each reason is how much better or worse it does with
+ * that ally or against that enemy than it usually does (shrunk toward its own rate, so few games
+ * pull the number to zero). `score` = strength + the reasons.
+ */
+export interface TeamPickReason {
+  /** lane: the enemy is its usual lane opponent; enemy: anywhere on the enemy team; duo: its usual partner role; ally: anyone on its team. */
+  kind: 'lane' | 'enemy' | 'duo' | 'ally';
+  championId: number;
+  games: number;
+  /** Raw win rate in those games. */
+  winRate: number;
+  /** Shrunk change from the champion's usual win rate (−0.03 = three points worse). */
+  delta: number;
+  /** The raw gap is more than two standard errors, so it's unlikely to be chance. */
+  sure: boolean;
+}
+
+export interface TeamPicks {
+  patch: string | null;
+  role: string;
+  picks: { championId: number; games: number; winRate: number; strength: number; score: number; reasons: TeamPickReason[] }[];
+}
+
 /** Draft helper, no enemy yet: champions whose worst common lane matchups are least bad. */
 export interface BlindPicks {
   patch: string | null;

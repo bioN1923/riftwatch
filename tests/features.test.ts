@@ -962,3 +962,30 @@ describe('roleRecord', () => {
     expect(r).toEqual({ MIDDLE: { games: 2, wins: 1 }, TOP: { games: 1, wins: 1 } });
   });
 });
+
+describe('team draft picks', async () => {
+  const { ChampionStatsStore } = await import('../server/champStats');
+  const { mockMatches } = await import('../server/mock');
+  const store = new ChampionStatsStore(null);
+  for (let i = 0; i < 60; i++) for (const m of mockMatches({ gameName: `Team${i}`, tagLine: 'X' }, 0, 20, {}).matches) store.addMatch(m);
+  it('scores = own strength + reasons, sorted, and skips taken champions', () => {
+    const base = store.teamPicks('MIDDLE', [], []);
+    expect(base.picks.length).toBeGreaterThan(3);
+    const [a, b] = base.picks;
+    const r = store.teamPicks('MIDDLE', [b.championId], [a.championId]);
+    expect(r.picks.some((p) => p.championId === a.championId || p.championId === b.championId)).toBe(false);
+    for (let i = 1; i < r.picks.length; i++) expect(r.picks[i - 1].score).toBeGreaterThanOrEqual(r.picks[i].score);
+    for (const p of r.picks) {
+      expect(p.score).toBeCloseTo(p.strength + p.reasons.reduce((s, x) => s + x.delta, 0), 9);
+      for (const x of p.reasons) {
+        expect(x.games).toBeGreaterThanOrEqual(8);
+        // Shrinking keeps every effect smaller than the raw gap.
+        expect(Math.abs(x.delta)).toBeLessThanOrEqual(Math.abs(x.winRate - p.winRate) + 1e-9);
+      }
+    }
+    expect(r.picks.some((p) => p.reasons.length > 0)).toBe(true);
+  });
+  it('gives no picks for an unknown role', () => {
+    expect(store.teamPicks('NOPE', [], []).picks).toEqual([]);
+  });
+});

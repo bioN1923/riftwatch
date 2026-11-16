@@ -830,6 +830,15 @@ app.get('/api/blind', (req, res) => {
   res.json(champStats.blindPicks(role));
 });
 
+app.get('/api/draft/team', (req, res) => {
+  const role = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'].find((r) => r === req.query.role);
+  if (!role) throw new ApiError(400, 'BAD_REQUEST', 'Unknown role.');
+  const ids = (v: unknown, max: number) =>
+    [...new Set(String(v ?? '').split(',').map(Number).filter((n) => Number.isInteger(n) && n > 0 && n < 10_000))].slice(0, max);
+  res.setHeader('Cache-Control', 'public, max-age=300');
+  res.json(champStats.teamPicks(role, ids(req.query.allies, 4), ids(req.query.enemies, 5)));
+});
+
 app.get('/api/benchmarks', (req, res) => {
   const role = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'].find((r) => r === req.query.role);
   if (!role) throw new ApiError(400, 'BAD_REQUEST', 'Unknown role.');

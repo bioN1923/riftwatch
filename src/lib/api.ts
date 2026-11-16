@@ -1,4 +1,4 @@
-import type { ApiErrorBody, ChallengeSummary, Benchmark, BlindPicks, PrivacyChallenge, PrivacyResult, ApiErrorCode, ChampionStats,
+import type { ApiErrorBody, ChallengeSummary, Benchmark, BlindPicks, TeamPicks, PrivacyChallenge, PrivacyResult, ApiErrorCode, ChampionStats,
   MatchupStats, HealthResponse, Ladder, LiveResponse, LpHistory, ServerStatus, MatchPage, MatchTimeline, PlayerHit, Profile, ScoutInfo, StatsGroup, TierList, ItemStats } from '../../shared/types';
 
 export class ApiClientError extends Error {
@@ -59,6 +59,8 @@ export const api = {
   champion: (id: number, p: { group: StatsGroup; role?: string; patch?: string }, signal?: AbortSignal) =>
     request<ChampionStats>(`/champions/${id}?group=${p.group}${p.role ? `&role=${p.role}` : ''}${p.patch ? `&patch=${p.patch}` : ''}`, signal),
   blind: (role: string, signal?: AbortSignal) => request<BlindPicks>(`/blind?role=${role}`, signal),
+  teamPicks: (role: string, allies: number[], enemies: number[], signal?: AbortSignal) =>
+    request<TeamPicks>(`/draft/team?role=${role}&allies=${allies.join(',')}&enemies=${enemies.join(',')}`, signal),
   items: (patch?: string, signal?: AbortSignal) => request<ItemStats>(`/items${patch ? `?patch=${encodeURIComponent(patch)}` : ''}`, signal),
   matchup: (id: number, opp: number, p: { role?: string; patch?: string }, signal?: AbortSignal) =>
     request<MatchupStats>(`/champions/${id}/vs/${opp}?group=ranked${p.role ? `&role=${p.role}` : ''}${p.patch ? `&patch=${p.patch}` : ''}`, signal),

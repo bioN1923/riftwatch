@@ -75,6 +75,11 @@ export function DraftPage() {
     <div className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="font-display text-5xl font-extrabold leading-none tracking-tight">{t('draft.heading')}</h1>
       <p className="mt-2 max-w-2xl text-sm text-muted">{t('draft.lead')}</p>
+      <p className="mt-1 text-sm">
+        <Link to={`/draft/team?role=${role}`} className="text-gold hover:underline">
+          {t('td.fromLane')}
+        </Link>
+      </p>
 
       <div role="tablist" aria-label={t('draft.role')} className="mt-6 flex flex-wrap gap-1.5">
         {ROLES.map((r) => (
@@ -133,7 +138,7 @@ export function DraftPage() {
 
 /* --------------------------------------------------------- champion grid */
 
-function ChampionGrid({ onPick, exclude }: { onPick: (id: number) => void; exclude: number[] }) {
+export function ChampionGrid({ onPick, exclude }: { onPick: (id: number) => void; exclude: number[] }) {
   const { data: sd } = useStaticData();
   const a = assets(sd);
   const [q, setQ] = useState('');

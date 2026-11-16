@@ -51,6 +51,7 @@ const router = createBrowserRouter([
           { path: '/api-usage', lazy: async () => ({ Component: (await import('./pages/ApiUsage')).ApiUsagePage }) },
           { path: '/changelog', lazy: async () => ({ Component: (await import('./pages/Changelog')).ChangelogPage }) },
           { path: '/draft', lazy: async () => ({ Component: (await import('./pages/Draft')).DraftPage }) },
+          { path: '/draft/team', lazy: async () => ({ Component: (await import('./pages/TeamDraft')).TeamDraftPage }) },
           { path: '/compare', lazy: async () => ({ Component: (await import('./pages/Compare')).ComparePage }) },
           { path: '/duo', lazy: async () => ({ Component: (await import('./pages/Duo')).DuoPage }) },
           { path: '/multisearch', lazy: async () => ({ Component: (await import('./pages/MultiSearch')).MultiSearchPage }) },
