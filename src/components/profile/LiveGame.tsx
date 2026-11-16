@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { callText } from '../../lib/matchupText';
+import { ItemRow } from '../build/BuildParts';
 import { callTone, matchupCall, MATCHUP_MIN_GAMES } from '../../lib/matchupVerdict';
 import { Link } from 'react-router';
 import { useQueries, useQuery } from '@tanstack/react-query';
@@ -181,6 +182,16 @@ function LaneMatchup({ game, puuid }: { game: Live; puuid: string }) {
       <Link to={matchupPath(sd, self.championId, lane.opp.championId, lane.role)} className="text-sm font-medium text-gold underline underline-offset-2 hover:text-text">
         {t('live.laneOpen')}
       </Link>
+      {enough && (m.builds?.[0]?.games ?? 0) >= 10 && (
+        // What players usually take into this opponent: keystone, core items and boots, from the matchup's own games.
+        <div className="flex w-full flex-wrap items-center gap-x-3 gap-y-2 border-t border-line pt-3 text-xs text-muted">
+          <span className="font-semibold text-text">{t('live.buildInto', { champion: them.name })}</span>
+          {m.runes[0] && <GameImg src={a.rune(m.runes[0].primary[0]).url} alt={a.rune(m.runes[0].primary[0]).name} size={26} rounded="full" className="bg-[#0e1b1d]!" />}
+          <ItemRow ids={m.builds[0].ids} size={28} arrows linked />
+          {m.boots[0] && m.boots[0].games >= 10 && <ItemRow ids={[m.boots[0].id]} size={28} />}
+          <span className="num text-faint">{t('common.games', { count: m.builds[0].games })}</span>
+        </div>
+      )}
     </div>
   );
 }

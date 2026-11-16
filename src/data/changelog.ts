@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.139',
+    date: '2026-11-16',
+    items: ['Live game: under the lane matchup, the usual build into that opponent (keystone, core items and boots), straight from ranked games of that exact matchup.'],
+  },
+  {
     version: '3.138',
     date: '2026-11-16',
     items: ['Matchup pages open their build with the same “Build at a glance” strip: what to take into that specific opponent, in one row. It follows the rune page you pick.'],

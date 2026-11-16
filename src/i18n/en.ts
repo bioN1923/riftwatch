@@ -1234,5 +1234,6 @@ const en = {
   "it.kind.ap": "Ability power",
   "it.kind.crit": "Critical strike",
   "it.kind.defence": "Defence",
+  "live.buildInto": "Usual build into {champion}:",
 };
 export default en;

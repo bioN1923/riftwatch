@@ -1234,5 +1234,6 @@ const dict: Record<string, string> = {
   "it.kind.ap": "Fähigkeitsstärke",
   "it.kind.crit": "Kritische Treffer",
   "it.kind.defence": "Verteidigung",
+  "live.buildInto": "Üblicher Build gegen {champion}:",
 };
 export default dict;
