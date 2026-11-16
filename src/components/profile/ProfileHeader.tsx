@@ -252,7 +252,10 @@ function RankBlock({ label, entry, big, ladder }: { label: string; entry?: Leagu
           {entry.hotStreak && <Flame className="size-3.5 text-kda-great" aria-label={t('profile.hotStreak')} />}
         </p>
         <p className={clsx('font-display text-xl font-extrabold leading-tight', big ? 'sm:text-3xl' : 'sm:text-2xl')}>
-          {tierName(entry.tier)} {APEX.has(entry.tier) ? '' : entry.rank}
+          {/* Tier and division stay on one line ("Emerald IV", never "Emerald" / "IV"); LP may wrap below on narrow widths. */}
+          <span className="whitespace-nowrap">
+            {tierName(entry.tier)} {APEX.has(entry.tier) ? '' : entry.rank}
+          </span>
           <span className="num ml-2 whitespace-nowrap text-sm font-semibold text-muted sm:text-base">{t('common.lp', { lp: entry.leaguePoints })}</span>
         </p>
         <p className="num text-xs text-muted">

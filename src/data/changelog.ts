@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.170',
+    date: '2026-11-16',
+    items: ['Profile header: the rank no longer breaks across lines ("Emerald" / "IV 51 LP"); tier and division always stay together.'],
+  },
+  {
     version: '3.169',
     date: '2026-11-16',
     items: [
