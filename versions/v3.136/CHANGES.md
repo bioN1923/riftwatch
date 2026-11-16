@@ -24,3 +24,7 @@ Option lists also showed one-off choices as if they were real options, e.g. "4th
   - "4th item" lists Rylai's (178 games) without the 1-game Zhonya's.
 
 Screens: `demo/build-*.png`, `demo/length-*.png`.
+
+## Live check (2026-11-16 06:33 local)
+- Both Champion chunks (`Champion-CjH0zRlD.js`, `Champion-DUiVm7oG.js`) are served (200).
+- Live Ahri mid per-page builds: [7, 0, 1] games.
