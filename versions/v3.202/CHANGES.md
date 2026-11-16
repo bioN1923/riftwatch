@@ -15,3 +15,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/loading-phone.png`, `demo/loading-desktop.png` and `demo/`.
+
+## Live
+- Deployed 22:34 local. The live entry carries `3.202`.
