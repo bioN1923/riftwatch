@@ -27,3 +27,8 @@
 - No page errors.
 
 Screens: `demo/champion-item-link.png`, `demo/items-from-champion.png`.
+
+## Live check (2026-11-16 05:43 local)
+- The live build serves `useStickyTop-D8r0BG1T.js`, which holds the item link (200).
+- Live Ahri mid has 9 linked items (core plus 4th–6th options), and all 9 are on the live Items list, so no link lands on the "not listed yet" note.
+- Arena: 969 games.
