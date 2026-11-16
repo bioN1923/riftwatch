@@ -17,3 +17,7 @@
 - No page errors.
 
 Screens: `demo/matchup-glance-*.png`.
+
+## Live check (2026-11-16 06:53 local)
+- The live build serves `Matchup-BX5GgA6e.js` (200).
+- Live Ahri vs Zed (116 games) has everything the strip needs: 3 rune pages, 2 spell pairs, 1 start, 3 builds and 3 boots.
