@@ -22,6 +22,13 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.151',
+    date: '2026-11-16',
+    items: [
+      'Season win rates on profiles, live games, Compare and Multi-search, plus the scouting report, Arena top-4 rate and Draft blind picks, now use the same rule as the rest of the site: green or red only when the rate is clearly away from 50% for the number of games. For example, 54% over 269 games is a coin flip, not a strength, so it stays plain.',
+    ],
+  },
+  {
     version: '3.150',
     date: '2026-11-16',
     items: ['Matchup page: "Other matchups" now shows how many games each one is based on, lists the most-played first, and only colours a win rate green or red when it is clearly off 50%. One-game 0% and 100% results no longer look like strong verdicts.'],

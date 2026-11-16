@@ -2,7 +2,7 @@ import { Link } from 'react-router';
 import clsx from 'clsx';
 import type { ChampionStats } from '../../../shared/types';
 import { assets, champSlug, useStaticData } from '../../lib/ddragon';
-import { decimal, pct, thousands } from '../../lib/format';
+import { decimal, pct, thousands, sureTone } from '../../lib/format';
 import { GameImg } from '../ui/GameImg';
 import { ItemTip } from '../ui/ItemTip';
 import { t } from '../../i18n';
@@ -21,7 +21,7 @@ export function ArenaStrip({ s }: { s: ChampionStats }) {
   if (!sum || !ar) return <div className="mt-6" />;
   const items: [string, string, string?][] = [
     [t('arena.avgPlace'), decimal(ar.avgPlacement, 2), ar.avgPlacement <= 4.5 ? 'text-win' : 'text-loss'],
-    [t('arena.top4'), pct(sum.winRate, 1), sum.winRate >= 0.5 ? 'text-win' : 'text-loss'],
+    [t('arena.top4'), pct(sum.winRate, 1), sureTone(sum.winRate, sum.games)],
     [t('arena.first'), pct(ar.firstRate, 1)],
     [t('cp.pickRate'), pct(sum.pickRate, 1)],
     [t('cp.games'), thousands(sum.games)],

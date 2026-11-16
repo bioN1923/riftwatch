@@ -302,7 +302,7 @@ function Header({ p, side }: { p: Profile; side: 'a' | 'b' }) {
                 {tierName(solo.tier)} {APEX.has(solo.tier) ? '' : solo.rank}
               </p>
               <p className="num text-xs text-muted">
-                {t('common.lp', { lp: solo.leaguePoints })} · <span className={clsx('font-semibold', wr >= 0.5 ? 'text-win' : 'text-loss')}>{pct(wr)}</span> · {t('common.games', { count: games })}
+                {t('common.lp', { lp: solo.leaguePoints })} · <span className={clsx('font-semibold', sureTone(wr, games))}>{pct(wr)}</span> · {t('common.games', { count: games })}
               </p>
               <LadderPlace entry={solo} ladder={{ platform: p.platform, puuid: p.account.puuid, queue: 'solo' }} />
             </div>

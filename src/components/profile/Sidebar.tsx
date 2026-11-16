@@ -5,7 +5,7 @@ import { GameImg } from '../ui/GameImg';
 import { Skeleton } from '../ui/States';
 import { RoleIcon, ROLE_LABEL } from '../ui/RoleIcon';
 import { assets, champSlug, useStaticData } from '../../lib/ddragon';
-import { compact, formatKda, kdaRatio, kdaTone, pct, winRateTone } from '../../lib/format';
+import { compact, formatKda, kdaRatio, kdaTone, pct, winRateTone, sureTone } from '../../lib/format';
 import { me, result, type Overview } from '../../lib/stats';
 import { profilePath } from '../../lib/riotId';
 import { t } from '../../i18n';
@@ -99,7 +99,7 @@ export function ScoutingReport({ ov, matches, puuid, name }: { ov?: Overview; ma
 
       <div className="mt-4 flex items-end gap-5">
         <div>
-          <p className={clsx('display-num text-5xl font-extrabold leading-none', wr >= 0.5 ? 'text-win' : 'text-loss')}>{Math.round(wr * 100)}%</p>
+          <p className={clsx('display-num text-5xl font-extrabold leading-none', sureTone(wr, g))}>{Math.round(wr * 100)}%</p>
           <p className="num mt-1 text-xs text-muted">{t('report.wonLost', { wins: ov.wins, losses: ov.losses })}</p>
         </div>
         <div>

@@ -9,7 +9,7 @@ import type { ChampionStats } from '../../shared/types';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api } from '../lib/api';
 import { assets, champSlug, useStaticData } from '../lib/ddragon';
-import { pct } from '../lib/format';
+import { pct, sureTone } from '../lib/format';
 import { damageMix, damageType } from '../lib/damageMix';
 import { banSuggestions, cautiousRate, winRange } from '../lib/draft';
 import { champHit } from '../lib/champSearch';
@@ -425,7 +425,7 @@ function BlindPanel({ role, pool }: { role: Role; pool: number[] }) {
                     </span>
                     <span className="num block truncate text-[11px] text-muted">{t('draft.blindWorst', { name: w.name, rate: pct(p.worst.winRate) })} · {t('common.games', { count: p.worst.games })}</span>
                   </span>
-                  <span className={clsx('num text-right text-sm font-bold', p.winRate >= 0.5 ? 'text-win' : 'text-loss')}>{pct(p.winRate, 1)}</span>
+                  <span className={clsx('num text-right text-sm font-bold', sureTone(p.winRate, p.games))}>{pct(p.winRate, 1)}</span>
                 </Link>
               </li>
             );

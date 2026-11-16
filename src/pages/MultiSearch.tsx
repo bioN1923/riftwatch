@@ -7,7 +7,7 @@ import { ChevronDown, History, Users } from 'lucide-react';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api, ApiClientError } from '../lib/api';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
-import { formatKda, kdaRatio, kdaTone, pct, tierName, wlTone } from '../lib/format';
+import { formatKda, kdaRatio, kdaTone, pct, tierName, wlTone, sureTone } from '../lib/format';
 import { fromSlug, profilePath, querySlug, type RiotId } from '../lib/riotId';
 import { parseLobby, untaggedNames, withDefaultTag } from '../lib/lobby';
 import { addLobby, clearLobbies, useLobbies, useRegion } from '../lib/storage';
@@ -255,7 +255,7 @@ function PlayerCard({ platform, id, duos }: { platform: string; id: RiotId; duos
                 {tierName(solo.tier)} {APEX.has(solo.tier) ? '' : solo.rank}
               </p>
               <p className="num text-xs text-muted">
-                {t.rich('ms.lpOf', { lp: solo.leaguePoints, rate: <span className={clsx('font-semibold', wr >= 0.5 ? 'text-win' : 'text-loss')}>{pct(wr)}</span>, games })}
+                {t.rich('ms.lpOf', { lp: solo.leaguePoints, rate: <span className={clsx('font-semibold', sureTone(wr, games))}>{pct(wr)}</span>, games })}
               </p>
               <LadderPlace entry={solo} ladder={{ platform: p.platform, puuid: p.account.puuid, queue: 'solo' }} />
             </div>

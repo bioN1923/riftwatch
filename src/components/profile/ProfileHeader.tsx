@@ -12,7 +12,7 @@ import { GameImg, Tooltip } from '../ui/GameImg';
 import { assets, rankEmblem, useStaticData } from '../../lib/ddragon';
 import { isFavorite, toggleFavorite, useFavorites } from '../../lib/storage';
 import { profilePath, toSlug } from '../../lib/riotId';
-import { pct, timeAgo, tierName, regionName } from '../../lib/format';
+import { pct, timeAgo, tierName, regionName, sureTone } from '../../lib/format';
 import { me, result } from '../../lib/stats';
 import { playerTags } from '../../lib/tags';
 import { TagList } from '../ui/TagList';
@@ -256,7 +256,7 @@ function RankBlock({ label, entry, big, ladder }: { label: string; entry?: Leagu
           <span className="num ml-2 whitespace-nowrap text-sm font-semibold text-muted sm:text-base">{t('common.lp', { lp: entry.leaguePoints })}</span>
         </p>
         <p className="num text-xs text-muted">
-          {t('common.wins', { count: entry.wins })} {t('common.losses', { count: entry.losses })} · <span className={clsx('font-semibold', wr >= 0.5 ? 'text-win' : 'text-loss')}>{pct(wr)}</span>
+          {t('common.wins', { count: entry.wins })} {t('common.losses', { count: entry.losses })} · <span className={clsx('font-semibold', sureTone(wr, entry.wins + entry.losses))}>{pct(wr)}</span>
         </p>
         {ladder && APEX.has(entry.tier) && <LadderPlace entry={entry} ladder={ladder} />}
       </div>

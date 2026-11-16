@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.151](v3.151/CHANGES.md) | 2026-11-16 | One honest win-rate colour rule in 7 more places |
 | [v3.150](v3.150/CHANGES.md) | 2026-11-16 | Matchup: other matchups with game counts and honest colours |
 | [v3.149](v3.149/CHANGES.md) | 2026-11-16 | What's new: grouped by day, 12 at a time |
 | [v3.148](v3.148/CHANGES.md) | 2026-11-16 | Multi-search: full champion names on player cards |

@@ -10,7 +10,7 @@ import { api } from '../../lib/api';
 import { assets, matchupPath, rankEmblem, useStaticData } from '../../lib/ddragon';
 import { guessRoles, roleGames, SR_QUEUES } from '../../lib/lanes';
 import { ROLE_LABEL } from '../ui/RoleIcon';
-import { compact, duration, pct, tierName } from '../../lib/format';
+import { compact, duration, pct, tierName, sureTone } from '../../lib/format';
 import { useLadderPosition } from '../../lib/useLadderPosition';
 import { getPlatform } from '../../../shared/regions';
 import { queueName } from '../../lib/queues';
@@ -290,7 +290,7 @@ function PlayerRow({ p, s, loading, self, platform, queueId }: { p: LiveParticip
           <Skeleton className="ml-auto h-8 w-16" />
         ) : solo ? (
           <>
-            <p className={clsx('num text-sm font-semibold', wr >= 0.55 ? 'text-win' : wr < 0.47 ? 'text-loss' : 'text-text')}>{pct(wr)}</p>
+            <p className={clsx('num text-sm font-semibold', sureTone(wr, games))}>{pct(wr)}</p>
             <p className="num text-xs text-muted">{t('common.games', { count: games })}</p>
           </>
         ) : (
