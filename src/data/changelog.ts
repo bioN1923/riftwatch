@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.171',
+    date: '2026-11-16',
+    items: ['Privacy: "What stays in your browser" now lists everything the site saves on your device, adding recently viewed champions, saved lobbies, draft pools, profile goals and the "What\'s new" entries you\'ve seen; duo-finder checks last only for the tab.'],
+  },
+  {
     version: '3.170',
     date: '2026-11-16',
     items: ['Profile header: the rank no longer breaks across lines ("Emerald" / "IV 51 LP"); tier and division always stay together.'],

@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.171](v3.171/CHANGES.md) | 2026-11-16 | Privacy page lists everything stored in the browser |
 | [v3.170](v3.170/CHANGES.md) | 2026-11-16 | Profile header: rank on one line |
 | [v3.169](v3.169/CHANGES.md) | 2026-11-16 | Team draft picker "Done"; readable draft links |
 | [v3.168](v3.168/CHANGES.md) | 2026-11-16 | Live game on phones: ranks shown; damage-mix line wraps |

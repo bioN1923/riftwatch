@@ -259,8 +259,10 @@ function Policy({ contact }: { contact?: string }) {
 
       <H>What stays in your browser</H>
       <P>
-        Your language, theme, region, starred players and recent searches are saved in your browser’s local storage. They never leave your device, and you
-        can clear them in your browser settings.
+        Your language, theme, region, starred players, recent searches, recently viewed champions, saved multi-search lobbies, your draft champion pools,
+        the goals you set on a profile and which &ldquo;What&rsquo;s new&rdquo; entries you&rsquo;ve seen are saved in your browser&rsquo;s local storage.
+        Players you check in the duo finder are kept only for the current tab. None of this leaves your device, and you can clear it in your browser
+        settings.
       </P>
 
       <H>Hiding your profile</H>
