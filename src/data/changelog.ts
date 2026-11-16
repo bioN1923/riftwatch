@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.142',
+    date: '2026-11-16',
+    items: ['Ladder: the win-rate column now shows a wins/losses split bar with a 50% mark, instead of a tiny sliver that was hard to read at top ranks where win rates sit close to 50%.'],
+  },
+  {
     version: '3.141',
     date: '2026-11-16',
     items: [

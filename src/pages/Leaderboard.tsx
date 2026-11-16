@@ -10,7 +10,6 @@ import { pct, thousands, regionName, tierName, timeAgo } from '../lib/format';
 import { profilePath } from '../lib/riotId';
 import { useRegion } from '../lib/storage';
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
-import { WinRateBar } from '../components/champions/common';
 import { fadeIn } from '../lib/motion';
 import { SlidingIndicator } from '../components/ui/Motion';
 import { t } from '../i18n';
@@ -342,7 +341,7 @@ export function LeaderboardPage() {
                       <td className="px-3 py-2.5 text-right">
                         <span className="inline-flex items-center gap-2.5">
                           <span className="hidden sm:inline">
-                            <WinRateBar value={wr} />
+                            <WinLossBar wins={e.wins} losses={e.losses} />
                           </span>
                           <span className={clsx('num w-11', wr >= 0.5 ? 'text-text' : 'text-muted')}>{pct(wr, 1)}</span>
                         </span>
@@ -376,5 +375,22 @@ export function LeaderboardPage() {
         </>
       )}
     </div>
+  );
+}
+
+/**
+ * Wins and losses as one split bar (green then red), sized by share of games. Ladder win rates sit
+ * close to 50%, so a bar centred on 50% (as on the champion pages) shows only a sliver here; the
+ * split keeps both sides visible and the 50% tick shows which side is ahead.
+ */
+function WinLossBar({ wins, losses }: { wins: number; losses: number }) {
+  const games = wins + losses;
+  const w = games ? (wins / games) * 100 : 50;
+  return (
+    <span className="relative flex h-2 w-24 gap-px overflow-hidden rounded-full align-middle" aria-hidden>
+      <span className="h-full bg-win" style={{ width: `${w}%` }} />
+      <span className="h-full flex-1 bg-loss/80" />
+      <span className="absolute inset-y-0 left-1/2 w-px bg-bg/70" />
+    </span>
   );
 }
