@@ -236,11 +236,13 @@ export function ChampionsPage() {
                 const c = a.champion(r.championId);
                 const champ = sd?.champions.get(r.championId);
                 const href = champ ? `/champions/${champSlug(champ.id)}${group !== 'ranked' ? `?queue=${group}` : r.role !== 'ALL' ? `?role=${r.role}` : ''}` : '#';
+                // Sorted by tier: a stronger line where one tier ends and the next begins, so the bands read at a glance.
+                const tierBreak = sort.key === 'tier' && i > 0 && rows[i - 1].tier !== r.tier;
                 return (
                   <tr
                     key={`${r.championId}-${r.role}`}
                     onClick={() => navigate(href)}
-                    className="fade-up group cursor-pointer border-t border-line transition-colors hover:bg-raised"
+                    className={clsx('fade-up group cursor-pointer transition-colors hover:bg-raised', tierBreak ? 'border-t-2 border-line-strong' : 'border-t border-line')}
                     style={{ animationDelay: `${Math.min(i, 16) * 22}ms` }}
                   >
                     <td className="num w-10 px-2 py-2 text-muted sm:px-3">{role === 'ALL' && sort.key === 'tier' ? i + 1 : r.rank}</td>
