@@ -35,3 +35,6 @@ First pass with Vercel's React performance rules (the `react-perf-rules` skill),
 - `tsc`, `vitest` (187) and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`.
+
+## Live
+- Deployed 22:56 local. The live entry carries `3.204`, and `/api/champions/ahri?group=ranked` answers 200 with real stats (3,400 Ahri games).
