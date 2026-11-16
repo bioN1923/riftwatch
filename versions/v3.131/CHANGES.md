@@ -31,3 +31,4 @@ Screens: `demo/items-dark-1280.png`, `demo/items-light-390.png`.
 - `Items-BFNyYc49.js` is served (200).
 - 514 of the 1,170 champion rows have a "vs usual" gap past two standard errors. With thousands of games, the steady edge of players who reach a full build shows up. The page's note explains this; it isn't the item causing wins.
 - The response took **352 ms**, all of it computed while the server could do nothing else. Follow-up in the same version: `/api/items` is now kept for 5 minutes per patch (`itemsMemo`, at most 8 entries), so only the first request in each window pays for it.
+- After the follow-up deploy, three `/api/items` requests took 189 ms (computed), then 62 ms and 62 ms (memoised). Arena: 922 games.
