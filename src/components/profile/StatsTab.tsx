@@ -2,7 +2,7 @@ import { Benchmarks, MAX_GOALS, useGoals, type MetricId } from './Insights';
 import { useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router';
 import clsx from 'clsx';
-import { ArrowDown, ArrowUp, Target } from 'lucide-react';
+import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, Target } from 'lucide-react';
 import type { MatchSummary } from '../../../shared/types';
 import { assets, champSlug, useStaticData } from '../../lib/ddragon';
 import { compact, decimal, duration as fmtDuration, formatKda, kdaRatio, kdaTone, multikill, pct, timeAgo, TONE_MIN_GAMES, winRateTone } from '../../lib/format';
@@ -158,12 +158,19 @@ function SortHeader({ k, sort, setSort, children, className }: { k: SortKey; sor
   );
 }
 
+/** Champion rows shown before "show all" in a long pool. */
+const CHAMP_ROWS = 6;
+
 function ChampionTable({ matches, puuid, onOpen }: { matches: MatchSummary[]; puuid: string; onOpen?: (championId: number) => void }) {
   const { data: sd } = useStaticData();
   const a = assets(sd);
   const [sort, setSort] = useState<{ k: SortKey; dir: number }>({ k: 'games', dir: -1 });
   const rows = useMemo(() => aggregate(matches, puuid, (_m, p) => String(p.championId)), [matches, puuid]);
   const sorted = [...rows].sort((x, y) => (value(x, sort.k) - value(y, sort.k)) * sort.dir || y.games - x.games);
+  // Long pools: the first rows by the current sort, the rest one click away (hiding only one or two rows saves nothing).
+  const [all, setAll] = useState(false);
+  const collapsible = sorted.length > CHAMP_ROWS + 2;
+  const shown = collapsible && !all ? sorted.slice(0, CHAMP_ROWS) : sorted;
   const h = (k: SortKey, label: string, cls?: string) => (
     <SortHeader k={k} sort={sort} setSort={setSort} className={cls}>
       {label}
@@ -196,7 +203,7 @@ function ChampionTable({ matches, puuid, onOpen }: { matches: MatchSummary[]; pu
             </tr>
           </thead>
           <tbody>
-            {sorted.map((r, i) => {
+            {shown.map((r, i) => {
               const id = Number(r.key);
               const c = a.champion(id);
               const slug = sd?.champions.get(id)?.id;
@@ -242,6 +249,14 @@ function ChampionTable({ matches, puuid, onOpen }: { matches: MatchSummary[]; pu
           </tbody>
         </table>
       </div>
+      {collapsible && (
+        <div className="border-t border-line px-4 py-2">
+          <button onClick={() => setAll((v) => !v)} aria-expanded={all} className="inline-flex min-h-[24px] items-center gap-1 text-sm text-muted hover:text-text">
+            {all ? <ChevronUp className="size-4" aria-hidden /> : <ChevronDown className="size-4" aria-hidden />}
+            {all ? t('stats.champsFewer') : t('stats.champsAll', { count: sorted.length, hidden: sorted.length - CHAMP_ROWS })}
+          </button>
+        </div>
+      )}
     </section>
   );
 }

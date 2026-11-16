@@ -1310,5 +1310,7 @@ const dict: Record<string, string> = {
   "home.tool.items": "Każdy ukończony przedmiot: jak często jest budowany i kto buduje go najczęściej.",
   "search.item": "Przedmiot",
   "cmp.roleNote": "Paski: udział wczytanych gier na każdej roli. Po prawej: gry i odsetek wygranych na tej roli (kolor tylko, gdy różnica od 50% jest większa niż przypadek).",
+  "stats.champsAll": "Pokaż wszystkich bohaterów: {count} (jeszcze {hidden})",
+  "stats.champsFewer": "Pokaż mniej",
 };
 export default dict;

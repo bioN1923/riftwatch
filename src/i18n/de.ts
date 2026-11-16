@@ -1238,5 +1238,7 @@ const dict: Record<string, string> = {
   "home.tool.items": "Jedes fertige Item: wie oft es gebaut wird und wer es am häufigsten baut.",
   "search.item": "Item",
   "cmp.roleNote": "Balken: Anteil der geladenen Spiele pro Rolle. Rechts: Spiele und Siegquote auf dieser Rolle (nur farbig, wenn der Abstand zu 50% größer als Zufall ist).",
+  "stats.champsAll": "Alle {count} Champions zeigen ({hidden} weitere)",
+  "stats.champsFewer": "Weniger zeigen",
 };
 export default dict;

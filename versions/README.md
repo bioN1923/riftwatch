@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.143](v3.143/CHANGES.md) | 2026-11-16 | Profile stats: long champion tables collapse to 6 rows with "show all" |
 | [v3.142](v3.142/CHANGES.md) | 2026-11-16 | Ladder: wins/losses split bar in the win-rate column |
 | [v3.141](v3.141/CHANGES.md) | 2026-11-16 | Compare: labelled role panel with per-role games and win rate |
 | [v3.140](v3.140/CHANGES.md) | 2026-11-16 | Search finds items; Items in home tools and phone menu |

@@ -1238,5 +1238,7 @@ const en = {
   "home.tool.items": "Every completed item, how often it’s built and who builds it most.",
   "search.item": "Item",
   "cmp.roleNote": "Bars: share of their loaded games in each role. Right: games and win rate in that role (coloured only when the gap from 50% is bigger than chance).",
+  "stats.champsAll": "Show all {count} champions ({hidden} more)",
+  "stats.champsFewer": "Show fewer",
 };
 export default en;

@@ -1274,5 +1274,7 @@ const dict: Record<string, string> = {
   "home.tool.items": "Fiecare obiect complet, cât de des e construit și cine îl construiește cel mai des.",
   "search.item": "Obiect",
   "cmp.roleNote": "Bare: cât din meciurile încărcate a jucat pe fiecare rol. Dreapta: meciuri și rata de victorie pe acel rol (colorată doar când diferența față de 50% e mai mare decât hazardul).",
+  "stats.champsAll": "Arată toți cei {count} campioni (încă {hidden})",
+  "stats.champsFewer": "Arată mai puțini",
 };
 export default dict;
