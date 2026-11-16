@@ -20,6 +20,7 @@ import { useRegion } from '../lib/storage';
 import { GameImg } from '../components/ui/GameImg';
 import { RoleIcon, ROLE_LABEL } from '../components/ui/RoleIcon';
 import { Skeleton } from '../components/ui/States';
+import { CopyLink } from '../components/ui/CopyLink';
 import { t } from '../i18n';
 
 /**
@@ -82,7 +83,8 @@ export function DraftPage() {
         </Link>
       </p>
 
-      <div role="tablist" aria-label={t('draft.role')} className="mt-6 flex flex-wrap gap-1.5">
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+      <div role="tablist" aria-label={t('draft.role')} className="flex flex-wrap gap-1.5">
         {ROLES.map((r) => (
           <button
             key={r}
@@ -97,6 +99,8 @@ export function DraftPage() {
             <RoleIcon role={r} size={15} /> {ROLE_LABEL[r]}
           </button>
         ))}
+      </div>
+      {(enemy != null || team.length > 0) && <CopyLink />}
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">

@@ -14,6 +14,7 @@ import { GameImg } from '../components/ui/GameImg';
 import { RoleIcon, ROLE_LABEL } from '../components/ui/RoleIcon';
 import { ErrorState, Skeleton } from '../components/ui/States';
 import { ChampionGrid } from './Draft';
+import { CopyLink } from '../components/ui/CopyLink';
 import { t } from '../i18n';
 
 const ROLES = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'] as const;
@@ -67,7 +68,9 @@ export function TeamDraftPage() {
         </Link>
       </p>
 
-      <div role="tablist" aria-label={t('draft.role')} className="mt-6 flex flex-wrap gap-1.5">
+      {/* The draft lives in the URL, so it can be shared; the button shows once there's something to share. */}
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+      <div role="tablist" aria-label={t('draft.role')} className="flex flex-wrap gap-1.5">
         {ROLES.map((r) => (
           <button
             key={r}
@@ -82,6 +85,8 @@ export function TeamDraftPage() {
             <RoleIcon role={r} size={15} /> {ROLE_LABEL[r]}
           </button>
         ))}
+      </div>
+      {(allies.length > 0 || enemies.length > 0) && <CopyLink />}
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
