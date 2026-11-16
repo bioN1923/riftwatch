@@ -21,3 +21,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/offline-phone.png`, `demo/champion-500-phone.png` and `demo/`.
+
+## Live
+- Deployed 22:13 local. The live bundle has `3.200` and the new offline message, and no "npm run dev" anywhere.
