@@ -1302,5 +1302,6 @@ const en = {
   "home.tool.teamDraft": "Put in the picks from both teams and get the best champion for your role, with the reasons: lane matchup, the other enemies and your teammates.",
   "mv.noneUp": "Rising: no big changes since last patch.",
   "mv.noneDown": "Falling: no big changes since last patch.",
+  "td.done": "Done",
 };
 export default en;

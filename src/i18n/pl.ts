@@ -1380,5 +1380,6 @@ const dict: Record<string, string> = {
   "home.tool.teamDraft": "Wpisz wybory obu drużyn i zobacz najlepszego bohatera na swoją rolę, z powodami: rywal z linii, pozostali przeciwnicy i sojusznicy.",
   "mv.noneUp": "Wzrosty: brak dużych zmian od poprzedniego patcha.",
   "mv.noneDown": "Spadki: brak dużych zmian od poprzedniego patcha.",
+  "td.done": "Gotowe",
 };
 export default dict;

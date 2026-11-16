@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.169',
+    date: '2026-11-16',
+    items: [
+      'Team draft: the champion picker has a "Done" button, so you can close it after adding a few picks instead of scrolling past it.',
+      'Draft links read cleanly: picks are separated by plain commas (?allies=leesin,jinx) instead of %2C, on both the lane and team draft pages.',
+    ],
+  },
+  {
     version: '3.168',
     date: '2026-11-16',
     items: [

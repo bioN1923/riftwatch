@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router';
+import { Link, useSearchParams, useNavigate } from 'react-router';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { keepWhile } from '../lib/keepWhile';
 import clsx from 'clsx';
@@ -33,7 +33,8 @@ const MAX_POOL = 8;
 const TEAM_SIZE = 5;
 
 export function DraftPage() {
-  const [params, setParams] = useSearchParams();
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
   const { data: sd } = useStaticData();
   const role: Role = (ROLES as readonly string[]).includes(params.get('role') ?? '') ? (params.get('role') as Role) : 'MIDDLE';
   const bySlug = useMemo(() => new Map([...(sd?.champions ?? new Map()).entries()].map(([key, c]) => [champSlug(c.id), key])), [sd]);
@@ -68,7 +69,7 @@ export function DraftPage() {
       else p.delete('pool');
       savePool(next.role ?? role, slugs);
     }
-    setParams(p, { replace: true });
+    navigate({ search: `?${p.toString().replace(/%2C/gi, ',')}` }, { replace: true });
   };
 
   return (
@@ -128,7 +129,7 @@ export function DraftPage() {
           const slugs = next.map((id) => champSlug(sd!.champions.get(id)!.id)).join(',');
           if (slugs) p.set('team', slugs);
           else p.delete('team');
-          setParams(p, { replace: true });
+          navigate({ search: `?${p.toString().replace(/%2C/gi, ',')}` }, { replace: true });
         }}
       />
     </div>

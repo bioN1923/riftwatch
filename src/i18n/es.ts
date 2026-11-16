@@ -1302,5 +1302,6 @@ const dict: Record<string, string> = {
   "home.tool.teamDraft": "Introduce las elecciones de ambos equipos y obtén el mejor campeón para tu rol, con los motivos: rival de línea, el resto de rivales y tus compañeros.",
   "mv.noneUp": "Al alza: sin grandes cambios desde el último parche.",
   "mv.noneDown": "A la baja: sin grandes cambios desde el último parche.",
+  "td.done": "Listo",
 };
 export default dict;

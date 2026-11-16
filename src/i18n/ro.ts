@@ -1341,5 +1341,6 @@ const dict: Record<string, string> = {
   "home.tool.teamDraft": "Introdu alegerile ambelor echipe și primești cel mai bun campion pentru rolul tău, cu motivele: adversarul de pe linie, ceilalți adversari și colegii tăi.",
   "mv.noneUp": "În creștere: nicio schimbare mare față de patch-ul trecut.",
   "mv.noneDown": "În scădere: nicio schimbare mare față de patch-ul trecut.",
+  "td.done": "Gata",
 };
 export default dict;

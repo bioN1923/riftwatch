@@ -1302,5 +1302,6 @@ const dict: Record<string, string> = {
   "home.tool.teamDraft": "Coloque as escolhas dos dois times e veja o melhor campeão para a sua rota, com os motivos: adversário de rota, os demais inimigos e seus aliados.",
   "mv.noneUp": "Em alta: nenhuma grande mudança desde o último patch.",
   "mv.noneDown": "Em queda: nenhuma grande mudança desde o último patch.",
+  "td.done": "Pronto",
 };
 export default dict;

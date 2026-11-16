@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router';
+import { Link, useSearchParams, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { Crosshair, Plus, ShieldCheck, Sparkles, Users, X } from 'lucide-react';
@@ -27,7 +27,8 @@ const SHOWN = 6;
  * each with the reasons behind it (lane matchup, other enemies, teammates, damage mix).
  */
 export function TeamDraftPage() {
-  const [params, setParams] = useSearchParams();
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
   const { data: sd } = useStaticData();
   const role: Role = (ROLES as readonly string[]).includes(params.get('role') ?? '') ? (params.get('role') as Role) : 'MIDDLE';
   const bySlug = useMemo(() => new Map([...(sd?.champions ?? new Map()).entries()].map(([key, c]) => [champSlug(c.id), key])), [sd]);
@@ -52,7 +53,8 @@ export function TeamDraftPage() {
       if (slugs) p.set(key, slugs);
       else p.delete(key);
     }
-    setParams(p, { replace: true });
+    // Commas stay readable in a shared link (?allies=leesin,jinx rather than leesin%2Cjinx).
+    navigate({ search: `?${p.toString().replace(/%2C/gi, ',')}` }, { replace: true });
   };
 
   return (
@@ -158,6 +160,13 @@ function TeamPanel(props: {
           </li>
         )}
       </ul>
+      {adding && picks.length < max && (
+        <div className="mt-2 flex justify-end">
+          <button onClick={() => setAdding(false)} className="inline-flex min-h-[24px] items-center gap-1 rounded border border-line px-2.5 py-1 text-xs font-medium text-muted hover:text-text">
+            {t('td.done')}
+          </button>
+        </div>
+      )}
       {adding && picks.length < max && (
         <ChampionGrid
           exclude={exclude}
