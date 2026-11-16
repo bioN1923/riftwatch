@@ -1260,5 +1260,7 @@ const dict: Record<string, string> = {
   "notFound.elsewhere": "O ve directamente a",
   "cp.moreRoles_one": "+{count} rol más",
   "cp.moreRoles_other": "+{count} roles más",
+  "arena.avgPlaceLower": "puesto medio, más bajo es mejor",
+  "len.titleArena": "Tasa de top 4 según la duración",
 };
 export default dict;

@@ -1260,5 +1260,7 @@ const en = {
   "notFound.elsewhere": "Or go straight to",
   "cp.moreRoles_one": "+{count} more role",
   "cp.moreRoles_other": "+{count} more roles",
+  "arena.avgPlaceLower": "avg place, lower is better",
+  "len.titleArena": "Top 4 rate by game length",
 };
 export default en;

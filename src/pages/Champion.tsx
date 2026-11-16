@@ -206,11 +206,11 @@ function ChampionView({ championId }: { championId: number }) {
               {group === 'ranked' && s.lane && (
                 <LaneCurve lane={s.lane} id="cp-lane-h" sub={t('cp.laneSub', { name: info?.name ?? '', count: s.lane.games })} />
               )}
-              <LengthChart rows={s.byLength} />
+              <LengthChart rows={s.byLength} title={group === 'arena' ? t('len.titleArena') : undefined} />
             </div>
             <aside ref={side.ref} style={side.style} className="space-y-5 lg:sticky lg:self-start">
               <Averages s={s} />
-              <PatchHistory history={s.history} current={s.patch} />
+              <PatchHistory history={s.history} current={s.patch} rateLabel={group === 'arena' ? t('arena.top4') : undefined} />
               <TopPlayers s={s} />
               {detail && <BaseStats d={detail} />}
               {detail?.blurb && (
@@ -1006,7 +1006,7 @@ export function lengthTrend(rows: (Rated & { label: string })[]): 'len.early' | 
   return d >= 0.04 ? 'len.late' : d <= -0.04 ? 'len.early' : 'len.even';
 }
 
-function LengthChart({ rows }: { rows: (Rated & { label: string })[] }) {
+function LengthChart({ rows, title }: { rows: (Rated & { label: string })[]; title?: string }) {
   const data = rows.filter((r) => r.games > 0);
   if (data.length < 2) return null;
   const lo = 0.35;
@@ -1017,7 +1017,7 @@ function LengthChart({ rows }: { rows: (Rated & { label: string })[] }) {
     <section className="panel p-5" aria-labelledby="len-h">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="len-h" className="panel-title text-2xl">
-          {t('len.title')}
+          {title ?? t('len.title')}
         </h2>
         <span className="text-xs text-muted">{t('len.sub')}</span>
       </div>
@@ -1026,7 +1026,7 @@ function LengthChart({ rows }: { rows: (Rated & { label: string })[] }) {
         <div className="absolute inset-x-0 border-t border-dashed border-line-strong" style={{ bottom: `${y(0.5) * 100}%` }}>
           <span className="absolute -top-2.5 right-0 bg-surface pl-1 text-[10px] text-faint">50%</span>
         </div>
-        <ul className="relative flex h-full items-end gap-3" aria-label={t('len.title')}>
+        <ul className="relative flex h-full items-end gap-3" aria-label={title ?? t('len.title')}>
           {data.map((r, i) => (
             <li key={r.label} className="flex h-full flex-1 flex-col items-center justify-end">
               <Tooltip content={t('len.tip', { label: lenLabel(r.label), rate: pct(r.winRate, 1), games: t('common.games', { count: r.games }) })}>

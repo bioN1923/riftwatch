@@ -1338,5 +1338,7 @@ const dict: Record<string, string> = {
   "cp.moreRoles_few": "+{count} role",
   "cp.moreRoles_many": "+{count} ról",
   "cp.moreRoles_other": "+{count} ról",
+  "arena.avgPlaceLower": "śr. miejsce, niższe = lepiej",
+  "len.titleArena": "Odsetek top 4 wg długości gry",
 };
 export default dict;

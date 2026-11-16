@@ -4,7 +4,7 @@ import { pct, thousands } from '../../lib/format';
 import { t } from '../../i18n';
 
 /** The same champion and role over the patches Riftwatch keeps, with a plain verdict on the latest change. */
-export function PatchHistory({ history, current }: { history?: (Rated & { patch: string; pickRate?: number })[]; current: string | null }) {
+export function PatchHistory({ history, current, rateLabel }: { history?: (Rated & { patch: string; pickRate?: number })[]; current: string | null; rateLabel?: string }) {
   const h = history ?? [];
   if (h.length < 2) return null;
   const MIN = 20;
@@ -30,7 +30,7 @@ export function PatchHistory({ history, current }: { history?: (Rated & { patch:
         <thead className="text-xs text-muted">
           <tr>
             <th scope="col" className="py-1 text-left font-medium">{t('ph.patch')}</th>
-            <th scope="col" className="py-1 text-right font-medium">{t('tl.col.wr')}</th>
+            <th scope="col" className="py-1 text-right font-medium">{rateLabel ?? t('tl.col.wr')}</th>
             {hasPick && <th scope="col" className="py-1 text-right font-medium">{t('tl.col.pick')}</th>}
             <th scope="col" className="py-1 text-right font-medium">{t('tl.col.games')}</th>
           </tr>

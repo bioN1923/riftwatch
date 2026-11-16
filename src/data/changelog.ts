@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.160',
+    date: '2026-11-16',
+    items: [
+      'Arena champion pages: "Best partners" now says what its number is (average place, lower is better), and average places are only coloured when they are clearly better or worse than the middle (4.5) for the number of games.',
+      'Arena champion pages: "Across patches" and the game-length chart are labelled "Top 4" instead of "Win rate", matching what Arena actually counts.',
+    ],
+  },
+  {
     version: '3.159',
     date: '2026-11-16',
     items: ['Draft: in "Best answers", champions that are already in your pool get an "In your pool" tag, so you can see at a glance whether one of the top counters is something you play.'],

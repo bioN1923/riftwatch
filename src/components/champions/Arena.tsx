@@ -2,7 +2,7 @@ import { Link } from 'react-router';
 import clsx from 'clsx';
 import type { ChampionStats } from '../../../shared/types';
 import { assets, champSlug, useStaticData } from '../../lib/ddragon';
-import { decimal, pct, thousands, sureTone } from '../../lib/format';
+import { decimal, pct, thousands, sureTone, placeTone } from '../../lib/format';
 import { GameImg } from '../ui/GameImg';
 import { ItemTip } from '../ui/ItemTip';
 import { t } from '../../i18n';
@@ -20,7 +20,7 @@ export function ArenaStrip({ s }: { s: ChampionStats }) {
   const ar = s.arena;
   if (!sum || !ar) return <div className="mt-6" />;
   const items: [string, string, string?][] = [
-    [t('arena.avgPlace'), decimal(ar.avgPlacement, 2), ar.avgPlacement <= 4.5 ? 'text-win' : 'text-loss'],
+    [t('arena.avgPlace'), decimal(ar.avgPlacement, 2), placeTone(ar.avgPlacement, sum.games)],
     [t('arena.top4'), pct(sum.winRate, 1), sureTone(sum.winRate, sum.games)],
     [t('arena.first'), pct(ar.firstRate, 1)],
     [t('cp.pickRate'), pct(sum.pickRate, 1)],
@@ -112,7 +112,11 @@ function Partners({ ar }: { ar: Arena }) {
   if (!ar.partners.length) return null;
   return (
     <div>
-      <h3 className="mb-2.5 font-display text-lg font-bold">{t('arena.partners')}</h3>
+      <h3 className="mb-2.5 flex items-baseline justify-between gap-2 font-display text-lg font-bold">
+        {t('arena.partners')}
+        {/* The number on each row is the pair's average finishing place (lower is better); say so instead of leaving a bare decimal. */}
+        <span className="font-sans text-xs font-normal text-muted">{t('arena.avgPlaceLower')}</span>
+      </h3>
       <ul className="space-y-1.5">
         {ar.partners.slice(0, 6).map((p) => {
           const c = a.champion(p.championId);
@@ -124,7 +128,7 @@ function Partners({ ar }: { ar: Arena }) {
                 {c.name}
               </Link>
               <span className="num text-xs text-muted">{t('common.games', { count: p.games })}</span>
-              <span className={clsx('num w-12 text-right font-semibold', p.avgPlacement <= 4.5 ? 'text-win' : 'text-loss')} title={t('arena.avgPlace')}>
+              <span className={clsx('num w-12 text-right font-semibold', placeTone(p.avgPlacement, p.games))} title={t('arena.avgPlace')}>
                 {decimal(p.avgPlacement, 2)}
               </span>
             </li>

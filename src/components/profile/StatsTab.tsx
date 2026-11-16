@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, Target } from 'lucide-react';
 import type { MatchSummary } from '../../../shared/types';
 import { assets, champSlug, useStaticData } from '../../lib/ddragon';
-import { compact, decimal, duration as fmtDuration, formatKda, kdaRatio, kdaTone, multikill, pct, timeAgo, TONE_MIN_GAMES, winRateTone } from '../../lib/format';
+import { compact, decimal, duration as fmtDuration, formatKda, kdaRatio, kdaTone, multikill, pct, timeAgo, winRateTone, placeTone } from '../../lib/format';
 import { me } from '../../lib/stats';
 import { winConditions, type WinCondition } from '../../lib/winConditions';
 import { laneOpponents } from '../../lib/laneOpponents';
@@ -582,7 +582,6 @@ function ArenaStats({ matches, puuid }: { matches: MatchSummary[]; puuid: string
   if (!s) return null;
   const max = Math.max(1, ...s.placements);
   // Green for a top-half average, red otherwise; plain on a handful of games.
-  const placeTone = (avg: number, games: number) => (games < TONE_MIN_GAMES ? 'text-text' : avg <= 4.5 ? 'text-win' : 'text-loss');
   const stat = (label: string, value: string, tone = 'text-text') => (
     <div>
       <dt className="text-[11px] text-muted">{label}</dt>

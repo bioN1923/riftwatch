@@ -67,6 +67,17 @@ export function sureTone(wr: number, games: number) {
   return wr > 0.5 ? 'text-win' : 'text-loss';
 }
 
+/**
+ * Arena average placement (1 best, 8 worst; 4.5 is the middle): green or red only when more than two
+ * standard errors from 4.5. One game's place has a spread of about 2.29 (uniform over 1–8).
+ */
+export function placeTone(avg: number, games: number) {
+  if (games < TONE_MIN_GAMES) return 'text-text';
+  const se = 2.29 / Math.sqrt(games);
+  if (Math.abs(avg - 4.5) <= 2 * se) return 'text-text';
+  return avg < 4.5 ? 'text-win' : 'text-loss';
+}
+
 export function winRateTone(wr: number, games?: number) {
   if (games != null && games < TONE_MIN_GAMES) return 'text-text';
   if (wr >= 0.6) return 'text-kda-great';
