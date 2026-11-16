@@ -27,3 +27,6 @@
 
 ## Next
 - The MEDIUM rules: duplicate global listeners, and re-renders on the profile's long match list.
+
+## Live
+- Deployed 23:06 local. The live entry carries `3.205`, and `/api/champions/ahri/vs/zed?group=ranked` answers 200 with 138 games.
