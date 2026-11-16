@@ -15,3 +15,7 @@
 - a11y: `{}`.
 - Phone matchup page: no horizontal scroll at 390 px.
 - Screenshots: `demo/` and `demo/matchup-header.png` (all plain, matching "could still be chance").
+
+## Live check (2026-11-16 14:34 local)
+- The live index serves `index-Hfpz12wp.js`, and the 3.167 changelog entry is present.
+- Ranked patch 16.22 is at 25,294 games, up from 25,137 at 14:03: still about 5 a minute.
