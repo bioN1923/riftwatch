@@ -20,8 +20,8 @@
 - **Server:**
   - **New tallies:** `al` and `en` per champion-role, covering every teammate and every enemy, in any role. They are filled for ranked games as they're read and trimmed to the 100 most common above 120 entries.
   - **`ChampionStatsStore.teamPicks(role, allies, enemies)`:** for every champion with enough games in the role (as blind picks), score = strength (`shrunk(w, g, 150) − 0.5`) + Σ reasons.
-    - Lane and partner pairs use the lane (`vs`) and duo (`duo`) tallies when they have `matchupMin` games, with shrink weight K=50.
-    - Other pairs use `al`/`en` with ≥10 games, K=100.
+    - Lane and partner pairs use the lane (`vs`) and duo (`duo`) tallies when they have `matchupMin` games, with shrink weight K=100 (see the tuning note).
+    - Other pairs use `al`/`en` with ≥10 games, K=150.
     - Each reason's delta is `(w − base·g)/(g + K)`, the pair's effect shrunk toward the champion's own rate.
     - `sure` = the raw gap is more than 2 standard errors.
   - **`GET /api/draft/team?role=&allies=&enemies=`:** ids are validated, with at most 4 allies and 5 enemies.
@@ -47,3 +47,8 @@
   - `demo/team-draft-phone.png`;
   - `demo/team-draft-add.png`;
   - `demo/` (usual set).
+
+## Tuning after the first live look (13:10 local)
+- **Live data:** the endpoint returned 59 mid candidates for allies Lee Sin/Jinx/Leona and enemies Zed/Vi/Kai'Sa/Thresh. Reasons were lane (37) and duo (52) only, since `al`/`en` start empty.
+- **The problem:** Ahri ranked #1 on a real effect (into Zed 62% over 127 games), but #2 was carried by a 16-game lane matchup at 81% (+7.2).
+- **The change:** shrink weights were raised to K=100 for lane and partner and K=150 for other pairs. The 127-game edge still counts about +6, while a 16-game one drops to about +4, so small samples can't leapfrog well-sampled ones.

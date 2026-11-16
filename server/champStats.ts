@@ -723,8 +723,8 @@ export class ChampionStatsStore {
     const taken = new Set([...allies, ...enemies]);
     // Heavy shrinking: a draft score adds up to nine of these, so small-sample noise must not pile up.
     const PAIR_MIN = 10;
-    const LANE_K = 50;
-    const PAIR_K = 100;
+    const LANE_K = 100;
+    const PAIR_K = 150;
     const reason = (kind: TeamPickReason['kind'], championId: number, v: C, base: number, k: number): TeamPickReason => {
       const raw = v.w / v.g;
       return {
