@@ -25,6 +25,7 @@ import { useSlideDirection } from '../components/ui/Motion';
 import { langInfo, t } from '../i18n';
 import { useStickyTop } from '../lib/useStickyTop';
 import { useMedia } from '../lib/useMedia';
+import { regionName } from '../lib/format';
 import { ArrowDown } from 'lucide-react';
 
 const FIRST_PAGE = 20;
@@ -152,7 +153,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
     }
   }
 
-  if (profileQ.isPending) return <ProfileSkeleton />;
+  if (profileQ.isPending) return <ProfileSkeleton gameName={gameName} tagLine={tagLine} platform={platform} />;
   if (profileQ.isError || !profile) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-10">
@@ -341,28 +342,35 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
   );
 }
 
-function ProfileSkeleton() {
+/**
+ * While the profile loads: the Riot ID from the address is already known, so show it where the name will be
+ * (on a slow connection you can see whose profile is coming). Layout follows the real page: matches, then summary.
+ */
+function ProfileSkeleton({ gameName, tagLine, platform }: { gameName: string; tagLine: string; platform: string }) {
   return (
     <div aria-busy="true" role="status" aria-label={t('profile.loading')}>
       <div className="border-b border-line bg-surface">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-8">
-          <Skeleton className="size-[88px]" />
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-64" />
-            <Skeleton className="h-4 w-32" />
+          <Skeleton className="size-[72px] sm:size-[88px]" />
+          <div className="min-w-0 space-y-1.5">
+            <p className="truncate font-display text-3xl font-bold leading-tight sm:text-4xl">
+              {gameName}
+              <span className="ml-1.5 text-xl text-faint sm:text-2xl">#{tagLine}</span>
+            </p>
+            <p className="text-sm text-muted">{regionName(platform)}</p>
           </div>
         </div>
       </div>
-      <div className="mx-auto grid max-w-6xl gap-4 px-4 py-5 lg:grid-cols-[320px_1fr]">
-        <div className="space-y-3">
-          <Skeleton className="h-36" />
-          <Skeleton className="h-14" />
-        </div>
+      <div className="mx-auto grid max-w-6xl gap-5 px-4 py-5 lg:grid-cols-[minmax(0,1fr)_310px]">
         <div className="space-y-2">
-          <Skeleton className="h-28" />
+          <Skeleton className="h-10" />
           {Array.from({ length: 4 }, (_, i) => (
-            <Skeleton key={i} className="h-[108px]" />
+            <Skeleton key={i} className="h-[124px]" />
           ))}
+        </div>
+        <div className="hidden space-y-3 lg:block">
+          <Skeleton className="h-36" />
+          <Skeleton className="h-24" />
         </div>
       </div>
     </div>

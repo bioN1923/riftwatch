@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.202',
+    date: '2026-11-16',
+    items: ['While a profile loads, its Riot ID and region show straight away, so on a slow connection you can see whose profile is coming. The placeholder layout now matches the real page (matches first, summary to the side).'],
+  },
+  {
     version: '3.201',
     date: '2026-11-16',
     items: [
