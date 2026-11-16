@@ -31,3 +31,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/hash-scroll-phone.png` and `demo/`.
+
+## Live
+- Deployed 23:23 local. The live entry carries `3.206`, and the live stylesheet has `content-visibility:auto`.
