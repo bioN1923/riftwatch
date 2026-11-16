@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.138](v3.138/CHANGES.md) | 2026-11-16 | Matchup pages: Build at a glance |
 | [v3.137](v3.137/CHANGES.md) | 2026-11-16 | Items page: type filters and patch selector |
 | [v3.136](v3.136/CHANGES.md) | 2026-11-16 | Champion build: clear-only colours throughout; no one-off item options |
 | [v3.135](v3.135/CHANGES.md) | 2026-11-16 | No skeleton flash on filter changes: matchup, tier list, profile queue, draft |

@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.138',
+    date: '2026-11-16',
+    items: ['Matchup pages open their build with the same “Build at a glance” strip: what to take into that specific opponent, in one row. It follows the rune page you pick.'],
+  },
+  {
     version: '3.137',
     date: '2026-11-16',
     items: ['Items page: filter by type (Attack damage, Ability power, Critical strike, Defence) and pick a patch. Your choice is kept in the address, so a filtered view can be shared.'],

@@ -312,7 +312,7 @@ export function Block({ title, aside, children, className }: { title: string; as
  * core items, boots and skill max. It follows the rune page picked below (and that page's main
  * build once it has enough games); every part links down to its full section.
  */
-function BuildGlance({ s, page, abilityIcons }: { s: ChampionStats; page: number; abilityIcons?: string[] }) {
+export function BuildGlance({ s, page, abilityIcons }: { s: BuildData & { skills?: ChampionStats['skills'] }; page: number; abilityIcons?: string[] }) {
   const { data: sd } = useStaticData();
   const a = assets(sd);
   const names = useRuneNames(s.runes);
@@ -352,7 +352,7 @@ function BuildGlance({ s, page, abilityIcons }: { s: ChampionStats; page: number
         {start && part(t('cp.glanceStart'), <ItemRow ids={start.ids} size={30} />)}
         {build && part(t('cp.coreShort'), <ItemRow ids={build.ids} size={36} arrows linked />)}
         {boots && part(t('cp.boots'), <ItemRow ids={[boots.id]} size={30} />)}
-        {s.skills.order &&
+        {s.skills?.order &&
           part(
             t('cp.glanceSkills'),
             <MaxOrder order={s.skills.order.split('').map((k) => 'QWE'.indexOf(k) + 1)} icons={abilityIcons} />,

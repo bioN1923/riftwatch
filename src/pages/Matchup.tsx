@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation, useParams, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { keepWhile } from '../lib/keepWhile';
@@ -17,7 +17,7 @@ import { EmptyState, ErrorState, Skeleton } from '../components/ui/States';
 import { PatchSelect, RoleTab } from '../components/champions/common';
 import { SlidingIndicator } from '../components/ui/Motion';
 import { LaneCurve } from '../components/champions/LaneCurve';
-import { ItemsBlock, Lead, LOW_SAMPLE, RunesBlock, SpellsAndStart } from './Champion';
+import { BuildGlance, ItemsBlock, Lead, LOW_SAMPLE, RunesBlock, SpellsAndStart } from './Champion';
 import { t } from '../i18n';
 import { guessChampion } from '../lib/champSearch';
 import { PatchHistory } from '../components/champions/PatchHistory';
@@ -82,6 +82,9 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
     placeholderData: keepWhile(muKey, 1, 2),
   });
   const m = q.data;
+  // The glance strip follows the rune page picked in the runes block.
+  const [runePage, setRunePage] = useState(0);
+  useEffect(() => setRunePage(0), [championId, opponentId, m?.role, m?.patch]);
 
   useEffect(() => {
     if (me && them) document.title = t('mp.title', { a: me.name, b: them.name });
@@ -191,7 +194,8 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
                 </p>
               )}
               <div className="mt-5 space-y-7">
-                <RunesBlock s={m} />
+                <BuildGlance s={m} page={runePage} />
+                <RunesBlock s={m} page={runePage} onPage={setRunePage} />
                 <SpellsAndStart s={m} />
                 <ItemsBlock s={m} />
               </div>
