@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.168](v3.168/CHANGES.md) | 2026-11-16 | Live game on phones: ranks shown; damage-mix line wraps |
 | [v3.167](v3.167/CHANGES.md) | 2026-11-16 | Matchup header colours follow the verdict; tiny lane leads plain |
 | [v3.166](v3.166/CHANGES.md) | 2026-11-16 | Patch movers: one-sided layout; two hook-order crash fixes |
 | [v3.165](v3.165/CHANGES.md) | 2026-11-16 | API usage page covers the draft helpers; crawler check |

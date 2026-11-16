@@ -85,9 +85,10 @@ export function LiveGame({ game, puuid, platform }: { game: Live; puuid: string;
                   {avg && <span className="ml-2 font-sans text-xs font-normal text-muted">{t('live.average', { rank: avg })}</span>}
                 </h3>
                 {mix && (
-                  <p className="flex items-center gap-2 text-xs text-muted md:mr-auto" title={t('live.dmgNote')}>
-                    <span className="text-faint">{t('live.dmgLabel')}:</span>
-                    <span>
+                  // Wraps as whole pieces on phones (label + counts stay together; the lean badge drops to the next line) instead of squeezing into columns.
+                  <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted md:mr-auto" title={t('live.dmgNote')}>
+                    <span className="whitespace-nowrap text-faint">{t('live.dmgLabel')}:</span>
+                    <span className="whitespace-nowrap">
                       {[mix.ad && t('live.dmgAd', { n: mix.ad }), mix.ap && t('live.dmgAp', { n: mix.ap }), mix.mixed && t('live.dmgMixed', { n: mix.mixed })].filter(Boolean).join(' · ')}
                     </span>
                     {mix.lean && (
@@ -304,8 +305,16 @@ function PlayerRow({ p, s, loading, self, platform, queueId }: { p: LiveParticip
           <Skeleton className="ml-auto h-8 w-16" />
         ) : solo ? (
           <>
-            <p className={clsx('num text-sm font-semibold', sureTone(wr, games))}>{pct(wr)}</p>
-            <p className="num text-xs text-muted">{t('common.games', { count: games })}</p>
+            {/* Phones have no rank column, so the rank leads here: emblem and tier, then the record. */}
+            <p className="flex items-center justify-end gap-1 text-xs font-semibold sm:hidden">
+              <img src={rankEmblem(solo.tier)} alt="" className="size-4" />
+              {tierName(solo.tier)} {APEX.has(solo.tier) ? '' : solo.rank}
+            </p>
+            <p className={clsx('num text-xs font-semibold sm:text-sm', sureTone(wr, games))}>
+              {pct(wr)}
+              <span className="font-normal text-muted sm:hidden"> · {games}</span>
+            </p>
+            <p className="num hidden text-xs text-muted sm:block">{t('common.games', { count: games })}</p>
           </>
         ) : (
           <span className="text-xs text-faint sm:hidden">{t('common.unranked')}</span>

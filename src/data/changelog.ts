@@ -22,6 +22,14 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.168',
+    date: '2026-11-16',
+    items: [
+      'Live game on phones: each player now shows their rank (emblem and tier) above their win rate and games. Before, phones showed only the win rate.',
+      'Live game: the team damage-mix line wraps neatly on narrow screens instead of squeezing "Damage mix:" into a column.',
+    ],
+  },
+  {
     version: '3.167',
     date: '2026-11-16',
     items: [
