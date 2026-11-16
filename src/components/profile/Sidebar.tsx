@@ -151,8 +151,11 @@ export function ChampionPool({ ov, loading, onOpen }: { ov?: Overview; loading: 
               <Skeleton className="h-4 flex-1" />
             </li>
           ))}
-        {ov?.champions.slice(0, 6).map((c) => {
+        {ov?.champions.slice(0, 6).map((c, _i, top) => {
           const champ = a.champion(c.championId);
+          // Bar length follows how much they play it (vs their most-played here); green/red inside is the record.
+          // A one-game 100% no longer fills the whole bar like a 20-game main does.
+          const most = Math.max(...top.map((x) => x.games));
           const ratio = kdaRatio(c.kills, c.deaths, c.assists);
           const wr = c.wins / c.games;
           return (
@@ -165,9 +168,11 @@ export function ChampionPool({ ov, loading, onOpen }: { ov?: Overview; loading: 
               <GameImg src={champ.url} alt="" size={36} rounded="md" />
               <div className="min-w-0">
                 <span className="block truncate font-medium group-hover:text-gold">{champ.name}</span>
-                <div className="mt-1 flex h-1.5 overflow-hidden rounded-full bg-sunken" role="img" aria-label={t('common.winsLossesAria', { wins: c.wins, losses: c.games - c.wins })}>
-                  <span className="bg-win" style={{ width: `${wr * 100}%` }} />
-                  <span className="flex-1 bg-loss/70" />
+                <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-sunken" role="img" aria-label={t('common.winsLossesAria', { wins: c.wins, losses: c.games - c.wins })}>
+                  <div className="flex h-full overflow-hidden rounded-full" style={{ width: `${Math.max(8, (c.games / most) * 100)}%` }}>
+                    <span className="bg-win" style={{ width: `${wr * 100}%` }} />
+                    <span className="flex-1 bg-loss/70" />
+                  </div>
                 </div>
               </div>
               <div className="text-right">
