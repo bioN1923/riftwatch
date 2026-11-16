@@ -9,3 +9,6 @@
 - `tsc`, `vitest` (183) and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`, plus a crop of the ladder in `demo/ladder-wl.png`.
+
+## Live check (2026-11-16 09:26 local)
+- The live index serves `index-DUj78F22.js`, and its Leaderboard chunk contains the split bar (`bg-loss/80`).
