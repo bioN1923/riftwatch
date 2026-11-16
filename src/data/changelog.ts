@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.181',
+    date: '2026-11-16',
+    items: ['Match history: remakes no longer show a gold "Perfect KDA" or an MVP/ACE badge. The game didn\'t count, so its KDA is shown in plain grey.'],
+  },
+  {
     version: '3.180',
     date: '2026-11-16',
     items: ['Draft helpers on phones: the share button says "Copy link" instead of showing a lone link icon on its own row.'],

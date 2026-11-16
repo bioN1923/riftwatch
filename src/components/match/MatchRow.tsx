@@ -114,8 +114,9 @@ export function MatchRow({ match, puuid, platform }: { match: MatchSummary; puui
                   {p.assists}
                 </p>
                 <p className="mt-1 flex items-center gap-2 text-xs">
-                  <span className={clsx('num font-semibold', kdaTone(ratio))}>{t('common.kdaValue', { value: formatKda(ratio) })}</span>
-                  <Badge p={p} />
+                  {/* A remake doesn't count, so its "Perfect" KDA or badge isn't something to highlight. */}
+                  <span className={clsx('num font-semibold', r === 'remake' ? 'text-faint' : kdaTone(ratio))}>{t('common.kdaValue', { value: formatKda(ratio) })}</span>
+                  {r !== 'remake' && <Badge p={p} />}
                   {p.largestMultiKill >= 2 && (
                     <span className={clsx('rounded-sm px-1.5 py-px text-[10px] font-bold', p.largestMultiKill >= 4 ? 'bg-kda-great text-bg' : 'bg-raised text-text')}>
                       {multikill(p.largestMultiKill)}
