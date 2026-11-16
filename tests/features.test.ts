@@ -900,9 +900,15 @@ describe('winRateTone', async () => {
   it('keeps small samples neutral', () => {
     expect(winRateTone(1, 3)).toBe('text-text');
     expect(winRateTone(0, 4)).toBe('text-text');
-    expect(winRateTone(0.75, 8)).toBe('text-kda-great');
-    expect(winRateTone(0.4, 20)).toBe('text-muted');
     expect(winRateTone(0.55)).toBe('text-win');
+  });
+  it('colours only what is more than chance', () => {
+    expect(winRateTone(0.6, 5)).toBe('text-text'); // 3–2
+    expect(winRateTone(0.75, 8)).toBe('text-text'); // 6–2 could still be luck
+    expect(winRateTone(0.4, 20)).toBe('text-text');
+    expect(winRateTone(0.9, 20)).toBe('text-kda-great'); // 18–2
+    expect(winRateTone(0.58, 300)).toBe('text-win');
+    expect(winRateTone(0.4, 200)).toBe('text-muted');
   });
 });
 

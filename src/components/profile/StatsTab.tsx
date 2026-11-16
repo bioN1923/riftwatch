@@ -689,9 +689,10 @@ function Records({ matches, puuid }: { matches: MatchSummary[]; puuid: string })
               <Link to={`${overview}#m-${r.match.id}`} className="flex h-full items-center gap-2.5 rounded border border-line bg-surface p-2.5 transition-colors hover:border-gold/60 hover:bg-raised">
                 <GameImg src={c.url} alt="" size={36} rounded="sm" />
                 <span className="min-w-0">
-                  <span className="block truncate text-[11px] text-muted">{t(`rec.${r.id}` as 'rec.kills')}</span>
+                  {/* Labels and the result line wrap instead of truncating: two columns on a phone leave ~110 px of text. */}
+                  <span className="block text-[11px] leading-snug text-muted">{t(`rec.${r.id}` as 'rec.kills')}</span>
                   <span className="num block font-display text-lg font-bold leading-tight">{value(r)}</span>
-                  <span className="block truncate text-[11px] text-faint">
+                  <span className="block text-[11px] leading-snug text-faint">
                     <span className={r.p.win ? 'text-win' : 'text-loss'}>{r.p.win ? t('result.win') : t('result.loss')}</span> · {c.name} · {timeAgo(r.match.startedAt)}
                   </span>
                 </span>

@@ -22,6 +22,15 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.189',
+    date: '2026-11-16',
+    items: [
+      'Profile win rates (champions, lane opponents, roles, duos, the sidebar and the per-champion page) are coloured only when the record is more than chance, like the rest of Riftwatch. A 3–2 lane record no longer glows gold.',
+      'Stats tab on phones: "Personal records" labels such as "Most damage to champions" wrap instead of being cut off.',
+      'Lane draft: adding or removing teammates under "Your team\'s damage" keeps keyboard focus in place.',
+    ],
+  },
+  {
     version: '3.188',
     date: '2026-11-16',
     items: [

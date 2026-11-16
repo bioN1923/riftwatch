@@ -603,8 +603,19 @@ function AnswerList({ list, enemy, role, min, inPool }: { list: Answer[]; enemy:
 function TeamDamage({ team, onChange }: { team: number[]; onChange: (next: number[]) => void }) {
   const { data: sd } = useStaticData();
   const a = assets(sd);
-  const [opened, setOpen] = useState(false);
+  const [opened, setOpen] = useState<false | 'key' | 'pointer'>(false);
   const open = opened || team.length > 0;
+  // Same focus hand-off as the team draft: removed buttons and the "Add" button disappear when used.
+  const sectionRef = useRef<HTMLElement>(null);
+  const refocus = useRef<number | null>(null);
+  useEffect(() => {
+    const want = refocus.current;
+    if (want == null) return;
+    refocus.current = null;
+    const removes = sectionRef.current?.querySelectorAll<HTMLButtonElement>('button[data-remove]') ?? [];
+    const next = removes[Math.min(want, removes.length - 1)] ?? sectionRef.current?.querySelector<HTMLInputElement>('input');
+    next?.focus();
+  });
   const ratings = team.map((id) => sd?.champions.get(id)?.dmg);
   const mix = team.length ? damageMix(ratings) : null;
   const label = (id: number) => {
@@ -612,14 +623,14 @@ function TeamDamage({ team, onChange }: { team: number[]; onChange: (next: numbe
     return k === 'ad' ? t('draft.teamAd') : k === 'ap' ? t('draft.teamAp') : k === 'mixed' ? t('draft.teamMixed') : '';
   };
   return (
-    <section className="panel mt-6 p-4" aria-labelledby="team-h">
+    <section ref={sectionRef} className="panel mt-6 p-4" aria-labelledby="team-h">
       <h2 id="team-h" className="panel-title flex items-center gap-1.5">
         <Shield className="size-4 text-gold" aria-hidden /> {t('draft.teamTitle')}
       </h2>
       <p className="mt-0.5 text-xs text-muted">{t('draft.teamLead')}</p>
       {team.length > 0 && (
         <ul className="mt-3 flex flex-wrap gap-2">
-          {team.map((id) => (
+          {team.map((id, i) => (
             <li key={id} className="flex items-center gap-2 rounded border border-line bg-surface py-1 pl-1 pr-1.5">
               <GameImg src={a.champion(id).url} alt="" size={32} rounded="sm" />
               <span className="text-sm">
@@ -627,7 +638,11 @@ function TeamDamage({ team, onChange }: { team: number[]; onChange: (next: numbe
                 <span className="block text-[11px] text-muted">{label(id)}</span>
               </span>
               <button
-                onClick={() => onChange(team.filter((x) => x !== id))}
+                data-remove
+                onClick={(e) => {
+                  if (e.detail === 0) refocus.current = i;
+                  onChange(team.filter((x) => x !== id));
+                }}
                 aria-label={t('draft.teamRemove', { champion: a.champion(id).name })}
                 className="ml-1 grid size-6 place-items-center rounded text-muted hover:bg-raised hover:text-text"
               >
@@ -649,9 +664,17 @@ function TeamDamage({ team, onChange }: { team: number[]; onChange: (next: numbe
       )}
       {team.length < TEAM_SIZE &&
         (open ? (
-          <ChampionGrid onPick={(id) => onChange([...team, id].slice(0, TEAM_SIZE))} exclude={team} />
+          <ChampionGrid
+            autoFocus={opened === 'key'}
+            onPick={(id) => {
+              const next = [...team, id].slice(0, TEAM_SIZE);
+              if (next.length >= TEAM_SIZE) refocus.current = next.length - 1; // the grid closes: land on the last remove button
+              onChange(next);
+            }}
+            exclude={team}
+          />
         ) : (
-          <button onClick={() => setOpen(true)} className="mt-3 inline-flex items-center gap-1.5 rounded border border-line px-3 py-1.5 text-sm font-medium text-muted hover:border-gold/60 hover:text-text">
+          <button onClick={(e) => setOpen(e.detail === 0 ? 'key' : 'pointer')} className="mt-3 inline-flex items-center gap-1.5 rounded border border-line px-3 py-1.5 text-sm font-medium text-muted hover:border-gold/60 hover:text-text">
             <Plus className="size-4" aria-hidden /> {t('draft.teamAdd')}
           </button>
         ))}

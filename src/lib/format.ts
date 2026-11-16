@@ -80,6 +80,9 @@ export function placeTone(avg: number, games: number) {
 
 export function winRateTone(wr: number, games?: number) {
   if (games != null && games < TONE_MIN_GAMES) return 'text-text';
+  // With a game count, colour only what's more than chance (same two-standard-error test as sureTone):
+  // a 3–2 lane record or 4–2 on a champion stays plain instead of glowing gold.
+  if (games != null && sureTone(wr, games) === 'text-text') return 'text-text';
   if (wr >= 0.6) return 'text-kda-great';
   if (wr >= 0.5) return 'text-win';
   return 'text-muted';
