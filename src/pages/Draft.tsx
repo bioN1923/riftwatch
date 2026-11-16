@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { useQueries, useQuery } from '@tanstack/react-query';
+import { keepWhile } from '../lib/keepWhile';
 import clsx from 'clsx';
 import { callTone, matchupCall } from '../lib/matchupVerdict';
 import { Ban, ChevronDown, Crosshair, Plus, Search, Shield, Swords, X } from 'lucide-react';
@@ -332,6 +333,7 @@ function Results({ enemy, role, pool }: { enemy: number; role: Role; pool: numbe
     queryKey: ['champion', enemy, 'ranked', role, undefined],
     queryFn: ({ signal }) => api.champion(enemy, { group: 'ranked', role }, signal),
     staleTime: 5 * 60_000,
+    placeholderData: keepWhile(['champion', enemy], 1),
   });
   if (q.isPending) return <Skeleton className="mt-6 h-64" />;
   const s = q.data as ChampionStats | undefined;
@@ -393,7 +395,7 @@ function Results({ enemy, role, pool }: { enemy: number; role: Role; pool: numbe
 function BlindPanel({ role, pool }: { role: Role; pool: number[] }) {
   const { data: sd } = useStaticData();
   const a = assets(sd);
-  const q = useQuery({ queryKey: ['blind', role], queryFn: ({ signal }) => api.blind(role, signal), staleTime: 5 * 60_000 });
+  const q = useQuery({ queryKey: ['blind', role], queryFn: ({ signal }) => api.blind(role, signal), staleTime: 5 * 60_000, placeholderData: keepWhile(['blind']) });
   if (q.isPending) return <Skeleton className="mt-6 h-48" />;
   const picks = q.data?.picks ?? [];
   const yours = new Set(pool);

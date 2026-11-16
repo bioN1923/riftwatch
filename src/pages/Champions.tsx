@@ -2,6 +2,7 @@ import { RecentChampList } from '../components/champions/RecentChamps';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
+import { keepWhile } from '../lib/keepWhile';
 import clsx from 'clsx';
 import { PatchMovers } from '../components/champions/PatchMovers';
 import { PatchDelta } from '../components/ui/PatchDelta';
@@ -44,8 +45,11 @@ export function ChampionsPage() {
     document.title = t('tl.title');
   }, []);
 
+  const tlKey = ['tierlist', group, patch] as const;
   const q = useQuery({
-    queryKey: ['tierlist', group, patch],
+    queryKey: tlKey,
+    // A patch switch keeps the list on screen (dimmed) until the new one arrives.
+    placeholderData: keepWhile(tlKey, 1),
     queryFn: ({ signal }) => api.tierList(group, patch, signal),
     staleTime: 60_000,
     refetchInterval: (query) => (query.state.data?.collecting ? 120_000 : false),
@@ -193,7 +197,7 @@ export function ChampionsPage() {
           </EmptyState>
         </div>
       ) : (
-        <div className="mt-2 overflow-x-auto">
+        <div className={clsx('mt-2 overflow-x-auto transition-opacity duration-200', q.isPlaceholderData && 'pointer-events-none opacity-60')} aria-busy={q.isPlaceholderData}>
           {rows.every((x) => x.lowSample) && (
             <p className="mb-2 rounded border border-line bg-surface px-3 py-2 text-sm text-muted" role="note">
               {t('tl.earlyData', { count: q.data.matches })}

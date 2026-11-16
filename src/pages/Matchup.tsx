@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link, Navigate, useLocation, useParams, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
+import { keepWhile } from '../lib/keepWhile';
 import clsx from 'clsx';
 import { callText } from '../lib/matchupText';
 import { callTone, matchupCall } from '../lib/matchupVerdict';
@@ -72,10 +73,13 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
   const me = sd?.champions.get(championId);
   const them = sd?.champions.get(opponentId);
 
+  const muKey = ['matchup', championId, opponentId, role, patch] as const;
   const q = useQuery({
-    queryKey: ['matchup', championId, opponentId, role, patch],
+    queryKey: muKey,
     queryFn: ({ signal }) => api.matchup(championId, opponentId, { role, patch }, signal),
     staleTime: 60_000,
+    // Changing lane or patch keeps this matchup on screen (dimmed) instead of flashing skeletons.
+    placeholderData: keepWhile(muKey, 1, 2),
   });
   const m = q.data;
 
@@ -142,7 +146,7 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
               <div role="tablist" aria-label={t('tl.role')} className="relative flex gap-5 overflow-x-auto overflow-y-hidden">
                 <SlidingIndicator />
                 {m.roles.map((r) => (
-                  <RoleTab key={r.role} role={r.role} active={m.role === r.role} onClick={() => set('role', r.role)}>
+                  <RoleTab key={r.role} role={r.role} active={(q.isPlaceholderData && role ? role : m.role) === r.role} onClick={() => set('role', r.role)}>
                     {ROLE_LABEL[r.role] ?? r.role} <span className="num text-faint">{thousands(r.games)}</span>
                   </RoleTab>
                 ))}
@@ -156,7 +160,7 @@ function MatchupView({ championId, opponentId }: { championId: number; opponentI
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl space-y-5 px-4 py-5">
+      <div className={clsx('mx-auto max-w-6xl space-y-5 px-4 py-5 transition-opacity duration-200', q.isPlaceholderData && 'pointer-events-none opacity-60')} aria-busy={q.isPlaceholderData}>
         {q.isPending ? (
           <Skeleton className="h-96" />
         ) : q.isError || !m ? (

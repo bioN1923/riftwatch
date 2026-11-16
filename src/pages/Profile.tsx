@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useParams, useSearchParams } from 'react-router';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
+import { keepWhile } from '../lib/keepWhile';
 import { getPlatform } from '../../shared/regions';
 import type { Profile } from '../../shared/types';
 import { api, ApiClientError } from '../lib/api';
@@ -79,9 +80,12 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
 
   // Same query as the rank-history panel (shared cache), for today's LP change.
   const lpQ = useQuery({ queryKey: ['lp', puuid], enabled: !!puuid, queryFn: ({ signal }) => api.lp(platform, puuid!, signal), staleTime: 60_000 });
+  const matchesKey = ['matches', platform, puuid, queue] as const;
   const matchesQ = useInfiniteQuery({
-    queryKey: ['matches', platform, puuid, queue],
+    queryKey: matchesKey,
     enabled: !!puuid,
+    // Switching queue filter keeps the current games on screen (dimmed) until the new list arrives.
+    placeholderData: keepWhile(matchesKey, 1, 2),
     initialPageParam: 0,
     queryFn: ({ pageParam, signal }) => {
       const fresh = freshRef.current && pageParam === 0;
@@ -245,7 +249,7 @@ function ProfileView({ platform, gameName, tagLine, tab }: { platform: string; g
                 />
               ) : (
                 <>
-                  <div className="space-y-5" aria-busy={matchesQ.isPending}>
+                  <div className={clsx('space-y-5 transition-opacity duration-200', matchesQ.isPlaceholderData && 'pointer-events-none opacity-60')} aria-busy={matchesQ.isPending || matchesQ.isPlaceholderData}>
                     {matchesQ.isPending && Array.from({ length: 5 }, (_, i) => <Skeleton key={i} className="h-[124px] rounded" />)}
                     {matches &&
                       groupByDay(matches).map((g) => {
