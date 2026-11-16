@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.198](v3.198/CHANGES.md) | 2026-11-16 | Changelog no longer in every page load |
 | [v3.197](v3.197/CHANGES.md) | 2026-11-16 | Lane opponents: no % under 5 games |
 | [v3.196](v3.196/CHANGES.md) | 2026-11-16 | Live mastery wraps; tiny matchups without rates |
 | [v3.195](v3.195/CHANGES.md) | 2026-11-16 | Compare cards: no cut-off region on phones |

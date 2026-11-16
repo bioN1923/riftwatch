@@ -8,19 +8,14 @@ export interface ChangelogEntry {
   items: string[];
 }
 
-/** True when version a ("3.35") is newer than b ("3.9" < "3.10"); everything is newer than "". */
-export function newerThan(a: string, b: string) {
-  if (!b) return true;
-  const x = a.split('.').map(Number);
-  const y = b.split('.').map(Number);
-  for (let i = 0; i < Math.max(x.length, y.length); i++) {
-    const d = (x[i] ?? 0) - (y[i] ?? 0);
-    if (d) return d > 0;
-  }
-  return false;
-}
+export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '3.198',
+    date: '2026-11-16',
+    items: ['Faster first load: pages no longer download the whole "What\'s new" history (about 16 kB) just to know the current version. It now loads only when you open What\'s new.'],
+  },
   {
     version: '3.197',
     date: '2026-11-16',

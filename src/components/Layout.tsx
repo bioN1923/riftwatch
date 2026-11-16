@@ -10,7 +10,8 @@ import { Shortcuts } from './Shortcuts';
 import { api } from '../lib/api';
 import { promptInstall, useCanInstall } from '../lib/install';
 import { setSeenVersion, useRegion, useSeenVersion, useTheme, type Theme } from '../lib/storage';
-import { CHANGELOG, newerThan } from '../data/changelog';
+import { newerThan } from '../lib/version';
+import { APP_VERSION } from '../version';
 import { LANGS, setLang, t, useLang, type Lang } from '../i18n';
 
 /** Riot Games' required legal boilerplate (developer.riotgames.com/policies/general). */
@@ -308,7 +309,7 @@ export function Layout() {
   const { pathname } = useLocation();
   const home = pathname === '/';
   const seen = useSeenVersion();
-  const latest = CHANGELOG[0].version;
+  const latest = APP_VERSION;
   // A first visit counts as up to date: the dot is for what changed since you started using Riftwatch.
   useEffect(() => {
     if (!seen) setSeenVersion(latest);

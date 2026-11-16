@@ -995,3 +995,12 @@ describe('team draft picks', async () => {
     expect(store.teamPicks('NOPE', [], []).picks).toEqual([]);
   });
 });
+
+describe('app version', () => {
+  it('package.json matches the newest changelog entry (the layout reads the version from package.json)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { CHANGELOG } = await import('../src/data/changelog');
+    const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as { version: string };
+    expect(pkg.version.replace(/\.0$/, '')).toBe(CHANGELOG[0].version);
+  });
+});
