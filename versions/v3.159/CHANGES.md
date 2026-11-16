@@ -9,3 +9,7 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/` and `demo/draft-inpool.png`.
+
+## Live check (2026-11-16 12:43 local)
+- The live index serves `index-Qrq07m3m.js`. Its Draft chunk uses `draft.inPool` twice (blind picks, plus the new best-answers tag), up from one before.
+- The device copy was checked for the new code before deploying.
