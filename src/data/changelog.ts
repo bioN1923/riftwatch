@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.197',
+    date: '2026-11-16',
+    items: ['Stats tab, "Lane opponents": records under 5 games show just the score, such as 0–1, without a stark 0% or 100% beside it.'],
+  },
+  {
     version: '3.196',
     date: '2026-11-16',
     items: [

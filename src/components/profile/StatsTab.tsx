@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, Target } from 'lucide-react';
 import type { MatchSummary } from '../../../shared/types';
 import { assets, champSlug, useStaticData } from '../../lib/ddragon';
-import { compact, decimal, duration as fmtDuration, formatKda, kdaRatio, kdaTone, multikill, pct, timeAgo, winRateTone, placeTone } from '../../lib/format';
+import { compact, decimal, duration as fmtDuration, formatKda, kdaRatio, kdaTone, multikill, pct, timeAgo, winRateTone, placeTone, TONE_MIN_GAMES } from '../../lib/format';
 import { me } from '../../lib/stats';
 import { winConditions, type WinCondition } from '../../lib/winConditions';
 import { laneOpponents } from '../../lib/laneOpponents';
@@ -730,7 +730,14 @@ function LaneOpponents({ matches, puuid }: { matches: MatchSummary[]; puuid: str
               <span className="min-w-0">
                 <span className="block truncate text-sm font-medium">{c.name}</span>
                 <span className="num block text-xs text-muted">
-                  {o.wins}–{o.games - o.wins} · <span className={clsx('font-semibold', winRateTone(wr, o.games))}>{pct(wr)}</span>
+                  {o.wins}–{o.games - o.wins}
+                  {/* The record says it all under 5 games; a "0%" or "100%" next to 0–1 only looks like a verdict. */}
+                  {o.games >= TONE_MIN_GAMES && (
+                    <>
+                      {' · '}
+                      <span className={clsx('font-semibold', winRateTone(wr, o.games))}>{pct(wr)}</span>
+                    </>
+                  )}
                 </span>
               </span>
             </li>
