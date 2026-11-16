@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.165',
+    date: '2026-11-16',
+    items: ['"How we use the Riot API" now covers the draft helpers: they work from the champion picks you enter (or those visible in a live game) plus win rates from games already read, show no player names and never infer premades.'],
+  },
+  {
     version: '3.164',
     date: '2026-11-16',
     items: ['Champion pages: the ARAM tab no longer shows a "Ban rate 0.0%" (ARAM has no bans, so the number only suggested nobody bans the champion).'],

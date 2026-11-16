@@ -37,7 +37,7 @@ export function ApiUsagePage() {
       {getLang() !== 'en' && <p className="mt-4 rounded border border-line bg-surface px-4 py-3 text-sm text-muted">{t('pv.englishOnly')}</p>}
       <P>
         Riftwatch is a League of Legends stats site: player profiles with rank, match history and champion stats; live-game scouting; a champion tier list
-        with builds, runes and matchups; the ranked ladder; and player comparison. Everything comes from the Riot Games API plus Data Dragon. This page
+        with builds, runes and matchups; draft helpers; the ranked ladder; and player comparison. Everything comes from the Riot Games API plus Data Dragon. This page
         describes how the site keeps its API use light, how it handles rate limits, and how players control their data.
       </P>
 
@@ -140,6 +140,12 @@ export function ApiUsagePage() {
         <li>
           The duo finder only looks at players who were in the visitor&rsquo;s own recent ranked games, and only shows those around the same rank. It
           never searches or ranks the wider player base, and hidden profiles are left out.
+        </li>
+        <li>
+          The draft helpers (lane draft and team draft) work only from champion picks the visitor enters, or the champion picks already visible in a
+          live game, plus win rates aggregated from games the site has already read. Apart from the optional &ldquo;Fill from a Riot ID&rdquo; pool import, which reads
+          that player&rsquo;s recent games just like opening their profile, they make no Riot API requests, show no player names, and never infer
+          premades or any other lobby information.
         </li>
         <li>Deletion requests that Riot forwards are handled by deleting the player’s stored data (search entry, rank history, champion lists).</li>
         <li>The site is free. If ads are added, they will follow Riot’s monetisation rules and ask visitors for consent first.</li>
