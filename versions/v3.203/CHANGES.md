@@ -23,3 +23,6 @@ Findings fixed:
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`.
+
+## Live
+- Deployed 22:45 local. The live entry carries `3.203`, and the live `index.html` has the ddragon preconnect.
