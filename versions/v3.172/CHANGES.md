@@ -26,3 +26,6 @@
   - Enter on "team dr" opens `/draft/team`.
 - Shortcut test: on the ladder, `g t` opens `/draft/team` and `g d` opens `/draft`. The home page focuses its search box on load, so shortcuts start after leaving it, as before.
 - Screenshots: `demo/search-page.png` and `demo/`.
+
+## Live check (2026-11-16 15:38 local)
+- The live index serves `index-BsValqgH.js`, which contains `search.page` with the page aliases ("counter pick") and the `/draft/team` shortcut.
