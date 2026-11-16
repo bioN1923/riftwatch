@@ -13,3 +13,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/lane-quiet.png`, `demo/lane-viktor.png` and `demo/`.
+
+## Live
+- Deployed 16:48 local. The live bundle has v3.178 and the new changelog line.
