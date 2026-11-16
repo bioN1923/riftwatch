@@ -11,3 +11,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/` and `demo/item-path.png` (demo Kha'Zix game: 4 rings).
+
+## Live check (2026-11-16 11:46 local)
+- The live index serves `index-GAehKqej.js`, and its Profile chunk contains `ib.keyDone`.
