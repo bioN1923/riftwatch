@@ -1284,5 +1284,11 @@ const dict: Record<string, string> = {
   "duo.how.3t": "Punctați după potrivire",
   "duo.how.3": "Fiecare primește un scor pentru rang, cum se potrivesc rolurile, când jucați amândoi, stilul campionilor, lupte, viziune și obiective.",
   "duo.how.note": "Se folosesc doar date publice din meciuri. Riftwatch nu contactează pe nimeni; asta rămâne la tine.",
+  "cl.updates_one": "{count} actualizare",
+  "cl.updates_few": "{count} actualizări",
+  "cl.updates_other": "{count} de actualizări",
+  "cl.older_one": "Arată actualizările mai vechi (încă {count})",
+  "cl.older_few": "Arată actualizările mai vechi (încă {count})",
+  "cl.older_other": "Arată actualizările mai vechi (încă {count})",
 };
 export default dict;

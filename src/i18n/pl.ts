@@ -1320,5 +1320,13 @@ const dict: Record<string, string> = {
   "duo.how.3t": "Ocenieni pod kątem dopasowania",
   "duo.how.3": "Każdy dostaje wynik za rangę, dopasowanie ról, porę gry, styl bohaterów, walki, wizję i cele.",
   "duo.how.note": "Używane są tylko publiczne dane z gier. Riftwatch z nikim się nie kontaktuje; to zależy od Ciebie.",
+  "cl.updates_one": "{count} aktualizacja",
+  "cl.updates_few": "{count} aktualizacje",
+  "cl.updates_many": "{count} aktualizacji",
+  "cl.updates_other": "{count} aktualizacji",
+  "cl.older_one": "Pokaż starsze aktualizacje (jeszcze {count})",
+  "cl.older_few": "Pokaż starsze aktualizacje (jeszcze {count})",
+  "cl.older_many": "Pokaż starsze aktualizacje (jeszcze {count})",
+  "cl.older_other": "Pokaż starsze aktualizacje (jeszcze {count})",
 };
 export default dict;

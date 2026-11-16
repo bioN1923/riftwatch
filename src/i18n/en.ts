@@ -1248,5 +1248,9 @@ const en = {
   "duo.how.3t": "Scored for fit",
   "duo.how.3": "Each one gets a score for rank, how your roles pair, when you both play, champion styles, fights, vision and objectives.",
   "duo.how.note": "Only public match data is used. Riftwatch doesn’t contact anyone; reaching out is up to you.",
+  "cl.updates_one": "{count} update",
+  "cl.updates_other": "{count} updates",
+  "cl.older_one": "Show older updates ({count} more)",
+  "cl.older_other": "Show older updates ({count} more)",
 };
 export default en;

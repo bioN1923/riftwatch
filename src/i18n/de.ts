@@ -1248,5 +1248,9 @@ const dict: Record<string, string> = {
   "duo.how.3t": "Nach Passung bewertet",
   "duo.how.3": "Jeder bekommt eine Wertung für Rang, wie eure Rollen zusammenpassen, wann ihr beide spielt, Champion-Stil, Kämpfe, Sicht und Ziele.",
   "duo.how.note": "Es werden nur öffentliche Spieldaten genutzt. Riftwatch kontaktiert niemanden; das Anschreiben liegt bei dir.",
+  "cl.updates_one": "{count} Update",
+  "cl.updates_other": "{count} Updates",
+  "cl.older_one": "Ältere Updates zeigen ({count} weitere)",
+  "cl.older_other": "Ältere Updates zeigen ({count} weitere)",
 };
 export default dict;

@@ -22,6 +22,11 @@ export function newerThan(a: string, b: string) {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.149',
+    date: '2026-11-16',
+    items: ['What\'s new: updates are grouped under one heading per day, and the page opens with the latest twelve (plus anything you haven\'t seen yet), with a button for older ones. It used to be one very long list.'],
+  },
+  {
     version: '3.148',
     date: '2026-11-16',
     items: ['Multi-search: each player card shows full champion names (no more "Kha\u2019\u2026" or "Miss \u2026"), with games, win rate and KDA on a line underneath.'],
