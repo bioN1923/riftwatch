@@ -13,3 +13,6 @@
 - `tsc`, `vitest` (183) and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/` and `demo/top-players.png`, where the demo top players' 5–6 game rates are now all plain.
+
+## Live check (2026-11-16 12:05 local)
+- The live index serves `index-hH-EphBd.js`, and the 3.156 changelog entry is in its changelog chunk, so this build is live. `wlTone` itself is minified, so it was verified by build identity.
