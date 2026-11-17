@@ -23,3 +23,7 @@
 - `tsc`, `vitest` (190) and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`.
+
+## Live check (06:55 local, about 1 minute after the deploy)
+- `3.212` is in the live JS bundle.
+- `aram.queued` 153, ARAM games 279 (up from 269). The line is being read, and ARAM games are being counted again.
