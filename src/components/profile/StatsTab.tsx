@@ -354,7 +354,8 @@ function ActivityCalendar({ matches, puuid }: { matches: MatchSummary[]; puuid: 
                 <Tooltip key={date.toISOString()} content={label}>
                   <span
                     className={clsx('block size-4 rounded-[3px]', !n && 'bg-sunken')}
-                    style={n ? { background: `color-mix(in srgb, ${wr >= 0.5 ? 'var(--win)' : 'var(--loss)'} ${25 + (n / max) * 75}%, var(--sunken))` } : undefined}
+                    // An even day (2–2) is its own grey: it was neither "won most" nor "lost most".
+                    style={n ? { background: `color-mix(in srgb, ${wr > 0.5 ? 'var(--win)' : wr < 0.5 ? 'var(--loss)' : 'var(--muted)'} ${25 + (n / max) * 75}%, var(--sunken))` } : undefined}
                   />
                 </Tooltip>
               );
@@ -362,12 +363,15 @@ function ActivityCalendar({ matches, puuid }: { matches: MatchSummary[]; puuid: 
           </div>
         ))}
       </div>
-      <p className="mt-3 flex items-center gap-3 text-xs text-muted">
+      <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
         <span className="flex items-center gap-1.5">
           <span className="size-3 rounded-[3px] bg-win" /> {t('stats.legendWin')}
         </span>
         <span className="flex items-center gap-1.5">
           <span className="size-3 rounded-[3px] bg-loss" /> {t('stats.legendLoss')}
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="size-3 rounded-[3px] bg-muted" /> {t('stats.legendEven')}
         </span>
         <span>{t('stats.legendDark')}</span>
       </p>

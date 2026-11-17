@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.224',
+    date: '2026-11-17',
+    items: ['Profile activity calendar: a day with as many wins as losses is now grey ("Even") instead of counting as a winning day, and the legend says "Stronger colour = more games", which is true in both the dark and light themes.'],
+  },
+  {
     version: '3.223',
     date: '2026-11-17',
     items: ['Profile stats: in "Champions played" and "By role", a win rate from fewer than five games is now shown faint instead of bold, so "100%" from one game no longer looks like a result. The record next to it still says what happened.'],

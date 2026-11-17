@@ -304,7 +304,7 @@ const en = {
   "stats.dayGames": "{date}: {games}, {wins} {losses}",
   "stats.legendWin": "Won most games that day",
   "stats.legendLoss": "Lost most",
-  "stats.legendDark": "Darker = more games",
+  "stats.legendDark": "Stronger colour = more games",
   "stats.trends": "Trends",
   "stats.trendCompare": "Recent half vs earlier half:",
   "stats.metric": "Metric",
@@ -1329,5 +1329,6 @@ const en = {
   "bp.picked": "Chosen runes",
   "home.moversAll": "All changes",
   "lb.pageN": "Page {page}",
+  "stats.legendEven": "Even",
 };
 export default en;

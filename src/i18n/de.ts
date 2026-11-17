@@ -303,7 +303,7 @@ const dict: Record<string, string> = {
   "stats.dayGames": "{date}: {games}, {wins} {losses}",
   "stats.legendWin": "An dem Tag meist gewonnen",
   "stats.legendLoss": "Meist verloren",
-  "stats.legendDark": "Dunkler = mehr Spiele",
+  "stats.legendDark": "Kräftigere Farbe = mehr Spiele",
   "stats.trends": "Trends",
   "stats.trendCompare": "Jüngere Hälfte gegenüber älterer Hälfte:",
   "stats.metric": "Kennzahl",
@@ -1329,5 +1329,6 @@ const dict: Record<string, string> = {
   "bp.picked": "Gewählte Runen",
   "home.moversAll": "Alle Änderungen",
   "lb.pageN": "Seite {page}",
+  "stats.legendEven": "Ausgeglichen",
 };
 export default dict;
