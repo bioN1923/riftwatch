@@ -12,3 +12,6 @@
 - `tsc`, `vitest` (191) and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`. Trends shows a dashed "Each game".
+
+## Live check (09:05 local)
+- `3.225` is in the live JS bundle.
