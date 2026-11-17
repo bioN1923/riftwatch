@@ -19,3 +19,6 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/sheet-phone.png` and `demo/`.
+
+## Live
+- Deployed 06:16 local. The live entry carries `3.209`, and the live stylesheet has `text-wrap:balance`.
