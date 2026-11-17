@@ -17,3 +17,7 @@
 - a11y: `{}`.
 - Playwright: clicking "All changes" on home lands on `/champions#movers`, with the section top at 73 px, just under the sticky header (156 px before the second scroll).
 - Screenshots: `demo/`.
+
+## Live check (07:59 local)
+- `3.219` is in the live JS bundle.
+- Live movers: 8 risers and 6 fallers. Home shows both rows, and the link sits at the end of the "Falling" row.
