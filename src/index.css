@@ -185,6 +185,12 @@
     min-height: 100dvh;
     background: var(--bg);
   }
+  /* Headings wrap into even lines instead of leaving one word alone on the last line. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
   /* Taps on controls act at once (no double-tap-zoom wait); pinch zoom still works. */
   a,
   button,

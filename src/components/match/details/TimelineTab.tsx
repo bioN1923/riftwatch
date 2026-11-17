@@ -322,7 +322,7 @@ function PlayerTimeline({ match, tl, who, focus }: { match: MatchSummary; tl: Ma
         {!sel && <p className="mt-3 text-xs text-faint">{t('tl.mapHint')}</p>}
       </figure>
 
-      <ol ref={listRef} aria-label={t('tl.listAria')} className="relative max-h-[360px] space-y-0.5 overflow-y-auto pr-1 text-sm">
+      <ol ref={listRef} aria-label={t('tl.listAria')} className="relative max-h-[360px] space-y-0.5 overflow-y-auto overscroll-contain pr-1 text-sm">
         {feed.length === 0 && <li className="text-muted">{t('tl.nothing')}</li>}
         {feed.map((f, i) => {
           const time = <span className="num w-11 shrink-0 text-xs text-faint">{fmtTime(f.t)}</span>;

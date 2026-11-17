@@ -208,7 +208,7 @@ export function ChampionGrid({ onPick, exclude, autoFocus = false }: { onPick: (
           className="h-9 w-full rounded border border-line bg-sunken pl-8 pr-3 text-sm outline-none placeholder:text-faint focus:border-gold focus:ring-2 focus:ring-gold/50"
         />
       </label>
-      <ul className="mt-3 grid max-h-72 grid-cols-[repeat(auto-fill,minmax(52px,1fr))] gap-2 overflow-y-auto pr-1">
+      <ul className="mt-3 grid max-h-72 grid-cols-[repeat(auto-fill,minmax(52px,1fr))] gap-2 overflow-y-auto overscroll-contain pr-1">
         {list.map(([id, c]) => (
           <li key={id}>
             <button

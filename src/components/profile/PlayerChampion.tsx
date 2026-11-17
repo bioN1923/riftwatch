@@ -92,7 +92,8 @@ export function PlayerChampionDialog({
           </button>
         </header>
 
-        <div className="overflow-y-auto px-5 py-4">
+        {/* overscroll-contain: scrolling past the top/bottom of the sheet (or pulling down on Android) stays in the sheet. */}
+        <div className="overflow-y-auto overscroll-contain px-5 py-4">
           {!pc ? (
             <p className="py-6 text-center text-sm text-muted">{t('pc.none')}</p>
           ) : (

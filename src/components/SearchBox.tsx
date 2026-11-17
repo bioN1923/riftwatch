@@ -347,7 +347,7 @@ export function SearchBox({ variant = 'compact', autoFocus }: { variant?: 'hero'
           id={listId}
           role="listbox"
           aria-label={t('search.suggestions')}
-          className="drop-in absolute inset-x-0 top-[calc(100%+6px)] z-40 max-h-[70vh] overflow-y-auto rounded-md border border-line-strong bg-surface py-1 text-left shadow-2xl"
+          className="drop-in absolute inset-x-0 top-[calc(100%+6px)] z-40 max-h-[70vh] overflow-y-auto overscroll-contain rounded-md border border-line-strong bg-surface py-1 text-left shadow-2xl"
         >
           {options.map((o, i) => {
             const selected = i === active;

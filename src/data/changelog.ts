@@ -12,6 +12,14 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.209',
+    date: '2026-11-17',
+    items: [
+      'Scrolling inside the champion record sheet, the search suggestions, the timeline list or the champion picker no longer carries on into the page behind once you reach the end. On Android it no longer triggers pull-to-refresh either.',
+      'Headings wrap into even lines instead of leaving a single word on its own.',
+    ],
+  },
+  {
     version: '3.208',
     date: '2026-11-16',
     items: [
