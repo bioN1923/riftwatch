@@ -17,6 +17,8 @@ import { findArenaPlayer, probeStatus, PROBE_EVERY_MS } from './arenaProbe';
 export const ARENA_QUIET_BATCH = 10;
 /** ARAM players read from the ARAM line in a quiet pass (nobody on the ladder has played since the last one). */
 export const ARAM_QUIET_BATCH = 5;
+/** While the ladder is busy, read one lined-up ARAM player at least this often (about 6 paced requests, ~1/4 of the budget). */
+export const ARAM_EVERY_MS = 60_000;
 
 /** ARAM line reads since the server started: players read, and new ARAM games they gave (shown on /api/health). */
 export const aramLine = { reads: 0, added: 0 };
@@ -110,6 +112,8 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
     }
   }
 
+  let lastAramRead = 0;
+
   async function loop() {
     stats.collecting = true;
     console.log(`Collecting ranked matches from ${platform.label} for champion stats (one request every ${opts.paceMs / 1000}s).`);
@@ -134,10 +138,14 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
           active++;
           const count = before == null ? 10 : Math.min(10, now - before);
           const ids = await paced(() => riot.matchIds(platform, puuid, 0, count, { queue: 420 })).catch(() => [] as string[]);
-          // Every third player or so, also read some ARAM games (no timelines needed). Apex ladder players
-          // rarely play ARAM, so this asks a player lined up from an ARAM game already read when there is
-          // one (ARAM players lead to more ARAM players, as with Arena); the same budget, far more games.
-          if (Math.random() < 0.35) await readQueue(opts.aramSeeds?.take() ?? puuid, 450);
+          // ARAM on a clock rather than by chance: a ranked player can take a minute of paced requests
+          // (a timeline per game), so a per-player chance read the line only a few times an hour after a
+          // restart. Apex players rarely play ARAM, so this asks a player lined up from an ARAM game already
+          // read (ARAM players lead to more ARAM players, as with Arena); each read gives about 5 new games.
+          if (Date.now() - lastAramRead >= ARAM_EVERY_MS) {
+            lastAramRead = Date.now();
+            await readQueue(opts.aramSeeds?.take() ?? puuid, 450);
+          }
           // Arena comes from Arena players instead: the next one lined up from an Arena game already read.
           if (opts.arenaSeeds?.size) await readArenaLine(1);
           else await maybeProbe();

@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.215](v3.215/CHANGES.md) | 2026-11-17 | ARAM line read once a minute |
 | [v3.214](v3.214/CHANGES.md) | 2026-11-17 | ARAM line read/added counters on /api/health |
 | [v3.213](v3.213/CHANGES.md) | 2026-11-17 | Tier letter aligned on champion pages |
 | [v3.212](v3.212/CHANGES.md) | 2026-11-17 | ARAM line read in quiet passes |
