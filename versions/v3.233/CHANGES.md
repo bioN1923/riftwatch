@@ -14,3 +14,6 @@
 - `tsc`, `vitest` (193) and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/14-phone-lane-leads.png` and `demo/15-desktop-lane-leads.png`.
+
+## Live check (10:27 local)
+- `3.233` is in the live JS bundle.
