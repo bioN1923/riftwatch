@@ -17,3 +17,6 @@
 - a11y: `{}`.
 - `demo/14-phone-match-rows.jpg` (iPhone 13): every row has the score beside spells, and Double kill wraps under the KDA.
 - Also checked: the "?" shortcut on the home page types into the search box because it has focus, which is expected.
+
+## Live check (10:07 local)
+- `3.231` is in the live JS bundle.
