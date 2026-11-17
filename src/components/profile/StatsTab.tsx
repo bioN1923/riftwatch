@@ -6,6 +6,9 @@ import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, Target } from 'lucide-react
 import type { MatchSummary } from '../../../shared/types';
 import { assets, champSlug, useStaticData } from '../../lib/ddragon';
 import { compact, decimal, duration as fmtDuration, formatKda, kdaRatio, kdaTone, multikill, pct, timeAgo, winRateTone, placeTone, TONE_MIN_GAMES } from '../../lib/format';
+
+/** Under five games a win rate (100% from one win) is shown faint and light, so it doesn't read as a result; the record beside it says what happened. */
+const few = (games: number) => games < TONE_MIN_GAMES;
 import { me } from '../../lib/stats';
 import { winConditions, type WinCondition } from '../../lib/winConditions';
 import { laneOpponents } from '../../lib/laneOpponents';
@@ -230,7 +233,7 @@ function ChampionTable({ matches, puuid, onOpen }: { matches: MatchSummary[]; pu
                       {t('common.wins', { count: r.wins })} {t('common.losses', { count: r.games - r.wins })}
                     </span>
                   </td>
-                  <td className={clsx('num px-2 text-right font-semibold', winRateTone(wr, r.games))}>{pct(wr)}</td>
+                  <td className={clsx('num px-2 text-right', few(r.games) ? 'text-faint' : clsx('font-semibold', winRateTone(wr, r.games)))}>{pct(wr)}</td>
                   <td className="num px-2 text-right">
                     <span className={clsx('font-semibold', kdaTone(ratio))}>{formatKda(ratio)}</span>
                     <span className="block text-xs text-muted">
@@ -286,7 +289,7 @@ function RoleTable({ matches, puuid }: { matches: MatchSummary[]; puuid: string 
               <span className="num w-44 text-right text-xs text-muted">
                 {t.rich('stats.roleLine', {
                   games: t('common.games', { count: r.games }),
-                  rate: <span className={clsx('font-semibold', winRateTone(wr, r.games))}>{pct(wr)}</span>,
+                  rate: <span className={few(r.games) ? 'text-faint' : clsx('font-semibold', winRateTone(wr, r.games))}>{pct(wr)}</span>,
                   kda: <span className={kdaTone(ratio)}>{formatKda(ratio)}</span>,
                 })}
               </span>
