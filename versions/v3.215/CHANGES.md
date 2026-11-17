@@ -21,3 +21,8 @@
 - `tsc`, `vitest` (190) and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`.
+
+## Live check (05:23 UTC, about 40 s after the deploy)
+- `3.215` is in the live JS bundle.
+- `aram: { reads: 1, added: 5 }`, with 307 ARAM games (296 before the deploy).
+- The once-a-minute rate is to be confirmed in v3.216: `reads` should be close to the minutes since the restart.
