@@ -15,3 +15,6 @@
 - `tsc`, `vitest` (192) and `vite build` pass.
 - a11y: `{}`.
 - Playwright element shots on iPhone 13 and iPhone SE (375 px) for both pages (`demo/14-phone-role-tabs.png`): all five fit in one row.
+
+## Live check (09:45 local)
+- `3.229` is in the live JS bundle.
