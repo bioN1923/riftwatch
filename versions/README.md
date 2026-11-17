@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.227](v3.227/CHANGES.md) | 2026-11-17 | Items: support upgrades marked, not priced |
 | [v3.226](v3.226/CHANGES.md) | 2026-11-17 | Faint win rate under 5 games in the profile sidebar |
 | [v3.225](v3.225/CHANGES.md) | 2026-11-17 | Dashed chart lines actually dashed |
 | [v3.224](v3.224/CHANGES.md) | 2026-11-17 | Activity calendar: even days grey, legend fixed |

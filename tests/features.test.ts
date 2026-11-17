@@ -1015,3 +1015,17 @@ describe('ladder page numbers', () => {
     expect(pageList(1, 1)).toEqual([1]);
   });
 });
+
+describe('support upgrade items', () => {
+  it('marks items that are not bought but upgraded from another one', async () => {
+    const { slimStatic } = await import('../shared/staticSlim');
+    const item = { data: {
+      '3860': { name: 'Bulwark of the Mountain', description: '', gold: { total: 400, sell: 160, purchasable: false }, specialRecipe: 3859 },
+      '3071': { name: 'Black Cleaver', description: '', gold: { total: 3000, sell: 2100, purchasable: true } },
+    } };
+    const s = slimStatic('1', { data: {} }, { data: {} }, item, []);
+    const m = new Map(s.items);
+    expect(m.get(3860)?.upgradeOf).toBe(3859);
+    expect(m.get(3071)?.upgradeOf).toBeUndefined();
+  });
+});

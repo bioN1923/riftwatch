@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.227',
+    date: '2026-11-17',
+    items: ['Items: support quest upgrades (like Bulwark of the Mountain) no longer show a "400 gold" price, since they can\'t be bought. They read "Upgrade", and hovering says which item they come from.'],
+  },
+  {
     version: '3.226',
     date: '2026-11-17',
     items: ['Profile sidebar: in "Champion pool" and "Often queues with", a win rate from fewer than five games is shown faint, like on the Stats tab, so "100% (1)" doesn\'t stand out as a result.'],

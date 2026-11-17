@@ -31,6 +31,8 @@ export interface ItemData {
   into: number[];
   /** Riot's item tags (Damage, SpellDamage, Health, Armor, SpellBlock, CriticalStrike…). */
   tags?: string[];
+  /** Not bought: the item this one is upgraded from (support quest items). */
+  upgradeOf?: number;
 }
 
 const stripTags = (s: string) => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();

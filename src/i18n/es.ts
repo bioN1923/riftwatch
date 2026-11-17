@@ -1330,5 +1330,7 @@ const dict: Record<string, string> = {
   "home.moversAll": "Todos los cambios",
   "lb.pageN": "Página {page}",
   "stats.legendEven": "Empate",
+  "it.upgrade": "Mejora",
+  "it.upgradeFrom": "No se compra: mejora de {name}",
 };
 export default dict;

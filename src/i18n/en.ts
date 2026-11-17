@@ -1330,5 +1330,7 @@ const en = {
   "home.moversAll": "All changes",
   "lb.pageN": "Page {page}",
   "stats.legendEven": "Even",
+  "it.upgrade": "Upgrade",
+  "it.upgradeFrom": "Not bought: upgraded from {name}",
 };
 export default en;
