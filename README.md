@@ -89,3 +89,4 @@ tests/         Vitest unit tests
 ```
 
 Riftwatch isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties.
+"# riftwatch" 
