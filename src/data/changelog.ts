@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.226',
+    date: '2026-11-17',
+    items: ['Profile sidebar: in "Champion pool" and "Often queues with", a win rate from fewer than five games is shown faint, like on the Stats tab, so "100% (1)" doesn\'t stand out as a result.'],
+  },
+  {
     version: '3.225',
     date: '2026-11-17',
     items: ['Charts: lines the legend shows as dashed (like "Each game" in profile Trends) are now actually drawn dashed. They came out solid before, so the two lines were hard to tell apart.'],

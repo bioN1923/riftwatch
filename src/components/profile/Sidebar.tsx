@@ -5,7 +5,7 @@ import { GameImg } from '../ui/GameImg';
 import { Skeleton } from '../ui/States';
 import { RoleIcon, ROLE_LABEL } from '../ui/RoleIcon';
 import { assets, champSlug, useStaticData } from '../../lib/ddragon';
-import { compact, formatKda, kdaRatio, kdaTone, pct, winRateTone, sureTone } from '../../lib/format';
+import { compact, formatKda, kdaRatio, kdaTone, pct, winRateTone, sureTone, TONE_MIN_GAMES } from '../../lib/format';
 import { me, result, type Overview } from '../../lib/stats';
 import { profilePath } from '../../lib/riotId';
 import { t } from '../../i18n';
@@ -176,7 +176,8 @@ export function ChampionPool({ ov, loading, onOpen }: { ov?: Overview; loading: 
                 </div>
               </div>
               <div className="text-right">
-                <p className={clsx('num text-sm font-semibold', winRateTone(wr, c.games))}>
+                {/* Under five games the rate is faint (as on the Stats tab): "100% (1)" is one game, not a result. */}
+                <p className={clsx('num text-sm', c.games < TONE_MIN_GAMES ? 'text-faint' : clsx('font-semibold', winRateTone(wr, c.games)))}>
                   {pct(wr)} <span className="font-normal text-muted">({c.games})</span>
                 </p>
                 <p className={clsx('num text-xs', kdaTone(ratio))}>{t('common.kdaValue', { value: formatKda(ratio) })}</p>
@@ -209,7 +210,7 @@ export function PlayedWith({ ov, platform }: { ov?: Overview; platform: string }
                   <span className="text-faint">#{d.tagLine}</span>
                 </span>
                 <span className="num text-xs text-muted">{t('common.games', { count: d.games })}</span>
-                <span className={clsx('num w-10 text-right font-semibold', winRateTone(wr, d.games))}>{pct(wr)}</span>
+                <span className={clsx('num w-10 text-right', d.games < TONE_MIN_GAMES ? 'text-faint' : clsx('font-semibold', winRateTone(wr, d.games)))}>{pct(wr)}</span>
               </Link>
             </li>
           );
