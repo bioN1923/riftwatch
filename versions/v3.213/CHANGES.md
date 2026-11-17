@@ -20,3 +20,7 @@ The quiet-pass reads from v3.212 are working: about 5 new ARAM games a few minut
 - `tsc`, `vitest` (190) and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`.
+
+## Live check (07:06 local)
+- `3.213` is in the live JS bundle.
+- ARAM: 284 games, with the queue at its 300 cap. The count hasn't moved since 04:58 UTC, but the deploy restarted the server in between. To re-check in v3.214, and see whether the line reads fast enough to keep up with how fast it fills.
