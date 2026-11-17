@@ -15,3 +15,6 @@
 - `tsc`, `vitest` (190) and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`, matchup page.
+
+## Live check (07:48 local)
+- `3.218` is in the live JS bundles.
