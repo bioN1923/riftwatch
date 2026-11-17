@@ -15,3 +15,6 @@
 - a11y: `{}`.
 - Screenshots: `demo/`.
 - Note: the full-page profile screenshots show older match rows as empty boxes. That's `content-visibility: auto` (v3.206) skipping rendering of off-screen rows in a full-page capture, not a page bug.
+
+## Live check (09:15 local)
+- `3.226` is in the live JS bundle.
