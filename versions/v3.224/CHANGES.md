@@ -16,3 +16,6 @@ In the profile Stats tab's Activity calendar (`v3.223/demo/06-profile-stats.jpg`
 - `tsc`, `vitest` (191) and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`. The demo has no even day, so only the legend change shows.
+
+## Live check (08:57 local)
+- `3.224` is in the live JS bundle.
