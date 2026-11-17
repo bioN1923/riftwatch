@@ -1367,5 +1367,6 @@ const dict: Record<string, string> = {
   "profile.jumpSummary": "Sari la rezumat: istoricul rangului, obiective, campioni",
   "error.offline.body": "Riftwatch nu poate fi accesat. Verifică conexiunea și încearcă din nou.",
   "bp.picked": "Rune alese",
+  "home.moversAll": "Toate schimbările",
 };
 export default dict;

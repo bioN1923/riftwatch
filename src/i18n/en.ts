@@ -1327,5 +1327,6 @@ const en = {
   "profile.jumpSummary": "Jump to the summary: rank history, goals, champion pool",
   "error.offline.body": "Can’t reach Riftwatch. Check your connection and try again.",
   "bp.picked": "Chosen runes",
+  "home.moversAll": "All changes",
 };
 export default en;

@@ -1327,5 +1327,6 @@ const dict: Record<string, string> = {
   "profile.jumpSummary": "Aller au résumé : historique de rang, objectifs, champions",
   "error.offline.body": "Impossible de joindre Riftwatch. Vérifie ta connexion et réessaie.",
   "bp.picked": "Runes choisies",
+  "home.moversAll": "Tous les changements",
 };
 export default dict;

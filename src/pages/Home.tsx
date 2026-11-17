@@ -215,15 +215,22 @@ function Movers({ m }: { m: { against: string; up: PatchMover[]; down: PatchMove
   const up = m.up.slice(0, 3);
   const down = m.down.slice(0, 3);
   if (!up.length && !down.length) return null;
+  // The tier list's movers section has the full lists (up to five each, with game counts); the link sits at the end
+  // of the last row, in the room a short list leaves.
+  const more = (
+    <Link to="/champions#movers" className="ml-auto shrink-0 text-sm font-medium text-gold underline-offset-2 hover:underline">
+      {t('home.moversAll')}
+    </Link>
+  );
   return (
     <div className={clsx('mt-4 grid gap-2', up.length && down.length && 'md:grid-cols-2')} role="group" aria-label={t('home.moversAria', { from: m.against })}>
-      <MoverRow icon={<TrendingUp className="size-4 shrink-0 text-win" aria-hidden />} label={t('home.moversUp', { from: m.against })} list={up} />
-      <MoverRow icon={<TrendingDown className="size-4 shrink-0 text-loss" aria-hidden />} label={t('home.moversDown', { from: m.against })} list={down} />
+      <MoverRow icon={<TrendingUp className="size-4 shrink-0 text-win" aria-hidden />} label={t('home.moversUp', { from: m.against })} list={up} more={down.length ? undefined : more} />
+      <MoverRow icon={<TrendingDown className="size-4 shrink-0 text-loss" aria-hidden />} label={t('home.moversDown', { from: m.against })} list={down} more={down.length ? more : undefined} />
     </div>
   );
 }
 
-function MoverRow({ icon, label, list }: { icon: ReactNode; label: string; list: PatchMover[] }) {
+function MoverRow({ icon, label, list, more }: { icon: ReactNode; label: string; list: PatchMover[]; more?: ReactNode }) {
   const { data: sd } = useStaticData();
   const a = assets(sd);
   if (!list.length) return null;
@@ -255,6 +262,7 @@ function MoverRow({ icon, label, list }: { icon: ReactNode; label: string; list:
           );
         })}
       </ul>
+      {more}
     </div>
   );
 }

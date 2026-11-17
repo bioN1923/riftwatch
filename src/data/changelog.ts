@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.219',
+    date: '2026-11-17',
+    items: ['Home: the patch movers strip ends with an "All changes" link that opens the tier list straight at its patch movers section, with up to five risers and fallers and their game counts.'],
+  },
+  {
     version: '3.218',
     date: '2026-11-17',
     items: ['Rune pages (champion, matchup and match details): on wider screens the chosen runes and stat shards are now listed by name next to the trees, keystone first, so the page reads without hovering every icon.'],

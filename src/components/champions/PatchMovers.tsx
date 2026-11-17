@@ -1,5 +1,5 @@
-import { useState, type ReactNode } from 'react';
-import { Link } from 'react-router';
+import { useEffect, useState, type ReactNode } from 'react';
+import { Link, useLocation } from 'react-router';
 import clsx from 'clsx';
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import type { PatchMover, TierList } from '../../../shared/types';
@@ -13,7 +13,18 @@ import { t } from '../../i18n';
 export function PatchMovers({ data, role, group }: { data: TierList; role: string; group: string }) {
   // Hooks first: the early returns below must not change how many hooks run.
   const [all, setAll] = useState(false);
+  const { hash } = useLocation();
   const m = data.movers;
+  const shown = !!m && !!data.patch;
+  // Arriving from the home page's "All changes" link: bring this section into view once it exists.
+  useEffect(() => {
+    if (hash !== '#movers' || !shown) return;
+    const go = () => document.getElementById('movers')?.scrollIntoView({ block: 'start' });
+    go();
+    // Again once the rows above (free rotation, filters) have settled, as profile deep links do.
+    const id = globalThis.setTimeout(go, 300);
+    return () => globalThis.clearTimeout(id);
+  }, [hash, shown]);
   if (!m || !data.patch) return null;
   // Kept in the server's order: by the change we can be fairly sure of, so a big swing on few games
   // doesn't jump ahead of a smaller, solid one.
@@ -22,7 +33,7 @@ export function PatchMovers({ data, role, group }: { data: TierList; role: strin
   const down = pick(m.down);
   if (!up.length && !down.length) return null;
   return (
-    <section aria-labelledby="movers-h" className="mt-6">
+    <section id="movers" aria-labelledby="movers-h" className="mt-6 scroll-mt-20">
       <h2 id="movers-h" className="font-display text-xl font-bold">
         {t('mv.title', { from: m.against, to: data.patch })}
       </h2>

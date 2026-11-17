@@ -1327,5 +1327,6 @@ const dict: Record<string, string> = {
   "profile.jumpSummary": "Zur Übersicht: Rangverlauf, Ziele, Championpool",
   "error.offline.body": "Riftwatch ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.",
   "bp.picked": "Gewählte Runen",
+  "home.moversAll": "Alle Änderungen",
 };
 export default dict;
