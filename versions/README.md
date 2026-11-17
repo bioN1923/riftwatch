@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.213](v3.213/CHANGES.md) | 2026-11-17 | Tier letter aligned on champion pages |
 | [v3.212](v3.212/CHANGES.md) | 2026-11-17 | ARAM line read in quiet passes |
 | [v3.211](v3.211/CHANGES.md) | 2026-11-17 | ARAM line for the collector; best-WR needs 20 games |
 | [v3.210](v3.210/CHANGES.md) | 2026-11-17 | Tiers need 50 games (ARAM noise) |

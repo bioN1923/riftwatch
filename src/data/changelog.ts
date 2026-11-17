@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.213',
+    date: '2026-11-17',
+    items: ['Champion pages: a B, C or D tier now lines up with the other headline numbers instead of floating in an invisible box, and sits on the same baseline.'],
+  },
+  {
     version: '3.212',
     date: '2026-11-17',
     items: ['More ARAM games during quiet hours: when nobody on the top ladder has played since the last pass, the collector now also reads a few lined-up ARAM players, in time that used to go only to background clean-up.'],

@@ -13,9 +13,17 @@ export const ROLE_TABS = ['ALL', 'TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY']
 export function TierBadge({ tier, size = 'md' }: { tier: TierRow['tier']; size?: 'md' | 'lg' }) {
   const tone =
     tier === 'S+' ? 'bg-gold text-gold-ink' : tier === 'S' ? 'border border-gold text-gold' : tier === 'A' ? 'border border-line-strong text-text' : tier === 'B' ? 'text-muted' : 'text-faint';
+  const boxed = tier === 'S+' || tier === 'S' || tier === 'A';
   return (
     <span
-      className={clsx('inline-grid place-items-center rounded-sm font-display font-extrabold leading-none', tone, size === 'lg' ? 'h-10 min-w-12 px-2 text-3xl' : 'h-6 min-w-8 px-1 text-base')}
+      className={clsx(
+        'inline-grid rounded-sm font-display font-extrabold leading-none',
+        tone,
+        size === 'lg'
+          ? // Large and unboxed (B and below): sit on the label's left edge like the other stats, not centred in an invisible box.
+            boxed ? 'h-10 min-w-12 place-items-center px-2 text-3xl' : 'text-3xl sm:text-4xl'
+          : 'h-6 min-w-8 place-items-center px-1 text-base',
+      )}
       title={tier === '–' ? t('tierBadge.unranked') : t('tierBadge.tier', { tier })}
     >
       {tier}

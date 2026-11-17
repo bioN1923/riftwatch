@@ -255,7 +255,7 @@ function StatStrip({ s, loading, bans = true }: { s?: ChampionStats; loading: bo
     <dl className="mt-7 grid grid-cols-3 items-start gap-x-4 gap-y-4 sm:flex sm:flex-wrap sm:items-end sm:gap-x-8 sm:gap-y-3">
       <div>
         <dt className="text-xs text-muted">{t('cp.tier')}</dt>
-        <dd className="mt-1">
+        <dd className={['S+', 'S', 'A'].includes(sum.tier) ? 'mt-1' : 'mt-0.5'}>
           <TierBadge tier={sum.tier} size="lg" />
         </dd>
       </div>
