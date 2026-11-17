@@ -188,7 +188,8 @@ function LaneMatchup({ game, puuid }: { game: Live; puuid: string }) {
         </p>
         <p className="mt-0.5 text-[11px] text-faint">{t('live.laneGuess')}</p>
       </div>
-      <div className="flex flex-col items-end gap-1">
+      {/* Phones: the two links wrap under the text, so they line up on the left with it instead of a ragged right edge. */}
+      <div className="flex flex-col items-start gap-1 sm:items-end">
         <Link to={matchupPath(sd, self.championId, lane.opp.championId, lane.role)} className="text-sm font-medium text-gold underline underline-offset-2 hover:text-text">
           {t('live.laneOpen')}
         </Link>

@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.234](v3.234/CHANGES.md) | 2026-11-17 | Live game lane links aligned on phones |
 | [v3.233](v3.233/CHANGES.md) | 2026-11-17 | Phone lane leads: one row per minute mark |
 | [v3.232](v3.232/CHANGES.md) | 2026-11-17 | Match details: score reads N/10 |
 | [v3.231](v3.231/CHANGES.md) | 2026-11-17 | Phone match rows: score stays beside spells |

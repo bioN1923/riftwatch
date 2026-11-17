@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.234',
+    date: '2026-11-17',
+    items: ['Live game on phones: "Open matchup" and "How this champion fits the draft" now line up on the left under the lane summary, instead of a ragged right edge with the first link floating in the middle.'],
+  },
+  {
     version: '3.233',
     date: '2026-11-17',
     items: ['Match details on phones: "Lane leads" in the Metrics tab now shows one row per minute mark (10, 15, 20) instead of three narrow columns where the gold, CS and XP leads ran into each other and the last one was cut off.'],
