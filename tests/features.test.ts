@@ -1004,3 +1004,14 @@ describe('app version', () => {
     expect(pkg.version.replace(/\.0$/, '')).toBe(CHANGELOG[0].version);
   });
 });
+
+describe('ladder page numbers', () => {
+  it('shows the first, the last and two either side, with gaps', async () => {
+    const { pageList } = await import('../src/pages/Leaderboard');
+    expect(pageList(1, 6)).toEqual([1, 2, 3, 4, 5, 6]);
+    expect(pageList(1, 20)).toEqual([1, 2, 3, null, 20]);
+    expect(pageList(10, 20)).toEqual([1, null, 8, 9, 10, 11, 12, null, 20]);
+    expect(pageList(4, 20)).toEqual([1, 2, 3, 4, 5, 6, null, 20]);
+    expect(pageList(1, 1)).toEqual([1]);
+  });
+});

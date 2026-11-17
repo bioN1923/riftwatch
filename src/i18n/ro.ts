@@ -1368,5 +1368,6 @@ const dict: Record<string, string> = {
   "error.offline.body": "Riftwatch nu poate fi accesat. Verifică conexiunea și încearcă din nou.",
   "bp.picked": "Rune alese",
   "home.moversAll": "Toate schimbările",
+  "lb.pageN": "Pagina {page}",
 };
 export default dict;

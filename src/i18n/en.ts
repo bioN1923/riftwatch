@@ -1328,5 +1328,6 @@ const en = {
   "error.offline.body": "Can’t reach Riftwatch. Check your connection and try again.",
   "bp.picked": "Chosen runes",
   "home.moversAll": "All changes",
+  "lb.pageN": "Page {page}",
 };
 export default en;

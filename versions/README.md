@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.222](v3.222/CHANGES.md) | 2026-11-17 | Ladder numbered pages; ban chip game counts |
 | [v3.221](v3.221/CHANGES.md) | 2026-11-17 | Game-length chart diverges from 50% |
 | [v3.220](v3.220/CHANGES.md) | 2026-11-17 | Compare: record instead of % under 5 games |
 | [v3.219](v3.219/CHANGES.md) | 2026-11-17 | Home movers strip links to the full patch movers |

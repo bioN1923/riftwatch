@@ -12,6 +12,14 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.222',
+    date: '2026-11-17',
+    items: [
+      'Ladder: numbered page buttons next to Previous and Next, so you can jump straight to any page instead of clicking through. Long ladders show the first, the last and the pages around the current one.',
+      'Draft helper: hovering a champion in "Ban for your pool" now shows its win rate and how many games it is from.',
+    ],
+  },
+  {
     version: '3.221',
     date: '2026-11-17',
     items: ['Champion pages: the "by game length" chart now grows its bars from the 50% line, up when a champion does better than even at that length and down when it does worse, so a 45% reads as below even at a glance.'],

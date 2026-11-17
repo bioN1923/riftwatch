@@ -1328,5 +1328,6 @@ const dict: Record<string, string> = {
   "error.offline.body": "Riftwatch ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.",
   "bp.picked": "Gewählte Runen",
   "home.moversAll": "Alle Änderungen",
+  "lb.pageN": "Seite {page}",
 };
 export default dict;

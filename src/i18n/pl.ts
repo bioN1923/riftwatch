@@ -1408,5 +1408,6 @@ const dict: Record<string, string> = {
   "error.offline.body": "Nie można połączyć się z Riftwatch. Sprawdź połączenie i spróbuj ponownie.",
   "bp.picked": "Wybrane runy",
   "home.moversAll": "Wszystkie zmiany",
+  "lb.pageN": "Strona {page}",
 };
 export default dict;

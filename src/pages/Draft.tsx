@@ -550,7 +550,7 @@ function BanPanel({ role, pool, onPick }: { role: Role; pool: number[]; onPick: 
                 </div>
                 <ul className="mt-2 flex flex-wrap gap-1.5" aria-label={t('draft.banHard', { name: c.name })}>
                   {b.against.map((x) => (
-                    <li key={x.championId} className="flex items-center gap-1 rounded border border-line px-1.5 py-0.5 text-[11px]" title={a.champion(x.championId).name}>
+                    <li key={x.championId} className="flex items-center gap-1 rounded border border-line px-1.5 py-0.5 text-[11px]" title={`${a.champion(x.championId).name} · ${pct(x.winRate, 1)} · ${t('common.games', { count: x.games })}`}>
                       <GameImg src={a.champion(x.championId).url} alt={a.champion(x.championId).name} size={18} rounded="sm" />
                       <span className={clsx('num font-semibold', callTone(matchupCall(x)))}>{pct(x.winRate)}</span>
                     </li>

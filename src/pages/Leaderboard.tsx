@@ -372,6 +372,27 @@ export function LeaderboardPage() {
               <button disabled={page <= 1} onClick={() => set({ page: page - 1 <= 1 ? null : String(page - 1) })} className="inline-flex items-center gap-1 rounded border border-line px-3 py-1.5 hover:border-line-strong hover:text-text disabled:opacity-40">
                 <ChevronLeft className="size-4" aria-hidden /> {t('lb.prev')}
               </button>
+              {/* Numbered pages (first, last and the two either side of this one) so page 6 isn't five clicks away. */}
+              <span className="hidden gap-1 sm:flex">
+                {pageList(page, pages).map((n, i) =>
+                  n == null ? (
+                    <span key={`gap${i}`} className="px-1 py-1.5 text-faint" aria-hidden>
+                      …
+                    </span>
+                  ) : (
+                    <button
+                      key={n}
+                      type="button"
+                      onClick={() => set({ page: n <= 1 ? null : String(n) })}
+                      aria-current={n === page ? 'page' : undefined}
+                      aria-label={t('lb.pageN', { page: String(n) })}
+                      className={clsx('num min-w-9 rounded border px-2 py-1.5', n === page ? 'border-gold/60 text-text' : 'border-line hover:border-line-strong hover:text-text')}
+                    >
+                      {n}
+                    </button>
+                  ),
+                )}
+              </span>
               <button disabled={page >= pages} onClick={() => set({ page: String(page + 1) })} className="inline-flex items-center gap-1 rounded border border-line px-3 py-1.5 hover:border-line-strong hover:text-text disabled:opacity-40">
                 {t('lb.next')} <ChevronRight className="size-4" aria-hidden />
               </button>
@@ -381,6 +402,23 @@ export function LeaderboardPage() {
       )}
     </div>
   );
+}
+
+/** Page numbers to show: all of them up to 7, otherwise the first, the last, and up to two either side of the current one; null is a gap. */
+export function pageList(page: number, pages: number): (number | null)[] {
+  // Few enough to show them all (a gap would hide only one or two buttons).
+  if (pages <= 7) return Array.from({ length: pages }, (_, i) => i + 1);
+  const keep = new Set([1, pages]);
+  for (let n = page - 2; n <= page + 2; n++) if (n >= 1 && n <= pages) keep.add(n);
+  const out: (number | null)[] = [];
+  let prev = 0;
+  for (const n of [...keep].sort((a, b) => a - b)) {
+    if (n - prev === 2) out.push(n - 1);
+    else if (n - prev > 2) out.push(null);
+    out.push(n);
+    prev = n;
+  }
+  return out;
 }
 
 /**
