@@ -14,3 +14,6 @@
 - `tsc`, `vitest` (193) and `vite build` pass.
 - a11y: `{}`.
 - `demo/14-phone-postgame-score.jpg` (iPhone 13): "5.00 7.5/10".
+
+## Live check (10:17 local)
+- `3.232` is in the live JS bundle.
