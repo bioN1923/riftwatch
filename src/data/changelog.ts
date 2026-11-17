@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.212',
+    date: '2026-11-17',
+    items: ['More ARAM games during quiet hours: when nobody on the top ladder has played since the last pass, the collector now also reads a few lined-up ARAM players, in time that used to go only to background clean-up.'],
+  },
+  {
     version: '3.211',
     date: '2026-11-17',
     items: [

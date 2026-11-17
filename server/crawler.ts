@@ -15,6 +15,8 @@ import { findArenaPlayer, probeStatus, PROBE_EVERY_MS } from './arenaProbe';
  */
 /** Lined-up Arena players read per quiet spell of the ladder (instead of resting). */
 export const ARENA_QUIET_BATCH = 10;
+/** ARAM players read from the ARAM line in a quiet pass (nobody on the ladder has played since the last one). */
+export const ARAM_QUIET_BATCH = 5;
 
 export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats: ChampionStatsStore; lastUserRequest: () => number; paceMs: number; onStop?: (message: string) => void; arenaSeeds?: ArenaSeeds; aramSeeds?: ArenaSeeds }) {
   // Never take the last half of the key's budget: visitors' lookups come first.
@@ -156,6 +158,12 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
           // The Arena list shouldn't wait for the ladder to wake up: read some of the line, or search.
           if (opts.arenaSeeds?.size) await readArenaLine(ARENA_QUIET_BATCH);
           else await maybeProbe();
+          // Nor ARAM: this time would otherwise only go to the backfill, so ranked loses nothing.
+          for (let i = 0; i < ARAM_QUIET_BATCH; i++) {
+            const seed = opts.aramSeeds?.take();
+            if (!seed) break;
+            await readQueue(seed, 450);
+          }
           if (!(await backfill(20))) await sleep(2 * 60_000);
         }
       } catch (e) {
