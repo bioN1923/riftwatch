@@ -15,3 +15,7 @@
 - `tsc`, `vitest` (191) and `vite build` pass.
 - a11y: `{}`, so the faint text passes contrast.
 - Screenshots: `demo/`.
+
+## Live check (08:46 local)
+- `3.223` is in the live JS bundle.
+- ARAM spot-check: 515 games, up from 339 at 07:39 local.
