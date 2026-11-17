@@ -12,6 +12,14 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.230',
+    date: '2026-11-17',
+    items: [
+      'Links with Riot IDs written as Name#TAG (for example a hand-made multi-search link) now work like our own Name-TAG links. Before, such a link opened an empty page.',
+      'Multi-search: a champion\'s win rate from fewer than five games is shown faint, as on profiles and Compare.',
+    ],
+  },
+  {
     version: '3.229',
     date: '2026-11-17',
     items: ['Draft helper and team draft on phones: the five role buttons now sit in one row, icon over label, instead of four and a lonely Support on a second line.'],

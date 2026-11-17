@@ -34,9 +34,12 @@ export function fromSlug(slug: string): RiotId | null {
   } catch {
     /* already plain text */
   }
-  const i = decoded.lastIndexOf('-');
+  // A hand-written or pasted link may use the Riot ID's own "Name#TAG" (encoded as %23) instead of our "Name-TAG":
+  // a name can't contain '#', so it's an unambiguous separator when present.
+  const hash = decoded.lastIndexOf('#');
+  const i = hash > 0 ? hash : decoded.lastIndexOf('-');
   if (i <= 0 || i === decoded.length - 1) return null;
-  return { gameName: decoded.slice(0, i), tagLine: decoded.slice(i + 1) };
+  return { gameName: decoded.slice(0, i).trim(), tagLine: decoded.slice(i + 1).trim() };
 }
 
 export function profilePath(platform: string, id: RiotId, sub?: 'live' | 'stats') {

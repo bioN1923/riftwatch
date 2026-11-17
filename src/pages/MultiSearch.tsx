@@ -7,7 +7,7 @@ import { ChevronDown, History, LayoutList, Tags, UserRound, Users } from 'lucide
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api, ApiClientError } from '../lib/api';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
-import { formatKda, kdaRatio, kdaTone, pct, tierName, wlTone, sureTone } from '../lib/format';
+import { formatKda, kdaRatio, kdaTone, pct, tierName, wlTone, sureTone, TONE_MIN_GAMES } from '../lib/format';
 import { fromSlug, profilePath, querySlug, type RiotId } from '../lib/riotId';
 import { parseLobby, untaggedNames, withDefaultTag } from '../lib/lobby';
 import { addLobby, clearLobbies, useLobbies, useRegion } from '../lib/storage';
@@ -336,7 +336,7 @@ function PlayerCard({ platform, id, duos }: { platform: string; id: RiotId; duos
                     {ch.name}
                   </Link>
                   <span className="num block truncate text-xs text-muted">
-                    {t('common.games', { count: c.games })} · <span className={clsx('font-semibold', wlTone(c.wins / c.games, c.games))}>{pct(c.wins / c.games)}</span> ·{' '}
+                    {t('common.games', { count: c.games })} · <span className={c.games < TONE_MIN_GAMES ? 'text-faint' : clsx('font-semibold', wlTone(c.wins / c.games, c.games))}>{pct(c.wins / c.games)}</span> ·{' '}
                     <span className={kdaTone(ratio)}>{formatKda(ratio)}</span>
                   </span>
                 </div>

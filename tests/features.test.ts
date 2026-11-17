@@ -1029,3 +1029,15 @@ describe('support upgrade items', () => {
     expect(m.get(3071)?.upgradeOf).toBeUndefined();
   });
 });
+
+describe('Riot IDs from links', () => {
+  it('reads both our Name-TAG slugs and pasted Name#TAG forms', async () => {
+    const { fromSlug } = await import('../src/lib/riotId');
+    expect(fromSlug('Caps-EUW')).toEqual({ gameName: 'Caps', tagLine: 'EUW' });
+    expect(fromSlug('Hide%20on%20bush-KR1')).toEqual({ gameName: 'Hide on bush', tagLine: 'KR1' });
+    expect(fromSlug('Caps%23EUW')).toEqual({ gameName: 'Caps', tagLine: 'EUW' });
+    expect(fromSlug('Some-Name#EUW')).toEqual({ gameName: 'Some-Name', tagLine: 'EUW' });
+    expect(fromSlug('Caps')).toBeNull();
+    expect(fromSlug('Caps#')).toBeNull();
+  });
+});
