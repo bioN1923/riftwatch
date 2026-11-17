@@ -16,3 +16,7 @@
 - `vitest`: 192 (+1).
 - a11y: `{}`.
 - Screenshots: `demo/`.
+
+## Live check (09:26 local)
+- `3.227` is in the live JS bundle.
+- The live `/api/static/en_US` has 26 items with `upgradeOf`.
