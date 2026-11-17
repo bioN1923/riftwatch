@@ -13,3 +13,6 @@
 - `tsc`, `vitest` (193) and `vite build` pass.
 - a11y: `{}`.
 - `demo/14-phone-live-lane.jpg`: both links line up on the left.
+
+## Live check (10:37 local)
+- `3.234` is in the live JS bundle.
