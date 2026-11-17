@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.233',
+    date: '2026-11-17',
+    items: ['Match details on phones: "Lane leads" in the Metrics tab now shows one row per minute mark (10, 15, 20) instead of three narrow columns where the gold, CS and XP leads ran into each other and the last one was cut off.'],
+  },
+  {
     version: '3.232',
     date: '2026-11-17',
     items: ['Match details: the performance score next to each player\'s KDA now reads "7.5/10", so it no longer looks like a second KDA. Before, only a mouse hover explained it, which phones can\'t do.'],

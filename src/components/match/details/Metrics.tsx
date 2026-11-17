@@ -62,18 +62,19 @@ export function Metrics({ match, puuid, platform }: { match: MatchSummary; puuid
               {j >= 0 && (
                 <section>
                   <SectionTitle aside={t('met.vsChamp', { champion: a.champion(opp!.championId).name })}>{t('met.laneLeads')}</SectionTitle>
-                  <div className="grid grid-cols-3 gap-px overflow-hidden rounded border border-line bg-line text-center">
+                  {/* Phones: one row per minute mark (label left, leads right); three narrow columns ran the numbers together. */}
+                  <div className="grid gap-px overflow-hidden rounded border border-line bg-line sm:grid-cols-3 sm:text-center">
                     {[10, 15, 20].map((min) => (
-                      <div key={min} className="bg-surface px-3 py-2.5">
+                      <div key={min} className="flex items-center justify-between gap-3 bg-surface px-3 py-2.5 sm:block">
                         <p className="text-xs text-muted">{t('met.atMin', { min })}</p>
                         {tl.frames.length > min ? (
-                          <div className="mt-1 flex justify-center gap-4 text-sm">
+                          <div className="flex justify-center gap-4 text-sm sm:mt-1">
                             <Lead label={t('met.leadGold')} v={leadAt(min, 'gold')} fmt={compact} />
                             <Lead label={t('met.leadCs')} v={leadAt(min, 'cs')} fmt={(n) => n.toFixed(0)} />
                             <Lead label={t('met.leadXp')} v={leadAt(min, 'xp')} fmt={compact} />
                           </div>
                         ) : (
-                          <p className="mt-1 text-sm text-faint">{t('met.ended')}</p>
+                          <p className="text-sm text-faint sm:mt-1">{t('met.ended')}</p>
                         )}
                       </div>
                     ))}
