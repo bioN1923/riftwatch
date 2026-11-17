@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.210',
+    date: '2026-11-17',
+    items: ['Tier lists give a champion a tier (S+ to D) only from 50 games. ARAM still has few games collected, and an S+ from a 16–8 record was mostly luck; those champions are listed without a tier until there\'s enough data.'],
+  },
+  {
     version: '3.209',
     date: '2026-11-17',
     items: [

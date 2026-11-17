@@ -67,6 +67,15 @@ describe('champion statistics', () => {
     }
   });
 
+  it('gives no tier below the games floor, in every queue', async () => {
+    const { TIER_MIN_GAMES } = await import('../server/champStats');
+    for (const group of ['ranked', 'aram', 'arena'] as const) {
+      for (const r of store.tierList(group).rows) {
+        if (r.games < TIER_MIN_GAMES) expect(r.tier).toBe('–');
+      }
+    }
+  });
+
   it('returns builds, skills and matchups for a champion', () => {
     const top = store.tierList('ranked').rows.sort((a, b) => b.games - a.games)[0];
     const c = store.champion(top.championId, 'ranked', top.role);

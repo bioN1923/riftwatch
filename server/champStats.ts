@@ -351,6 +351,9 @@ function arenaSummary(ar: ArenaAgg, games: number): NonNullable<ChampionStats['a
 /** Standard error of the difference between two win rates (around 50%) on g1 and g2 games. */
 const moverSe = (g1: number, g2: number) => Math.sqrt(0.25 / g1 + 0.25 / g2);
 
+/** Fewest games before a champion gets a tier (S+…D) at all; below it the tier is "–". */
+export const TIER_MIN_GAMES = 50;
+
 export function movers(now: TierRow[], before: TierRow[], against: string, minGames = 100): NonNullable<TierList['movers']> {
   const prev = new Map(before.map((r) => [`${r.championId}:${r.role}`, r]));
   const list: PatchMover[] = [];
@@ -765,8 +768,9 @@ export class ChampionStatsStore {
 
   private rows(g: GroupAgg): TierRow[] {
     const rows: TierRow[] = [];
-    // Below ~0.5% of games a win rate is mostly noise (40 games at 66% is common luck).
-    const minGames = Math.max(20, Math.round(g.matches * 0.005));
+    // Below ~0.5% of games a win rate is mostly noise (40 games at 66% is common luck). The floor is 50:
+    // a small queue (ARAM had 269 games, ~25 per champion) otherwise handed out S+ for 16–8 records.
+    const minGames = Math.max(TIER_MIN_GAMES, Math.round(g.matches * 0.005));
     for (const [id, c] of Object.entries(g.champs)) {
       const total = Object.values(c.roles).reduce((s, r) => s + r.g, 0);
       for (const [role, r] of Object.entries(c.roles)) {

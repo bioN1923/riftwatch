@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.210](v3.210/CHANGES.md) | 2026-11-17 | Tiers need 50 games (ARAM noise) |
 | [v3.209](v3.209/CHANGES.md) | 2026-11-17 | Contained inner scrolling; balanced headings |
 | [v3.208](v3.208/CHANGES.md) | 2026-11-16 | Overview return 2x faster; deep links land |
 | [v3.207](v3.207/CHANGES.md) | 2026-11-16 | Tier list & items: deferred filtering |
