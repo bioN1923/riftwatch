@@ -20,3 +20,7 @@
 - It appears only when the last day ends on a streak of 3 or more, which today's demo data does.
 - The light `--win` is now **#0e7451**: 4.72:1 on the tint and 5.78:1 on white, up from 5.33:1. This is a barely visible darkening that applies to every light-theme green. Dark theme is unchanged.
 - a11y re-run: `{}`.
+
+## Live check (08:17 local)
+- `3.220` is in the live JS bundle, and `#0e7451` is in the live CSS.
+- Sync note: `rw-sync-449` was packed before the a11y fix, then superseded by the amended commit. It was copied but never extracted, and the PC got `rw-sync-450`.
