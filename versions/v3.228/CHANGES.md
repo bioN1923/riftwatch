@@ -12,3 +12,6 @@
 - `tsc`, `vitest` (192) and `vite build` pass.
 - a11y: `{}`.
 - Screenshot `demo/14-item-tip-upgrade.png`: Bulwark's tooltip reads "Not bought: upgraded from Targon's Buckler".
+
+## Live check (09:35 local)
+- `3.228` is in the live JS bundle.
