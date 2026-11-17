@@ -16,3 +16,6 @@
 - `vitest`: 191 (+1).
 - a11y: `{}`.
 - Screenshots: `demo/`. The ladder shows buttons 1–6 with 1 current.
+
+## Live check (08:38 local)
+- `3.222` is in the live JS bundle.
