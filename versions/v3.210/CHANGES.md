@@ -25,3 +25,9 @@
 - `tsc`, `vitest` and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`.
+
+## Live
+- Deployed 06:29 local. The live entry carries `3.210`.
+- ARAM: 269 games, all 172 champions shown with "–" (no tier).
+- Arena (7,062 games): S+ 11, S 21, A 38, B 43, C 35, D 25.
+- Ranked (29,908 games): S+ 21, S 35, A 60, B 76, C 50, D 26, – 38. Unchanged apart from normal data drift.
