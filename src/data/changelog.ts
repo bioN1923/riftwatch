@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.216',
+    date: '2026-11-17',
+    items: ['Tier list and matchups: the small win-rate bars now show their whole track and a clear 50% mark, so a short bar reads as "a little above or below even" rather than a stray tick.'],
+  },
+  {
     version: '3.215',
     date: '2026-11-17',
     items: ['More ARAM games: the collector now reads a lined-up ARAM player once a minute while it works through the ranked ladder, instead of leaving it to chance. Each read adds about five games to the ARAM tier list.'],

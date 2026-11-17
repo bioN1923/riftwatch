@@ -89,9 +89,10 @@ export function RoleTab({ role, active, children, onClick }: { role: string; act
 /** Small win-rate bar centred on 50%: right of centre is above even. */
 export function WinRateBar({ value }: { value: number }) {
   const off = Math.max(-0.05, Math.min(0.05, value - 0.5)) / 0.05; // -1..1, full bar at ±5 points
+  // The track is drawn in the divider colour so a short bar still reads as "a bit above 50%", not a stray tick.
   return (
-    <span className="relative inline-block h-1.5 w-16 rounded-full bg-sunken align-middle" aria-hidden>
-      <span className="absolute inset-y-[-2px] left-1/2 w-px bg-line-strong" />
+    <span className="relative inline-block h-1.5 w-16 rounded-full bg-line align-middle" aria-hidden>
+      <span className="absolute inset-y-[-3px] left-1/2 w-px bg-muted" />
       <span
         className={clsx('grow-x absolute inset-y-0 rounded-full', off >= 0 ? 'left-1/2 origin-left bg-win' : 'right-1/2 origin-right bg-loss')}
         style={{ width: `${Math.abs(off) * 50}%` }}
