@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.217',
+    date: '2026-11-17',
+    items: ['Matchups: CS at 15 now shows one decimal, like the lane chart below it. A matchup headed "−1" with a chart ending at "−1.3" now reads "−1.3" in both places, and the same goes for the matchup table on champion pages.'],
+  },
+  {
     version: '3.216',
     date: '2026-11-17',
     items: ['Tier list and matchups: the small win-rate bars now show their whole track and a clear 50% mark, so a short bar reads as "a little above or below even" rather than a stray tick.'],

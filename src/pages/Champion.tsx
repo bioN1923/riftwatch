@@ -984,7 +984,7 @@ function Matchups({ s }: { s: ChampionStats }) {
                       <Lead v={m.goldDiff15} unit="g" quiet={GOLD_QUIET} />
                     </td>
                     <td className="num px-2 text-right">
-                      <Lead v={m.csDiff15} unit="" quiet={CS_QUIET} />
+                      <Lead v={m.csDiff15} unit="" decimals={1} quiet={CS_QUIET} />
                     </td>
                     <td className="num pl-2 text-right">
                       <Lead v={m.xpDiff15} unit="" quiet={XP_QUIET} />

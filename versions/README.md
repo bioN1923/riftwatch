@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.217](v3.217/CHANGES.md) | 2026-11-17 | CS at 15 with one decimal, matching the lane chart |
 | [v3.216](v3.216/CHANGES.md) | 2026-11-17 | Visible win-rate bar track |
 | [v3.215](v3.215/CHANGES.md) | 2026-11-17 | ARAM line read once a minute |
 | [v3.214](v3.214/CHANGES.md) | 2026-11-17 | ARAM line read/added counters on /api/health |

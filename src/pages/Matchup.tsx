@@ -292,7 +292,7 @@ function Verdict({ m, me, them }: { m: MatchupStats; me: string; them: string })
           m.baseline ? t('mp.averages', { champion: me, rate: pct(m.baseline.winRate, 1) }) : undefined,
         )}
         {tile(t('mp.gold15'), <Lead v={m.goldDiff15} unit="" quiet={GOLD_QUIET} />, t('mp.leadInLane'))}
-        {tile(t('mp.cs15'), <Lead v={m.csDiff15} unit="" quiet={CS_QUIET} />)}
+        {tile(t('mp.cs15'), <Lead v={m.csDiff15} unit="" decimals={1} quiet={CS_QUIET} />)}
         {tile(t('mp.xp15'), <Lead v={m.xpDiff15} unit="" quiet={XP_QUIET} />)}
         {tile(t('mp.avgKda'), m.kda ? formatKda((m.kda.kills + m.kda.assists) / Math.max(1, m.kda.deaths)) : '–', m.kda ? `${m.kda.kills.toFixed(1)} / ${m.kda.deaths.toFixed(1)} / ${m.kda.assists.toFixed(1)}` : undefined)}
       </div>
