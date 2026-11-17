@@ -22,3 +22,6 @@
 - `vitest`: 193 (+1).
 - a11y: `{}`.
 - `demo/14-multisearch-hash-link.jpg`: the `%23` link now loads all 5 players.
+
+## Live check (09:55 local)
+- `3.230` is in the live JS bundle.
