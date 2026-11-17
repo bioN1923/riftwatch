@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.225',
+    date: '2026-11-17',
+    items: ['Charts: lines the legend shows as dashed (like "Each game" in profile Trends) are now actually drawn dashed. They came out solid before, so the two lines were hard to tell apart.'],
+  },
+  {
     version: '3.224',
     date: '2026-11-17',
     items: ['Profile activity calendar: a day with as many wins as losses is now grey ("Even") instead of counting as a winning day, and the legend says "Stronger colour = more games", which is true in both the dark and light themes.'],

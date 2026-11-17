@@ -104,7 +104,9 @@ export function LineChart({
                 strokeWidth="2"
                 strokeLinejoin="round"
                 strokeLinecap="round"
-                pathLength={1}
+                // pathLength=1 is only for the draw-in animation; on a dashed line it would scale the "5 4" dashes to
+                // the whole path, so the dash covered everything and the line came out solid.
+                pathLength={s.dashed ? undefined : 1}
                 className={s.dashed ? undefined : 'draw-line'}
                 strokeDasharray={s.dashed ? '5 4' : undefined}
               />

@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.225](v3.225/CHANGES.md) | 2026-11-17 | Dashed chart lines actually dashed |
 | [v3.224](v3.224/CHANGES.md) | 2026-11-17 | Activity calendar: even days grey, legend fixed |
 | [v3.223](v3.223/CHANGES.md) | 2026-11-17 | Faint win rate under 5 games on profile stats |
 | [v3.222](v3.222/CHANGES.md) | 2026-11-17 | Ladder numbered pages; ban chip game counts |
