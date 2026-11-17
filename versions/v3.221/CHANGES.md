@@ -16,3 +16,6 @@
 - a11y: `{}`.
 - Playwright element shot of Ahri ranked (45%, 44%, 50%, 51%): bars hang from or rise off the line as expected.
 - Screenshots: `demo/`.
+
+## Live check (08:28 local)
+- `3.221` is in the live JS bundle.
