@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.221](v3.221/CHANGES.md) | 2026-11-17 | Game-length chart diverges from 50% |
 | [v3.220](v3.220/CHANGES.md) | 2026-11-17 | Compare: record instead of % under 5 games |
 | [v3.219](v3.219/CHANGES.md) | 2026-11-17 | Home movers strip links to the full patch movers |
 | [v3.218](v3.218/CHANGES.md) | 2026-11-17 | Chosen runes listed by name beside the rune trees |

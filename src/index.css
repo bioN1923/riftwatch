@@ -411,6 +411,11 @@
   transform-origin: bottom;
   animation: grow-y 900ms var(--ease-smooth) both;
 }
+/* The same growth for a bar hanging down from a line (below-even values). */
+.grow-y-down {
+  transform-origin: top;
+  animation: grow-y 900ms var(--ease-smooth) both;
+}
 .pop-in {
   animation: pop-in 380ms var(--ease-spring) both;
 }

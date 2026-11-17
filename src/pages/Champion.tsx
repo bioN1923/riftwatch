@@ -1043,22 +1043,33 @@ function LengthChart({ rows, title }: { rows: (Rated & { label: string })[]; tit
         <div className="absolute inset-x-0 border-t border-dashed border-line-strong" style={{ bottom: `${y(0.5) * 100}%` }}>
           <span className="absolute -top-2.5 right-0 bg-surface pl-1 text-[10px] text-faint">50%</span>
         </div>
-        <ul className="relative flex h-full items-end gap-3" aria-label={title ?? t('len.title')}>
-          {data.map((r, i) => (
-            <li key={r.label} className="flex h-full flex-1 flex-col items-center justify-end">
-              <Tooltip content={t('len.tip', { label: lenLabel(r.label), rate: pct(r.winRate, 1), games: t('common.games', { count: r.games }) })}>
-                <span className="flex flex-col items-center" style={{ height: '100%' }}>
-                  <span className="num mb-1 text-xs font-semibold">{pct(r.winRate)}</span>
-                </span>
-              </Tooltip>
-              <span
-                className={clsx('grow-y w-full max-w-16 rounded-t-[4px]', (({ 'text-win': 'bg-win/80', 'text-loss': 'bg-loss/70' }) as Record<string, string>)[sureTone(r.winRate, r.games)] ?? 'bg-line-strong')}
-                style={{ height: `${Math.max(4, y(r.winRate) * 100)}%`, animationDelay: `${i * 60}ms` }}
-                role="img"
-                aria-label={`${lenLabel(r.label)}: ${pct(r.winRate, 1)}`}
-              />
-            </li>
-          ))}
+        {/* Bars grow from the 50% line, up for better than even and down for worse, so a 45% reads as "below even" at a glance
+            instead of as a short bar measured from an arbitrary floor. */}
+        <ul className="relative flex h-full gap-3" aria-label={title ?? t('len.title')}>
+          {data.map((r, i) => {
+            const mid = y(0.5) * 100;
+            const at = y(r.winRate) * 100;
+            const up = r.winRate >= 0.5;
+            const h = Math.max(2, Math.abs(at - mid));
+            const tone = (({ 'text-win': 'bg-win/80', 'text-loss': 'bg-loss/70' }) as Record<string, string>)[sureTone(r.winRate, r.games)] ?? 'bg-line-strong';
+            return (
+              <li key={r.label} className="relative h-full flex-1">
+                <Tooltip content={t('len.tip', { label: lenLabel(r.label), rate: pct(r.winRate, 1), games: t('common.games', { count: r.games }) })}>
+                  <span className="absolute inset-0 flex justify-center">
+                    <span
+                      className={clsx('absolute w-full max-w-16', up ? 'grow-y rounded-t-[4px]' : 'grow-y-down rounded-b-[4px]', tone)}
+                      style={{ bottom: `${up ? mid : mid - h}%`, height: `${h}%`, animationDelay: `${i * 60}ms` }}
+                      role="img"
+                      aria-label={`${lenLabel(r.label)}: ${pct(r.winRate, 1)}`}
+                    />
+                    <span className="num absolute text-xs font-semibold" style={up ? { bottom: `calc(${mid + h}% + 4px)` } : { top: `calc(${100 - mid + h}% + 4px)` }}>
+                      {pct(r.winRate)}
+                    </span>
+                  </span>
+                </Tooltip>
+              </li>
+            );
+          })}
         </ul>
       </div>
       <ul className="mt-2 flex gap-3" aria-hidden>

@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.221',
+    date: '2026-11-17',
+    items: ['Champion pages: the "by game length" chart now grows its bars from the 50% line, up when a champion does better than even at that length and down when it does worse, so a 45% reads as below even at a glance.'],
+  },
+  {
     version: '3.220',
     date: '2026-11-17',
     items: ['Compare: champions and roles played fewer than five times now show the plain record (like 1W 0L) instead of a bold "100%", which read like a verdict from a single game.', 'Light theme: the green used for wins is a shade darker, so small green labels such as "3 wins to end the day" on a profile meet the contrast minimum.'],
