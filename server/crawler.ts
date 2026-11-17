@@ -16,7 +16,7 @@ import { findArenaPlayer, probeStatus, PROBE_EVERY_MS } from './arenaProbe';
 /** Lined-up Arena players read per quiet spell of the ladder (instead of resting). */
 export const ARENA_QUIET_BATCH = 10;
 
-export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats: ChampionStatsStore; lastUserRequest: () => number; paceMs: number; onStop?: (message: string) => void; arenaSeeds?: ArenaSeeds }) {
+export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats: ChampionStatsStore; lastUserRequest: () => number; paceMs: number; onStop?: (message: string) => void; arenaSeeds?: ArenaSeeds; aramSeeds?: ArenaSeeds }) {
   // Never take the last half of the key's budget: visitors' lookups come first.
   const { riot, platform, stats } = opts;
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -60,6 +60,7 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
         const m = shapeMatch(await paced(() => riot.match(platform, id, false)));
         stats.addMatch(m);
         opts.arenaSeeds?.note(m);
+        opts.aramSeeds?.note(m);
       } catch (e) {
         if ((e as any)?.code === 'KEY_INVALID') throw e;
       }
@@ -126,8 +127,10 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
           active++;
           const count = before == null ? 10 : Math.min(10, now - before);
           const ids = await paced(() => riot.matchIds(platform, puuid, 0, count, { queue: 420 })).catch(() => [] as string[]);
-          // Every third player or so, also take their recent ARAM games (no timelines needed).
-          if (Math.random() < 0.35) await readQueue(puuid, 450);
+          // Every third player or so, also read some ARAM games (no timelines needed). Apex ladder players
+          // rarely play ARAM, so this asks a player lined up from an ARAM game already read when there is
+          // one (ARAM players lead to more ARAM players, as with Arena); the same budget, far more games.
+          if (Math.random() < 0.35) await readQueue(opts.aramSeeds?.take() ?? puuid, 450);
           // Arena comes from Arena players instead: the next one lined up from an Arena game already read.
           if (opts.arenaSeeds?.size) await readArenaLine(1);
           else await maybeProbe();

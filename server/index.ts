@@ -55,6 +55,8 @@ const champStats = new ChampionStatsStore(DEMO ? null : path.resolve(here, 'data
 // Players from Arena games already read, for the collector to look up next (see arenaSeeds.ts).
 const arenaSeeds = new ArenaSeeds((getPlatform(process.env.CRAWL_REGION ?? 'euw1') ?? getPlatform('euw1')!).id, 1000, 20_000, DEMO ? null : path.resolve(here, 'data', 'arena-seeds.json'));
 whenArenaQueueLearned(() => arenaSeeds.touch());
+// The same for ARAM: players from ARAM games already read, so ARAM isn't asked of apex players who never play it.
+const aramSeeds = new ArenaSeeds((getPlatform(process.env.CRAWL_REGION ?? 'euw1') ?? getPlatform('euw1')!).id, 300, 20_000, DEMO ? null : path.resolve(here, 'data', 'aram-seeds.json'), (q) => q === 450);
 const timelines = new TtlCache<MatchTimeline>(300);
 const privacy = new PrivacyStore(DEMO ? null : path.resolve(here, 'data', 'privacy.json'));
 players.isBlocked = (puuid) => privacy.isHidden(puuid);
@@ -76,6 +78,7 @@ for (const [obj, methods, label] of [
   [lp, ['flush'], 'lp'],
   [errorLog, ['flush'], 'errorLog'],
   [arenaSeeds, ['flush'], 'arenaSeeds'],
+  [aramSeeds, ['flush'], 'aramSeeds'],
   [ladderHistory, ['flush'], 'ladderHistory'],
   [privacy, ['flush'], 'privacy'],
   ...(matchStore ? [[matchStore, ['get', 'set', 'prune'], 'matchStore'] as const] : []),
@@ -252,6 +255,7 @@ app.get('/api/health', (_req, res) => {
     contact: process.env.CONTACT_EMAIL || undefined,
     // Counts only, so the Arena collection can be checked from outside.
     arena: { probes: probeStatus.runs, found: probeStatus.found, lastProbeAt: probeStatus.lastAt, queued: arenaSeeds.size, queue: arenaQueue() },
+    aram: { queued: aramSeeds.size },
     perf: perfSnapshot(),
   } satisfies HealthResponse);
 });
@@ -371,6 +375,7 @@ app.get(
     matches.forEach((m) => {
       champStats.addMatch(m);
       arenaSeeds.note(m);
+      aramSeeds.note(m);
     });
     res.json({ ...page, matches: matches.map(scrubMatch) });
   }),
@@ -1283,6 +1288,7 @@ if (!DEMO && process.env.CRAWLER !== 'false') {
     paceMs: Number(process.env.CRAWL_PACE_MS ?? 2500),
     onStop: (message) => errorLog.record({ source: 'riot', kind: 'KEY_INVALID', message, where: 'champion stats collector', urgent: true }),
     arenaSeeds,
+    aramSeeds,
   });
 }
 
@@ -1312,6 +1318,7 @@ const shutdown = () => {
   players.flush();
   champStats.flush();
   arenaSeeds.flush();
+  aramSeeds.flush();
   ladderHistory.flush();
   process.exit(0);
 };

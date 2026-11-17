@@ -76,6 +76,16 @@ describe('champion statistics', () => {
     }
   });
 
+  it('tags "best" only on variations with enough games', async () => {
+    const { BEST_MIN_GAMES } = await import('../server/champStats');
+    for (const group of ['ranked', 'aram'] as const) {
+      for (const row of store.tierList(group).rows.slice(0, 15)) {
+        const s = store.champion(row.championId, group, row.role);
+        for (const v of [...s.builds, ...s.runes]) if (v.tags.includes('best')) expect(v.games).toBeGreaterThanOrEqual(BEST_MIN_GAMES);
+      }
+    }
+  });
+
   it('returns builds, skills and matchups for a champion', () => {
     const top = store.tierList('ranked').rows.sort((a, b) => b.games - a.games)[0];
     const c = store.champion(top.championId, 'ranked', top.role);

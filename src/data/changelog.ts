@@ -12,6 +12,14 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.211',
+    date: '2026-11-17',
+    items: [
+      'More ARAM games for the ARAM stats: the collector now follows players from ARAM games it has already read, instead of asking top ranked players (who rarely play ARAM). It uses the same small share of the request budget.',
+      'A build or rune page is marked "Best win rate" only once it has at least 20 games, so a 4–1 page no longer wears the badge.',
+    ],
+  },
+  {
     version: '3.210',
     date: '2026-11-17',
     items: ['Tier lists give a champion a tier (S+ to D) only from 50 games. ARAM still has few games collected, and an S+ from a 16–8 record was mostly luck; those champions are listed without a tier until there\'s enough data.'],

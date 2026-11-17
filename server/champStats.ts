@@ -234,6 +234,9 @@ function countBuild(r: BuildTally, legendaries: number[], boots: number | undefi
   if (legendaries[5]) bump(r.s6, String(legendaries[5]), win, delta);
 }
 
+/** Fewest games before a build or rune page can be tagged "Best win rate". */
+export const BEST_MIN_GAMES = 20;
+
 /**
  * Pick variations from a tally: the three most played, plus the best performer (by
  * sample-adjusted win rate) if it isn't among them. Tags mark which is which.
@@ -243,7 +246,8 @@ function pickVariations<T extends C>(entries: [string, T][]) {
   const all = [...entries].sort((a, b) => b[1].g - a[1].g);
   const popular = all.filter(([, v]) => v.g >= Math.max(3, Math.round(total * 0.03))).slice(0, 3);
   for (const e of all) if (popular.length < 3 && !popular.includes(e)) popular.push(e);
-  const qualified = all.filter(([, v]) => v.g >= Math.max(5, Math.round(total * 0.05)));
+  // "Best win rate" needs 20 games: on small samples (ARAM) a 4–1 rune page used to wear the badge.
+  const qualified = all.filter(([, v]) => v.g >= Math.max(BEST_MIN_GAMES, Math.round(total * 0.05)));
   const best = [...qualified].sort((a, b) => shrunk(b[1].w, b[1].g) - shrunk(a[1].w, a[1].g))[0];
   const chosen = best && !popular.includes(best) ? [...popular, best] : popular;
   return chosen.map(([key, v], i) => ({

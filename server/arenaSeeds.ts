@@ -22,6 +22,8 @@ export class ArenaSeeds {
     private maxQueue = 300,
     private maxKnown = 20_000,
     private file: string | null = null,
+    /** Which games line up their players: Arena by default; ARAM uses its own line (index.ts). */
+    private accepts: (queueId: number) => boolean = isArena,
   ) {
     if (!file) return;
     try {
@@ -56,7 +58,7 @@ export class ArenaSeeds {
   }
 
   note(m: Pick<MatchSummary, 'id' | 'queueId' | 'participants'>) {
-    if (!isArena(m.queueId) || !m.id.toUpperCase().startsWith(`${this.platformId.toUpperCase()}_`)) return;
+    if (!this.accepts(m.queueId) || !m.id.toUpperCase().startsWith(`${this.platformId.toUpperCase()}_`)) return;
     for (const p of m.participants) {
       if (!p.puuid || this.known.has(p.puuid)) continue;
       if (this.known.size >= this.maxKnown) this.known.clear(); // forget the oldest round rather than grow forever

@@ -59,6 +59,22 @@ describe('ArenaSeeds on disk', () => {
   });
 });
 
+describe('the ARAM line', () => {
+  it('lines up only ARAM players, and the Arena line ignores ARAM games', async () => {
+    const { ArenaSeeds } = await import('../server/arenaSeeds');
+    const aram = new ArenaSeeds('euw1', 300, 20_000, null, (q) => q === 450);
+    const arena = new ArenaSeeds('euw1', 300, 20_000, null);
+    const game = (id: string, queueId: number, ps: string[]) => ({ id, queueId, participants: ps.map((puuid) => ({ puuid })) as never });
+    for (const s of [aram, arena]) {
+      s.note(game('EUW1_10', 450, ['a1', 'a2']));
+      s.note(game('EUW1_11', 420, ['r1']));
+      s.note(game('EUW1_12', 1710, ['c1']));
+    }
+    expect([aram.take(), aram.take(), aram.take()]).toEqual(['a1', 'a2', undefined]);
+    expect([arena.take(), arena.take()]).toEqual(['c1', undefined]);
+  });
+});
+
 describe('learned Arena queue ids', () => {
   it('are saved with the line and restored after a restart', async () => {
     const fs = await import('node:fs');

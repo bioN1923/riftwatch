@@ -208,6 +208,8 @@ export interface HealthResponse {
   contact?: string;
   /** The background search for Arena games: probes run, players found, last probe time, players lined up. */
   arena?: { probes: number; found: number; lastProbeAt: number | null; queued: number; queue?: number };
+  /** Players lined up from ARAM games already read, for the collector (see aramSeeds in server/index.ts). */
+  aram?: { queued: number };
   /** Server timings (event-loop delay, GC, saves, ingest, recent stalls): numbers only. */
   perf?: unknown;
 }
