@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.229',
+    date: '2026-11-17',
+    items: ['Draft helper and team draft on phones: the five role buttons now sit in one row, icon over label, instead of four and a lonely Support on a second line.'],
+  },
+  {
     version: '3.228',
     date: '2026-11-17',
     items: ['Item tooltips everywhere (builds, match details, the Items list): support quest upgrades now say which item they come from instead of showing a 400-gold price.'],

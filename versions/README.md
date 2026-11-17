@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.229](v3.229/CHANGES.md) | 2026-11-17 | Phone role tabs in one row (draft, team draft) |
 | [v3.228](v3.228/CHANGES.md) | 2026-11-17 | Item tooltips: support upgrades say where they come from |
 | [v3.227](v3.227/CHANGES.md) | 2026-11-17 | Items: support upgrades marked, not priced |
 | [v3.226](v3.226/CHANGES.md) | 2026-11-17 | Faint win rate under 5 games in the profile sidebar |

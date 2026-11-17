@@ -94,7 +94,8 @@ export function DraftPage() {
       </p>
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-      <div role="tablist" aria-label={t('draft.role')} className="flex flex-wrap gap-1.5">
+      {/* Phones: the five roles in one row (icon over label) instead of four and a lonely Support on a second line. */}
+      <div role="tablist" aria-label={t('draft.role')} className="grid w-full grid-cols-5 gap-1.5 sm:flex sm:w-auto sm:flex-wrap">
         {ROLES.map((r) => (
           <button
             key={r}
@@ -102,11 +103,11 @@ export function DraftPage() {
             aria-selected={role === r}
             onClick={() => set({ role: r, pool: readPool(r).split(',').map((s) => bySlug.get(s)).filter((x): x is number => x != null) })}
             className={clsx(
-              'inline-flex items-center gap-1.5 rounded border px-3 py-1.5 text-sm font-medium transition-colors',
+              'inline-flex min-w-0 flex-col items-center justify-center gap-0.5 rounded border px-1 py-1.5 text-xs font-medium transition-colors sm:flex-row sm:gap-1.5 sm:px-3 sm:text-sm',
               role === r ? 'border-gold bg-gold/10 text-text' : 'border-line text-muted hover:text-text',
             )}
           >
-            <RoleIcon role={r} size={15} /> {ROLE_LABEL[r]}
+            <RoleIcon role={r} size={15} /> <span className="max-w-full truncate">{ROLE_LABEL[r]}</span>
           </button>
         ))}
       </div>
