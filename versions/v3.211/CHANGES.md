@@ -24,3 +24,7 @@
 - a11y: `{}`.
 - Demo `/api/health` has `aram`.
 - Screenshots: `demo/`.
+
+## Live
+- Deployed 06:43 local. The live entry carries `3.211`.
+- 30 s after the deploy, `aram.queued` was 10 players and ARAM games were still 269. Growth is to be re-checked in the next version.
