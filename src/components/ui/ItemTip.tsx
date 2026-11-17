@@ -41,8 +41,11 @@ export function ItemTip({ id, note }: { id: number; note?: string }) {
         <img src={a.item(id).url} alt="" className="size-9 shrink-0 rounded-[4px] ring-1 ring-line-strong" />
         <span className="min-w-0 flex-1">
           <span className="block font-display text-[15px] font-bold leading-tight text-text">{it.name}</span>
-          <span className="mt-0.5 flex items-center gap-2 text-[11px]">
-            {it.gold > 0 && (
+          <span className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px]">
+            {/* Support upgrades aren't bought (their 400 is a sell-back value): say where they come from instead of a price. */}
+            {it.upgradeOf != null ? (
+              <span className="font-medium text-muted">{t('it.upgradeFrom', { name: data?.items.get(it.upgradeOf)?.name ?? '' })}</span>
+            ) : it.gold > 0 && (
               <span className="num inline-flex items-center gap-1 font-semibold text-gold">
                 <span className="size-2 rounded-full bg-gold" aria-hidden />
                 {num(it.gold)}

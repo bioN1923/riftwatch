@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.228',
+    date: '2026-11-17',
+    items: ['Item tooltips everywhere (builds, match details, the Items list): support quest upgrades now say which item they come from instead of showing a 400-gold price.'],
+  },
+  {
     version: '3.227',
     date: '2026-11-17',
     items: ['Items: support quest upgrades (like Bulwark of the Mountain) no longer show a "400 gold" price, since they can\'t be bought. They read "Upgrade", and hovering says which item they come from.'],
