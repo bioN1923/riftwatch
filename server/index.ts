@@ -13,7 +13,7 @@ import { LpStore } from './lpStore';
 import { PlayerIndex } from './playerIndex';
 import { ChampionStatsStore, matchupMin } from './champStats';
 import { loadItemKinds } from './items';
-import { startCrawler } from './crawler';
+import { aramLine, startCrawler } from './crawler';
 import { ArenaSeeds } from './arenaSeeds';
 import { LadderHistory } from './ladderHistory';
 import { probeStatus } from './arenaProbe';
@@ -255,7 +255,7 @@ app.get('/api/health', (_req, res) => {
     contact: process.env.CONTACT_EMAIL || undefined,
     // Counts only, so the Arena collection can be checked from outside.
     arena: { probes: probeStatus.runs, found: probeStatus.found, lastProbeAt: probeStatus.lastAt, queued: arenaSeeds.size, queue: arenaQueue() },
-    aram: { queued: aramSeeds.size },
+    aram: { queued: aramSeeds.size, reads: aramLine.reads, added: aramLine.added },
     perf: perfSnapshot(),
   } satisfies HealthResponse);
 });

@@ -18,6 +18,9 @@ export const ARENA_QUIET_BATCH = 10;
 /** ARAM players read from the ARAM line in a quiet pass (nobody on the ladder has played since the last one). */
 export const ARAM_QUIET_BATCH = 5;
 
+/** ARAM line reads since the server started: players read, and new ARAM games they gave (shown on /api/health). */
+export const aramLine = { reads: 0, added: 0 };
+
 export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats: ChampionStatsStore; lastUserRequest: () => number; paceMs: number; onStop?: (message: string) => void; arenaSeeds?: ArenaSeeds; aramSeeds?: ArenaSeeds }) {
   // Never take the last half of the key's budget: visitors' lookups come first.
   const { riot, platform, stats } = opts;
@@ -51,6 +54,7 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
 
   /** A player's last few games in one queue, without timelines; Arena games line up their players. */
   async function readQueue(puuid: string, queue: number) {
+    if (queue === 450) aramLine.reads++;
     let ids = await paced(() => riot.matchIds(platform, puuid, 0, 5, { queue })).catch(() => [] as string[]);
     // A lined-up Arena player with no games in the queue we asked for: Arena may be running under an
     // event queue id we haven't learned yet (or forgot on a restart). Read their latest games of any
@@ -61,6 +65,7 @@ export function startCrawler(opts: { riot: RiotClient; platform: Platform; stats
       try {
         const m = shapeMatch(await paced(() => riot.match(platform, id, false)));
         stats.addMatch(m);
+        if (m.queueId === 450) aramLine.added++;
         opts.arenaSeeds?.note(m);
         opts.aramSeeds?.note(m);
       } catch (e) {

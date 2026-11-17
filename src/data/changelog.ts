@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.214',
+    date: '2026-11-17',
+    items: ['Behind the scenes: the server status now counts how many lined-up ARAM players have been read and how many new ARAM games they gave, to find out why the ARAM list grows slowly.'],
+  },
+  {
     version: '3.213',
     date: '2026-11-17',
     items: ['Champion pages: a B, C or D tier now lines up with the other headline numbers instead of floating in an invisible box, and sits on the same baseline.'],
