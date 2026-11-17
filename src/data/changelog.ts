@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.231',
+    date: '2026-11-17',
+    items: ['Match history on phones: a big score with a couple of badges (like "10 / 6 / 10 · ACE · Double kill") now stays beside the spells and runes, with the badges wrapping under it, instead of the whole score dropping below them and making that row look different from the rest.'],
+  },
+  {
     version: '3.230',
     date: '2026-11-17',
     items: [

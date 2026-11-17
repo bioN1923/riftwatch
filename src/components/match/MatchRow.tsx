@@ -103,7 +103,7 @@ export const MatchRow = memo(function MatchRow({ match, puuid, platform }: { mat
               </time>
             </p>
 
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 sm:gap-x-5">
               {arena && p.augments?.length ? (
                 <div className="flex gap-0.5">
                   <SpellsOnly p={p} a={a} size={22} />
@@ -112,15 +112,17 @@ export const MatchRow = memo(function MatchRow({ match, puuid, platform }: { mat
               ) : (
                 <SpellsRunes p={p} a={a} size={22} />
               )}
-              <div>
-                <p className="display-num text-[28px] font-extrabold leading-none">
+              {/* Phones: the score takes the room left beside spells and runes (badges wrap inside it) instead of
+                  the whole block dropping under them when it's "10 / 6 / 10" with two badges. */}
+              <div className="min-w-0 flex-1 sm:flex-none">
+                <p className="display-num whitespace-nowrap text-[24px] font-extrabold leading-none sm:text-[28px]">
                   {p.kills}
                   <span className="mx-1 text-faint">/</span>
                   <span className="text-loss">{p.deaths}</span>
                   <span className="mx-1 text-faint">/</span>
                   {p.assists}
                 </p>
-                <p className="mt-1 flex items-center gap-2 text-xs">
+                <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
                   {/* A remake doesn't count, so its "Perfect" KDA or badge isn't something to highlight. */}
                   <span className={clsx('num font-semibold', r === 'remake' ? 'text-faint' : kdaTone(ratio))}>{t('common.kdaValue', { value: formatKda(ratio) })}</span>
                   {r !== 'remake' && <Badge p={p} />}
