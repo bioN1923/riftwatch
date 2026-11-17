@@ -1326,5 +1326,6 @@ const en = {
   "bench.grey": "Grey: a gap under 10%, or fewer than 10 of your games. Too small to read much into.",
   "profile.jumpSummary": "Jump to the summary: rank history, goals, champion pool",
   "error.offline.body": "Can’t reach Riftwatch. Check your connection and try again.",
+  "bp.picked": "Chosen runes",
 };
 export default en;

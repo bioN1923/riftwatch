@@ -5,6 +5,7 @@ screenshots: `live/` (riftwatch.fly.dev, real data) and `demo/` (demo data, full
 
 | Version | Date | Highlights |
 |---|---|---|
+| [v3.218](v3.218/CHANGES.md) | 2026-11-17 | Chosen runes listed by name beside the rune trees |
 | [v3.217](v3.217/CHANGES.md) | 2026-11-17 | CS at 15 with one decimal, matching the lane chart |
 | [v3.216](v3.216/CHANGES.md) | 2026-11-17 | Visible win-rate bar track |
 | [v3.215](v3.215/CHANGES.md) | 2026-11-17 | ARAM line read once a minute |

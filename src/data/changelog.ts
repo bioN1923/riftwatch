@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.218',
+    date: '2026-11-17',
+    items: ['Rune pages (champion, matchup and match details): on wider screens the chosen runes and stat shards are now listed by name next to the trees, keystone first, so the page reads without hovering every icon.'],
+  },
+  {
     version: '3.217',
     date: '2026-11-17',
     items: ['Matchups: CS at 15 now shows one decimal, like the lane chart below it. A matchup headed "−1" with a chart ending at "−1.3" now reads "−1.3" in both places, and the same goes for the matchup table on champion pages.'],

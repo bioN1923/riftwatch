@@ -91,6 +91,29 @@ export function RuneTrees({ primaryStyle, secondaryStyle, picked, shards }: { pr
       {primary && <Tree tree={primary} picked={set} a={a} withKeystone />}
       {secondary && <Tree tree={secondary} picked={set} a={a} />}
       {shards.length > 0 && <ShardGrid shards={shards} />}
+      {/* The chosen runes by name, so the page reads without hovering every icon. Fills the room beside the trees from
+          md up; hidden from screen readers, which already get each lit icon's name. */}
+      <div className="hidden min-w-0 md:block" aria-hidden>
+        <p className="mb-2 text-sm font-semibold">{t('bp.picked')}</p>
+        <ul className="space-y-1 text-xs">
+          {picked.map((id, i) => {
+            const name = a.rune(id).name;
+            return name ? (
+              <li key={id} className={i === 0 ? 'font-semibold text-gold' : 'text-muted'}>
+                {name}
+              </li>
+            ) : null;
+          })}
+          {shards.map((id, i) => {
+            const name = SHARD_INFO[id]?.name;
+            return name ? (
+              <li key={`s${i}`} className="text-faint">
+                {name}
+              </li>
+            ) : null;
+          })}
+        </ul>
+      </div>
     </div>
   );
 }

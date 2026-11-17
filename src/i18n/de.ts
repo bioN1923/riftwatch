@@ -1326,5 +1326,6 @@ const dict: Record<string, string> = {
   "bench.grey": "Grau: ein Unterschied unter 10 % oder weniger als 10 deiner Spiele. Zu wenig, um viel hineinzulesen.",
   "profile.jumpSummary": "Zur Übersicht: Rangverlauf, Ziele, Championpool",
   "error.offline.body": "Riftwatch ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.",
+  "bp.picked": "Gewählte Runen",
 };
 export default dict;

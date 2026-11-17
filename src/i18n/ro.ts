@@ -1366,5 +1366,6 @@ const dict: Record<string, string> = {
   "bench.grey": "Gri: o diferență sub 10% sau mai puțin de 10 meciuri ale tale. Prea puțin ca să tragi concluzii.",
   "profile.jumpSummary": "Sari la rezumat: istoricul rangului, obiective, campioni",
   "error.offline.body": "Riftwatch nu poate fi accesat. Verifică conexiunea și încearcă din nou.",
+  "bp.picked": "Rune alese",
 };
 export default dict;

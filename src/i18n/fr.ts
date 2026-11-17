@@ -1326,5 +1326,6 @@ const dict: Record<string, string> = {
   "bench.grey": "Gris : un écart de moins de 10 % ou moins de 10 de tes parties. Trop peu pour en tirer grand-chose.",
   "profile.jumpSummary": "Aller au résumé : historique de rang, objectifs, champions",
   "error.offline.body": "Impossible de joindre Riftwatch. Vérifie ta connexion et réessaie.",
+  "bp.picked": "Runes choisies",
 };
 export default dict;
