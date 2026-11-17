@@ -7,7 +7,7 @@ import type { MatchSummary, Profile } from '../../shared/types';
 import { PLATFORMS, getPlatform } from '../../shared/regions';
 import { api, ApiClientError } from '../lib/api';
 import { assets, champSlug, rankEmblem, useStaticData } from '../lib/ddragon';
-import { compact, decimal, formatKda, kdaRatio, kdaTone, multikill, pct, regionName, sureTone, thousands, tierName, wlTone } from '../lib/format';
+import { compact, decimal, formatKda, kdaRatio, kdaTone, multikill, pct, regionName, sureTone, thousands, tierName, TONE_MIN_GAMES, wlTone } from '../lib/format';
 import { fromSlug, parseRiotId, profilePath, querySlug, type RiotId } from '../lib/riotId';
 import { useFavorites, useRecent, useRegion, type SavedPlayer } from '../lib/storage';
 import { me, result } from '../lib/stats';
@@ -558,7 +558,14 @@ function Roles({ a, b, ma, mb, pa, pb }: { a: PlayerSummary; b: PlayerSummary; m
                   <span className="num truncate text-right text-xs text-faint">
                     {rec && rec.games > 0 ? (
                       <>
-                        {t('common.games', { count: rec.games })} · <span className={sureTone(rec.wins / rec.games, rec.games)}>{pct(rec.wins / rec.games, 0)}</span>
+                        {t('common.games', { count: rec.games })} ·{' '}
+                        {rec.games < TONE_MIN_GAMES ? (
+                          <span className="text-muted">
+                            {t('common.wins', { count: rec.wins })} {t('common.losses', { count: rec.games - rec.wins })}
+                          </span>
+                        ) : (
+                          <span className={sureTone(rec.wins / rec.games, rec.games)}>{pct(rec.wins / rec.games, 0)}</span>
+                        )}
                       </>
                     ) : (
                       '–'
@@ -692,7 +699,14 @@ function ChampList({ s, name, color, shared }: { s: PlayerSummary; name: string;
                   {t('common.games', { count: c.games })} · <span className={kdaTone(ratio)}>{formatKda(ratio)}</span>
                 </span>
               </span>
-              <span className={clsx('num text-xs font-semibold', wlTone(c.wins / c.games, c.games))}>{pct(c.wins / c.games, 0)}</span>
+              {/* Under five games a percentage (100% from one win) reads like a verdict; the plain record says what happened. */}
+              {c.games < TONE_MIN_GAMES ? (
+                <span className="num text-xs text-muted">
+                  {t('common.wins', { count: c.wins })} {t('common.losses', { count: c.games - c.wins })}
+                </span>
+              ) : (
+                <span className={clsx('num text-xs font-semibold', wlTone(c.wins / c.games, c.games))}>{pct(c.wins / c.games, 0)}</span>
+              )}
             </li>
           );
         })}

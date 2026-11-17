@@ -12,6 +12,11 @@ export { newerThan } from '../lib/version';
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '3.220',
+    date: '2026-11-17',
+    items: ['Compare: champions and roles played fewer than five times now show the plain record (like 1W 0L) instead of a bold "100%", which read like a verdict from a single game.', 'Light theme: the green used for wins is a shade darker, so small green labels such as "3 wins to end the day" on a profile meet the contrast minimum.'],
+  },
+  {
     version: '3.219',
     date: '2026-11-17',
     items: ['Home: the patch movers strip ends with an "All changes" link that opens the tier list straight at its patch movers section, with up to five risers and fallers and their game counts.'],
