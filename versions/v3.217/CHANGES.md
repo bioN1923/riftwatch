@@ -16,3 +16,7 @@
 - `tsc`, `vitest` (190) and `vite build` pass.
 - a11y: `{}`.
 - Screenshots: `demo/`. The header now reads −1.3.
+
+## Live check (07:39 local)
+- `3.217` is in the live JS bundle.
+- ARAM spot-check: 339 games, up from 316 at 05:28 UTC.
