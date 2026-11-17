@@ -155,8 +155,13 @@ export function PostGame({ match, puuid, platform }: { match: MatchSummary; puui
                       <span className="flex items-center gap-1.5">
                         <span className={clsx('font-semibold', kdaTone(ratio))}>{formatKda(ratio)}</span>
                         {!match.remake && (
-                          <span className="text-muted" title={t('pg.score')}>
+                          // "7.5" next to the KDA read like a second KDA; "/10" says it's the 0–10 score (title only helps with a mouse).
+                          <span className="whitespace-nowrap text-muted" title={t('pg.score')}>
+                            <span className="sr-only">{t('pg.score')}: </span>
                             {p.score.toFixed(1)}
+                            <span className="text-faint" aria-hidden>
+                              /10
+                            </span>
                           </span>
                         )}
                         <Badge p={p} />
